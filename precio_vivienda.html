@@ -15,6 +15,17 @@
     <main>
 
         <section>
+            <h2>Metodología</h2>
+            <ul>
+                <li>Introducción</li>
+                <li>Datos</li>
+                <li>Análisis Exploratorio</li>
+                <li>Evaluación y validación</li>
+            </ul>
+        </section>
+
+        
+        <section>
             <h2>Introducción</h2>
             <p>
                 Este estudio analiza la variación de los precios de propiedades en alquiler dentro del
@@ -41,21 +52,14 @@
         </section>
 
         <section>
-            <h2>Descripción</h2>
+            <h2>Análisis Exploratorio</h2>
             <p>
-                Análisis y modelado del precio de viviendas utilizando variables
-                socioeconómicas y características del inmueble.
+                 Se realizó un análisis exploratorio que comenzó con la limpieza de los datos, eliminando duplicados, valores atípicos y nulos. 
+                 Se descartaron variables redundantes (Furnished…32 y Furnished…42) y la variable Floors por su baja calidad y escasa relevancia. 
+                 Las zonas de Montevideo se agruparon en municipios mediante una nueva variable (Municipio), y el precio se transformó a precio_m2 para facilitar el análisis.
+                
+                 Los valores faltantes se imputaron según cada variable: se asignó la zona a la dirección, la media al precio_m2 y la categoría más frecuente a condición y disposición. Además, se recodificaron variables para mejorar su análisis y evaluar su relación lineal con precio_m2. Los duplicados se eliminaron considerando coincidencias únicas entre filas. Finalmente, se utilizaron visualizaciones para identificar qué variables influyen más en el precio por metro cuadrado.
             </p>
-        </section>
-
-        <section>
-            <h2>Metodología</h2>
-            <ul>
-                <li>Análisis exploratorio</li>
-                <li>Feature engineering</li>
-                <li>Modelos de regresión</li>
-                <li>Evaluación y validación</li>
-            </ul>
         </section>
 
     </main>
