@@ -199,11 +199,46 @@
     </ol>
 
     <h3>5.1 Multicolinealidad</h3>
-
     <p>
         La mayoría de las variables tienen valores de GVIF ajustados menores a 2, lo que generalmente se considera aceptable,
         por lo que no hay problemas graves de multicolinealidad en el modelo.
     </p>
+
+
+        <h3>5.2 Homocedasticidad</h3>
+    <p>
+          El test de Breusch-Pagan examina si la varianza de los residuos depende linealmente de 
+          las variables independientes del modelo original.  Se realiza una regresión auxiliar de los residuos al cuadrado contra las variables independientes originales.
+          Se calcula un estadístico de prueba basado en la regresión auxiliar. El estadístico de prueba sigue una distribución chi-cuadrado.
+    </p>
+
+
+    <table border="1">
+    <tr>
+        <th>Test</th>
+        <th>Estadístico</th>
+        <th>gl</th>
+        <th>p-valor</th>
+        <th>Conclusión</th>
+    </tr>
+    <tr>
+        <td>Breusch-Pagan</td>
+        <td>25.43</td>
+        <td>5</td>
+        <td>&lt; 0.001</td>
+        <td>Se rechaza H₀</td>
+    </tr>
+    </table>
+
+    </p>
+         Ambos p-valores son super pequeños, por lo tanto, hay problema de Heterocedasticidad. Se
+         puede concluir que se rechaza la hipótesis nula que no es nuestro objetivo
+    </p>
+    
+
+
+
+    
 </section>
 
 
