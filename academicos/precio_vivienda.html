@@ -177,9 +177,39 @@
         <section>
             <h2>Modelo Predictivo</h2>
                <p>
-                 aaa
-               <p>
+                Se realizó una exploración de las variables para evaluar su relación con el precio por metro cuadrado mediante gráficos lineales. A partir de este análisis, se construyó un modelo de regresión lineal utilizando las variables que parecían tener mayor influencia (municipio, condición, baños, año de construcción, tipo de propiedad, vista al mar, cantidad de estacionamientos y número de piso).
+                Sin embargo, los resultados del modelo fueron poco satisfactorios: la mayoría de los coeficientes no resultaron estadísticamente significativos (p-valor > 0.05), el error promedio de predicción fue alto (15,90 dólares por m²) y el R² fue muy bajo, lo que indica que las variables explicativas no logran explicar adecuadamente el precio por metro cuadrado. Debido a estos malos resultados, se decidió evaluar los cuatro supuestos del modelo para analizar su validez predictiva.
+               <p>      
         <section>
+
+
+        <section>
+            <h2>Supuestos a cumplir</h2>
+               <p>
+                   Para poder obtener conclusiones confiables, el modelo debe cumplir con determinados supuestos
+                   
+                   1) no multicolinealidad: exacta ni aproximada, para asegurar que la matriz X sea de rango completo (conformable)
+
+                   2) linealidad: la relación entre variables expicativas y la respuesta debe ser aproximadamente lineal.
+                   
+                   3) homoscedasticidad: la varianza de los errores no depende de ninguna de las variables explicativas.
+                   
+                   4) normalidad: los errores del modelo deben presentar una distribución normal.
+                   
+                   5) atípicos/influyentes: si bien no es un supuesto en si mismo, es recomendable identificar observaciones atípicas e influyentes al modelo.
+               <p> 
+
+
+                <p>
+                    5.1 Multicolinealidad:
+                    La mayoria de las variables tienen valores de GVIF ajustados menores a 2, lo que generalmente
+                    se consudera aceptable por lo que no hay problemas graves de multicolinealidad en el modelo    
+        <section>
+
+
+
+
+            
         
     </main>
 
