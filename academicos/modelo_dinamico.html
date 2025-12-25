@@ -123,11 +123,18 @@
                 width="900"
             >  
 
+             <p>Cada órbita es un nivel diferente de volatilidad, cuand se entra en una órbita, se mantendrá rotando en ella para siempre a menos que un factor externo lo empuje a otra.<p>
+             <p>El asterisco es el punto de equilibrio, donde la tasa de crecimiento de la presa (Precio) y del depredador (Volumen de transacciones) son cero, ambos se mantienen constantes<p>
+             <p>Ademas la forma de la Órbita, que no es un círculo perfecto, sino que están inclinadas y estiradas, representan las distintas fases por las que pasa el modelo:<p>
 
-             
+             <p> -Fase de Crecimiento (Abajo a la derecha): El precio sube porque hay pocas "fuerzas depredadoras" (poco volumen de venta/especulación).<p>
 
+             <p> - Fase de Depredación (Arriba a la derecha): El volumen alcanza su máximo justo cuando el precio empieza a flaquear. El "depredador" está en su apogeo.<p>
 
+             <p> - Fase de Declive (Arriba a la izquierda): El alto volumen agota el movimiento y el precio cae.<p>
 
+             <p> - Fase de Recuperación (Abajo a la izquierda): Ambos están en mínimos; el sistema descansa para reiniciar el ciclo.<p>
+            
             <p>Podemos observar un grafico de Correlación Cruzada (CCF)<p>
             <img 
                 src="../images/Imagen51.png"
@@ -145,17 +152,14 @@
             <p>Hacia el Lag -30 (Izquierda), tenemos que el comportamiento pasado del volumen tiene una fuerte influencia en el precio actual.<p>
             <p>Cerca del Lag 0, tenemos la interacción inmediata. La correlación negativa aquí indica que en el momento en que el volumen de transacciones sube, el precio tiende a bajar.<p>
             <p>Con respecto a la simetría, que la correlación se mantenga negativa en un rango amplio de días confirma que no es un evento aislado, sino un ciclo de retroalimentación persistente<p>
-
-
-                
-
-
-                
-
-
     </section>
+     <section>
+        <h2>Conclusion</h2>
+
+         <p>A través de la aplicación del modelo de Lotka-Volterra, se ha validado que el Precio (Presa) y el Volumen de transacciones(Depredador) de Twitter mantienen una relación de interdependencia cíclica. El volumen de transacciones se ve influido por la volatilidad del precio, alcanzando su maximo justo antes de que el precio de mercado sufra correcciones, tal como predice la teoría de depredador-presa.transacciones<p>
+         <p>El análisis de Correlación Cruzada mostro el desfase temporal (lag) entre las variables. La persistencia de correlaciones negativas en distintos lapsos de tiempo refuerza la idea de que el volumen de transacciones excesivo suele ser un indicador de que bajara el precio.<p>
+        
+        
 </body>
 
-
-    
 </html>
