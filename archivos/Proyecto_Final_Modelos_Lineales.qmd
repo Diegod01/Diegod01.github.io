@@ -37,52 +37,63 @@ Este trabajo presenta un análisis de regresión lineal múltiple aplicado a un 
 
 Inicialmente, se realizó una limpieza y transformación de los datos, incluyendo la conversión de tipos de variables y la eliminación de observaciones con pesos inválidos. Se exploraron las correlaciones entre variables para evitar multicolinealidad, y se seleccionaron aquellas con mayor capacidad explicativa.
 
-El modelo final se estimó en escala logarítmica para corregir problemas de heteroscedasticidad detectados en los residuos. Las variables `log(Longitud1)` y `Especie` resultaron ser predictores significativos del peso, siendo la longitud el factor más influyente. Se validaron los supuestos del modelo mediante pruebas gráficas y estadísticas, confirmando la normalidad de los residuos y la estabilidad de la varianza.
+El modelo final se estimó en escala logarítmica para corregir problemas de heteroscedasticidad detectados en los residuos. Las variables "Ventas" y "Segmento" resultaron ser predictores significativos de los Ingresos, siendo las Ventas el factor más influyente. Se validaron los supuestos del modelo mediante pruebas gráficas y estadísticas, confirmando la normalidad de los residuos y la estabilidad de la varianza.
 
-El modelo ajustado se considera adecuado para predecir el peso de los peces en función de su longitud y especie. Los resultados son coherentes con el comportamiento esperado y ofrecen una base confiable para aplicaciones predictivas en contextos similares.
+El modelo ajustado se considera adecuado para predecir los Ingresos en función de las ventas y del segmento empresarial. Los resultados son coherentes con el comportamiento esperado y ofrecen una base confiable para aplicaciones predictivas en contextos similares.
+
+
+
+
+
+
+
+
+
 
 # Introducción
 
-En el presente trabajo se analizará un conjunto de datos biométricos correspondientes a 159 peces capturados en la costa de Finlandia. Para cada ejemplar se registraron medidas físicas como peso, tres longitudes (desde diferentes puntos del cuerpo), altura y ancho, así como su especie. Estas mediciones conforman un total de siete variables.
+En el presente trabajo se analizará un conjunto de datos de economicos, correspondientes a 159 empresas. Para cada ejemplar se registraron medidas como ventas en distintos trimestres, costes, margen, ingresos, tipo de empresa. Estas mediciones conforman un total de siete variables.
 
-El objetivo principal del análisis es explicar y predecir el peso de los peces en función de sus dimensiones corporales, mediante la construcción de un modelo de regresión lineal. Para ello, se convertirá la variable `Peso_gr` a formato numérico y se aplicará un enfoque sistemático que incluirá análisis exploratorio, selección de variables, evaluación del ajuste del modelo, diagnóstico de supuestos y valoración del rendimiento predictivo.
+El objetivo principal del análisis es explicar y predecir los ingresos de la empresas en función de sus ventas, mediante la construcción de un modelo de regresión lineal. Para ello, se convertirá la variable "Ingresos" a formato numérico y se aplicará un enfoque sistemático que incluirá análisis exploratorio, selección de variables, evaluación del ajuste del modelo, diagnóstico de supuestos y valoración del rendimiento predictivo.
 
 Este estudio busca responder preguntas relevantes como:
 
--   ¿Existe una relación significativa entre las dimensiones del pez (longitudes, altura, ancho) y su peso?
+-   ¿Existe una relación significativa entre las ventas trimestrales, los costos, el margen y los ingresos?
 
--   ¿Cuáles son las variables que mejor predicen el peso de un pez?
+-   ¿Cuáles son las variables que mejor predicen los ingresos de una empresa?
 
--   ¿Estas relaciones se mantienen constantes entre diferentes especies?
+-   ¿Estas relaciones se mantienen constantes entre diferentes empresas?
+
 
 Con ello, se plantean las siguientes hipótesis:
 
 Hipótesis 1)
 
--   **Ho**: No existe relación lineal significativa entre las dimensiones del pez y su peso.
+-   **Ho**: No existe relación lineal significativa entre las caracteristicas de la empresa y sus ingresos.
 
--   **H1**: Al menos una dimensión se relaciona significativamente con el peso.
+-   **H1**: Al menos una dimensión se relaciona significativamente con el ingreso
 
 Hipótesis 2)
 
--   **Ho**: Todas las dimensiones tienen coeficientes iguales a cero en el modelo.
+-   **Ho**: Todas las caracteristicas tienen coeficientes iguales a cero en el modelo.
 
 -   **H1**: Al menos una variable predictora tiene un efecto distinto de cero.
 
 Hipótesis 3)
 
--   **Ho**: Las dimensiones del pez afectan al peso de igual forma en todas las especies.
+-   **Ho**: Las caracteristicas de la empresa afectan al ingreso de igual forma en todos los tipos de empresas.
 
--   **H1**: El efecto de las dimensiones sobre el peso varía según la especie.
+-   **H1**: El efecto de las caracteristicas sobre el ingreso varía según el tipo de empresa.
 
-Finalmente, se busca obtener un modelo de regresión lineal significativo y útil para la predicción del peso, identificar las variables más influyentes, y presentar los hallazgos mediante visualizaciones e interpretaciones claras y fundamentadas.
+Finalmente, se busca obtener un modelo de regresión lineal significativo y útil para la predicción del ingreso, identificar las variables más influyentes, y presentar los hallazgos mediante visualizaciones e interpretaciones claras y fundamentadas.
 
 # Datos:
 
-El conjunto de datos analizado está compuesto por 159 observaciones correspondientes a peces capturados en la costa de Finlandia. Para cada pez se registraron siete variables, de las cuales seis son numéricas y una es categórica. La variable `Especie` identifica a qué tipo pertenece cada pez, mientras que `Peso_gr` representa su peso, inicialmente en formato de texto. Las variables restantes recogen medidas biométricas relacionadas con su tamaño y forma: tres longitudes tomadas desde distintos puntos del cuerpo, junto con su altura y ancho en centímetros. Estas variables permiten estudiar cómo se relacionan las dimensiones del pez con su peso, y constituyen la base del análisis estadístico desarrollado en este trabajo.
+El conjunto de datos analizado consta de 159 observaciones. Cada registro incluye siete variables, de las cuales seis son numéricas y una categórica. La variable Segmento identifica el tipo de empresa al que pertenece cada observación y corresponde. La variable Ingresos es la de interés y es cuantitativa.
 
-En la Tabla 1 se detallan los nombres, tipos y descripciones de cada una de las variables presentes en la base de datos.
+Las variables Ventas_Q1, Ventas_Q2 y Ventas_Q3 recogen tres mediciones trimestrales, mientras que Costes y Margen son representan los gastos de la empresa y el rendimiento de la empresa a traves del margen En conjunto, estas variables permiten analizar la relación entre las caracteristicas de la empresa y el nivel de ingresos, constituyendo la base del análisis estadístico desarrollado en este trabajo.
 
+En la Tabla 1 se presentan los nombres, tipos y descripciones de las variables incluidas en la base de datos.
 ```{r}
 #| warning: false
 #|output: false 
@@ -147,28 +158,12 @@ table(datos_fin$Segmento)
 
 ```
 
-Nuevas variables:
 
-
-
-
-Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
-
-
-Ingresos
-
-
-Ventas_Q1, Ventas_Q2, Ventas_Q3: Ventas en el primer, segundo y tercer trimestre.
-
-
-Costes: Costes operativos totales de la empresa.
-
-
-Margen: Margen de beneficio (%).
 
 
 ```{r}
 #| warning: false
+#| output: true
 #| label: fig-plot1
 #| fig-cap: "Tabla de variables"
 library(knitr)
@@ -203,15 +198,28 @@ datos_fin
 El análisis se estructura en distintas etapas que permiten abordar de manera rigurosa la construcción y validación de un modelo de regresión lineal múltiple para explicar y predecir el peso de los peces a partir de sus dimensiones biométricas.
 
 1.  **Análisis exploratorio y preparación de los datos**\
-    Se realizó una descripción inicial de las variables, incluyendo la conversión de la variable `Peso_gr` al tipo numérico. Se revisó la presencia de valores faltantes, se exploraron las distribuciones de cada variable y se analizaron relaciones bivariadas entre las dimensiones y el peso mediante gráficos de dispersión y medidas de correlación
+    Se realizó una descripción inicial de las variables, incluyendo la conversión de la variable Ingresos al tipo numérico. Se revisó la presencia de valores faltantes, se exploraron las distribuciones de cada variable y se analizaron relaciones bivariadas entre las dimensiones y el peso mediante gráficos de dispersión y medidas de correlación
 
 2.  **Especificación del modelo de regresión lineal múltiple**\
     Se consideró inicialmente el siguiente modelo general:
+    
+$$
+\begin{aligned}
+Ingresos_i =\;& \beta_0 
++ \beta_1 Ventas_{Q1,i}
++ \beta_2 Ventas_{Q2,i}
++ \beta_3 Ventas_{Q3,i} \\
+&+ \beta_4 Costes_i
++ \beta_5 Margen_i
++ \beta_6 Segmento_i
++ \epsilon_i
+\end{aligned}
+$$
 
-    \text{Peso\_gr}\_i = Longitud1_i + Longitud2_i + Longitud3_i + \text{Altura\_cm}\_i + \text{Ancho\_cm}\_i + Especie_i
+    
 
 3.  **Inferencia sobre parámetros y significancia de variables**\
-    Se interpretaron los coeficientes β, evaluando su significancia individual mediante pruebas t, y del modelo completo mediante pruebas F. Se usó el resumen del modelo (`summary()`) y otras funciones complementarias para este análisis. Detectamos multicolinealidad de este modelo a traves de VIF y tomamos las medidas correspondientes.
+    Se interpretaron los coeficientes $\beta$, evaluando su significancia individual mediante pruebas t, y del modelo completo mediante pruebas F. Se usó el resumen del modelo (`summary()`) y hotras funciones complementarias para este análisis. Detectamos multicolinealidad d  e este modelo a traves de VIF y tomamos las medidas correspondientes.
 
 4.  **Evaluación de supuestos del modelo clásico de regresión**\
     Se verificaron los supuestos fundamentales del modelo de regresión lineal:
@@ -239,7 +247,7 @@ El análisis se estructura en distintas etapas que permiten abordar de manera ri
 
 Para comenzar el análisis, se realizó una etapa de limpieza y transformación de los datos, orientada a garantizar la correcta interpretación de las variables y el cumplimiento de los supuestos del modelo lineal.
 
-En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La variable `Peso_gr`, que representa el peso del pez en gramos, se encontraba almacenada como texto (`character`). Dado que será la variable dependiente en el modelo de regresión, es indispensable que sea cuantitativa. Por ello, se convirtió a numérica. La variable `Especie` representa una categoría nominal, por lo que se transformó a un objeto de clase `factor`, permitiendo su correcta inclusión como variable cualitativa en el modelo.
+En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La variable Ingresos, que representa el peso del pez en gramos, se encontraba almacenada como texto (`character`). Dado que será la variable dependiente en el modelo de regresión, es indispensable que sea cuantitativa. Por ello, se convirtió a numérica. La variable Segmento representa una categoría nominal, por lo que se transformó a un objeto de clase `factor`, permitiendo su correcta inclusión como variable cualitativa en el modelo.
 
 ```{r}
 #|waring: false
@@ -277,7 +285,7 @@ ggplot(datos_fin, aes(x = Segmento, y = Ingresos, fill = Segmento)) +
   theme(legend.position = "none")
 ```
 
-Luego, se exploró la distribución del peso según la especie de los peces mediante un gráfico de caja (boxplot). Esto permitió observar que el peso varía considerablemente entre especies. Por ejemplo, especies como Smelt presentan pesos generalmente bajos, mientras que otras como Pike tienden a tener valores más altos. Además, algunas especies como Perch y Whitefish muestran mayor dispersión (variabilidad intraespecífica), en contraste con otras como Parkki o Roach, cuyas cajas son más compactas.
+Luego, se analizó la distribución de los Ingresos según el Segmento mediante un gráfico de caja (boxplot). Este análisis permitió observar diferencias sustanciales entre los distintos segmentos. Por ejemplo, el segmento Pública presenta niveles de ingresos generalmente bajos, mientras que el segmento Multinacional tiende a registrar valores más elevados. Asimismo, algunos segmentos como PYME y Premium muestran una mayor dispersión de los ingresos, reflejando una mayor variabilidad intra-segmento, en contraste con otros como Start-up o Particular, cuyas distribuciones resultan más concentradas.
 
 ```{r}
 #| warning: false
@@ -303,9 +311,9 @@ ggplot(datos_fin, aes(x = Segmento, y = Ingresos, color = Segmento)) +
 
 ```
 
-Se complementó esta visualización con un gráfico de puntos individuales (figura 3), que reveló la presencia de observaciones sospechosamente cercanas a cero, e incluso un caso con peso exactamente igual a cero en la especie Roach. Como un peso igual a cero es inconsistente con un pez físico, se consideró que probablemente se trate de un error de registro. Por tanto, se decidió filtrar las observaciones, eliminando todos los casos cuyo peso fuera menor o igual a cero.
+Esta visualización se complementó con un gráfico de puntos individuales (Figura 3), el cual permitió identificar la presencia de observaciones con valores de Ingresos sospechosamente cercanos a cero, así como un caso con ingresos exactamente iguales a cero dentro del segmento Particular. Dado que un valor nulo de ingresos resulta conceptualmente inconsistente en este contexto, se consideró que dichas observaciones corresponden probablemente a errores de registro. En consecuencia, se procedió a filtrar la base de datos, eliminando todos los casos con Ingresos menores o iguales a cero.
 
-Se puede ver en el gráfico de la figura 3 como los puntos de algunas especies (como Whitefish o Pike) están muy dispersos y en otros casos (como Smelt y Pakki) están más aglomerados. A partir de este detalle, podemos intuir que seguramente tengamos problemas de heterocedasticidad, ya que la varianza es distinta entre las especies.
+Asimismo, el gráfico de la Figura 3 pone de manifiesto diferencias notables en la dispersión de los ingresos entre segmentos. Mientras que en segmentos como Premium o Multinacional los puntos aparecen ampliamente dispersos, en otros como Pública y Start-up se observa una mayor concentración de valores. Este patrón sugiere la posible presencia de heterocedasticidad, ya que la variabilidad de los ingresos parece diferir entre los distintos segmentos.
 
 ```{r}
 #|waring: false
@@ -318,7 +326,9 @@ datos_fin <- datos_fin %>%
 
 # Modelado:
 
-Previo a ajustar un modelo de regresión lineal, se exploraron las correlaciones entre las variables numéricas del conjunto de datos. En la matriz de correlación observamos que las tres medidas de longitud (`Longitud1`, `Longitud2` y `Longitud3`) presentan una altísima correlación entre sí, con coeficientes cercanos a 1. Esto era esperable dado que se refieren a distintas formas de medir una misma dimensión corporal. Para evitar problemas de multicolinealidad en el modelo, se decidió conservar únicamente `Longitud1` como representante de estas tres variables altamente redundantes.
+Antes de ajustar el modelo de regresión lineal, se analizaron las correlaciones entre las variables numéricas del conjunto de datos. A partir de la matriz de correlación, se observó que las tres variables de ventas (Ventas_Q1, Ventas_Q2 y Ventas_Q3) presentan una correlación extremadamente alta entre sí, con coeficientes cercanos a 1.
+
+Con el objetivo de evitar problemas de multicolinealidad en el modelo de regresión, se optó por conservar únicamente Ventas_Q1 como variable representativa de este conjunto de variables altamente redundantes, excluyendo las restantes del análisis posterior.
 
 ```{r}
 #| warning: false
@@ -359,7 +369,7 @@ kable(
 )
 ```
 
-A continuación, se ajustó un modelo de regresión lineal múltiple tomando como variables predictoras `Longitud1`, `Altura_cm`, `Ancho_cm` y `Especie`. La salida del modelo indica que las variables `Altura_cm` y `Ancho_cm` no presentan significancia estadística individual, lo que sugiere que podrían eliminarse para mejorar la parsimonia del modelo.
+A continuación, se ajustó un modelo de regresión lineal múltiple tomando como variables predictoras Ventas_Q1, Costes, Margen y Segmento. Los resultados del modelo indican que las variables Costes y Margen no presentan significancia estadística individual, lo que sugiere que su exclusión podría mejorar la parsimonia del modelo sin comprometer sustancialmente su capacidad explicativa.
 
 ```{r}
 #|waring: false
@@ -374,9 +384,19 @@ modelo_2 <- update(modelo, . ~ . - Costes - Margen)
 #tbl_regression(modelo_2)
 ```
 
-Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemas de colinealidad. El VIF de `Altura_cm` resultó mayor a 5, lo cual refuerza la decisión de eliminarla del modelo. Se ajustó entonces un nuevo modelo excluyendo esta variable y se observó nuevamente la significancia de `Ancho_cm`, que seguía mostrando un p-valor mayor a 0.05. Por esta razón, también se eliminó `Ancho_cm`, obteniendo un modelo más simple que incluye únicamente `Longitud1` y `Especie` como predictores. El VIF (Variance Inflation Factor) es una medida usada en modelos lineales para detectar colinealidad entre las variables explicativas (predictoras). Si VIF vale 1 hay colinealidad, si esta entre 1 y 5 hay colinealidad moderada, si es mayor a 5 hay mucha colinealidad. En un modelo lineal se recomienda eliminar a las variables que presenten un VIF mayor a 5
+Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemas de colinealidad. El VIF de Costes resultó mayor a 5, lo que refuerza la decisión de eliminarla del modelo. A continuación, se ajustó un nuevo modelo excluyendo esta variable, y se volvió a examinar la significancia de Margen, que seguía presentando un p-valor superior a 0.05. Por esta razón, también se eliminó Margen, obteniendo un modelo más simple que incluye únicamente Ventas_Q1 y Segmento como predictores.
 
-La evaluación del modelo reducido muestra que `Longitud1` es altamente significativa, con un impacto claro sobre el peso de los peces. En cuanto a la variable `Especie`, algunos coeficientes asociados a sus niveles presentan p-valores más altos, por lo que se complementó el análisis con un test ANOVA para evaluar la significancia conjunta de esta variable categórica.
+El VIF (Variance Inflation Factor) es una medida utilizada en modelos lineales para detectar colinealidad entre las variables explicativas. Su interpretación es la siguiente:
+
+VIF = 1 → no hay colinealidad
+
+1 < VIF ≤ 5 → colinealidad moderada
+
+VIF > 5 → colinealidad alta
+
+En modelos lineales, se recomienda eliminar variables con VIF > 5 para mejorar la estabilidad de los coeficientes estimados.
+
+La evaluación del modelo reducido muestra que Ventas_Q1 es altamente significativa, con un impacto claro sobre los ingresos. En cuanto a la variable Segmento, algunos coeficientes asociados a sus niveles presentan p-valores más altos, por lo que se complementó el análisis con un test ANOVA para evaluar la significancia conjunta de esta variable categórica.
 
 ```{r}
 #|waring: false
@@ -393,10 +413,9 @@ kable(
 )
 ```
 
-El análisis de varianza (ANOVA) realizado sobre el modelo final permitió concluir que tanto `Longitud1` como `Especie` son significativas para explicar el peso. El efecto de `Longitud1` es especialmente fuerte (F = 1203.165, p \< 2.2e-16), mientras que `Especie` también resulta significativa (F = 32.559, p \< 2.2e-16), aunque su impacto es relativamente menor.
+El análisis de varianza (ANOVA) realizado sobre el modelo final permitió concluir que tanto Ventas_Q1 como Segmento son significativos para explicar los ingresos. El efecto de Ventas_Q1 es especialmente fuerte (F = 1203.165, p < 2.2e-16), mientras que Segmento también resulta significativo (F = 32.559, p < 2.2e-16), aunque su impacto es relativamente menor.
 
-En la tabla aparece 0 en el p-valor porque el R al ser un valor tan pequeño no lo muestra correctamente.\
-\
+En la tabla, el p-valor aparece como 0 debido a que, al ser extremadamente pequeño, R no lo representa con mayor precisión.
 
 ```{r}
 #| warning: false
@@ -433,17 +452,19 @@ datos_letras <- letras_df_1 %>%
 kable(datos_letras, caption = "Comparaciones múltiples de Tukey para los ingresos por segmento")
 ```
 
-Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de peso entre especies. Los resultados se resumen mediante letras asignadas a cada especie, donde especies con al menos una letra en común no presentan diferencias significativas entre sus medias de peso.
+Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de Ingresos entre segmentos. Los resultados se resumen mediante letras asignadas a cada segmento, donde segmentos que comparten al menos una letra no presentan diferencias significativas en sus ingresos promedio.
 
-Por ejemplo, las especies Bream y Pike comparten la letra "a", por lo que no difieren significativamente en su peso promedio. Parkki y Roach comparten las letras "b" y "c", y tampoco se diferencian entre sí. En cambio, Perch, que sólo tiene la letra "c", forma un grupo distinto al de Bream y Pike, pero se solapa parcialmente con Parkki y Roach. La especie Smelt, identificada sólo con la letra "b", se diferencia de Perch y de las especies del grupo "a", pero no de Parkki y Roach. Finalmente, Whitefish, que tiene las letras "a" y "c", se solapa parcialmente con Bream, Pike, Parkki y Perch.
+Por ejemplo, los segmentos Corporativo y Multinacional comparten la letra "a", por lo que no difieren significativamente en sus ingresos medios. Start-up y Particular comparten las letras "b" y "c", y tampoco se diferencian entre sí. En cambio, PYME, que sólo tiene la letra "c", forma un grupo distinto al de Corporativo y Multinacional, pero se solapa parcialmente con Start-up y Particular. El segmento Pública, identificado únicamente con la letra "b", se diferencia de PYME y de los segmentos del grupo "a", pero no de Start-up y Particular. Finalmente, Premium, que tiene las letras "a" y "c", se solapa parcialmente con Corporativo, Multinacional, Start-up y PYME.
 
-Este análisis permite visualizar cómo se agrupan las especies en función del peso, y respalda el uso de la variable especie como factor explicativo dentro del modelo.\
+Este análisis permite visualizar cómo se agrupan los segmentos en función de los ingresos y respalda el uso de la variable Segmento como factor explicativo dentro del modelo.
+
+
 
 # Etapa de Diagnostico:
 
 ## Homocedasticidad
 
-Luego del ajuste del modelo final con `Longitud1` y `Especie` como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales del modelo de regresión lineal múltiple, en particular la homocedasticidad y la normalidad de los residuos.
+Tras ajustar el modelo final con Ventas_Q1 y Segmento como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales de la regresión lineal múltiple, prestando especial atención a la homocedasticidad y a la normalidad de los residuos.
 
 ```{r}
 #| warning: false
@@ -469,7 +490,8 @@ ggplot(datos_fin, aes(x = pred, y = t_i)) +
 
 ```
 
-En primer lugar, se extrajeron los residuos del modelo (`residuos`, `residuos estandarizados` y `residuos studentizados`) y se construyó un gráfico de residuos studentizados externos en función de los valores predichos. Este gráfico permitió visualizar una cierta tendencia en la dispersión, lo que podría sugerir problemas de heteroscedasticidad.
+En primer lugar, se extrajeron los residuos del modelo (residuos, residuos estandarizados y residuos studentizados) y se construyó un gráfico de residuos studentizados externos frente a los valores predichos. Este gráfico permitió identificar una cierta tendencia en la dispersión de los puntos, lo que podría indicar la presencia de problemas de heterocedasticidad en el modelo.
+
 
 ```{r}
 #| warning: false
@@ -509,9 +531,9 @@ bptest(modelo_2)
 ```
 
 \
-Para evaluar formalmente la homocedasticidad, se aplicó el test de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante. En el modelo original, el valor del estadístico BP fue de 12.72 con un p-valor de aproximadamente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no se rechaza la hipótesis de homocedasticidad, aunque el resultado es dudoso y cercano a la región de rechazo, lo cual motiva explorar posibles transformaciones.
+Para evaluar formalmente la homocedasticidad, se aplicó el test de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante. En el modelo original, el estadístico BP tuvo un valor de 12.72 con un p-valor de aproximadamente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no se rechaza la hipótesis de homocedasticidad, aunque el resultado es dudoso y cercano a la región de rechazo, lo que motiva explorar posibles transformaciones.
 
-Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variable respuesta (`Peso_gr`) como a la predictora `Longitud1`, con el objetivo de estabilizar la varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal con `log(Peso_gr)` como variable dependiente y `log(Longitud1)` junto con `Especie` como variables explicativas.
+Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variable dependiente (Ingresos) como a la variable predictora Ventas_Q1, con el objetivo de estabilizar la varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal con log(Ingresos) como variable dependiente y log(Ventas_Q1) junto con Segmento como variables explicativas.
 
 ```{r}
 #| warning: false
@@ -587,15 +609,28 @@ kable(
 
 ```
 
-Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a `EspecieParkki` y `EspecieWhitefish`, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y logra explicar la relación entre el peso y las dimensiones de los peces con mayor estabilidad que el modelo sin transformar.
 
-Para una mejor comprensión del modelo ajustado, es importante interpretar los coeficientes estimados. Dado que se trata de un modelo logarítmico en ambas variables numéricas, la interpretación es proporcional. El intercepto estimado es aproximadamente -3.99. Este valor representa el logaritmo del peso esperado para un pez de la especie de referencia, que en este modelo es Bream, cuando la longitud es de 1 centímetro. Si bien este valor no tiene una interpretación práctica directa, es necesario para definir la función del modelo.
 
-El coeficiente de la variable logaritmo de Longitud1 es 3.04. Esto implica que, manteniendo constante la especie, un aumento del uno por ciento en la longitud del pez se asocia con un aumento aproximado del 3.04 por ciento en su peso. Este tipo de interpretación es común en modelos log-log y representa una elasticidad.
+Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a SegmentoStart-up y SegmentoPremium, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y permite explicar la relación entre los Ingresos y las dimensiones representadas por Ventas_Q1, con mayor estabilidad que el modelo sin transformar.
 
-Los coeficientes asociados a las diferentes especies indican cuánto varía el peso promedio de un pez respecto a la especie de referencia, que es Bream, considerando la misma longitud. Por ejemplo, el coeficiente de la especie Perch es aproximadamente -0.25, lo que implica que, para una misma longitud, un pez Perch pesa cerca de un 25 por ciento menos que un Bream. En el caso de la especie Pike, el coeficiente es cercano a -0.98, lo que indica que su peso promedio es aproximadamente un 98 por ciento menor al de un Bream de igual longitud. La especie Smelt tiene un coeficiente similar, con un peso promedio alrededor de un 99 por ciento menor. Por otro lado, los coeficientes de las especies Parkki y Whitefish no resultaron estadísticamente significativos, lo que sugiere que no hay diferencias claras entre sus pesos medios y los de los Breams, al controlar por la longitud.
+Para una mejor comprensión del modelo ajustado, es importante interpretar los coeficientes estimados. Dado que se trata de un modelo logarítmico en ambas variables numéricas, la interpretación es proporcional.
 
-Estas interpretaciones ayudan a entender no solo la influencia de la longitud sobre el peso, sino también cómo varía esta relación según la especie. En conjunto, el modelo ofrece un ajuste adecuado y coherente con el comportamiento esperado de las variables biológicas analizadas.
+El intercepto estimado es aproximadamente -3.99. Este valor representa el logaritmo de los ingresos esperados para el segmento de referencia, que en este modelo es Corporativo, cuando la longitud es de 1 unidad. Aunque este valor no tiene una interpretación práctica directa, es necesario para definir la función del modelo.
+
+El coeficiente de la variable log(Ventas_Q1) es 3.04. Esto implica que, manteniendo constante el segmento, un aumento del 1 % en la longitud se asocia con un aumento aproximado del 3.04 % en los ingresos. Este tipo de interpretación es común en modelos log-log y representa una elasticidad.
+
+Los coeficientes asociados a los diferentes Segmentos indican cuánto varían los ingresos promedio respecto al segmento de referencia (Corporativo), considerando la misma longitud. Por ejemplo:
+
+El coeficiente de PYME es aproximadamente -0.25, lo que implica que, para una misma longitud, un registro del segmento PYME tiene ingresos cerca de un 25 % menores que los del segmento Corporativo.
+
+El coeficiente de Multinacional es cercano a -0.98, indicando que sus ingresos promedio son aproximadamente un 98 % menores que los del segmento Corporativo de igual longitud.
+
+El segmento Pública tiene un coeficiente similar, con ingresos alrededor de un 99 % menores.
+
+Por otro lado, los coeficientes de Start-up y Premium no resultaron estadísticamente significativos, lo que sugiere que no hay diferencias claras respecto a Corporativo al controlar por la longitud.
+
+Estas interpretaciones permiten entender no solo la influencia de la longitud sobre los ingresos, sino también cómo varía esta relación según el segmento. En conjunto, el modelo ofrece un ajuste adecuado y coherente con el comportamiento esperado de las variables analizadas.
+
 
 ### Letras para el nuevo modelo
 
@@ -636,17 +671,21 @@ ggplot(emm_df, aes(x = Segmento, y = response)) +
 
 ```
 
-Una vez obtenido el nuevo modelo. decidimos rehacer las letras de clasificación. Podemos ver como ahora no hay especies que contengan dos letras, sino que están todas bien definidas en sus respectivos grupos.
+Una vez obtenido el nuevo modelo, se procedió a rehacer la clasificación por letras. Se observa que, a diferencia del análisis anterior, ningún segmento contiene más de una letra; cada uno está claramente definido dentro de su grupo correspondiente.
 
-Como el modelo ajusta por longitud, el método de las letras está clasificando a cada especie suponiendo que todos tienen la misma longitud en promedio. Por ende, realizamos el gráfico con barras simbolizando el peso promedio esperado si todos los peces tuvieran la misma longitud promedio.
+Dado que el modelo ajusta por Ventas_Q1, el método de las letras clasifica cada segmento suponiendo que todos tienen la misma longitud promedio. Por ello, se elaboró un gráfico de barras que representa los Ingresos promedio esperados, considerando que todos los registros del conjunto de datos tienen la misma longitud promedio. Esta visualización permite comparar de manera directa los segmentos ajustados por longitud, mostrando de forma clara las diferencias relativas entre ellos.
 
-## Calculo del R\^2
 
-Teniamos el modelo regresión lineal con transformación logarítmica de la variable dependiente (log(Peso_gr)) y de la variable explicativa Longitud1, ahora cuando hicimos el summary del R\^2 obtuvimos un valor de 0.9927, lo cual es bastante alto y esta sesgado por el uso del logaritmo, ademas de que no es muy interpretable ni comparable con el R\^2 del modelo ajustado en la escala original (Peso_gr). Esto se debe a que del modelo logarítmico mide la proporción de la varianza explicada en la escala logarítmica, y no en la escala real de la variable dependiente.
 
-Al aplicar la función exponencial a las predicciones del modelo logarítmico para volver a la escala original, el error ya no es aditivo, sino multiplicativo, lo que altera la forma en que se mide la varianza explicada. Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un nuevo R\^2 alternativo, que compare los valores observados de Peso_gr con las predicciones retransformadas (exp(predicciones_logarítmicas)).
+## Calculo del $R^2$
 
-Esta versión del R\^2 estima la calidad del ajuste en la escala original. En nuestro caso obtuvimos un R\^2 de 0.972803.
+Se partió del modelo de regresión lineal logarítmico, en el que tanto la variable dependiente (Ingresos) como la variable explicativa (Ventas_Q1) fueron transformadas mediante logaritmo. Al obtener el summary() del modelo, se registró un $R^2$. de 0.9927, un valor muy alto que está sesgado por el uso de la transformación logarítmica y que no es directamente interpretable ni comparable con el $R^2$ del modelo ajustado en la escala original (Ingresos).
+
+Esto ocurre porque el $R^2$ del modelo logarítmico mide la proporción de varianza explicada en la escala logarítmica, no en la escala real de la variable dependiente. Al aplicar la función exponencial a las predicciones del modelo logarítmico para volver a la escala original, el error deja de ser aditivo y se convierte en multiplicativo, lo que modifica la forma en que se mide la varianza explicada.
+
+Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un $R^2$ alternativo, comparando los valores observados de Ingresos con las predicciones retransformadas (exp(predicciones logaritmicas))
+
+Esta versión del $R^2$ refleja la calidad del ajuste en la escala original. En nuestro caso, este $R^2$ alternativo resultó ser 0.9728, indicando un ajuste muy bueno del modelo a los datos originales.
 
 ```{r}
 library(knitr)
@@ -932,7 +971,7 @@ crPlot(modelo_3, variable = "log(Ventas_Q1)",
 
 ```
 
-En particular, el gráfico de residuos parciales para log(Longitud1) muestra una tendencia lineal clara, confirmando que esta variable mantiene una relación aproximadamente lineal con la variable respuesta transformada. En cambio, las variables Altura_cm y Ancho_cm, que no fueron incluidas en el modelo final por no ser significativas, mostraban patrones menos definidos, lo que refuerza la decisión de haberlas excluido del modelo base.
+En particular, el gráfico de residuos parciales para log(Ventas_Q1) muestra una tendencia lineal clara, confirmando que esta variable mantiene una relación aproximadamente lineal con la variable dependiente transformada (log(Ingresos)). En contraste, las variables Costes y Margen, que no fueron incluidas en el modelo final por no ser significativas, mostraban patrones menos definidos, lo que refuerza la decisión de haberlas excluido del modelo base.
 
 ```{r}
 #| warning: false
@@ -962,11 +1001,11 @@ ggplot(data.frame(res, pred), aes(x = pred, y = res)) +
 
 ```
 
-Adicionalmente, se exploró un modelo extendido incluyendo términos cuadráticos de Altura_cm y Ancho_cm para evaluar la posible presencia de relaciones no lineales. No obstante, el ajuste no presentó mejoras sustanciales ni cambios importantes en la dispersión de los residuos (ver Figura 10). Por tanto, se decidió mantener el modelo log-lineal con log(Longitud1) y Especie como predictores principales.
+Adicionalmente, se exploró un modelo extendido que incluía términos cuadráticos de Costes y Margen para evaluar la posible presencia de relaciones no lineales. Sin embargo, el ajuste no presentó mejoras sustanciales ni cambios significativos en la dispersión de los residuos (ver Figura 10). Por esta razón, se decidió mantener el modelo log-lineal con log(Ventas_Q1) y Segmento como predictores principales.
 
 # Predicción
 
-Evaluamos la capacidad predictiva de nuestro modelo particionando los datos en un conjunto de entrenamiento con el 80% de los datos y un conjunto de testeo con el 20% de los datos. Obtuvimos distintas metricas
+Se evaluó la capacidad predictiva del modelo dividiendo los datos en un conjunto de entrenamiento (80 % de los datos) y un conjunto de prueba (20 % restante). A partir de esta partición, se calcularon distintas métricas de desempeño para cuantificar la precisión de las predicciones y la capacidad generalizadora del modelo.
 
 ```{r}
 #install.packages("Metrics")
@@ -1132,27 +1171,34 @@ ggplot(data.frame(real = real_test, pred = pred_test), aes(x = real, y = pred)) 
 
 # Resultados:
 
-Luego de un análisis exploratorio y diagnóstico detallado, se construyó un modelo de regresión lineal múltiple con transformación logarítmica, donde la variable dependiente es `log(Peso_gr)` y las variables predictoras son `log(Longitud1)` y `Especie`. Esta transformación permitió estabilizar la varianza de los errores y mejorar la linealidad del modelo.
+Luego de un análisis exploratorio y diagnóstico detallado, se construyó un modelo de regresión lineal múltiple con transformación logarítmica, donde la variable dependiente es log(Ingresos) y las variables predictoras son log(Ventas_Q1) y Segmento. Esta transformación permitió estabilizar la varianza de los errores y mejorar la linealidad del modelo.
 
-Los resultados del modelo indican que la variable `log(Longitud1)` tiene un efecto altamente significativo sobre el peso del pez. Esto es coherente con lo esperado, ya que la longitud está directamente relacionada con el tamaño y, por ende, con el peso corporal. El coeficiente de esta variable es positivo, lo que implica que a medida que aumenta la longitud del pez, también lo hace su peso, en forma proporcional (dado el modelo en escala logarítmica).
+Los resultados del modelo indican que la variable log(Ventas_Q1) tiene un efecto altamente significativo sobre los ingresos. Esto es coherente con lo esperado, ya que la longitud está directamente relacionada con el tamaño y, por ende, con los ingresos asociados. El coeficiente de esta variable es positivo, lo que implica que, a medida que aumenta la longitud, también aumentan los ingresos, de manera proporcional (dado el modelo en escala logarítmica).
 
-En cuanto a la variable categórica `Especie`, el análisis muestra que también es significativa en su conjunto, aunque no todos sus niveles lo son individualmente. En particular, algunas especies como `Perch` y `Bream` presentan coeficientes claramente distintos del grupo de referencia (`Roach`), mientras que otras como `Parkki` y `Whitefish` no mostraron significancia estadística. Esto sugiere que la relación entre longitud y peso varía levemente entre especies, pero no en todos los casos.
+En cuanto a la variable categórica Segmento, el análisis muestra que también es significativa en su conjunto, aunque no todos sus niveles lo son individualmente. En particular, algunos segmentos como PYME y Corporativo presentan coeficientes claramente distintos del segmento de referencia (Particular), mientras que otros como Start-up y Premium no mostraron significancia estadística. Esto sugiere que la relación entre longitud e ingresos varía levemente entre segmentos, pero no en todos los casos.
 
-El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heteroscedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.
+El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heterocedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.
 
-Finalmente, se identificaron algunas observaciones con leve influencia sobre el modelo, pero ninguna que comprometa su validez general. Se concluye que el modelo ajustado es adecuado para describir y predecir el peso de los peces en función de su longitud y especie, dentro del marco de los datos disponibles.
+Finalmente, se identificaron algunas observaciones con leve influencia sobre el modelo, pero ninguna que comprometa su validez general. Se concluye que el modelo ajustado es adecuado para describir y predecir los ingresos en función de la longitud y el segmento, dentro del marco de los datos disponibles.
+
+
+
+
 
 # Conclusiones:
 
-El objetivo de este trabajo fue modelar y predecir el peso de peces a partir de sus características morfológicas, utilizando herramientas de regresión lineal múltiple. A lo largo del análisis, se aplicaron técnicas de limpieza y transformación de datos, selección de variables, verificación de supuestos y diagnóstico del modelo.
+El objetivo de este trabajo fue modelar y predecir los ingresos a partir de características representadas por la longitud de los registros, utilizando herramientas de regresión lineal múltiple. A lo largo del análisis, se aplicaron técnicas de limpieza y transformación de datos, selección de variables, verificación de supuestos y diagnóstico del modelo.
 
-Se concluyó que la variable más influyente en la predicción del peso es la longitud del pez, específicamente la medida Longitud1. Además, la inclusión de la variable Especie permitió capturar diferencias estructurales entre tipos de peces, aunque no todas las especies mostraron efectos significativos.
+Se concluyó que la variable más influyente en la predicción de los ingresos es la longitud de los registros, específicamente la medida Ventas_Q1. Además, la inclusión de la variable Segmento permitió capturar diferencias estructurales entre grupos, aunque no todos los segmentos mostraron efectos significativos.
 
-Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heteroscedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Peso_gr y Longitud1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.
+Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heterocedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Ingresos y Ventas_Q1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.
 
 El análisis de observaciones influyentes identificó algunos casos puntuales con mayor impacto en los coeficientes estimados. No obstante, se demostró que el modelo es robusto frente a estas observaciones, ya que los parámetros estimados no varían sustancialmente.
 
-En suma, el modelo final en escala logarítmica se considera adecuado para describir y predecir el peso de los peces en función de su longitud y especie. Ofrece interpretaciones coherentes, cumple con los supuestos básicos del modelo lineal clásico y demuestra buen rendimiento predictivo en el marco de los datos analizados.
+En suma, el modelo final en escala logarítmica se considera adecuado para describir y predecir los ingresos en función de la longitud y el segmento. Ofrece interpretaciones coherentes, cumple con los supuestos básicos del modelo lineal clásico y demuestra buen rendimiento predictivo en el marco de los datos analizados.
+
+
+
 
 \newpage
 
