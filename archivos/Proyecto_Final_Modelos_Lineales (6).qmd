@@ -84,7 +84,7 @@ library(gtsummary)
 #|output: false 
 
 # Datos
-datos <- read_xlsx(here("Proyecto_Final", "biometria_peces.xlsx"))
+datos <- read_xlsx(here("archivos", "biometria_peces (3).xlsx"))
 ```
 
 ```{r}
