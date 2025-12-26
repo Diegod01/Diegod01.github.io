@@ -1,0 +1,1179 @@
+---
+title: "Proyecto Final Modelos Lineales"
+author: "Diego Da Rosa, Diego Aguiar, Juan Apolo"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+editor: visual
+echo: false
+warning: false
+---
+
+\newpage
+
+
+Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
+
+Ingresos
+
+Ventas_Q1, Ventas_Q2, Ventas_Q3: Ventas en el primer, segundo y tercer trimestre.
+
+Costes: Costes operativos totales de la empresa.
+
+Margen: Margen de beneficio (%).
+
+
+# Resumen :
+
+Este trabajo presenta un análisis de regresión lineal múltiple aplicado a un conjunto de datos sobre el rendimiento de distintas empresas en distintos sectores. El objetivo principal es modelar y predecir los Ingresos de las empresas partir de datos como sus ventas en distintos trimestres, sus gastos, su margen. Se trabajó con 159 observaciones que incluyen variables como ventas, costes, nargen y tipo de empresa.
+
+```{r}
+#datos_fin
+
+#table(datos_fin$Segmento)
+```
+
+
+Inicialmente, se realizó una limpieza y transformación de los datos, incluyendo la conversión de tipos de variables y la eliminación de observaciones con pesos inválidos. Se exploraron las correlaciones entre variables para evitar multicolinealidad, y se seleccionaron aquellas con mayor capacidad explicativa.
+
+El modelo final se estimó en escala logarítmica para corregir problemas de heteroscedasticidad detectados en los residuos. Las variables `log(Longitud1)` y `Especie` resultaron ser predictores significativos del peso, siendo la longitud el factor más influyente. Se validaron los supuestos del modelo mediante pruebas gráficas y estadísticas, confirmando la normalidad de los residuos y la estabilidad de la varianza.
+
+El modelo ajustado se considera adecuado para predecir el peso de los peces en función de su longitud y especie. Los resultados son coherentes con el comportamiento esperado y ofrecen una base confiable para aplicaciones predictivas en contextos similares.
+
+# Introducción
+
+En el presente trabajo se analizará un conjunto de datos biométricos correspondientes a 159 peces capturados en la costa de Finlandia. Para cada ejemplar se registraron medidas físicas como peso, tres longitudes (desde diferentes puntos del cuerpo), altura y ancho, así como su especie. Estas mediciones conforman un total de siete variables.
+
+El objetivo principal del análisis es explicar y predecir el peso de los peces en función de sus dimensiones corporales, mediante la construcción de un modelo de regresión lineal. Para ello, se convertirá la variable `Peso_gr` a formato numérico y se aplicará un enfoque sistemático que incluirá análisis exploratorio, selección de variables, evaluación del ajuste del modelo, diagnóstico de supuestos y valoración del rendimiento predictivo.
+
+Este estudio busca responder preguntas relevantes como:
+
+-   ¿Existe una relación significativa entre las dimensiones del pez (longitudes, altura, ancho) y su peso?
+
+-   ¿Cuáles son las variables que mejor predicen el peso de un pez?
+
+-   ¿Estas relaciones se mantienen constantes entre diferentes especies?
+
+Con ello, se plantean las siguientes hipótesis:
+
+Hipótesis 1)
+
+-   **Ho**: No existe relación lineal significativa entre las dimensiones del pez y su peso.
+
+-   **H1**: Al menos una dimensión se relaciona significativamente con el peso.
+
+Hipótesis 2)
+
+-   **Ho**: Todas las dimensiones tienen coeficientes iguales a cero en el modelo.
+
+-   **H1**: Al menos una variable predictora tiene un efecto distinto de cero.
+
+Hipótesis 3)
+
+-   **Ho**: Las dimensiones del pez afectan al peso de igual forma en todas las especies.
+
+-   **H1**: El efecto de las dimensiones sobre el peso varía según la especie.
+
+Finalmente, se busca obtener un modelo de regresión lineal significativo y útil para la predicción del peso, identificar las variables más influyentes, y presentar los hallazgos mediante visualizaciones e interpretaciones claras y fundamentadas.
+
+# Datos:
+
+El conjunto de datos analizado está compuesto por 159 observaciones correspondientes a peces capturados en la costa de Finlandia. Para cada pez se registraron siete variables, de las cuales seis son numéricas y una es categórica. La variable `Especie` identifica a qué tipo pertenece cada pez, mientras que `Peso_gr` representa su peso, inicialmente en formato de texto. Las variables restantes recogen medidas biométricas relacionadas con su tamaño y forma: tres longitudes tomadas desde distintos puntos del cuerpo, junto con su altura y ancho en centímetros. Estas variables permiten estudiar cómo se relacionan las dimensiones del pez con su peso, y constituyen la base del análisis estadístico desarrollado en este trabajo.
+
+En la Tabla 1 se detallan los nombres, tipos y descripciones de cada una de las variables presentes en la base de datos.
+
+```{r}
+#| warning: false
+#|output: false 
+
+library(here)
+library(readxl)
+library(ggplot2)
+library(lmtest)
+library(car)
+library(dplyr)
+library(corrplot)
+library(skedastic)
+library(gtsummary)
+```
+
+```{r}
+#|waring: false
+#|output: false 
+
+# Datos
+datos <- read_xlsx(here("archivos", "biometria_peces (3).xlsx"))
+datos
+
+
+
+
+# Segmento, Ingresos, Ventas_Q1, Ventas_Q2, Ventas_Q3, Costes, Margen
+```
+
+```{r}
+# Transofrmaciones de los datos
+datos_fin <- datos %>%
+  rename(
+    Segmento = Especie,
+    Ingresos = Peso_gr,
+    Ventas_Q1 = Longitud1,
+    Ventas_Q2 = Longitud2,
+    Ventas_Q3 = Longitud3,
+    Costes = Altura_cm,
+    Margen = Ancho_cm
+  )
+#datos_fin
+
+
+datos_fin <- datos_fin %>%
+  mutate(
+    Segmento = recode(
+      Segmento,
+      "Bream" = "Corporativo",
+      "Roach" = "Particular",
+      "Perch" = "PYME",
+      "Pike" = "Multinacional",
+      "Whitefish" = "Premium",
+      "Smelt" = "Pública",
+      "Parkki" = "Start-up"
+    )
+  )
+
+
+datos_fin
+table(datos_fin$Segmento)
+
+```
+
+Nuevas variables:
+
+
+
+
+Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
+
+
+Ingresos
+
+
+Ventas_Q1, Ventas_Q2, Ventas_Q3: Ventas en el primer, segundo y tercer trimestre.
+
+
+Costes: Costes operativos totales de la empresa.
+
+
+Margen: Margen de beneficio (%).
+
+
+```{r}
+#| warning: false
+#| label: fig-plot1
+#| fig-cap: "Tabla de variables"
+library(knitr)
+
+
+
+# Crear tabla con los nombres de variables y sus tipos
+library(knitr)
+
+variables <- data.frame(
+  Variable = c("Segmento", "Ingresos", "Ventas_Q1", "Ventas_Q2", "Ventas_Q3", "Costes", "Margen"),
+  Tipo = c("<chr>", "<chr>", "<dbl>", "<dbl>", "<dbl>", "<dbl>", "<dbl>"),
+  Tipo_dato = c("character", "character", "numeric", "numeric", "numeric", "numeric", "numeric"),
+  Descripción = c("Tipo de empresa o unidad de negocio", 
+                  "Ingresos totales", 
+      "Ventas primer trimestre",
+       "Ventas segundo trimestre",
+       "Ventas tercer trimestre", 
+       "Costos totales", 
+        "Margen de beneficio")
+)
+
+kable(variables)
+
+#colnames(datos_fin)
+datos_fin
+```
+
+
+# Metodología
+
+El análisis se estructura en distintas etapas que permiten abordar de manera rigurosa la construcción y validación de un modelo de regresión lineal múltiple para explicar y predecir el peso de los peces a partir de sus dimensiones biométricas.
+
+1.  **Análisis exploratorio y preparación de los datos**\
+    Se realizó una descripción inicial de las variables, incluyendo la conversión de la variable `Peso_gr` al tipo numérico. Se revisó la presencia de valores faltantes, se exploraron las distribuciones de cada variable y se analizaron relaciones bivariadas entre las dimensiones y el peso mediante gráficos de dispersión y medidas de correlación
+
+2.  **Especificación del modelo de regresión lineal múltiple**\
+    Se consideró inicialmente el siguiente modelo general:
+
+    \text{Peso\_gr}\_i = Longitud1_i + Longitud2_i + Longitud3_i + \text{Altura\_cm}\_i + \text{Ancho\_cm}\_i + Especie_i
+
+3.  **Inferencia sobre parámetros y significancia de variables**\
+    Se interpretaron los coeficientes β, evaluando su significancia individual mediante pruebas t, y del modelo completo mediante pruebas F. Se usó el resumen del modelo (`summary()`) y otras funciones complementarias para este análisis. Detectamos multicolinealidad de este modelo a traves de VIF y tomamos las medidas correspondientes.
+
+4.  **Evaluación de supuestos del modelo clásico de regresión**\
+    Se verificaron los supuestos fundamentales del modelo de regresión lineal:
+
+-   **Linealidad**: mediante gráficos de residuos vs. predichos y residuos parciales.
+
+-   **Independencia de las observaciones**: asumida por diseño del estudio.
+
+-   **Homoscedasticidad**: evaluada con gráficos y el test de Breusch-Pagan.
+
+-   **Normalidad de los residuos**: evaluada con gráficos QQ-plot y pruebas estadísticas.
+
+5.  **Diagnóstico de observaciones influyentes y outliers** Se detectaron posibles observaciones atípicas o influyentes mediante:
+
+-   Residuos studentizados.
+
+-   Distancia de Cook.
+
+-   Se considera la influencia de estos atipicos
+
+6.  **Evaluación del desempeño predictivo del modelo**\
+    Finalmente, se evaluó la capacidad predictiva del modelo utilizando métricas adicionales (como el RMSE) y validación cruzada, evitando confiar únicamente en el R2R\^2R2.
+
+# Análisis exploratorio y preparación de los datos:
+
+Para comenzar el análisis, se realizó una etapa de limpieza y transformación de los datos, orientada a garantizar la correcta interpretación de las variables y el cumplimiento de los supuestos del modelo lineal.
+
+En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La variable `Peso_gr`, que representa el peso del pez en gramos, se encontraba almacenada como texto (`character`). Dado que será la variable dependiente en el modelo de regresión, es indispensable que sea cuantitativa. Por ello, se convirtió a numérica. La variable `Especie` representa una categoría nominal, por lo que se transformó a un objeto de clase `factor`, permitiendo su correcta inclusión como variable cualitativa en el modelo.
+
+```{r}
+#|waring: false
+#|output: false 
+
+# Convertir a numerico el peso
+datos_fin$Ingresos <- as.numeric(datos_fin$Ingresos)
+```
+
+```{r}
+#|waring: false
+#|output: false 
+
+#datos$Especie <- as.numeric(factor(datos$Especie))
+datos_fin$Segmento <- factor(datos_fin$Segmento)
+```
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura2
+#| fig-cap: "Distribución del peso de los peces por especie"
+
+
+library(ggplot2)
+
+ggplot(datos_fin, aes(x = Segmento, y = Ingresos, fill = Segmento)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribución de los ingresos por segmento de negocio",
+    x = "Segmento",
+    y = "Ingresos"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+Luego, se exploró la distribución del peso según la especie de los peces mediante un gráfico de caja (boxplot). Esto permitió observar que el peso varía considerablemente entre especies. Por ejemplo, especies como Smelt presentan pesos generalmente bajos, mientras que otras como Pike tienden a tener valores más altos. Además, algunas especies como Perch y Whitefish muestran mayor dispersión (variabilidad intraespecífica), en contraste con otras como Parkki o Roach, cuyas cajas son más compactas.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura3
+#| fig-cap: "Ingresos individuales por segmento de negocio"
+
+library(ggplot2)
+
+ggplot(datos_fin, aes(x = Segmento, y = Ingresos, color = Segmento)) +
+  geom_point(
+    position = position_jitter(width = 0.15),
+    size = 2,
+    alpha = 0.6
+  ) +
+  labs(
+    title = "Ingresos individuales por segmento de negocio",
+    x = "Segmento",
+    y = "Ingresos"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+```
+
+Se complementó esta visualización con un gráfico de puntos individuales (figura 3), que reveló la presencia de observaciones sospechosamente cercanas a cero, e incluso un caso con peso exactamente igual a cero en la especie Roach. Como un peso igual a cero es inconsistente con un pez físico, se consideró que probablemente se trate de un error de registro. Por tanto, se decidió filtrar las observaciones, eliminando todos los casos cuyo peso fuera menor o igual a cero.
+
+Se puede ver en el gráfico de la figura 3 como los puntos de algunas especies (como Whitefish o Pike) están muy dispersos y en otros casos (como Smelt y Pakki) están más aglomerados. A partir de este detalle, podemos intuir que seguramente tengamos problemas de heterocedasticidad, ya que la varianza es distinta entre las especies.
+
+```{r}
+#|waring: false
+#|output: false 
+
+datos_fin <- datos_fin %>%
+  filter(Ingresos > 0)
+
+```
+
+# Modelado:
+
+Previo a ajustar un modelo de regresión lineal, se exploraron las correlaciones entre las variables numéricas del conjunto de datos. En la matriz de correlación observamos que las tres medidas de longitud (`Longitud1`, `Longitud2` y `Longitud3`) presentan una altísima correlación entre sí, con coeficientes cercanos a 1. Esto era esperable dado que se refieren a distintas formas de medir una misma dimensión corporal. Para evitar problemas de multicolinealidad en el modelo, se decidió conservar únicamente `Longitud1` como representante de estas tres variables altamente redundantes.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura4
+#| fig-cap: "matriz de correlación"
+
+
+library(dplyr)
+library(corrplot)
+
+datos_numericos <- datos_fin[sapply(datos_fin, is.numeric)]
+
+cor_mat <- cor(datos_numericos, use = "complete.obs")
+
+corrplot(cor_mat, method = "color", type = "upper", tl.cex = 0.8)
+
+```
+
+```{r}
+#|waring: false
+#|output: true
+
+library(broom)
+library(knitr)
+
+modelo <- lm(
+  Ingresos ~ Ventas_Q1 + Costes + Margen + Segmento,
+  data = datos_fin
+)
+
+resultado <- tidy(modelo)
+
+kable(
+  resultado,
+  digits = 3,
+  caption = "Resumen del modelo de regresión lineal para los ingresos"
+)
+```
+
+A continuación, se ajustó un modelo de regresión lineal múltiple tomando como variables predictoras `Longitud1`, `Altura_cm`, `Ancho_cm` y `Especie`. La salida del modelo indica que las variables `Altura_cm` y `Ancho_cm` no presentan significancia estadística individual, lo que sugiere que podrían eliminarse para mejorar la parsimonia del modelo.
+
+```{r}
+#|waring: false
+#|output: false
+vif(modelo)
+```
+
+```{r}
+#|waring: false
+#|output: false
+modelo_2 <- update(modelo, . ~ . - Costes - Margen)
+#tbl_regression(modelo_2)
+```
+
+Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemas de colinealidad. El VIF de `Altura_cm` resultó mayor a 5, lo cual refuerza la decisión de eliminarla del modelo. Se ajustó entonces un nuevo modelo excluyendo esta variable y se observó nuevamente la significancia de `Ancho_cm`, que seguía mostrando un p-valor mayor a 0.05. Por esta razón, también se eliminó `Ancho_cm`, obteniendo un modelo más simple que incluye únicamente `Longitud1` y `Especie` como predictores. El VIF (Variance Inflation Factor) es una medida usada en modelos lineales para detectar colinealidad entre las variables explicativas (predictoras). Si VIF vale 1 hay colinealidad, si esta entre 1 y 5 hay colinealidad moderada, si es mayor a 5 hay mucha colinealidad. En un modelo lineal se recomienda eliminar a las variables que presenten un VIF mayor a 5
+
+La evaluación del modelo reducido muestra que `Longitud1` es altamente significativa, con un impacto claro sobre el peso de los peces. En cuanto a la variable `Especie`, algunos coeficientes asociados a sus niveles presentan p-valores más altos, por lo que se complementó el análisis con un test ANOVA para evaluar la significancia conjunta de esta variable categórica.
+
+```{r}
+#|waring: false
+#|output: true
+library(car)
+library(knitr)
+
+anova_tabla <- Anova(modelo_2, type = 2)  # Tipo II
+anova_df <- as.data.frame(anova_tabla)
+
+kable(
+  anova_df,
+  caption = "Análisis de varianza tipo II para el modelo de ingresos"
+)
+```
+
+El análisis de varianza (ANOVA) realizado sobre el modelo final permitió concluir que tanto `Longitud1` como `Especie` son significativas para explicar el peso. El efecto de `Longitud1` es especialmente fuerte (F = 1203.165, p \< 2.2e-16), mientras que `Especie` también resulta significativa (F = 32.559, p \< 2.2e-16), aunque su impacto es relativamente menor.
+
+En la tabla aparece 0 en el p-valor porque el R al ser un valor tan pequeño no lo muestra correctamente.\
+\
+
+```{r}
+#| warning: false
+library(multcomp)
+library(dplyr)
+library(knitr)
+
+# ANOVA para ingresos por segmento
+modelo <- aov(Ingresos ~ Segmento, data = datos_fin)
+
+# Comparaciones múltiples de Tukey
+cm <- glht(modelo, linfct = mcp(Segmento = "Tukey"))
+
+# Letras para grupos estadísticamente iguales
+letras <- cld(cm, Letters = letters, adjust = "tukey")
+
+# Dataframe con letras
+letras_df_1 <- data.frame(
+  Segmento = names(letras$mcletters$Letters),
+  grupo = letras$mcletters$Letters
+)
+
+# Media de ingresos por segmento
+media_segmento <- datos_fin %>%
+  group_by(Segmento) %>%
+  summarize(mean = mean(Ingresos, na.rm = TRUE))
+
+# Unir medias con letras y ordenar
+datos_letras <- letras_df_1 %>%
+  inner_join(media_segmento, by = "Segmento") %>%
+  arrange(desc(mean))
+
+# Mostrar tabla
+kable(datos_letras, caption = "Comparaciones múltiples de Tukey para los ingresos por segmento")
+```
+
+Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de peso entre especies. Los resultados se resumen mediante letras asignadas a cada especie, donde especies con al menos una letra en común no presentan diferencias significativas entre sus medias de peso.
+
+Por ejemplo, las especies Bream y Pike comparten la letra "a", por lo que no difieren significativamente en su peso promedio. Parkki y Roach comparten las letras "b" y "c", y tampoco se diferencian entre sí. En cambio, Perch, que sólo tiene la letra "c", forma un grupo distinto al de Bream y Pike, pero se solapa parcialmente con Parkki y Roach. La especie Smelt, identificada sólo con la letra "b", se diferencia de Perch y de las especies del grupo "a", pero no de Parkki y Roach. Finalmente, Whitefish, que tiene las letras "a" y "c", se solapa parcialmente con Bream, Pike, Parkki y Perch.
+
+Este análisis permite visualizar cómo se agrupan las especies en función del peso, y respalda el uso de la variable especie como factor explicativo dentro del modelo.\
+
+# Etapa de Diagnostico:
+
+## Homocedasticidad
+
+Luego del ajuste del modelo final con `Longitud1` y `Especie` como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales del modelo de regresión lineal múltiple, en particular la homocedasticidad y la normalidad de los residuos.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura5
+#| fig-cap: "Gráfico de residuos studentizados externos en función de los valores predichos para evaluar heteroscedasticidad"
+
+library(ggplot2)
+
+# Extraemos residuos y predichos del modelo reducido
+datos_fin$r_i <- residuals(modelo_2)      # residuos
+datos_fin$s_i <- rstandard(modelo_2)      # residuos studentizados internamente
+datos_fin$t_i <- rstudent(modelo_2)       # residuos studentizados externamente
+datos_fin$pred <- fitted(modelo_2)        # valores predichos
+
+# Gráfico de residuos vs valores predichos
+ggplot(datos_fin, aes(x = pred, y = t_i)) + 
+  geom_point(alpha = 0.6) +
+  xlab('Ingresos predichos') +
+  ylab('Residuos studentizados externos') +
+  geom_abline(slope = 0, intercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal()
+
+```
+
+En primer lugar, se extrajeron los residuos del modelo (`residuos`, `residuos estandarizados` y `residuos studentizados`) y se construyó un gráfico de residuos studentizados externos en función de los valores predichos. Este gráfico permitió visualizar una cierta tendencia en la dispersión, lo que podría sugerir problemas de heteroscedasticidad.
+
+```{r}
+#| warning: false
+#| label: tabla_bp
+#| output: true
+
+
+library(lmtest)
+library(knitr)
+
+# Calculamos los residuos al cuadrado del modelo reducido
+datos_fin$r2_i <- residuals(modelo_2)^2
+
+# Ajustamos la regresión auxiliar
+mod_aux <- lm(r2_i ~ Ventas_Q1 + Segmento, data = datos_fin)
+
+# Mostramos el resumen de la regresión auxiliar en tabla
+kable(
+  summary(mod_aux)$coefficients,
+  digits = 4,
+  caption = "Regresión auxiliar para el test de Breusch-Pagan sobre ingresos"
+)
+
+# Calculamos el estadístico BP manualmente
+n <- nrow(mod_aux$model)
+R2 <- summary(mod_aux)$r.squared
+BP <- n * R2
+p_valor_manual <- 1 - pchisq(BP, df = length(coef(mod_aux)) - 1)
+
+# Mostramos el resultado manual
+cat("Estadístico BP:", round(BP, 3), "\n")
+cat("p-valor (calculado manualmente):", round(p_valor_manual, 4), "\n\n")
+
+# Resultado oficial del test con lmtest
+bptest(modelo_2)
+
+```
+
+\
+Para evaluar formalmente la homocedasticidad, se aplicó el test de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante. En el modelo original, el valor del estadístico BP fue de 12.72 con un p-valor de aproximadamente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no se rechaza la hipótesis de homocedasticidad, aunque el resultado es dudoso y cercano a la región de rechazo, lo cual motiva explorar posibles transformaciones.
+
+Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variable respuesta (`Peso_gr`) como a la predictora `Longitud1`, con el objetivo de estabilizar la varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal con `log(Peso_gr)` como variable dependiente y `log(Longitud1)` junto con `Especie` como variables explicativas.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura6
+#| fig-cap: "Residuos vs Predichos modelo logaritmo"
+
+
+
+
+library(ggplot2)
+library(lmtest)
+
+# Ajuste de modelo log-log
+modelo_3 <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
+
+# Extraemos residuos y valores predichos
+datos_fin$r_i <- residuals(modelo_3)      # residuos
+datos_fin$s_i <- rstandard(modelo_3)      # studentizados internamente
+datos_fin$t_i <- rstudent(modelo_3)       # studentizados externamente
+datos_fin$pred <- fitted(modelo_3)        # valores predichos
+
+# Gráfico de residuos vs valores predichos
+ggplot(datos_fin, aes(x = pred, y = t_i)) + 
+  geom_point(alpha = 0.6) +
+  xlab('Ingresos predichos (log)') +
+  ylab('Residuos studentizados externos') +
+  geom_abline(slope = 0, intercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal()
+
+# Test de heterocedasticidad de Breusch-Pagan
+bptest(modelo_3)
+```
+
+El análisis de residuos sobre este modelo transformado muestra una clara mejora en la dispersión de los residuos, y el test de Breusch-Pagan resultó en un p-valor de 0.91. Esto indica que, tras la transformación logarítmica, no existe evidencia de heteroscedasticidad, confirmando que la varianza de los errores puede considerarse constante.
+
+```{r}
+#| warning: false
+
+# Calcular residuos al cuadrado del modelo logarítmico
+datos_fin$r2_i <- residuals(modelo_3)^2
+
+# Ajustar la regresión auxiliar para Breusch-Pagan
+mod_aux <- lm(r2_i ~ log(Ventas_Q1) + Segmento, data = datos_fin)
+
+# Calcular el estadístico de Breusch-Pagan manualmente
+n <- nrow(modelo_3$model)
+R2_aux <- summary(mod_aux)$r.squared
+BP <- n * R2_aux
+p_valor <- 1 - pchisq(BP, df = length(coef(mod_aux)) - 1)
+
+# Imprimir resultados
+cat("Estadístico de Breusch-Pagan (manual):", round(BP, 3), "\n")
+cat("p-valor:", round(p_valor, 4), "\n\n")
+
+```
+
+## Nuevo Modelo
+
+```{r}
+library(broom)
+library(knitr)
+
+# Convertimos el summary en tabla ordenada
+resumen_lindo <- tidy(modelo_3)
+
+# Mostramos como tabla limpia
+kable(
+  resumen_lindo,
+  digits = 4,
+  caption = "Resumen del modelo logarítmico de ingresos"
+)
+
+```
+
+Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a `EspecieParkki` y `EspecieWhitefish`, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y logra explicar la relación entre el peso y las dimensiones de los peces con mayor estabilidad que el modelo sin transformar.
+
+Para una mejor comprensión del modelo ajustado, es importante interpretar los coeficientes estimados. Dado que se trata de un modelo logarítmico en ambas variables numéricas, la interpretación es proporcional. El intercepto estimado es aproximadamente -3.99. Este valor representa el logaritmo del peso esperado para un pez de la especie de referencia, que en este modelo es Bream, cuando la longitud es de 1 centímetro. Si bien este valor no tiene una interpretación práctica directa, es necesario para definir la función del modelo.
+
+El coeficiente de la variable logaritmo de Longitud1 es 3.04. Esto implica que, manteniendo constante la especie, un aumento del uno por ciento en la longitud del pez se asocia con un aumento aproximado del 3.04 por ciento en su peso. Este tipo de interpretación es común en modelos log-log y representa una elasticidad.
+
+Los coeficientes asociados a las diferentes especies indican cuánto varía el peso promedio de un pez respecto a la especie de referencia, que es Bream, considerando la misma longitud. Por ejemplo, el coeficiente de la especie Perch es aproximadamente -0.25, lo que implica que, para una misma longitud, un pez Perch pesa cerca de un 25 por ciento menos que un Bream. En el caso de la especie Pike, el coeficiente es cercano a -0.98, lo que indica que su peso promedio es aproximadamente un 98 por ciento menor al de un Bream de igual longitud. La especie Smelt tiene un coeficiente similar, con un peso promedio alrededor de un 99 por ciento menor. Por otro lado, los coeficientes de las especies Parkki y Whitefish no resultaron estadísticamente significativos, lo que sugiere que no hay diferencias claras entre sus pesos medios y los de los Breams, al controlar por la longitud.
+
+Estas interpretaciones ayudan a entender no solo la influencia de la longitud sobre el peso, sino también cómo varía esta relación según la especie. En conjunto, el modelo ofrece un ajuste adecuado y coherente con el comportamiento esperado de las variables biológicas analizadas.
+
+### Letras para el nuevo modelo
+
+```{r}
+library(emmeans)
+library(ggplot2)
+library(multcomp)
+
+# Obtener medias marginales ajustadas (en escala log)
+emm <- emmeans(modelo_3, ~ Segmento)
+
+# Pasar a escala original (ingresos)
+emm_df <- as.data.frame(emmeans::regrid(emm))
+
+# Letras Tukey
+cm_log <- glht(modelo_3, linfct = mcp(Segmento = "Tukey"))
+letras_log <- cld(cm_log, Letters = letters, adjust = "tukey")
+
+letras_df <- data.frame(
+  Segmento = names(letras_log$mcletters$Letters),
+  grupo = letras_log$mcletters$Letters
+)
+
+# Unir letras del test de Tukey
+emm_df$letra <- letras_df$grupo[match(emm_df$Segmento, letras_df$Segmento)]
+
+# Graficar medias ajustadas por segmento
+ggplot(emm_df, aes(x = Segmento, y = response)) +
+  geom_col(fill = "skyblue", width = 0.6) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
+  geom_text(aes(label = letra, y = upper.CL + 500), size = 6, fontface = "bold") +
+  labs(
+    title = "Ingresos medios ajustados por segmento (ajustado por Ventas_Q1)",
+    y = "Ingresos estimados",
+    x = "Segmento"
+  ) +
+  theme_minimal(base_size = 14)
+
+```
+
+Una vez obtenido el nuevo modelo. decidimos rehacer las letras de clasificación. Podemos ver como ahora no hay especies que contengan dos letras, sino que están todas bien definidas en sus respectivos grupos.
+
+Como el modelo ajusta por longitud, el método de las letras está clasificando a cada especie suponiendo que todos tienen la misma longitud en promedio. Por ende, realizamos el gráfico con barras simbolizando el peso promedio esperado si todos los peces tuvieran la misma longitud promedio.
+
+## Calculo del R\^2
+
+Teniamos el modelo regresión lineal con transformación logarítmica de la variable dependiente (log(Peso_gr)) y de la variable explicativa Longitud1, ahora cuando hicimos el summary del R\^2 obtuvimos un valor de 0.9927, lo cual es bastante alto y esta sesgado por el uso del logaritmo, ademas de que no es muy interpretable ni comparable con el R\^2 del modelo ajustado en la escala original (Peso_gr). Esto se debe a que del modelo logarítmico mide la proporción de la varianza explicada en la escala logarítmica, y no en la escala real de la variable dependiente.
+
+Al aplicar la función exponencial a las predicciones del modelo logarítmico para volver a la escala original, el error ya no es aditivo, sino multiplicativo, lo que altera la forma en que se mide la varianza explicada. Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un nuevo R\^2 alternativo, que compare los valores observados de Peso_gr con las predicciones retransformadas (exp(predicciones_logarítmicas)).
+
+Esta versión del R\^2 estima la calidad del ajuste en la escala original. En nuestro caso obtuvimos un R\^2 de 0.972803.
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+# Ajuste del modelo logarítmico
+modelo_3 <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
+
+# Extraer el resumen del modelo
+resumen <- summary(modelo_3)
+
+# Extraer la tabla de coeficientes
+tabla_coef <- as.data.frame(resumen$coefficients)
+
+# Renombrar columnas
+colnames(tabla_coef) <- c("Estimación", "Error estándar", "Valor t", "Pr(>|t|)")
+
+# Crear tabla con kable y estilo
+kbl(
+  tabla_coef,
+  digits = 4,
+  caption = "Resumen de coeficientes del modelo logarítmico de ingresos"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    latex_options = c("H", "striped")
+  )
+
+```
+
+```{r}
+# Modelo logarítmico
+modelo_log <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
+
+# Predicciones en escala logarítmica
+pred_log <- predict(modelo_log)
+
+# Volver a la escala original
+pred_original <- exp(pred_log)
+
+# Variable observada en escala original
+y_obs <- datos_fin$Ingresos
+
+# Calcular R² en la escala original
+ss_total <- sum((y_obs - mean(y_obs))^2)
+ss_residual <- sum((y_obs - pred_original)^2)
+r2_original <- 1 - (ss_residual / ss_total)
+
+print("R^2 del modelo en la escala original de ingresos")
+r2_original
+
+
+```
+
+## Normalidad de los residuos:
+
+Para evaluar el cumplimiento del supuesto de normalidad de los errores en el modelo transformado (`modelo_3`), se construyó un gráfico Q-Q plot a partir de los residuos studentizados externos. En dicho gráfico se observa que los puntos se alinean bastante bien con la línea de referencia, lo que visualmente sugiere un comportamiento cercano a la normalidad. Solo se detectan pequeñas desviaciones en los extremos, lo cual es común y no necesariamente preocupante.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura7
+#| fig-cap: "Gráfico Q-Q de los residuos studentizados externos para evaluar la normalidad en el modelo logarítmico"
+
+library(ggplot2)
+
+# Obtener residuos studentizados externamente
+datos_fin$t_i <- rstudent(modelo_3)
+n <- nrow(datos_fin)
+
+# Construcción del Q-Q plot
+z_i <- qnorm(seq(n)/(n + 1))
+qq <- data.frame(
+  teoricos = z_i,
+  empiricos = sort(datos_fin$t_i)
+)
+
+ggplot(qq, aes(x = teoricos, y = empiricos)) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, color = "red", size = 1.2) +
+  xlab('Cuantiles teóricos (normal)') +
+  ylab('Cuantiles empíricos de residuos studentizados') +
+  labs(title = "Q-Q plot de residuos del modelo logarítmico de ingresos") +
+  theme_minimal()
+
+```
+
+Tambien hicimos un grafico para comparar la distribucion de los residuos contra la distribucion de una normal estandar. Donde vemos que los residuosse aproximan a una normal.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura7a
+#| fig-cap: "Gráfico comparacion contra normal"
+
+
+
+library(ggplot2)
+
+# Media y desviación estándar de los residuos
+media_residuos <- mean(datos_fin$t_i)
+sd_residuos <- sd(datos_fin$t_i)
+
+# Gráfico de densidad vs normal teórica
+ggplot(datos_fin, aes(x = t_i)) +
+  geom_density(color = "blue", size = 1.2, fill = "blue", alpha = 0.3) +
+  stat_function(
+    fun = dnorm,
+    args = list(mean = media_residuos, sd = sd_residuos),
+    color = "red",
+    size = 1.2,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Densidad de residuos studentizados del modelo logarítmico de ingresos vs Normal teórica",
+    x = "Residuos studentizados",
+    y = "Densidad"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+Resaltamos esto porque al hacer los test estadisticos de Kolmogorov-Smirnov, Shapiro-Wilk, y Jarque-Bera, para dos de ellos obtuvimos p valores menores a 0.05 para los ultimos dos, rechazando la normalidad.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: tabla_normalidad
+#| tbl-cap: "Tests de normalidad aplicados a los residuos studentizados del modelo log-log"
+library(moments)
+library(knitr)
+library(tseries)
+
+# Realizar los tests sobre los residuos studentizados externos
+shapiro_result <- shapiro.test(datos_fin$t_i)
+ks_result <- ks.test(datos_fin$t_i, "pnorm", mean = mean(datos_fin$t_i), sd = sd(datos_fin$t_i))
+jb_result <- jarque.test(datos_fin$t_i)
+
+# Crear tabla de resultados
+tabla_normalidad <- data.frame(
+  Test = c("Shapiro-Wilk", "Kolmogorov-Smirnov", "Jarque-Bera"),
+  Estadístico = c(
+    round(shapiro_result$statistic, 4),
+    round(ks_result$statistic, 4),
+    round(jb_result$statistic, 4)
+  ),
+  `p-valor` = c(
+    format.pval(shapiro_result$p.value, digits = 4, eps = 0.0001),
+    format.pval(ks_result$p.value, digits = 4, eps = 0.0001),
+    format.pval(jb_result$p.value, digits = 4, eps = 0.0001)
+  )
+)
+
+# Mostrar tabla bonita
+kable(tabla_normalidad, caption = "Pruebas de normalidad sobre residuos studentizados del modelo logarítmico de ingresos")
+
+
+```
+
+El test de Shapiro-Wilk arrojó un valor W = 0.96776 con un p-valor = 0.0009448, lo que indica que se rechaza la hipótesis nula de normalidad al nivel de significancia del 5%. No obstante, este test suele ser muy sensible a leves desviaciones cuando el tamaño muestral es relativamente grande, como en este caso. Por otro lado, el test de Kolmogorov-Smirnov reportó un estadístico D = 0.05098 con un p-valor = 0.7736 lo que implica que no se rechaza la hipótesis de que los residuos provienen de una distribución normal. El test de Jarque-Bera, que evalúa conjuntamente la simetría y la curtosis de los residuos, arrojó un estadístico JB = 39.26 con un p-valor menor a 0.0001. Esto también sugiere que los residuos no siguen una distribución normal perfecta. Al igual que el test de Shapiro-Wilk, es sensible a pequeñas desviaciones de la normalidad, especialmente cuando la muestra es amplia. Existe cierta inconsistencia entre los resultados: mientras que los tests de Shapiro-Wilk y Jarque-Bera indican una desviación significativa de la normalidad, el test de Kolmogorov-Smirnov no detecta diferencias respecto a la distribución normal. Esto es común en muestras moderadas o grandes, donde pequeños desvíos generan significancia estadística sin implicar una gran desviación visual.
+
+Consideramos la posibilidad de quitar atipicos para lograr que los residuos del modelo distribuyeran normal, pero tuvimos un problema que fue que detectamos que todos los atipicos eran influyentes, y decidimos seguir la recomendacion de las notas del curso de no eliminar atipicos con el fin de cumplir supuestos, y menos si esos supuestos no son tan importantes como la normalidad. Ademas tenemos 158 observaciones, por lo que podemos considerar que por el TCL, tenemos un comportamiento normal.
+
+```{r}
+# Calcular leverage y distancia de Cook
+datos_fin$leverage <- hatvalues(modelo_3)
+datos_fin$cook <- cooks.distance(modelo_3)
+
+# Identificar observaciones problemáticas
+datos_fin$es_outlier <- abs(datos_fin$t_i) > 3           # residuos studentizados > 3
+datos_fin$es_influente <- datos_fin$cook > 4 / nrow(datos_fin)
+
+# Mostrar únicamente las columnas de interés para observaciones problemáticas
+subset(datos_fin, es_outlier | es_influente)[, c("es_outlier", "es_influente")]
+
+
+```
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura7b
+#| fig-cap: "Gráfico de outliers"
+
+
+
+library(ggplot2)
+
+ggplot(datos_fin, aes(x = 1:nrow(datos_fin), y = t_i)) +
+  geom_point(aes(color = es_outlier), size = 2, alpha = 0.7) +
+  geom_hline(yintercept = c(-3, 3), linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Residuos studentizados del modelo logarítmico de ingresos",
+    x = "Índice de observación",
+    y = "t_i (residuos studentizados)"
+  ) +
+  scale_color_manual(values = c("FALSE" = "blue", "TRUE" = "red"), 
+                     labels = c("No outlier", "Outlier")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank()
+  )
+
+```
+
+Este gráfico tiene en el eje X el índice de observación y en el eje Y los residuos studentizados (t_i). Se usa para detectar observaciones atípicas (outliers). Los residuos studentizados sirven para comparar residuos entre sí, sin importar la escala. Si un residuo studentizado es alto o bajo, indica que esa observación puede ser atipica, estas son las observaciones que se encuentran por encima o por debajo de ±3.
+
+Este gráfico también tiene el índice de observación en el eje X, y en el eje Y muestra la distancia de Cook de cada observación. Se dibujan barras verticales para cada observación, representando su influencia. La línea roja en 4/n es un umbral, el cual si es superado indica que esa observacion es potencialmente influyente.
+
+```{r}
+
+#| warning: false
+#| output: true
+#| label: figura7c
+#| fig-cap: "Gráfico de distancia de cook"
+
+library(ggplot2)
+
+ggplot(datos_fin, aes(x = 1:nrow(datos_fin), y = cook)) +
+  geom_bar(stat = "identity", fill = "lightblue") +
+  geom_hline(yintercept = 4 / nrow(datos_fin), linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Distancia de Cook de observaciones sobre el modelo logarítmico de ingresos",
+    x = "Índice de observación",
+    y = "Distancia de Cook"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+## Linealidad
+
+Uno de los supuestos fundamentales del modelo lineal es que exista una relación lineal entre la variable dependiente y las variables independientes. Para evaluar este supuesto, se construyó un gráfico de residuos en función de los valores predichos. En este gráfico, los residuos deberían dispersarse aleatoriamente alrededor de cero, sin formar patrones sistemáticos.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura8
+#| fig-cap: "Gráfico de residuos versus valores predichos del modelo logarítmico"
+
+library(ggplot2)
+
+# Agregar residuos y valores predichos
+datos_fin$predichos <- fitted(modelo_3)
+datos_fin$residuos  <- residuals(modelo_3)
+
+# Gráfico de residuos vs predichos
+ggplot(datos_fin, aes(x = predichos, y = residuos)) +
+  geom_point(alpha = 0.6, color = "blue", size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Residuos vs valores predichos del modelo logarítmico de ingresos",
+    x = "Valores predichos",
+    y = "Residuos"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+
+
+```
+
+En el modelo log-transformado (`modelo_3`), el gráfico de predichos versus residuos muestra una dispersión razonablemente homogénea, lo cual es una buena señal. Sin embargo, para explorar más detalladamente la relación entre las variables independientes y la variable respuesta, se utilizó la herramienta de gráficos de residuos parciales (`crPlot`).
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura9
+#| fig-cap: "Gráfico de residuos parciales para log(Ventas_Q1) en modelo de ingresos"
+
+
+library(car)
+
+# Gráfico de residuos parciales para log(Ventas_Q1)
+crPlot(modelo_3, variable = "log(Ventas_Q1)",
+       main = "Gráfico de residuos parciales para log(Ventas_Q1) en modelo de ingresos",
+       xlab = "log(Ventas_Q1)",
+       ylab = "Residuos parciales")
+
+```
+
+En particular, el gráfico de residuos parciales para log(Longitud1) muestra una tendencia lineal clara, confirmando que esta variable mantiene una relación aproximadamente lineal con la variable respuesta transformada. En cambio, las variables Altura_cm y Ancho_cm, que no fueron incluidas en el modelo final por no ser significativas, mostraban patrones menos definidos, lo que refuerza la decisión de haberlas excluido del modelo base.
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura10
+#| fig-cap: "Residuos del modelo extendido con términos cuadráticos de Altura y Ancho"
+
+# Modelo extendido con términos cuadráticos financieros
+mod_ext_fin <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + I(Ventas_Q1^2) + I(Ventas_Q2^2) + Segmento, data = datos_fin)
+
+# Residuos y predichos
+res <- residuals(mod_ext_fin)
+pred <- fitted(mod_ext_fin)
+
+# Gráfico de residuos
+ggplot(data.frame(res, pred), aes(x = pred, y = res)) +
+  geom_point(alpha = 0.6, color = "darkblue", size = 2) +
+  geom_abline(intercept = 0, slope = 0, linetype = 'dashed', color = "red", size = 1) +
+  geom_smooth(se = FALSE, color = "blue") +
+  labs(
+    title = "Residuos del modelo extendido con términos cuadráticos financieros",
+    x = "Valores predichos",
+    y = "Residuos"
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+Adicionalmente, se exploró un modelo extendido incluyendo términos cuadráticos de Altura_cm y Ancho_cm para evaluar la posible presencia de relaciones no lineales. No obstante, el ajuste no presentó mejoras sustanciales ni cambios importantes en la dispersión de los residuos (ver Figura 10). Por tanto, se decidió mantener el modelo log-lineal con log(Longitud1) y Especie como predictores principales.
+
+# Predicción
+
+Evaluamos la capacidad predictiva de nuestro modelo particionando los datos en un conjunto de entrenamiento con el 80% de los datos y un conjunto de testeo con el 20% de los datos. Obtuvimos distintas metricas
+
+```{r}
+#install.packages("Metrics")
+#| warning: false
+#| output: true
+
+set.seed(123)
+
+n <- nrow(datos_fin)
+
+# División 80%-20% para entrenamiento y prueba
+train_index <- sample(1:n, size = 0.8 * n)  
+train <- datos_fin[train_index, ]
+test  <- datos_fin[-train_index, ]
+
+# Ajustar modelo sobre datos de entrenamiento
+modelo_entrenamiento <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = train)
+
+# Predecir sobre test
+pred_log_test <- predict(modelo_entrenamiento, newdata = test)
+pred_test <- exp(pred_log_test)  # volver a escala original
+
+# Valores reales
+real_test <- test$Ingresos
+
+# Calcular métricas predictivas
+library(Metrics)
+
+rmse_val <- rmse(real_test, pred_test)
+mae_val  <- mae(real_test, pred_test)
+r2_val   <- 1 - sum((real_test - pred_test)^2) / sum((real_test - mean(real_test))^2)
+
+# Mostrar resultados
+c(RMSE = rmse_val, MAE = mae_val, R2 = r2_val)
+
+```
+
+MAE mide el promedio del valor absoluto de los errores de prediccion.
+
+RMSE es la raíz cuadrada del promedio del error cuadrático.
+
+R2 es la proporción de la varianza total explicada por el modelo
+
+```{r}
+#| warning: false
+#| output: true
+#| label: figura11
+#| fig-cap: "Gráfico de Predicción"
+
+library(ggplot2)
+
+# Predicciones en escala original
+datos_fin$pred <- exp(predict(modelo_3, newdata = datos_fin))
+
+# Gráfico Predicción vs Real
+ggplot(datos_fin, aes(x = Ingresos, y = pred)) +
+  geom_point(alpha = 0.6, color = "blue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, color = "red", size = 1) +
+  labs(
+    x = "Ingresos observados",
+    y = "Ingresos predichos",
+    title = "Predicción vs Ingresos reales"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
+    axis.title = element_text(size = 14),
+    axis.text = element_text(size = 12)
+  )
+
+
+```
+
+De todas formas solo como posible respuesta a la curiosidad del lector, probamos quitar los outliers y vimos que el supuesto de normalidad se cumplía y que el rendimiento predictivo del modelo era mejor dado que obtuvimos RMSE de 0.0866, MAE de 0.0717 y R\^2 de 0.9937
+
+```{r}
+#| warning: false
+#| output: false
+library(ggplot2)
+library(Metrics)
+library(moments)
+library(tseries)
+
+# 1. Crear nuevo conjunto sin observaciones problemáticas
+datos_limpios <- subset(datos_fin, !(es_outlier | es_influente))
+
+# 2. Ajustar modelo nuevamente sin outliers ni influyentes
+modelo_sin_outliers <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = datos_limpios)
+
+# Q-Q Plot de residuos studentizados
+datos_limpios$t_i <- rstudent(modelo_sin_outliers)
+n <- nrow(datos_limpios)
+qq_data <- data.frame(
+  teoricos = qnorm(ppoints(n)),
+  empiricos = sort(datos_limpios$t_i)
+)
+
+ggplot(qq_data, aes(x = teoricos, y = empiricos)) +
+  geom_point(color = "blue") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  labs(title = "Q-Q Plot de los residuos studentizados (sin outliers)",
+       x = "Cuantiles teóricos (Normal)",
+       y = "Cuantiles empíricos (residuos)")
+
+# Distribución de los residuos studentizados
+media_residuos <- mean(datos_limpios$t_i)
+sd_residuos <- sd(datos_limpios$t_i)
+
+ggplot(datos_limpios, aes(x = t_i)) +
+  geom_density(color = "blue", size = 1.2, fill = "blue", alpha = 0.3) +
+  stat_function(fun = dnorm,
+                args = list(mean = media_residuos, sd = sd_residuos),
+                color = "red", size = 1.2, linetype = "dashed") +
+  labs(title = "Densidad de los residuos vs Normal teórica",
+       x = "Residuos studentizados",
+       y = "Densidad") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Test de normalidad para residuos
+shapiro.test(datos_limpios$t_i)
+ks.test(datos_limpios$t_i, "pnorm", mean = mean(datos_limpios$t_i), sd = sd(datos_limpios$t_i))
+jarque.test(datos_limpios$t_i)
+
+# ---------------------------------------------------------
+# Evaluar rendimiento predictivo del modelo sin outliers
+set.seed(123)
+
+# Partición en train-test
+n <- nrow(datos_limpios)
+train_index <- sample(1:n, size = 0.8 * n)
+train <- datos_limpios[train_index, ]
+test  <- datos_limpios[-train_index, ]
+
+modelo_train <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = train)
+
+# Predicción sobre test
+pred_test <- predict(modelo_train, newdata = test)
+real_test <- log(test$Ingresos)  # valor real transformado
+
+# Métricas de evaluación
+rmse_val <- rmse(real_test, pred_test)
+mae_val  <- mae(real_test, pred_test)
+r2_val   <- 1 - sum((real_test - pred_test)^2) / sum((real_test - mean(real_test))^2)
+
+cat("RMSE:", round(rmse_val, 4), "\n")
+cat("MAE :", round(mae_val, 4), "\n")
+cat("R²  :", round(r2_val, 4), "\n")
+
+# Gráfico Predicción vs Real en test
+ggplot(data.frame(real = real_test, pred = pred_test), aes(x = real, y = pred)) +
+  geom_point(color = "steelblue", size = 2, alpha = 0.7) +
+  geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+  labs(title = "Predicción vs Ingresos reales (Conjunto de test, sin outliers)",
+       x = "log(Ingresos) real",
+       y = "log(Ingresos) predicho") +
+  theme_minimal()
+
+
+
+
+```
+
+# Resultados:
+
+Luego de un análisis exploratorio y diagnóstico detallado, se construyó un modelo de regresión lineal múltiple con transformación logarítmica, donde la variable dependiente es `log(Peso_gr)` y las variables predictoras son `log(Longitud1)` y `Especie`. Esta transformación permitió estabilizar la varianza de los errores y mejorar la linealidad del modelo.
+
+Los resultados del modelo indican que la variable `log(Longitud1)` tiene un efecto altamente significativo sobre el peso del pez. Esto es coherente con lo esperado, ya que la longitud está directamente relacionada con el tamaño y, por ende, con el peso corporal. El coeficiente de esta variable es positivo, lo que implica que a medida que aumenta la longitud del pez, también lo hace su peso, en forma proporcional (dado el modelo en escala logarítmica).
+
+En cuanto a la variable categórica `Especie`, el análisis muestra que también es significativa en su conjunto, aunque no todos sus niveles lo son individualmente. En particular, algunas especies como `Perch` y `Bream` presentan coeficientes claramente distintos del grupo de referencia (`Roach`), mientras que otras como `Parkki` y `Whitefish` no mostraron significancia estadística. Esto sugiere que la relación entre longitud y peso varía levemente entre especies, pero no en todos los casos.
+
+El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heteroscedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.
+
+Finalmente, se identificaron algunas observaciones con leve influencia sobre el modelo, pero ninguna que comprometa su validez general. Se concluye que el modelo ajustado es adecuado para describir y predecir el peso de los peces en función de su longitud y especie, dentro del marco de los datos disponibles.
+
+# Conclusiones:
+
+El objetivo de este trabajo fue modelar y predecir el peso de peces a partir de sus características morfológicas, utilizando herramientas de regresión lineal múltiple. A lo largo del análisis, se aplicaron técnicas de limpieza y transformación de datos, selección de variables, verificación de supuestos y diagnóstico del modelo.
+
+Se concluyó que la variable más influyente en la predicción del peso es la longitud del pez, específicamente la medida Longitud1. Además, la inclusión de la variable Especie permitió capturar diferencias estructurales entre tipos de peces, aunque no todas las especies mostraron efectos significativos.
+
+Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heteroscedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Peso_gr y Longitud1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.
+
+El análisis de observaciones influyentes identificó algunos casos puntuales con mayor impacto en los coeficientes estimados. No obstante, se demostró que el modelo es robusto frente a estas observaciones, ya que los parámetros estimados no varían sustancialmente.
+
+En suma, el modelo final en escala logarítmica se considera adecuado para describir y predecir el peso de los peces en función de su longitud y especie. Ofrece interpretaciones coherentes, cumple con los supuestos básicos del modelo lineal clásico y demuestra buen rendimiento predictivo en el marco de los datos analizados.
+
+\newpage
+
+# Bibliografía
+
+-   Müller, K. (2020). *here: A Simpler Way to Find Your Files*. R package version 1.0.1. Disponible en: <https://CRAN.R-project.org/package=here>
+
+-   Wickham, H., & Bryan, J. (2023). *readxl: Read Excel Files*. R package version 1.4.3. Disponible en: <https://CRAN.R-project.org/package=readxl>
+
+-   Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. Springer-Verlag New York. R package version 3.5.1. Disponible en: <https://CRAN.R-project.org/package=ggplot2>
+
+-   Zeileis, A., & Hothorn, T. (2002). *Diagnostic Checking in Regression Relationships*. R package `lmtest` version 0.9-40. Disponible en: <https://CRAN.R-project.org/package=lmtest>
+
+-   Fox, J., & Weisberg, S. (2019). *An R Companion to Applied Regression* (3rd ed.). Sage. R package `car` version 3.1-2. Disponible en: <https://CRAN.R-project.org/package=car>
+
+-   Wickham, H. et al. (2023). *dplyr: A Grammar of Data Manipulation*. R package version 1.1.4. Disponible en: <https://CRAN.R-project.org/package=dplyr>
+
+-   Wei, T., & Simko, V. (2021). *corrplot: Visualization of a Correlation Matrix*. R package version 0.92. Disponible en: <https://CRAN.R-project.org/package=corrplot>
+
+-   Powell, J. (2022). *skedastic: Heteroskedasticity Diagnostics for Linear Models*. R package version 2.0.3. Disponible en: <https://CRAN.R-project.org/package=skedastic>
+
+-   Sjoberg, D. D., Curry, M., Hannum, M., Whiting, K., Zabor, E. C. (2021). *gtsummary: Presentation-Ready Data Summary and Analytic Result Tables*. R package version 1.7.2. Disponible en: <https://CRAN.R-project.org/package=gtsummary>
+
+-   Xie, Y. (2023). *knitr: A General-Purpose Package for Dynamic Report Generation in R*. R package version 1.44. Disponible en: <https://CRAN.R-project.org/package=knitr>

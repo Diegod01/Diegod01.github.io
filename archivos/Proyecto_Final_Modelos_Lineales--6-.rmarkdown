@@ -12,9 +12,28 @@ warning: false
 
 \newpage
 
+
+Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
+
+Ingresos
+
+Ventas_Q1, Ventas_Q2, Ventas_Q3: Ventas en el primer, segundo y tercer trimestre.
+
+Costes: Costes operativos totales de la empresa.
+
+Margen: Margen de beneficio (%).
+
+
 # Resumen :
 
-Este trabajo presenta un análisis de regresión lineal múltiple aplicado a un conjunto de datos biométricos de peces capturados en la costa de Finlandia. El objetivo principal es modelar y predecir el peso de los peces a partir de sus dimensiones físicas y especie. Se trabajó con 159 observaciones que incluyen variables como longitud, altura, ancho y clasificación por especie.
+Este trabajo presenta un análisis de regresión lineal múltiple aplicado a un conjunto de datos sobre el rendimiento de distintas empresas en distintos sectores. El objetivo principal es modelar y predecir los Ingresos de las empresas partir de datos como sus ventas en distintos trimestres, sus gastos, su margen. Se trabajó con 159 observaciones que incluyen variables como ventas, costes, nargen y tipo de empresa.
+
+```{r}
+#datos_fin
+
+#table(datos_fin$Segmento)
+```
+
 
 Inicialmente, se realizó una limpieza y transformación de los datos, incluyendo la conversión de tipos de variables y la eliminación de observaciones con pesos inválidos. Se exploraron las correlaciones entre variables para evitar multicolinealidad, y se seleccionaron aquellas con mayor capacidad explicativa.
 
@@ -86,6 +105,11 @@ library(gtsummary)
 # Datos
 datos <- read_xlsx(here("archivos", "biometria_peces (3).xlsx"))
 datos
+
+
+
+
+# Segmento, Ingresos, Ventas_Q1, Ventas_Q2, Ventas_Q3, Costes, Margen
 ```
 
 ```{r}
@@ -109,17 +133,24 @@ datos_fin <- datos_fin %>%
       Segmento,
       "Bream" = "Corporativo",
       "Roach" = "Particular",
+      "Perch" = "PYME",
+      "Pike" = "Multinacional",
       "Whitefish" = "Premium",
+      "Smelt" = "Pública",
       "Parkki" = "Start-up"
     )
   )
 
 
 datos_fin
+table(datos_fin$Segmento)
 
 ```
 
 Nuevas variables:
+
+
+
 
 Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
 
@@ -1146,3 +1177,4 @@ En suma, el modelo final en escala logarítmica se considera adecuado para descr
 -   Sjoberg, D. D., Curry, M., Hannum, M., Whiting, K., Zabor, E. C. (2021). *gtsummary: Presentation-Ready Data Summary and Analytic Result Tables*. R package version 1.7.2. Disponible en: <https://CRAN.R-project.org/package=gtsummary>
 
 -   Xie, Y. (2023). *knitr: A General-Purpose Package for Dynamic Report Generation in R*. R package version 1.44. Disponible en: <https://CRAN.R-project.org/package=knitr>
+
