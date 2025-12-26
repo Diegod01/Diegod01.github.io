@@ -88,6 +88,54 @@ datos <- read_xlsx(here("archivos", "biometria_peces (3).xlsx"))
 ```
 
 ```{r}
+# Transofrmaciones de los datos
+datos_fin <- datos %>%
+  rename(
+    Segmento = Especie,
+    Ingresos = Peso_gr,
+    Ventas_Q1 = Longitud1,
+    Ventas_Q2 = Longitud2,
+    Ventas_Q3 = Longitud3,
+    Costes = Altura_cm,
+    Margen = Ancho_cm
+  )
+
+
+
+datos_fin <- datos_fin %>%
+  mutate(
+    Segmento = recode(
+      Segmento,
+      "Bream" = "Corporativo",
+      "Roach" = "Particular",
+      "Whitefish" = "Premium",
+      "Parkki" = "Start-up"
+    )
+  )
+
+
+datos_fin
+
+```
+
+Nuevas variables:
+
+Segmento: Tipo de empresa o unidad de negocio. Sus categorias son (Corporativo    Start-up       Perch        Pike  Particular       Smelt     Premium ) 
+
+
+Ingresos
+
+
+Ventas_Q1, Ventas_Q2, Ventas_Q3: Ventas en el primer, segundo y tercer trimestre.
+
+
+Costes: Costes operativos totales de la empresa.
+
+
+Margen: Margen de beneficio (%).
+
+
+```{r}
 #| warning: false
 #| label: fig-plot1
 #| fig-cap: "Tabla de variables"
