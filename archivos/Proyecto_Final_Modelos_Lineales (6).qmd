@@ -85,6 +85,7 @@ library(gtsummary)
 
 # Datos
 datos <- read_xlsx(here("archivos", "biometria_peces (3).xlsx"))
+datos
 ```
 
 ```{r}
@@ -99,7 +100,7 @@ datos_fin <- datos %>%
     Costes = Altura_cm,
     Margen = Ancho_cm
   )
-
+#datos_fin
 
 
 datos_fin <- datos_fin %>%
@@ -141,25 +142,30 @@ Margen: Margen de beneficio (%).
 #| fig-cap: "Tabla de variables"
 library(knitr)
 
+
+
 # Crear tabla con los nombres de variables y sus tipos
 library(knitr)
 
 variables <- data.frame(
-  Variable = c("Especie", "Peso_gr", "Longitud1", "Longitud2", "Longitud3", 
-               "Altura_cm", "Ancho_cm"),
+  Variable = c("Segmento", "Ingresos", "Ventas_Q1", "Ventas_Q2", "Ventas_Q3", "Costes", "Margen"),
   Tipo = c("<chr>", "<chr>", "<dbl>", "<dbl>", "<dbl>", "<dbl>", "<dbl>"),
   Tipo_dato = c("character", "character", "numeric", "numeric", "numeric", "numeric", "numeric"),
-  Descripción = c("Nombre de la especie", 
-                  "Peso en gramos (formato texto)", 
-                  "Longitud desde la nariz hasta el comienzo de la cola (numérica)", 
-                  "Longitud desde la punta de la nariz hasta la muesca de la cola. (numérica)", 
-                  "Longitud desde la nariz al final de la cola (numérica)", 
-                  "Altura en centímetros", 
-                  "Ancho en centímetros")
+  Descripción = c("Tipo de empresa o unidad de negocio", 
+                  "Ingresos totales", 
+      "Ventas primer trimestre",
+       "Ventas segundo trimestre",
+       "Ventas tercer trimestre", 
+       "Costos totales", 
+        "Margen de beneficio")
 )
 
 kable(variables)
+
+#colnames(datos_fin)
+datos_fin
 ```
+
 
 # Metodología
 
@@ -209,7 +215,7 @@ En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La
 #|output: false 
 
 # Convertir a numerico el peso
-datos$Peso_gr <- as.numeric(datos$Peso_gr)
+datos_fin$Ingresos <- as.numeric(datos_fin$Ingresos)
 ```
 
 ```{r}
@@ -217,7 +223,7 @@ datos$Peso_gr <- as.numeric(datos$Peso_gr)
 #|output: false 
 
 #datos$Especie <- as.numeric(factor(datos$Especie))
-datos$Especie <- factor(datos$Especie)
+datos_fin$Segmento <- factor(datos_fin$Segmento)
 ```
 
 ```{r}
@@ -227,10 +233,14 @@ datos$Especie <- factor(datos$Especie)
 #| fig-cap: "Distribución del peso de los peces por especie"
 
 
-ggplot(datos, aes(x= Especie, y = Peso_gr, fill = Especie)) + geom_boxplot() + labs(
-    title = "Distribución del peso de los peces por especie",
-    x = "Especie",
-    y = "Peso (gramos)"
+library(ggplot2)
+
+ggplot(datos_fin, aes(x = Segmento, y = Ingresos, fill = Segmento)) +
+  geom_boxplot() +
+  labs(
+    title = "Distribución de los ingresos por segmento de negocio",
+    x = "Segmento",
+    y = "Ingresos"
   ) +
   theme_minimal() +
   theme(legend.position = "none")
@@ -242,18 +252,24 @@ Luego, se exploró la distribución del peso según la especie de los peces medi
 #| warning: false
 #| output: true
 #| label: figura3
-#| fig-cap: "Peso individual de peces por especie"
+#| fig-cap: "Ingresos individuales por segmento de negocio"
 
+library(ggplot2)
 
-ggplot(datos, aes(x = Especie, y = Peso_gr, color = Especie)) +
-  geom_point(position = position_jitter(width = 0.15), size = 2, alpha = 0.6) +
+ggplot(datos_fin, aes(x = Segmento, y = Ingresos, color = Segmento)) +
+  geom_point(
+    position = position_jitter(width = 0.15),
+    size = 2,
+    alpha = 0.6
+  ) +
   labs(
-    title = "Peso individual de peces por especie",
-    x = "Especie",
-    y = "Peso (g)"
+    title = "Ingresos individuales por segmento de negocio",
+    x = "Segmento",
+    y = "Ingresos"
   ) +
   theme_minimal() +
   theme(legend.position = "none")
+
 ```
 
 Se complementó esta visualización con un gráfico de puntos individuales (figura 3), que reveló la presencia de observaciones sospechosamente cercanas a cero, e incluso un caso con peso exactamente igual a cero en la especie Roach. Como un peso igual a cero es inconsistente con un pez físico, se consideró que probablemente se trate de un error de registro. Por tanto, se decidió filtrar las observaciones, eliminando todos los casos cuyo peso fuera menor o igual a cero.
@@ -264,7 +280,9 @@ Se puede ver en el gráfico de la figura 3 como los puntos de algunas especies (
 #|waring: false
 #|output: false 
 
-datos <- datos %>% filter(Peso_gr > 0)
+datos_fin <- datos_fin %>%
+  filter(Ingresos > 0)
+
 ```
 
 # Modelado:
@@ -278,9 +296,13 @@ Previo a ajustar un modelo de regresión lineal, se exploraron las correlaciones
 #| fig-cap: "matriz de correlación"
 
 
-datos_numericos <- datos[sapply(datos, is.numeric)]
+library(dplyr)
+library(corrplot)
+
+datos_numericos <- datos_fin[sapply(datos_fin, is.numeric)]
+
 cor_mat <- cor(datos_numericos, use = "complete.obs")
-#cor_mat
+
 corrplot(cor_mat, method = "color", type = "upper", tl.cex = 0.8)
 
 ```
@@ -292,12 +314,18 @@ corrplot(cor_mat, method = "color", type = "upper", tl.cex = 0.8)
 library(broom)
 library(knitr)
 
-modelo <- lm(Peso_gr ~ Longitud1 + Altura_cm + Ancho_cm + Especie, data = datos)
+modelo <- lm(
+  Ingresos ~ Ventas_Q1 + Costes + Margen + Segmento,
+  data = datos_fin
+)
 
 resultado <- tidy(modelo)
 
-kable(resultado, digits = 3, caption = "Resumen del modelo de regresión lineal")
-
+kable(
+  resultado,
+  digits = 3,
+  caption = "Resumen del modelo de regresión lineal para los ingresos"
+)
 ```
 
 A continuación, se ajustó un modelo de regresión lineal múltiple tomando como variables predictoras `Longitud1`, `Altura_cm`, `Ancho_cm` y `Especie`. La salida del modelo indica que las variables `Altura_cm` y `Ancho_cm` no presentan significancia estadística individual, lo que sugiere que podrían eliminarse para mejorar la parsimonia del modelo.
@@ -311,7 +339,7 @@ vif(modelo)
 ```{r}
 #|waring: false
 #|output: false
-modelo_2 <- update(modelo, .~. - Altura_cm - Ancho_cm)
+modelo_2 <- update(modelo, . ~ . - Costes - Margen)
 #tbl_regression(modelo_2)
 ```
 
@@ -325,11 +353,13 @@ La evaluación del modelo reducido muestra que `Longitud1` es altamente signific
 library(car)
 library(knitr)
 
-anova_tabla <- Anova(modelo_2)
+anova_tabla <- Anova(modelo_2, type = 2)  # Tipo II
 anova_df <- as.data.frame(anova_tabla)
 
-kable(anova_df, caption = "Análisis de varianza tipo II para el modelo")
-
+kable(
+  anova_df,
+  caption = "Análisis de varianza tipo II para el modelo de ingresos"
+)
 ```
 
 El análisis de varianza (ANOVA) realizado sobre el modelo final permitió concluir que tanto `Longitud1` como `Especie` son significativas para explicar el peso. El efecto de `Longitud1` es especialmente fuerte (F = 1203.165, p \< 2.2e-16), mientras que `Especie` también resulta significativa (F = 32.559, p \< 2.2e-16), aunque su impacto es relativamente menor.
@@ -340,18 +370,36 @@ En la tabla aparece 0 en el p-valor porque el R al ser un valor tan pequeño no 
 ```{r}
 #| warning: false
 library(multcomp)
+library(dplyr)
+library(knitr)
 
+# ANOVA para ingresos por segmento
+modelo <- aov(Ingresos ~ Segmento, data = datos_fin)
 
-modelo <- aov(Peso_gr ~ Especie, data = datos)
-cm <- glht(modelo, linfct = mcp(Especie = "Tukey"))
+# Comparaciones múltiples de Tukey
+cm <- glht(modelo, linfct = mcp(Segmento = "Tukey"))
+
+# Letras para grupos estadísticamente iguales
 letras <- cld(cm, Letters = letters, adjust = "tukey")
 
-letras_df_1 <- data.frame(Especie = names(letras$mcletters$Letters),
-                        grupo = letras$mcletters$Letters)
-media_especie <- datos %>% group_by(Especie) %>% summarize(mean = mean(Peso_gr))
+# Dataframe con letras
+letras_df_1 <- data.frame(
+  Segmento = names(letras$mcletters$Letters),
+  grupo = letras$mcletters$Letters
+)
 
-datos_letras <- letras_df_1 %>% inner_join(media_especie) %>% arrange(desc(mean))
-kable(datos_letras, caption = "Comparaciones múltiples de Tukey")
+# Media de ingresos por segmento
+media_segmento <- datos_fin %>%
+  group_by(Segmento) %>%
+  summarize(mean = mean(Ingresos, na.rm = TRUE))
+
+# Unir medias con letras y ordenar
+datos_letras <- letras_df_1 %>%
+  inner_join(media_segmento, by = "Segmento") %>%
+  arrange(desc(mean))
+
+# Mostrar tabla
+kable(datos_letras, caption = "Comparaciones múltiples de Tukey para los ingresos por segmento")
 ```
 
 Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de peso entre especies. Los resultados se resumen mediante letras asignadas a cada especie, donde especies con al menos una letra en común no presentan diferencias significativas entre sus medias de peso.
@@ -372,16 +420,18 @@ Luego del ajuste del modelo final con `Longitud1` y `Especie` como variables pre
 #| label: figura5
 #| fig-cap: "Gráfico de residuos studentizados externos en función de los valores predichos para evaluar heteroscedasticidad"
 
-# Extraemos residuos y predichos
-datos$r_i <- residuals(modelo_2)        # residuos
-datos$s_i <- rstandard(modelo_2)        # studentizados internamente
-datos$t_i <- rstudent(modelo_2)         # studentizados externamente
-datos$pred <- fitted(modelo_2)          # valores predichos
+library(ggplot2)
 
-# Gráfico de residuos
-ggplot(datos, aes(x = pred, y = t_i)) + 
-  geom_point() +
-  xlab('Valores predichos') +
+# Extraemos residuos y predichos del modelo reducido
+datos_fin$r_i <- residuals(modelo_2)      # residuos
+datos_fin$s_i <- rstandard(modelo_2)      # residuos studentizados internamente
+datos_fin$t_i <- rstudent(modelo_2)       # residuos studentizados externamente
+datos_fin$pred <- fitted(modelo_2)        # valores predichos
+
+# Gráfico de residuos vs valores predichos
+ggplot(datos_fin, aes(x = pred, y = t_i)) + 
+  geom_point(alpha = 0.6) +
+  xlab('Ingresos predichos') +
   ylab('Residuos studentizados externos') +
   geom_abline(slope = 0, intercept = 0, linetype = "dashed", color = "red") +
   theme_minimal()
@@ -395,18 +445,22 @@ En primer lugar, se extrajeron los residuos del modelo (`residuos`, `residuos es
 #| label: tabla_bp
 #| output: true
 
+
 library(lmtest)
 library(knitr)
 
-# Calculamos los residuos al cuadrado
-datos$r2_i <- residuals(modelo_2)^2
+# Calculamos los residuos al cuadrado del modelo reducido
+datos_fin$r2_i <- residuals(modelo_2)^2
 
 # Ajustamos la regresión auxiliar
-mod_aux <- lm(r2_i ~ Longitud1 + Especie, data = datos)
+mod_aux <- lm(r2_i ~ Ventas_Q1 + Segmento, data = datos_fin)
 
 # Mostramos el resumen de la regresión auxiliar en tabla
-kable(summary(mod_aux)$coefficients, digits = 4,
-      caption = "Regresión auxiliar para el test de Breusch-Pagan")
+kable(
+  summary(mod_aux)$coefficients,
+  digits = 4,
+  caption = "Regresión auxiliar para el test de Breusch-Pagan sobre ingresos"
+)
 
 # Calculamos el estadístico BP manualmente
 n <- nrow(mod_aux$model)
@@ -414,14 +468,12 @@ R2 <- summary(mod_aux)$r.squared
 BP <- n * R2
 p_valor_manual <- 1 - pchisq(BP, df = length(coef(mod_aux)) - 1)
 
-# Mostramos el resultado del BP manual
+# Mostramos el resultado manual
 cat("Estadístico BP:", round(BP, 3), "\n")
 cat("p-valor (calculado manualmente):", round(p_valor_manual, 4), "\n\n")
 
 # Resultado oficial del test con lmtest
 bptest(modelo_2)
-
-
 
 ```
 
@@ -439,23 +491,27 @@ Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto 
 
 
 
-modelo_3 <- lm(log(Peso_gr)~ log(Longitud1) + Especie, datos)
+library(ggplot2)
+library(lmtest)
 
+# Ajuste de modelo log-log
+modelo_3 <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
 
-# extraemos los residuos
-datos$r_i <- residuals(modelo_3)  # residuos
-datos$s_i <- rstandard(modelo_3)  # studendizados INTERNAMENTE
-datos$t_i <- rstudent(modelo_3)   # studentizados EXTERNAMENTE
+# Extraemos residuos y valores predichos
+datos_fin$r_i <- residuals(modelo_3)      # residuos
+datos_fin$s_i <- rstandard(modelo_3)      # studentizados internamente
+datos_fin$t_i <- rstudent(modelo_3)       # studentizados externamente
+datos_fin$pred <- fitted(modelo_3)        # valores predichos
 
-# PRIMER PASO PARA EXPLORAR HETEROSCEDASTICIDAD (predichos vs residuos)
-datos$pred <- fitted(modelo_3)
+# Gráfico de residuos vs valores predichos
+ggplot(datos_fin, aes(x = pred, y = t_i)) + 
+  geom_point(alpha = 0.6) +
+  xlab('Ingresos predichos (log)') +
+  ylab('Residuos studentizados externos') +
+  geom_abline(slope = 0, intercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal()
 
-ggplot(datos, aes(x = pred, y = t_i)) + 
-  geom_point() +
-  xlab('Predichos') +
-  ylab('Residuos') +
-  geom_abline(slope = 0, intercept = 0)
-
+# Test de heterocedasticidad de Breusch-Pagan
 bptest(modelo_3)
 ```
 
@@ -463,13 +519,14 @@ El análisis de residuos sobre este modelo transformado muestra una clara mejora
 
 ```{r}
 #| warning: false
+
 # Calcular residuos al cuadrado del modelo logarítmico
-datos$r2_i <- residuals(modelo_3)^2
+datos_fin$r2_i <- residuals(modelo_3)^2
 
 # Ajustar la regresión auxiliar para Breusch-Pagan
-mod_aux <- lm(r2_i ~ log(Longitud1) + Especie, data = datos)
+mod_aux <- lm(r2_i ~ log(Ventas_Q1) + Segmento, data = datos_fin)
 
-# Calcular el estadístico de Breusch-Pagan
+# Calcular el estadístico de Breusch-Pagan manualmente
 n <- nrow(modelo_3$model)
 R2_aux <- summary(mod_aux)$r.squared
 BP <- n * R2_aux
@@ -478,6 +535,7 @@ p_valor <- 1 - pchisq(BP, df = length(coef(mod_aux)) - 1)
 # Imprimir resultados
 cat("Estadístico de Breusch-Pagan (manual):", round(BP, 3), "\n")
 cat("p-valor:", round(p_valor, 4), "\n\n")
+
 ```
 
 ## Nuevo Modelo
@@ -490,7 +548,12 @@ library(knitr)
 resumen_lindo <- tidy(modelo_3)
 
 # Mostramos como tabla limpia
-kable(resumen_lindo, digits = 4, caption = "Resumen del modelo logarítmico")
+kable(
+  resumen_lindo,
+  digits = 4,
+  caption = "Resumen del modelo logarítmico de ingresos"
+)
+
 ```
 
 Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a `EspecieParkki` y `EspecieWhitefish`, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y logra explicar la relación entre el peso y las dimensiones de los peces con mayor estabilidad que el modelo sin transformar.
@@ -511,28 +574,33 @@ library(ggplot2)
 library(multcomp)
 
 # Obtener medias marginales ajustadas (en escala log)
-emm <- emmeans(modelo_3, ~ Especie)
+emm <- emmeans(modelo_3, ~ Segmento)
 
-# Pasar a escala original (peso en gramos)
+# Pasar a escala original (ingresos)
 emm_df <- as.data.frame(emmeans::regrid(emm))
 
-#Letras Tukey
-cm_log <- glht(modelo_3, linfct = mcp(Especie = "Tukey"))
+# Letras Tukey
+cm_log <- glht(modelo_3, linfct = mcp(Segmento = "Tukey"))
 letras_log <- cld(cm_log, Letters = letters, adjust = "tukey")
 
-letras_df <- data.frame(Especie = names(letras$mcletters$Letters),
-                        grupo = letras_log$mcletters$Letters)
+letras_df <- data.frame(
+  Segmento = names(letras_log$mcletters$Letters),
+  grupo = letras_log$mcletters$Letters
+)
 
 # Unir letras del test de Tukey
-emm_df$letra <- letras_df$grupo[match(emm_df$Especie, letras_df$Especie)]
+emm_df$letra <- letras_df$grupo[match(emm_df$Segmento, letras_df$Segmento)]
 
-# Graficar medias ajustadas por especie
-ggplot(emm_df, aes(x = Especie, y = response)) +
+# Graficar medias ajustadas por segmento
+ggplot(emm_df, aes(x = Segmento, y = response)) +
   geom_col(fill = "skyblue", width = 0.6) +
   geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), width = 0.2) +
-  geom_text(aes(label = letra, y = upper.CL + 5), size = 6, fontface = "bold") +
-  labs(title = "Peso medio ajustado por especie (ajustado por longitud)",
-       y = "Peso estimado (g)", x = "Especie") +
+  geom_text(aes(label = letra, y = upper.CL + 500), size = 6, fontface = "bold") +
+  labs(
+    title = "Ingresos medios ajustados por segmento (ajustado por Ventas_Q1)",
+    y = "Ingresos estimados",
+    x = "Segmento"
+  ) +
   theme_minimal(base_size = 14)
 
 ```
@@ -553,8 +621,8 @@ Esta versión del R\^2 estima la calidad del ajuste en la escala original. En nu
 library(knitr)
 library(kableExtra)
 
-# Sea el modelo:
-modelo_3 <- lm(log(Peso_gr) ~ log(Longitud1) + Especie, data = datos)
+# Ajuste del modelo logarítmico
+modelo_3 <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
 
 # Extraer el resumen del modelo
 resumen <- summary(modelo_3)
@@ -565,39 +633,39 @@ tabla_coef <- as.data.frame(resumen$coefficients)
 # Renombrar columnas
 colnames(tabla_coef) <- c("Estimación", "Error estándar", "Valor t", "Pr(>|t|)")
 
-# Crear tabla con kable
-kbl(tabla_coef, digits = 4, caption = "Resumen de coeficientes del modelo") %>%
-  kable_styling(full_width = FALSE, position = "center", latex_options = c("H", "striped"))
-
-
-
-
-
-
-
+# Crear tabla con kable y estilo
+kbl(
+  tabla_coef,
+  digits = 4,
+  caption = "Resumen de coeficientes del modelo logarítmico de ingresos"
+) %>%
+  kable_styling(
+    full_width = FALSE,
+    position = "center",
+    latex_options = c("H", "striped")
+  )
 
 ```
 
 ```{r}
-# Modelo en escala logarítmica
-modelo_log <- lm(log(Peso_gr) ~ log(Longitud1) + Especie, data = datos)
+# Modelo logarítmico
+modelo_log <- lm(log(Ingresos) ~ log(Ventas_Q1) + Segmento, data = datos_fin)
 
-# Predicciones en escala log (lineal)
+# Predicciones en escala logarítmica
 pred_log <- predict(modelo_log)
 
 # Volver a la escala original
 pred_original <- exp(pred_log)
 
 # Variable observada en escala original
-y_obs <- datos$Peso_gr
+y_obs <- datos_fin$Ingresos
 
 # Calcular R² en la escala original
 ss_total <- sum((y_obs - mean(y_obs))^2)
 ss_residual <- sum((y_obs - pred_original)^2)
 r2_original <- 1 - (ss_residual / ss_total)
 
-
-print("R^2 de modelo en el cual volvimos a la escala original")
+print("R^2 del modelo en la escala original de ingresos")
 r2_original
 
 
@@ -613,21 +681,27 @@ Para evaluar el cumplimiento del supuesto de normalidad de los errores en el mod
 #| label: figura7
 #| fig-cap: "Gráfico Q-Q de los residuos studentizados externos para evaluar la normalidad en el modelo logarítmico"
 
-# Obtener residuos studentizados
-datos$t_i <- rstudent(modelo_3)
-n <- nrow(datos)
+library(ggplot2)
+
+# Obtener residuos studentizados externamente
+datos_fin$t_i <- rstudent(modelo_3)
+n <- nrow(datos_fin)
 
 # Construcción del Q-Q plot
 z_i <- qnorm(seq(n)/(n + 1))
-qq <- data.frame(teoricos = z_i,
-                 empiricos = sort(datos$t_i))
+qq <- data.frame(
+  teoricos = z_i,
+  empiricos = sort(datos_fin$t_i)
+)
 
 ggplot(qq, aes(x = teoricos, y = empiricos)) +
-  geom_point() +
-  xlab('Cuantiles teóricos') +
-  ylab('Cuantiles empíricos') +
-  geom_abline(slope = 1, intercept = 0, col = 2, size = 1.5) +
+  geom_point(alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, color = "red", size = 1.2) +
+  xlab('Cuantiles teóricos (normal)') +
+  ylab('Cuantiles empíricos de residuos studentizados') +
+  labs(title = "Q-Q plot de residuos del modelo logarítmico de ingresos") +
   theme_minimal()
+
 ```
 
 Tambien hicimos un grafico para comparar la distribucion de los residuos contra la distribucion de una normal estandar. Donde vemos que los residuosse aproximan a una normal.
@@ -640,20 +714,27 @@ Tambien hicimos un grafico para comparar la distribucion de los residuos contra 
 
 
 
-# Gráfico
+library(ggplot2)
 
 # Media y desviación estándar de los residuos
-media_residuos <- mean(datos$t_i)
-sd_residuos <- sd(datos$t_i)
+media_residuos <- mean(datos_fin$t_i)
+sd_residuos <- sd(datos_fin$t_i)
 
-ggplot(datos, aes(x = t_i)) +
+# Gráfico de densidad vs normal teórica
+ggplot(datos_fin, aes(x = t_i)) +
   geom_density(color = "blue", size = 1.2, fill = "blue", alpha = 0.3) +
-  stat_function(fun = dnorm,
-                args = list(mean = media_residuos, sd = sd_residuos),
-                color = "red", size = 1.2, linetype = "dashed") +
-  labs(title = "Densidad de los residuos vs Normal teórica",
-       x = "Residuos studentizados",
-       y = "Densidad") +
+  stat_function(
+    fun = dnorm,
+    args = list(mean = media_residuos, sd = sd_residuos),
+    color = "red",
+    size = 1.2,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Densidad de residuos studentizados del modelo logarítmico de ingresos vs Normal teórica",
+    x = "Residuos studentizados",
+    y = "Densidad"
+  ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
@@ -666,31 +747,32 @@ Resaltamos esto porque al hacer los test estadisticos de Kolmogorov-Smirnov, Sha
 #| output: true
 #| label: tabla_normalidad
 #| tbl-cap: "Tests de normalidad aplicados a los residuos studentizados del modelo log-log"
-
 library(moments)
 library(knitr)
 library(tseries)
 
-
 # Realizar los tests sobre los residuos studentizados externos
-shapiro_result <- shapiro.test(datos$t_i)
-ks_result <- ks.test(datos$t_i, "pnorm", mean = mean(datos$t_i), sd = sd(datos$t_i))
-jb_result <- jarque.test(datos$t_i)
-#jb_result <- jarque.bera.test(datos$t_i)
+shapiro_result <- shapiro.test(datos_fin$t_i)
+ks_result <- ks.test(datos_fin$t_i, "pnorm", mean = mean(datos_fin$t_i), sd = sd(datos_fin$t_i))
+jb_result <- jarque.test(datos_fin$t_i)
 
 # Crear tabla de resultados
 tabla_normalidad <- data.frame(
   Test = c("Shapiro-Wilk", "Kolmogorov-Smirnov", "Jarque-Bera"),
-  Estadístico = c(round(shapiro_result$statistic, 4),
-                  round(ks_result$statistic, 4),
-                  round(jb_result$statistic, 4)),
-  `p-valor` = c(format.pval(shapiro_result$p.value, digits = 4, eps = 0.0001),
-                format.pval(ks_result$p.value, digits = 4, eps = 0.0001),
-                format.pval(jb_result$p.value, digits = 4, eps = 0.0001))
+  Estadístico = c(
+    round(shapiro_result$statistic, 4),
+    round(ks_result$statistic, 4),
+    round(jb_result$statistic, 4)
+  ),
+  `p-valor` = c(
+    format.pval(shapiro_result$p.value, digits = 4, eps = 0.0001),
+    format.pval(ks_result$p.value, digits = 4, eps = 0.0001),
+    format.pval(jb_result$p.value, digits = 4, eps = 0.0001)
+  )
 )
 
 # Mostrar tabla bonita
-kable(tabla_normalidad)
+kable(tabla_normalidad, caption = "Pruebas de normalidad sobre residuos studentizados del modelo logarítmico de ingresos")
 
 
 ```
@@ -700,18 +782,17 @@ El test de Shapiro-Wilk arrojó un valor W = 0.96776 con un p-valor = 0.0009448,
 Consideramos la posibilidad de quitar atipicos para lograr que los residuos del modelo distribuyeran normal, pero tuvimos un problema que fue que detectamos que todos los atipicos eran influyentes, y decidimos seguir la recomendacion de las notas del curso de no eliminar atipicos con el fin de cumplir supuestos, y menos si esos supuestos no son tan importantes como la normalidad. Ademas tenemos 158 observaciones, por lo que podemos considerar que por el TCL, tenemos un comportamiento normal.
 
 ```{r}
-datos$leverage <- hatvalues(modelo_3)
-datos$cook <- cooks.distance(modelo_3)
+# Calcular leverage y distancia de Cook
+datos_fin$leverage <- hatvalues(modelo_3)
+datos_fin$cook <- cooks.distance(modelo_3)
 
-# Para revisar las observaciones problemáticas
-datos$es_outlier <- abs(datos$t_i) > 3
-datos$es_influente <- datos$cook > 4 / nrow(datos)
+# Identificar observaciones problemáticas
+datos_fin$es_outlier <- abs(datos_fin$t_i) > 3           # residuos studentizados > 3
+datos_fin$es_influente <- datos_fin$cook > 4 / nrow(datos_fin)
 
-# Ver casos relevantes
-#subset(datos, es_outlier | es_influente)
+# Mostrar únicamente las columnas de interés para observaciones problemáticas
+subset(datos_fin, es_outlier | es_influente)[, c("es_outlier", "es_influente")]
 
-subset(datos, es_outlier | es_influente)[, (ncol(datos)-1):ncol(datos)]
-#
 
 ```
 
@@ -725,12 +806,22 @@ subset(datos, es_outlier | es_influente)[, (ncol(datos)-1):ncol(datos)]
 
 library(ggplot2)
 
-ggplot(datos, aes(x = 1:nrow(datos), y = t_i)) +
-  geom_point(aes(color = es_outlier)) +
-  geom_hline(yintercept = c(-3, 3), linetype = "dashed", color = "red") +
-  labs(title = "Residuos Studentizados",
-       x = "Índice de observación", y = "t_i (residuos studentizados)") +
-  theme_minimal()
+ggplot(datos_fin, aes(x = 1:nrow(datos_fin), y = t_i)) +
+  geom_point(aes(color = es_outlier), size = 2, alpha = 0.7) +
+  geom_hline(yintercept = c(-3, 3), linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Residuos studentizados del modelo logarítmico de ingresos",
+    x = "Índice de observación",
+    y = "t_i (residuos studentizados)"
+  ) +
+  scale_color_manual(values = c("FALSE" = "blue", "TRUE" = "red"), 
+                     labels = c("No outlier", "Outlier")) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank()
+  )
+
 ```
 
 Este gráfico tiene en el eje X el índice de observación y en el eje Y los residuos studentizados (t_i). Se usa para detectar observaciones atípicas (outliers). Los residuos studentizados sirven para comparar residuos entre sí, sin importar la escala. Si un residuo studentizado es alto o bajo, indica que esa observación puede ser atipica, estas son las observaciones que se encuentran por encima o por debajo de ±3.
@@ -744,13 +835,19 @@ Este gráfico también tiene el índice de observación en el eje X, y en el eje
 #| label: figura7c
 #| fig-cap: "Gráfico de distancia de cook"
 
+library(ggplot2)
 
-ggplot(datos, aes(x = 1:nrow(datos), y = cook)) +
+ggplot(datos_fin, aes(x = 1:nrow(datos_fin), y = cook)) +
   geom_bar(stat = "identity", fill = "lightblue") +
-  geom_hline(yintercept = 4 / nrow(datos), linetype = "dashed", color = "red") +
-  labs(title = "Distancia de Cook",
-       x = "Índice de observación", y = "Distancia de Cook") +
-  theme_minimal()
+  geom_hline(yintercept = 4 / nrow(datos_fin), linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Distancia de Cook de observaciones sobre el modelo logarítmico de ingresos",
+    x = "Índice de observación",
+    y = "Distancia de Cook"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
 ```
 
 ## Linealidad
@@ -763,18 +860,24 @@ Uno de los supuestos fundamentales del modelo lineal es que exista una relación
 #| label: figura8
 #| fig-cap: "Gráfico de residuos versus valores predichos del modelo logarítmico"
 
-# Agregar residuos y predichos
-datos$predichos <- fitted(modelo_3)
-datos$residuos  <- residuals(modelo_3)
+library(ggplot2)
+
+# Agregar residuos y valores predichos
+datos_fin$predichos <- fitted(modelo_3)
+datos_fin$residuos  <- residuals(modelo_3)
 
 # Gráfico de residuos vs predichos
-ggplot(datos, aes(x = predichos, y = residuos)) +
-  geom_point() +
-  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
-  xlab("Valores predichos") +
-  ylab("Residuos") +
-  ggtitle("Evaluación visual del supuesto de linealidad") +
-  theme_minimal()
+ggplot(datos_fin, aes(x = predichos, y = residuos)) +
+  geom_point(alpha = 0.6, color = "blue", size = 2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red", size = 1) +
+  labs(
+    title = "Residuos vs valores predichos del modelo logarítmico de ingresos",
+    x = "Valores predichos",
+    y = "Residuos"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 
 ```
@@ -785,9 +888,16 @@ En el modelo log-transformado (`modelo_3`), el gráfico de predichos versus resi
 #| warning: false
 #| output: true
 #| label: figura9
-#| fig-cap: "Gráfico de residuos parciales para log(Longitud1)"
+#| fig-cap: "Gráfico de residuos parciales para log(Ventas_Q1) en modelo de ingresos"
 
-crPlot(modelo_3, variable = "log(Longitud1)")
+
+library(car)
+
+# Gráfico de residuos parciales para log(Ventas_Q1)
+crPlot(modelo_3, variable = "log(Ventas_Q1)",
+       main = "Gráfico de residuos parciales para log(Ventas_Q1) en modelo de ingresos",
+       xlab = "log(Ventas_Q1)",
+       ylab = "Residuos parciales")
 
 ```
 
@@ -799,21 +909,25 @@ En particular, el gráfico de residuos parciales para log(Longitud1) muestra una
 #| label: figura10
 #| fig-cap: "Residuos del modelo extendido con términos cuadráticos de Altura y Ancho"
 
-# Modelo extendido con términos cuadráticos
-mod_alt <- update(modelo_3, . ~ . + I(Altura_cm^2) + I(Ancho_cm^2))
+# Modelo extendido con términos cuadráticos financieros
+mod_ext_fin <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + I(Ventas_Q1^2) + I(Ventas_Q2^2) + Segmento, data = datos_fin)
 
-# Residuos y predichos del modelo extendido
-res <- residuals(mod_alt)
-pred <- fitted(mod_alt)
+# Residuos y predichos
+res <- residuals(mod_ext_fin)
+pred <- fitted(mod_ext_fin)
 
-# Gráfico de residuos del modelo extendido
+# Gráfico de residuos
 ggplot(data.frame(res, pred), aes(x = pred, y = res)) +
-  geom_point() +
-  xlab("Valores predichos") +
-  ylab("Residuos") +
-  geom_abline(intercept = 0, slope = 0, linetype = 'dashed', color = "red") +
+  geom_point(alpha = 0.6, color = "darkblue", size = 2) +
+  geom_abline(intercept = 0, slope = 0, linetype = 'dashed', color = "red", size = 1) +
   geom_smooth(se = FALSE, color = "blue") +
-  theme_bw()
+  labs(
+    title = "Residuos del modelo extendido con términos cuadráticos financieros",
+    x = "Valores predichos",
+    y = "Residuos"
+  ) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5))
 
 ```
 
@@ -828,30 +942,33 @@ Evaluamos la capacidad predictiva de nuestro modelo particionando los datos en u
 #| warning: false
 #| output: true
 
-
 set.seed(123)
-n <- nrow(datos)
-train_index <- sample(1:n, size = 0.8 * n)  # 80% entrenamiento
-train <- datos[train_index, ]
-test <- datos[-train_index, ]
+
+n <- nrow(datos_fin)
+
+# División 80%-20% para entrenamiento y prueba
+train_index <- sample(1:n, size = 0.8 * n)  
+train <- datos_fin[train_index, ]
+test  <- datos_fin[-train_index, ]
 
 # Ajustar modelo sobre datos de entrenamiento
-modelo_entrenamiento <- lm(log(Peso_gr) ~ log(Longitud1) + Especie, data = train)
+modelo_entrenamiento <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = train)
 
 # Predecir sobre test
 pred_log_test <- predict(modelo_entrenamiento, newdata = test)
-pred_test <- exp(pred_log_test)  # volver a la escala original
+pred_test <- exp(pred_log_test)  # volver a escala original
 
-# Comparar con valores reales
-real_test <- test$Peso_gr
+# Valores reales
+real_test <- test$Ingresos
 
 # Calcular métricas predictivas
 library(Metrics)
 
 rmse_val <- rmse(real_test, pred_test)
-mae_val <- mae(real_test, pred_test)
-r2_val <- 1 - sum((real_test - pred_test)^2) / sum((real_test - mean(real_test))^2)
+mae_val  <- mae(real_test, pred_test)
+r2_val   <- 1 - sum((real_test - pred_test)^2) / sum((real_test - mean(real_test))^2)
 
+# Mostrar resultados
 c(RMSE = rmse_val, MAE = mae_val, R2 = r2_val)
 
 ```
@@ -870,18 +987,25 @@ R2 es la proporción de la varianza total explicada por el modelo
 
 library(ggplot2)
 
-datos$pred <- exp(predict(modelo_3))
+# Predicciones en escala original
+datos_fin$pred <- exp(predict(modelo_3, newdata = datos_fin))
 
-ggplot(datos, aes(x = Peso_gr, y = pred)) +
-  geom_point(alpha = 0.6) +
-  geom_abline(slope = 1, intercept = 0, color = "red") +
-  labs(x = "Peso observado", y = "Peso predicho", title = "Predicción vs Real") +
+# Gráfico Predicción vs Real
+ggplot(datos_fin, aes(x = Ingresos, y = pred)) +
+  geom_point(alpha = 0.6, color = "blue", size = 2) +
+  geom_abline(slope = 1, intercept = 0, color = "red", size = 1) +
+  labs(
+    x = "Ingresos observados",
+    y = "Ingresos predichos",
+    title = "Predicción vs Ingresos reales"
+  ) +
   theme_minimal() +
   theme(
-    plot.title = element_text(size = 18, face = "bold"),
+    plot.title = element_text(size = 18, face = "bold", hjust = 0.5),
     axis.title = element_text(size = 14),
     axis.text = element_text(size = 12)
   )
+
 
 ```
 
@@ -890,23 +1014,19 @@ De todas formas solo como posible respuesta a la curiosidad del lector, probamos
 ```{r}
 #| warning: false
 #| output: false
-
-# Ver como era el modelo si quitabamos los outliers
-library(moments)
 library(ggplot2)
 library(Metrics)
-
+library(moments)
+library(tseries)
 
 # 1. Crear nuevo conjunto sin observaciones problemáticas
-datos_limpios <- subset(datos, !(es_outlier | es_influente))
+datos_limpios <- subset(datos_fin, !(es_outlier | es_influente))
+
 # 2. Ajustar modelo nuevamente sin outliers ni influyentes
-modelo_3_sin_outliers <- lm(log(Peso_gr) ~ log(Longitud1) + Especie, data = datos_limpios)
+modelo_sin_outliers <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = datos_limpios)
 
-
-
-# QQPLOT de datos sin outliers
-datos_limpios$t_i <- rstudent(modelo_3_sin_outliers)
-
+# Q-Q Plot de residuos studentizados
+datos_limpios$t_i <- rstudent(modelo_sin_outliers)
 n <- nrow(datos_limpios)
 qq_data <- data.frame(
   teoricos = qnorm(ppoints(n)),
@@ -916,16 +1036,14 @@ qq_data <- data.frame(
 ggplot(qq_data, aes(x = teoricos, y = empiricos)) +
   geom_point(color = "blue") +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
-  labs(title = "Q-Q Plot de los residuos studentizados",
+  labs(title = "Q-Q Plot de los residuos studentizados (sin outliers)",
        x = "Cuantiles teóricos (Normal)",
        y = "Cuantiles empíricos (residuos)")
 
-
-# Distribucion de los residuos studentizados
-# Media y desviación estándar de los residuos studentizados
+# Distribución de los residuos studentizados
 media_residuos <- mean(datos_limpios$t_i)
 sd_residuos <- sd(datos_limpios$t_i)
-# Gráfico de densidad
+
 ggplot(datos_limpios, aes(x = t_i)) +
   geom_density(color = "blue", size = 1.2, fill = "blue", alpha = 0.3) +
   stat_function(fun = dnorm,
@@ -937,46 +1055,28 @@ ggplot(datos_limpios, aes(x = t_i)) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5))
 
-
-
-
-# Test de normalidad para el modelo sin outliers:
-
-# Shapiro-Wilk
+# Test de normalidad para residuos
 shapiro.test(datos_limpios$t_i)
-
-# Kolmogorov-Smirnov (contra normal)
-ks.test(datos_limpios$t_i, "pnorm",
-        mean = mean(datos_limpios$t_i),
-        sd = sd(datos_limpios$t_i))
-
-# Jarque-Bera
+ks.test(datos_limpios$t_i, "pnorm", mean = mean(datos_limpios$t_i), sd = sd(datos_limpios$t_i))
 jarque.test(datos_limpios$t_i)
 
+# ---------------------------------------------------------
+# Evaluar rendimiento predictivo del modelo sin outliers
+set.seed(123)
 
-
-
-
-# EVALUAR EL RENDIMIENTO PREDICTIVO DEL MODELO SIN OUTLIERS:
-
-set.seed(123)  #  reproducibilidad
-
-# Particion en train test
+# Partición en train-test
 n <- nrow(datos_limpios)
-n_train <- floor(0.8 * n)
-indices_train <- sample(seq_len(n), size = n_train)
+train_index <- sample(1:n, size = 0.8 * n)
+train <- datos_limpios[train_index, ]
+test  <- datos_limpios[-train_index, ]
 
-datos_train <- datos_limpios[indices_train, ]
-datos_test  <- datos_limpios[-indices_train, ]
+modelo_train <- lm(log(Ingresos) ~ log(Ventas_Q1) + log(Ventas_Q2) + Segmento, data = train)
 
-modelo_train <- lm(log(Peso_gr) ~ log(Longitud1) + Especie, data = datos_train)
+# Predicción sobre test
+pred_test <- predict(modelo_train, newdata = test)
+real_test <- log(test$Ingresos)  # valor real transformado
 
-pred_test <- predict(modelo_train, newdata = datos_test)
-real_test <- log(datos_test$Peso_gr)  # valor real transformado
-
-
-
-# Metricas de evaluacion de la capacidad predictiva
+# Métricas de evaluación
 rmse_val <- rmse(real_test, pred_test)
 mae_val  <- mae(real_test, pred_test)
 r2_val   <- 1 - sum((real_test - pred_test)^2) / sum((real_test - mean(real_test))^2)
@@ -985,14 +1085,13 @@ cat("RMSE:", round(rmse_val, 4), "\n")
 cat("MAE :", round(mae_val, 4), "\n")
 cat("R²  :", round(r2_val, 4), "\n")
 
-
-# Grafico de regresion
+# Gráfico Predicción vs Real en test
 ggplot(data.frame(real = real_test, pred = pred_test), aes(x = real, y = pred)) +
   geom_point(color = "steelblue", size = 2, alpha = 0.7) +
   geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
-  labs(title = "Predicción vs Real (Conjunto de test)",
-       x = "log(Peso_gr) real",
-       y = "log(Peso_gr) predicho") +
+  labs(title = "Predicción vs Ingresos reales (Conjunto de test, sin outliers)",
+       x = "log(Ingresos) real",
+       y = "log(Ingresos) predicho") +
   theme_minimal()
 
 
