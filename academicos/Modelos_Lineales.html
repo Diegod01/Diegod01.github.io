@@ -113,7 +113,9 @@ Ingresos_i =\;& \beta_0
      <p>Para comenzar el análisis, se realizó una etapa de limpieza y transformación de los datos, orientada a garantizar la correcta interpretación de las variables y el cumplimiento de los supuestos del modelo lineal.<p>
 
      <p>En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La variable Ingresos, que representa el peso del pez en gramos, se encontraba almacenada como texto (character). Dado que será la variable dependiente en el modelo de regresión, es indispensable que sea cuantitativa. Por ello, se convirtió a numérica. La variable Segmento representa una categoría nominal, por lo que se transformó a un objeto de clase factor, permitiendo su correcta inclusión como variable cualitativa en el modelo.<p>
-            <img 
+            
+      <p>Se analizó la distribución de los Ingresos según el Segmento mediante un gráfico de caja (boxplot). Este análisis permitió observar diferencias sustanciales entre los distintos segmentos. Por ejemplo, el segmento Pública presenta niveles de ingresos generalmente bajos, mientras que el segmento Multinacional tiende a registrar valores más elevados. Asimismo, algunos segmentos como PYME y Premium muestran una mayor dispersión de los ingresos, reflejando una mayor variabilidad intra-segmento, en contraste con otros como Start-up o Particular, cuyas distribuciones resultan más concentradas.</p>   
+      <img 
                 src="../images/Imagen53.png"
                 alt="Título"
                 class="img-proyecto"
@@ -122,6 +124,8 @@ Ingresos_i =\;& \beta_0
 
 
 
+      <p>Esta visualización se complementó con un gráfico de puntos individuales (Figura 3), el cual permitió identificar la presencia de observaciones con valores de Ingresos sospechosamente cercanos a cero, así como un caso con ingresos exactamente iguales a cero dentro del segmento Particular. Dado que un valor nulo de ingresos resulta conceptualmente inconsistente en este contexto, se consideró que dichas observaciones corresponden probablemente a errores de registro. En consecuencia, se procedió a filtrar la base de datos, eliminando todos los casos con Ingresos menores o iguales a cero.</p>
+      <p>Asimismo, el gráfico de la Figura 3 pone de manifiesto diferencias notables en la dispersión de los ingresos entre segmentos. Mientras que en segmentos como Premium o Multinacional los puntos aparecen ampliamente dispersos, en otros como Pública y Start-up se observa una mayor concentración de valores. Este patrón sugiere la posible presencia de heterocedasticidad, ya que la variabilidad de los ingresos parece diferir entre los distintos segmentos.</p>
 
                   <img 
                 src="../images/Imagen54.png"
@@ -129,7 +133,13 @@ Ingresos_i =\;& \beta_0
                 class="img-proyecto"
                 width="450"
             >
-      
+
+
+        <h2>Modelado</h2>
+
+        <p>Antes de ajustar el modelo de regresión lineal, se analizaron las correlaciones entre las variables numéricas del conjunto de datos. A partir de la matriz de correlación, se observó que las tres variables de ventas (Ventas_Q1, Ventas_Q2 y Ventas_Q3) presentan una correlación extremadamente alta entre sí, con coeficientes cercanos a 1.</p>
+        <p>Con el objetivo de evitar problemas de multicolinealidad en el modelo de regresión, se optó por conservar únicamente Ventas_Q1 como variable representativa de este conjunto de variables altamente redundantes, excluyendo las restantes del análisis posterior.</p>
+
                   <img 
                 src="../images/Imagen55.png"
                 alt="Título"
