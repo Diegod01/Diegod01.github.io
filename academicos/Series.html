@@ -24,7 +24,13 @@
 
 <p>En este documento lo que hacemos es analizar la serie de tiempo del IMAE (Indicador Mensual de Actividad Económica), que es un indicador económico sintético, construido a partir de otros indicadores individuales combinados, derivados de distintos sectores de actividad económica, como agropecuario, minería, manufactura, energía, salud, finanzas, etc. El IMAE es un indicador de corto plazo reportado mensualmente. Se basa en estadísticas y métodos contables. El IMAE es un índice de Laspeyres mensual con base 100 en el año 2016; indica la actividad económica con una frecuencia mensual a precios constantes de 2016. Para calcular el IMAE, vemos el valor agregado a precios básicos de cada una de las actividades económicas, agregando los impuestos netos de subsidios a los productos, utilizando las ponderaciones de las cuentas nacionales base 2016. La razón de usar indicadores mensuales es ver el valor agregado de las industrias y de los impuestos netos de subsidios sobre los productos. La publicación del IMAE se hace a los 60 días de que termina el mes.</p>
 
-
+            <img 
+                src="../images/Imagen75.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+     
         <h2>Metodologia</h2>
 
 <p>PreProcesamiento de Datos: Los datos que tenemos los obtuvimos de la p´agina del Banco Central Del Uruguay. Los datos van desde Enero de 2016
@@ -39,29 +45,83 @@ el desv´ıo est´andar 5.89. El rango intercuart´ılico vale 8.10</p>
 
  <p>Se aplicó la transformación logarítmica a la serie para homogeneizar la varianza y linealizar la tendencia, logrando reducir la varianza de 34.71899 a 0.0033, sin cambios visibles en la forma del gráfico. Luego se analizaron la FAC y la FACP de la serie original y la logaritmizada, las cuales resultaron iguales. En la FAC se observaron varios rezagos significativos al inicio, con una convergencia lenta hacia cero y algunos rezagos estacionales (24 y 36) significativos. En la FACP, los rezagos hasta el 13 alternan entre significativos y no significativos, y posteriormente permanecen dentro de la banda de confianza. Con base en estos resultados, se concluye que la serie no es estacionaria.</p>    
 
+            <img 
+                src="../images/Imagen76.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+     
         <h3>Tendencia</h3>
 
  <p>En esta sección se analizó la presencia de tendencia en la serie mediante distintos tests estadísticos. Tras confirmarla, se aplicó una diferencia regular para filtrarla y se repitieron los tests sobre la serie diferenciada para verificar su eliminación. El análisis gráfico, junto con la FAC y la FACP de la serie diferenciada, mostró que la tendencia creciente fue efectivamente eliminada.</p>    
 
+            <img 
+                src="../images/Imagen77.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+
+     
 <p>Se aplicó el test de Dickey-Fuller para evaluar la presencia de raíces unitarias y, por tanto, la estacionariedad de la serie. En la serie original, se utilizó el test con tendencia, seleccionando manualmente 6 rezagos para eliminar la autocorrelación de los residuos. Los resultados mostraron que no se rechaza la hipótesis nula, indicando la presencia de raíz unitaria, tendencia estocástica y no estacionariedad, lo cual fue confirmado tanto por el estadístico t como por los estadísticos F asociados a φ₂ y φ₃.</p>
 <p>Al aplicar el test a la serie con diferencia regular, los resultados cambiaron significativamente: se rechazó la hipótesis nula, evidenciando la ausencia de raíz unitaria, la eliminación de la tendencia y la estacionariedad de la serie diferenciada, conclusión respaldada por los estadísticos t y F.</p>
 
 <p>Se realizó un ajuste lineal a la serie original para detectar tendencia, obteniendo un p-valor menor a 0.05 y una pendiente positiva, lo que indica una tendencia creciente. En cambio, al ajustar una recta a la serie con diferencia regular, el p-valor fue mayor a 0.05 y la recta resultó prácticamente horizontal, evidenciando que la tendencia fue eliminada. Se aclara que este procedimiento no constituye una prueba formal de tendencia determinística, sino un método exploratorio para identificar comportamientos crecientes.</p>
 
+              <img 
+                src="../images/Imagen78.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+
+     
 <p>Otro test de tendencia que hice fue el an´alisis del espectro que nos sirve para detectar tendencia, la cual se da cuando la frecuencia cero explica gran parte de la varianza (´area debajo del espectro), que es lo que ocurre en nuestra
 serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro para la serie diferenciada regularmente (imagen derecha), vemos que la frecuencia cero explica muy poco la varianza, lo que es un indicador de que filtramos la tendencia.</p>
 
+            <img 
+                src="../images/Imagen79.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
 
      
         <h3>Estacionalidad</h3>
 
 <p>Se aplicó una diferencia estacional a la serie que ya tenía diferencia regular para reducir la estacionalidad, evaluando el resultado con distintos métodos. Al comparar los espectros, los picos en las frecuencias 2 y 4 —indicativos de estacionalidad— desaparecen tras la diferencia estacional, mostrando una reducción importante, aunque no total, de este componente.</p>
+                      <img 
+                src="../images/Imagen80.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+     
 <p>Además, la FAC de la serie con solo diferencia regular presentaba rezagos significativos en múltiplos de 6, señal clara de estacionalidad. Estos rezagos y su patrón desaparecen al aplicar tanto la diferencia regular como la estacional, confirmando que la estacionalidad fue en gran medida filtrada.</p>
+
+                 <img 
+                src="../images/Imagen81.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
 
 <p>La estacionalidad también se identificó mediante el ggmonthplot. En la serie con solo diferencia regular se observó un patrón mensual claro y repetitivo: valores bajos en enero, altos en mayo, octubre, noviembre y diciembre, y medias mensuales distintas, lo que confirma un comportamiento estacional anual. En cambio, en la serie con diferencia regular y estacional, estos patrones desaparecen y las medias mensuales se vuelven similares.</p>
 
+                 <img 
+                src="../images/Imagen82.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+     
 <p>Finalmente, se utilizó el test KPSS para verificar la estacionariedad. En la serie original se rechazó la estacionariedad (p < 0.05), mientras que en la serie con diferencia regular, y también con diferencia regular y estacional, no se rechazó la hipótesis nula (p ≥ 0.05), confirmando que las transformaciones lograron una serie estacionaria.</p>
 
      
@@ -82,7 +142,12 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
     <p>Para el modelo seleccionado y el modelo ajustado por outliers, se analizaron la FAC y la FACP de los residuos, observándose que los rezagos se mantienen dentro de los intervalos de confianza, lo que indica incorrelación. Aunque en el modelo ajustado apareció un rezago aislado (rezago 3) aparentemente significativo, no se consideró relevante al confirmarse la incorrelación mediante pruebas formales.</p>
     <p>Posteriormente, el test de Ljung-Box arrojó p-valores mayores a 0.05 en ambos modelos, por lo que no se rechazó la hipótesis nula, concluyéndose que los residuos son incorrelacionados.</p> 
 
-
+                 <img 
+                src="../images/Imagen83.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
      
        <h3>Normalidad de los residuos</h3>
 
@@ -91,7 +156,12 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
 <p>Para el modelo ajustado por outliers, todos los tests (Shapiro y Jarque-Bera, global, simetría y curtosis) dieron p > 0.05, indicando que los residuos siguen una distribución normal.</p>
 <p>En conclusión, ajustar los outliers solucionó los problemas de normalidad en los residuos.</p>
 
-     
+                      <img 
+                src="../images/Imagen84.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
        <h3>Homoscedasticidad de los residuo</h3>
  
@@ -99,7 +169,12 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
 <p>Para el modelo seleccionado, p = 0.6093, y para el modelo ajustado por outliers, p = 0.7384; en ambos casos no se rechazó Ho, indicando varianza constante.</p>
 <p>Además, la FAC y FACP de los residuos al cuadrado mostraron que la mayoría de los rezagos no son significativos en ambos modelos, lo que refuerza la posible homoscedasticidad.</p>
 
-
+                 <img 
+                src="../images/Imagen85.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
  
       <h2>Outliers</h2>
@@ -108,12 +183,26 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
  <p>Al incorporar los outliers en el modelo inicial, se detectó que algunos coeficientes (ma2 y sma1) no eran significativos. Se ajustó el modelo a un SARIMA(0,1,1)(0,1,1), verificando nuevamente los residuos: se cumplían incorrelación y homoscedasticidad, pero no la normalidad, la cual se logró tras un segundo ajuste por outliers. En este modelo final, todos los coeficientes resultaron significativos.</p>
  <p>Finalmente, comparando criterios de selección (AIC, AICc, BIC), se concluyó que este modelo ajustado por outliers era el más adecuado y se continuó el análisis con él.</p>
 
+                  <img 
+                src="../images/Imagen86.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
  
       <h2>Prediccion</h2>
 
 <p>Se realizó una predicción a 10 meses del IMAE, desde marzo de 2025 hasta enero de 2026. Para esto, se definió un horizonte de predicción de 10 meses y se generó la matriz newxreg1 con los efectos de los outliers futuros, detectados previamente con tso. Esta matriz incluye los valores esperados de los outliers para los periodos de predicción (t+1 hasta t+h) y se utilizó como variable explicativa en la función forecast del modelo ajustado por outliers para obtener las predicciones futuras.</p>
 
+                  <img 
+                src="../images/Imagen87.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+ 
  <p>Para obtener la tasa de crecimiento interanual para los valores de 2025, seguimos usando los valores predichos para 2025 y los compararemos con su correspondiente valor de 2024 a traves de la siguiente formula:</p>
 
 <p>Tasa de crecimiento interanual: \( \left(\frac{V_t}{V_{t-12}} - 1 \right)*100  \)   </p>
@@ -121,7 +210,13 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
 <p>Fuimos alicando esa formula para los valores predichos que van desde abril de 2025 hasta diciembre de 2026 con los valores
 reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre de 2025.</p>
 
-
+                  <img 
+                src="../images/Imagen88.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+ 
 <p>Luego para Tasa promedio anual de crecimiento IMAE 2025 respecto a 2024 la formula es</p>
 
 <p>Tasa de crecimiento anual promedio: \( \left(\frac{\bar{V_{2025}}}{\bar{V_{2024}}} - 1 \right)*100  \)   </p>
@@ -135,10 +230,23 @@ reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre d
  
 <p>Se dividió la serie del IMAE en conjunto de entrenamiento (train) y conjunto de prueba (test). Se usaron 99 observaciones (01/01/2016 a 01/03/2024) para entrenar el modelo y 12 observaciones (01/03/2024 a 01/03/2025) para evaluar su rendimiento dentro de la muestra.</p>
 <p>La predicción dentro de la muestra mostró resultados similares a los valores reales, con pequeñas variaciones. La mayoría de los valores observados se mantuvo dentro de la banda de confianza, aunque al inicio el modelo tuvo un peor desempeño, bordeando la banda de confianza.</p>
-
+                  <img 
+                src="../images/Imagen89.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+ 
 
 <p>Podemos comparar ambos valores, reales vs predichos dentro de la muestra con la siguiente tabla</p>
+                  <img 
+                src="../images/Imagen90.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
+ 
 <p>O podemos evaluar la calidad de la prediccion con distintas metricas:</p>
  <ul>
     <li><strong>ME:</strong> Error medio, casi sin sesgo, aunque ligeramente sobreestima.</li>
@@ -151,7 +259,12 @@ reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre d
     <li><strong>Theil’s U:</strong> Compara con un modelo naive; el modelo ajustado es mejor que predecir simplemente el último valor.</li>
   </ul>
 
- 
+                   <img 
+                src="../images/Imagen91.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
 
  
       <h2>Conclusiones Finales:</h2>
