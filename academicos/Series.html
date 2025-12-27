@@ -68,26 +68,97 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
      
         <h2>Eleccion de Modelo Posible</h2>
 
-        <h3>Diagnostico y Re-Diagnostico:</h3>
+<p>A partir de la FAC y FACP de la serie (con diferencia regular y estacional), se propuso inicialmente un modelo SARIMA(0,1,2)(0,1,1). La parte regular se justificó por la presencia de dos rezagos significativos en la FAC (q = 2), ausencia de rezagos AR (p = 0) y una diferencia regular (d = 1). En la parte estacional, la significancia del rezago 12 indicó un MA estacional de orden 1 (Q = 1), sin evidencia de AR estacional (P = 0), y se aplicó una diferencia estacional (D = 1).</p>  
+<p>Al estimar el modelo, se observó que al usar la serie logaritmizada los coeficientes no resultaban significativos, mientras que con la serie original sí lo eran, por lo que se decidió descartar el logaritmo. En el modelo final, los coeficientes ma1, ma2 y sma1 resultaron significativos.</p>  
+<p>En el análisis de residuos se cumplieron los supuestos de incorrelación y homocedasticidad, pero no el de normalidad. Para corregirlo, se ajustó el modelo considerando valores atípicos, detectados mediante la función tso del paquete tsoutliers, incorporando estos efectos como regresores externos y reestimando el modelo SARIMA.</p>     
 
+     
+        <h3>Diagnostico y Re-Diagnostico:</h3>
+<p>Vamos a mostrar el diagn´ostico de los residuos que hicimos para el modelo original y el re-diagn´ostico que hicimos para el modelo ajustado por los outliers, para ver que mejoro</p>
+
+    
         <h3>Incorrelacion de los residuos:</h3>
 
+    <p>Para el modelo seleccionado y el modelo ajustado por outliers, se analizaron la FAC y la FACP de los residuos, observándose que los rezagos se mantienen dentro de los intervalos de confianza, lo que indica incorrelación. Aunque en el modelo ajustado apareció un rezago aislado (rezago 3) aparentemente significativo, no se consideró relevante al confirmarse la incorrelación mediante pruebas formales.</p>
+    <p>Posteriormente, el test de Ljung-Box arrojó p-valores mayores a 0.05 en ambos modelos, por lo que no se rechazó la hipótesis nula, concluyéndose que los residuos son incorrelacionados.</p> 
+
+
+     
        <h3>Normalidad de los residuos</h3>
 
+<p>Se evaluó la normalidad de los residuos de ambos modelos mediante QQ-plot y los tests de Shapiro y Jarque-Bera.</p>
+<p>Para el modelo seleccionado, los residuos no siguen una distribución normal: Shapiro p = 0.004268 (<0.05), Jarque-Bera global p < 0.05, y el test de curtosis también rechazó la normalidad. Solo el test de asimetría no mostró problemas (p = 0.2303).</p>
+<p>Para el modelo ajustado por outliers, todos los tests (Shapiro y Jarque-Bera, global, simetría y curtosis) dieron p > 0.05, indicando que los residuos siguen una distribución normal.</p>
+<p>En conclusión, ajustar los outliers solucionó los problemas de normalidad en los residuos.</p>
+
+     
+
        <h3>Homoscedasticidad de los residuo</h3>
+ 
+<p>Se verificó la homoscedasticidad de los residuos calculando los residuos al cuadrado y aplicando el test de Ljung-Box, contrastando: Ho) residuos homoscedásticos vs H1) heteroscedásticos.</p>
+<p>Para el modelo seleccionado, p = 0.6093, y para el modelo ajustado por outliers, p = 0.7384; en ambos casos no se rechazó Ho, indicando varianza constante.</p>
+<p>Además, la FAC y FACP de los residuos al cuadrado mostraron que la mayoría de los rezagos no son significativos en ambos modelos, lo que refuerza la posible homoscedasticidad.</p>
 
 
+
+ 
       <h2>Outliers</h2>
 
+ <p>Se comparó la serie original con la serie ajustada por outliers, destacando un outlier en abril de 2020, correspondiente al inicio de la emergencia sanitaria por COVID-19, con un efecto transitorio (TC) que disminuyó gradualmente hasta 2022, reflejando la estabilización económica.</p>
+ <p>Al incorporar los outliers en el modelo inicial, se detectó que algunos coeficientes (ma2 y sma1) no eran significativos. Se ajustó el modelo a un SARIMA(0,1,1)(0,1,1), verificando nuevamente los residuos: se cumplían incorrelación y homoscedasticidad, pero no la normalidad, la cual se logró tras un segundo ajuste por outliers. En este modelo final, todos los coeficientes resultaron significativos.</p>
+ <p>Finalmente, comparando criterios de selección (AIC, AICc, BIC), se concluyó que este modelo ajustado por outliers era el más adecuado y se continuó el análisis con él.</p>
 
+
+ 
       <h2>Prediccion</h2>
 
+<p>Se realizó una predicción a 10 meses del IMAE, desde marzo de 2025 hasta enero de 2026. Para esto, se definió un horizonte de predicción de 10 meses y se generó la matriz newxreg1 con los efectos de los outliers futuros, detectados previamente con tso. Esta matriz incluye los valores esperados de los outliers para los periodos de predicción (t+1 hasta t+h) y se utilizó como variable explicativa en la función forecast del modelo ajustado por outliers para obtener las predicciones futuras.</p>
+
+ <p>Para obtener la tasa de crecimiento interanual para los valores de 2025, seguimos usando los valores predichos para 2025 y los compararemos con su correspondiente valor de 2024 a traves de la siguiente formula:</p>
+
+<p>Tasa de crecimiento interanual: \( \left(\frac{V_t}{V_{t-12}} - 1 \right)*100  \)   </p>
+
+<p>Fuimos alicando esa formula para los valores predichos que van desde abril de 2025 hasta diciembre de 2026 con los valores
+reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre de 2025.</p>
+
+
+<p>Luego para Tasa promedio anual de crecimiento IMAE 2025 respecto a 2024 la formula es</p>
+
+<p>Tasa de crecimiento anual promedio: \( \left(\frac{\bar{V_{2025}}}{\bar{V_{2024}}} - 1 \right)*100  \)   </p>
+
+<p>y al aplicar obtenemos el valor de 0.64%. El crecimiento del IMAE para 2025 sera de 0.64%.</p>
+
+
+
+ 
       <h3>Validacion de las Predicciones:</h3>
+ 
+<p>Se dividió la serie del IMAE en conjunto de entrenamiento (train) y conjunto de prueba (test). Se usaron 99 observaciones (01/01/2016 a 01/03/2024) para entrenar el modelo y 12 observaciones (01/03/2024 a 01/03/2025) para evaluar su rendimiento dentro de la muestra.</p>
+<p>La predicción dentro de la muestra mostró resultados similares a los valores reales, con pequeñas variaciones. La mayoría de los valores observados se mantuvo dentro de la banda de confianza, aunque al inicio el modelo tuvo un peor desempeño, bordeando la banda de confianza.</p>
 
 
+<p>Podemos comparar ambos valores, reales vs predichos dentro de la muestra con la siguiente tabla</p>
+
+<p>O podemos evaluar la calidad de la prediccion con distintas metricas:</p>
+ <ul>
+    <li><strong>ME:</strong> Error medio, casi sin sesgo, aunque ligeramente sobreestima.</li>
+    <li><strong>RMSE:</strong> Raíz del error cuadrático medio, indica mayor precisión en test.</li>
+    <li><strong>MAE:</strong> Error absoluto medio, valores similares en train y test.</li>
+    <li><strong>MPE:</strong> Error porcentual medio, casi sin sesgo porcentual.</li>
+    <li><strong>MAPE:</strong> Error porcentual absoluto medio, muy bajo, indicando un buen ajuste.</li>
+    <li><strong>MASE:</strong> Error absoluto medio escalado, mejor que un modelo random walk.</li>
+    <li><strong>ACF1:</strong> Autocorrelación del primer rezago en residuos, ligera en test.</li>
+    <li><strong>Theil’s U:</strong> Compara con un modelo naive; el modelo ajustado es mejor que predecir simplemente el último valor.</li>
+  </ul>
+
+ 
+
+ 
       <h2>Conclusiones Finales:</h2>
-     
+<p>Tras seguir la metodología del informe, se concluye que el modelo obtenido, aunque no perfecto, está bien seleccionado y tiene buena capacidad predictiva, según los parámetros de error evaluados. Los tests de tendencia y estacionalidad fueron clave para mejorar el modelo, así como la consideración de outliers que podrían afectar su rendimiento. Se observó que la transformación logarítmica no fue muy efectiva. Además, se resalta que el trabajo con series de tiempo no es automático: requiere iterar técnicas, verificar supuestos y evaluar el desempeño continuamente, en un proceso de aprendizaje y mejora continua.</p>
+
+
+ 
     </section>
-    
   </body>
 </html>      
