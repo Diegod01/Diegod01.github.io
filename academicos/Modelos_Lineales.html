@@ -231,6 +231,15 @@ Ingresos_i =\;& \beta_0
                 class="img-proyecto"
                 width="450"
             >
+
+                 <img 
+                src="../images/Imagen59.png"
+                alt="Título"
+                class="img-proyecto"
+                width="450"
+            >
+
+     
 <p>Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de Ingresos entre segmentos. Los resultados se resumen mediante letras asignadas a cada segmento, donde segmentos que comparten al menos una letra no presentan diferencias significativas en sus ingresos promedio.</p>
 <p>Por ejemplo, los segmentos Corporativo y Multinacional comparten la letra "a", por lo que no difieren significativamente en sus ingresos medios. Start-up y Particular comparten las letras "b" y "c", y tampoco se diferencian entre sí. En cambio, PYME, que sólo tiene la letra "c", forma un grupo distinto al de Corporativo y Multinacional, pero se solapa parcialmente con Start-up y Particular. El segmento Pública, identificado únicamente con la letra "b", se diferencia de PYME y de los segmentos del grupo "a", pero no de Start-up y Particular. Finalmente, Premium, que tiene las letras "a" y "c", se solapa parcialmente con Corporativo, Multinacional, Start-up y PYME.</p>
 <p>Este análisis permite visualizar cómo se agrupan los segmentos en función de los ingresos y respalda el uso de la variable Segmento como factor explicativo dentro del modelo.</p>
@@ -240,13 +249,7 @@ Ingresos_i =\;& \beta_0
 
           <h3>Homocedasticidad</h3>
 
-                        <img 
-                src="../images/Imagen59.png"
-                alt="Título"
-                class="img-proyecto"
-                width="450"
-            >
-
+     <p>Tras ajustar el modelo final con Ventas_Q1 y Segmento como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales de la regresión lineal múltiple, prestando especial atención a la homocedasticidad y a la normalidad de los residuos.</p>
 
                         <img 
                 src="../images/Imagen60.png"
@@ -254,14 +257,15 @@ Ingresos_i =\;& \beta_0
                 class="img-proyecto"
                 width="450"
             >
-
+     <p>En primer lugar, se extrajeron los residuos del modelo (residuos, residuos estandarizados yresiduos studentizados) y se construyó un gráfico de residuos studentizados externos frente alos valores predichos. Este gráfico permitió identificar una cierta tendencia en la dispersiónde los puntos, lo que podría indicar la presencia de problemas de heterocedasticidad en elmodelo</p>
                         <img 
                 src="../images/Imagen61.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
-      
+
+      <p>Para evaluar formalmente la homocedasticidad, se aplicó el test de Breusch-Pagan, que con-trasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante.En el modelo original, el estadístico BP tuvo un valor de 12.72 con un p-valor de aproximada-mente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no serechaza la hipótesis de homocedasticidad, aunque el resultado es dudoso y cercano a la regiónde rechazo, lo que motiva explorar posibles transformaciones.Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variabledependiente (Ingresos) como a la variable predictora Ventas_Q1, con el objetivo de estabilizarla varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal conlog(Ingresos) como variable dependiente y log(Ventas_Q1) junto con Segmento como variablesexplicativas</p>
                   <img 
                 src="../images/Imagen62.png"
                 alt="Título"
@@ -269,6 +273,11 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
+     <p>El análisis de residuos sobre este modelo transformado muestra una clara mejora en la disper-sión de los residuos, y el test de Breusch-Pagan resultó en un p-valor de 0.91. Esto indica que,tras la transformación logarítmica, no existe evidencia de heteroscedasticidad, confirmandoque la varianza de los errores puede considerarse constante.</p>
+
+
+        <h2>Nuevo Modelo</h2>
+     
                         <img 
                 src="../images/Imagen63.png"
                 alt="Título"
@@ -276,7 +285,29 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
+<p>Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a SegmentoStart-up y SegmentoPremium, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y permite explicar la relación entre los Ingresos y las dimensiones representadas por Ventas_Q1, con mayor estabilidad que el modelo sin transformar.</p>
 
+<p>Para una mejor comprensión del modelo ajustado, es importante interpretar los coeficientes estimados. Dado que se trata de un modelo logarítmico en ambas variables numéricas, la interpretación es proporcional.</p>
+
+<p>El intercepto estimado es aproximadamente -3.99. Este valor representa el logaritmo de los ingresos esperados para el segmento de referencia, que en este modelo es Corporativo, cuando la longitud es de 1 unidad. Aunque este valor no tiene una interpretación práctica directa, es necesario para definir la función del modelo.</p>
+
+<p>El coeficiente de la variable log(Ventas_Q1) es 3.04. Esto implica que, manteniendo constante el segmento, un aumento del 1 % en la longitud se asocia con un aumento aproximado del 3.04 % en los ingresos. Este tipo de interpretación es común en modelos log-log y representa una elasticidad.</p>
+
+<p>Los coeficientes asociados a los diferentes Segmentos indican cuánto varían los ingresos promedio respecto al segmento de referencia (Corporativo), considerando la misma longitud. Por ejemplo:</p>
+
+<p>El coeficiente de PYME es aproximadamente -0.25, lo que implica que, para una misma longitud, un registro del segmento PYME tiene ingresos cerca de un 25 % menores que los del segmento Corporativo.</p>
+
+<p>El coeficiente de Multinacional es cercano a -0.98, indicando que sus ingresos promedio son aproximadamente un 98 % menores que los del segmento Corporativo de igual longitud.</p>
+
+<p>El segmento Pública tiene un coeficiente similar, con ingresos alrededor de un 99 % menores.</p>
+
+<p>Por otro lado, los coeficientes de Start-up y Premium no resultaron estadísticamente significativos, lo que sugiere que no hay diferencias claras respecto a Corporativo al controlar por la longitud.</p>
+
+<p>Estas interpretaciones permiten entender no solo la influencia de la longitud sobre los ingresos, sino también cómo varía esta relación según el segmento. En conjunto, el modelo ofrece un ajuste adecuado y coherente con el comportamiento esperado de las variables analizadas.</p>
+
+
+<h3>Nuevo Modelo</h3>
+     
                         <img 
                 src="../images/Imagen64.png"
                 alt="Título"
