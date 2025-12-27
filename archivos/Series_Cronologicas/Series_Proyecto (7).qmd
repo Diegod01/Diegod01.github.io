@@ -9,7 +9,7 @@ execute:
   warning: false
   message: false
   results: false
-  output: false
+  output: true
   fig-show: "hide"
 ---
 
@@ -21,9 +21,7 @@ En este documento lo que hacemos es analizar la serie de tiempo del IMAE siguien
 
 En este documento lo que hacemo es analizar la serie de tiempo de el IMAE (Indicador Mensual de Actividad Economica), que es un indicador economico sintetico, construido a partir de otros indicadores individuales combinados derivados de distintos sectores de actividad economica, como Agropecuario, Minería, Manufactura, Energía, Salud, Finanzas, etc. El IMAE es un indicador de corto plazo reportado mensualmente. Se basa en estadisticas y metodos contables. El IMAE es un índice de Laspeyres mensual con base 100 en el año 2016, indica la actividad económica con una frecuencia mensual a precios constantes de 2016. Para calcular el IMAE vemos el valor agregado a precios básicos de cada una de las actividades económicas agregando los impuestos netos de subsidios a los productos, utilizando las ponderaciones de las cuentas nacionales base 2016. La razon de usar indicadores mensuales es para ver el valor agregado de las industrias y de los impuestos netos de subsidios sobre los productos. La publicacion del IMAE se hace a los 60 días de que termina el mes.
 
-Fuente de contexto sobre el IMAE.
-https://www.bcu.gub.uy/Estadisticas-e-Indicadores/Documents/Metodolog%C3%ADa%20IMAE.pdf
-
+Fuente de contexto sobre el IMAE. https://www.bcu.gub.uy/Estadisticas-e-Indicadores/Documents/Metodolog%C3%ADa%20IMAE.pdf
 
 ```{r}
 # Librerias
@@ -71,7 +69,7 @@ library(trend)
 ```{r}
 # Datos
 # Eliminamos las ultimas 4 filas que no contenian datos relativos a la serie, sino otros valores.
-datos <- read_excel(here("Datos de Anexo I Series IMAE, IVF base 2016100 al 30052025.xlsx")) %>% slice(1:(n() - 4))
+datos <- read_excel(here("archivos", "Series_Cronologicas", "Datos de Anexo I Series IMAE, IVF base 2016100 al 30052025 (4).xlsx")) %>% slice(1:(n() - 4))
 
 # Ver los datos
 head(datos)
@@ -83,7 +81,7 @@ str(datos)
 
 # No hay datos nulos
 sum(is.na(datos)) 
-
+here()
 ```
 
 ```{r}
@@ -232,14 +230,14 @@ summary(test1)
 
 
 ```
-Para ver la significacion de cada lag miro el p-valor 
 
--2.462 es el valor t.
-2.2091 es el F del phi2, que testeaba raiz unitaria y tendencia.
+Para ver la significacion de cada lag miro el p-valor
+
+-2.462 es el valor t. 2.2091 es el F del phi2, que testeaba raiz unitaria y tendencia.
 
 Para el phi3 miro el 3.1001, el phi3 me testea tendencia igual cero, hay raiz unitaria y puede existir constante. Como es el caso de mi serie. Esto porque 3.1001 es menor que todos los valores asociados a phi3 para todos los niveles de significacion. Luego 2.2091 testea la existencia de raiz unitaria y de tendencia, en este este valor es menor que todos los valores asociados a phi2 para distintos niveles de significacion, lo que indica que hay raiz unitaria.
 
-Otra prueba que podemos hacer es un ajuste lineal a la serie para detectar tendencia. En el summary de esta prueba, vemos que el p-valor es menor a 0.05, por lo que hay una tendencia. Tambien podemos verlo en la recta de regresion que tiene una pendiente positiva, lo que es indicio de una tendencia creciente en la serie. 
+Otra prueba que podemos hacer es un ajuste lineal a la serie para detectar tendencia. En el summary de esta prueba, vemos que el p-valor es menor a 0.05, por lo que hay una tendencia. Tambien podemos verlo en la recta de regresion que tiene una pendiente positiva, lo que es indicio de una tendencia creciente en la serie.
 
 Es importante aclarar que esto NO es una prueba de tendencia deterministica, solo es una forma de detectar un comportamiento creciente en la serie.
 
@@ -317,26 +315,16 @@ plot(test2)
 # phi3  8.43  6.49  5.47
 # En este caso Rechazo Ho, no existen raices unitarias, por lo que la serie es estacionaria.
 ```
-Para ver la significacion de cada lag miro el p-valor 
 
--9.9732 es el valor t.
-33.1553 es el F del phi2, que testeaba raiz unitaria y tendencia.
+Para ver la significacion de cada lag miro el p-valor
+
+-9.9732 es el valor t. 33.1553 es el F del phi2, que testeaba raiz unitaria y tendencia.
 
 Para el phi3 miro el 49.733 , el phi3 me testea tendencia igual cero, hay raiz unitaria y puede existir constante. Dado que 49.733 es mayor que todos los valores asociados a phi3 para todos los niveles de significacion, es un indicador de que no hay raiz unitaria ni tendencia distinta de cero, por lo que la serie seria estacionaria.
 
-
-Luego 33.1553  testea la existencia de raiz unitaria y de tendencia, en este este valor es mayor que todos los valores asociados a phi2 para distintos niveles de significacion, lo que indica que NO hay raiz unitaria.
-
-
-
-
-
-
-
+Luego 33.1553 testea la existencia de raiz unitaria y de tendencia, en este este valor es mayor que todos los valores asociados a phi2 para distintos niveles de significacion, lo que indica que NO hay raiz unitaria.
 
 Otra prueba que podemos hacer es un ajuste lineal a la serie para detectar tendencia. En el summary de esta prueba, vemos que el p-valor es menor a 0.05, por lo que hay una tendencia. Tambien podemos verlo en la recta de regresion que tiene una pendiente positiva, lo que es indicio de una tendencia creciente en la serie.
-
-
 
 Volvemos a realizar el ajuste de una recta de regresion, en este caso el p-valor que obtenemos es mayor a 0.05, por lo que es un indicador de no tendencia. En el grafico se ve que la recta se mantiene horizontal y la tendencia se ha filtrado.
 
@@ -519,8 +507,6 @@ Planteamos nuestro modelo y revisamos la significancia de los coeficientes, en e
 
 Observamos que el coeficiente asociado los dos coeficientes asociados al MA son significativos minimamente, el coeficiente sma1 es muy significativo.
 
-
-
 # Diagnostico:
 
 En esta parte primero obtuvimos los residuos y los residuos estandarizados del modelo, realizamos un grafico para ambos residuos.
@@ -619,7 +605,7 @@ JarqueBera.test(residuos) # JarqueBera
 
 Finalmente hicimos verificamos si se cumplia la Homocedasticidad (varianza constante) de los residuos. Donde nuestra hipotesis nula es que los residuos tienen varianza constante y nuestra hipotesis alternativa es que los residuos tienen varianza no constante. Para esto usamos la funcion ArchTest de la libreria FinTS, obteniendo un p valor de 0.8215, por lo que como este valor es superior a un nivel de significacion alfa de 5%, no rechazamos Ho y los residuos tienen una varianza constante.
 
-Finalmente testeamos la homoscedasticidad (varianza constante) de los residuos, donde la 
+Finalmente testeamos la homoscedasticidad (varianza constante) de los residuos, donde la
 
 ```{r}
 # Probar homoscedasticidad con residuos al cuadrado.
@@ -685,8 +671,6 @@ xreg1 <- outliers.effects(outliers1$outliers, length((im_ts)))
 ```
 
 Para dar un poco de contexto, este outlier ocurre en Abril de 2020, que fue el punto donde inicio la emergencia sanitaria de Covid-19, lo que tuvo un efecto importante en la economía, y por lo tanto en el IMAE. Podemos observar en el gráfico que este outlier tuvo un efecto del tipo TC (Transitory Change), esto nos indica que la pandemia tuvo un efecto bastante fuerte en la serie del IMAE, pero vemos que fue desapareciendo poco a poco a lo largo de los años el efecto de este outlier, lo que coincide con que la economía se fue estabilizando con el paso de los años, hasta volver al valor en el que se encontraba en aproximadamente 2022, como se ve en el gráfico para el caso del IMAE.
-
-
 
 ```{r}
 modelo1_nuevo <- Arima(y = im_ts, # Datos para estimar
@@ -913,7 +897,6 @@ autoplot(predicciones) +
 
 ```
 
-
 ```{r}
 # VER CRECIMIENTO DEL IMAE A FUTURO
 
@@ -934,8 +917,6 @@ valor_futuro <- as.numeric(tail(predicciones$mean, 1)) #
 crecimiento_esperado <- ((valor_futuro / valor_actual) - 1) * 100
 crecimiento_esperado
 ```
-
-
 
 ```{r}
 # Función para calcular la tasa de crecimiento interanual de una predicción
@@ -1007,12 +988,7 @@ cat("Tasa promedio anual de crecimiento IMAE 2025 respecto a 2024:", round(tasa_
 
 ```
 
-
-
-
-
-Nuestros datos los datos del IMAE van desde el 01/01/2016 hasta el 01/03/2025. Vamos a predecir 10 meses adelante, hasta el 01/01/2026. 
-
+Nuestros datos los datos del IMAE van desde el 01/01/2016 hasta el 01/03/2025. Vamos a predecir 10 meses adelante, hasta el 01/01/2026.
 
 ```{r}
 
@@ -1021,22 +997,15 @@ Nuestros datos los datos del IMAE van desde el 01/01/2016 hasta el 01/03/2025. V
 
 ```
 
-
-
 # Validacion de las Predicciones:
 
 Dividimos la serie de datos en dos conjuntos, el conjunto de train (entrenamiento) y el conjunto de test (testeo). El conjunto de train se usa para ajustar el modelo, el conjunto de tets se usa para evaluar el rendimiento predicitivo del modelo. Al particionar asi,conocemos lo que ha ocurrido pero el modelo no lo conoce, por lo que al predecir fuera de la muestra, veremos que tan bien lo ha hecho. En la parte de entrenamiento el modelo aprende la estructura (tendencia, estacionalidad, shocks), de la serie. Y en la parte de test predice sobre los datos nuevos que no conoce. Cuando haga la prediccion, compararemos lo que predijo con lo que realmente ocurrio, calculando métricas de error como RMSE, MAE, MAPE, etc. Se analiza si el patrón de error no deja autocorrelación en los residuos.
 
 En nuestro caso usamos dummies (xreg) para representar eventos anómalos del pasado. Al validar, esos eventos no se repiten en el futuro, por lo que esos regresores valen cero.
 
+Nuestra serie del IMAE tiene 111 observaciones, vamos a usar 99 observaciones para el conjunto de entrenamiento, que sera lo que ocurrio desde 01/01/2016 hasta 01/03/2024. Luego usaremos 12 observaciones para evaluar el rendimiento de nuestro modelo dentro de la muestra, donde el modelo hara una prediccion de lo que ocurrio desde el 01/03/2024 hasta el 01/03/2025, donde nosotros ya sabemos lo que ocurrio y podremos comparar el rendimiento de nuestro modelo.
 
-Nuestra serie del IMAE tiene 111 observaciones, vamos a usar 
-99 observaciones para el conjunto de entrenamiento, que sera lo que ocurrio desde  01/01/2016 hasta  01/03/2024.   Luego usaremos 12 observaciones para evaluar el rendimiento de nuestro modelo dentro de la muestra, donde el modelo hara una prediccion de lo que ocurrio desde el 01/03/2024 hasta el 01/03/2025, donde nosotros ya sabemos lo que ocurrio y podremos comparar el rendimiento de nuestro modelo.
-
-
-
-
-datos los datos del IMAE van desde el 01/01/2016 hasta el 01/03/2025. Vamos a predecir 10 meses adelante, hasta el 01/01/2026. 
+datos los datos del IMAE van desde el 01/01/2016 hasta el 01/03/2025. Vamos a predecir 10 meses adelante, hasta el 01/01/2026.
 
 ```{r}
 # Prediccion dentro de la muestra
@@ -1125,17 +1094,11 @@ print(comparacion)
 
 ```
 
-
 ```{r}
 t(comparacion)
 ```
 
-
-
-
-
 Evaluamos la calidad de la prediccion con distintas metricas, una es que lo observados se mantienen dentro del intervalo de confianza, es lo que esperaba, es un buen indicador de capacidad predictiva.
-
 
 ```{r}
 accuracy(pred_test, test_fd)
@@ -1143,24 +1106,12 @@ accuracy(pred_test, test_fd)
 
 ME es el promedio de los errores, casi sin sesgo, pero sobreestima un poco. RMSE es la raíz cuadrada del error cuadrático medio, el modelo es más preciso en test. MAE es el promedio del valor absoluto del error, en test y train son muy similares. MPE es el promedio de los errores porcentuales, casi sin sesgo porcentual. MAPE es el promedio del valor absoluto de errores porcentuales, es muy bajo, indica un buen ajuste. MASE es el Error absoluto medio escalado que es un MAE comparado con el MAE de un modelo random walk, con los valores vemos que es mejor que ese modelo. ACF1 es la autocorrelación del primer rezago en residuos, hay algo de autocorrelación en test. Theil’s U Compara el modelo con naive, el modelo es mejor que una predicción naive. Un naive es un modelo que predice lo mismo que el ultimo valor.
 
-
-
-
 # Conclusiones Finales:
 
 Luego de haber seguido la metodología que usamos en el informe, el modelo que obtuve, si bien no es perfecto, considero que está bien seleccionado y que tiene una capacidad predictiva buena, basándome en los parámetros de error predictivo que vimos. Considero que los test para detectar la tendencia y la estacionalidad fuero claves para mejorar a nuestro modelo, junto con la consideración de outliers que podían afectar el rendimiento del mismo. Se observó que la aplicación del logaritmo no fue muy eficiente, y me pareció relevante destacar que el trabajar con series de tiempo no es una actividad automática, sino que se debe iterar una y otra vez las técnicas que usamos, verificando el rendimiento de lo que planteamos y el cumplimiento de determinados supuestos, para ir obteniendo mejores resultados, es un proceso de aprendizaje y mejoramiento continuo.
 
-
-
-
-
 # ANEXO
-
 
 Justificacion) Mejor usar modelos mas parsimoniosos (menor cantidad de parametros posibles)
 
-
-
-
 Probar el rjdemetra. que da un modelo que compite con el nuestro. Para evaluarlo en prediccion contra el modelo que yo use
-
