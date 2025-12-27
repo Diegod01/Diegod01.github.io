@@ -176,14 +176,22 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
-
+    <p>El análisis de varianza (ANOVA) realizado sobre el modelo final permitió concluir que tanto Ventas_Q1 como Segmento son significativos para explicar los ingresos. El efecto de Ventas_Q1 es especialmente fuerte (F = 1203.165, p < 2.2e-16), mientras que Segmento también resulta significativo (F = 32.559, p < 2.2e-16), aunque su impacto es relativamente menor.</p>
+    <p>En la tabla, el p-valor aparece como 0 debido a que, al ser extremadamente pequeño, R no lo representa con mayor precisión.</p>
                         <img 
                 src="../images/Imagen58.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
+<p>Se realizó un análisis post-hoc utilizando el test de comparaciones múltiples de Tukey para comparar las medias de Ingresos entre segmentos. Los resultados se resumen mediante letras asignadas a cada segmento, donde segmentos que comparten al menos una letra no presentan diferencias significativas en sus ingresos promedio.</p>
+<p>Por ejemplo, los segmentos Corporativo y Multinacional comparten la letra "a", por lo que no difieren significativamente en sus ingresos medios. Start-up y Particular comparten las letras "b" y "c", y tampoco se diferencian entre sí. En cambio, PYME, que sólo tiene la letra "c", forma un grupo distinto al de Corporativo y Multinacional, pero se solapa parcialmente con Start-up y Particular. El segmento Pública, identificado únicamente con la letra "b", se diferencia de PYME y de los segmentos del grupo "a", pero no de Start-up y Particular. Finalmente, Premium, que tiene las letras "a" y "c", se solapa parcialmente con Corporativo, Multinacional, Start-up y PYME.</p>
+<p>Este análisis permite visualizar cómo se agrupan los segmentos en función de los ingresos y respalda el uso de la variable Segmento como factor explicativo dentro del modelo.</p>
+     
 
+     <h2>Etapa de Diagnostico</h2>
+
+          <h2>Homocedasticidad</h2>
 
                         <img 
                 src="../images/Imagen59.png"
