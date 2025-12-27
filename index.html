@@ -8,6 +8,33 @@
 </head>
 <body>
 
+    <div class="lang-switch">
+  <button onclick="traducir('en')">English</button>
+  <button onclick="traducir('es')">Español</button>
+</div>
+
+<div id="google_translate_element" style="display:none"></div>
+
+<script>
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement({
+    pageLanguage: 'es',
+    includedLanguages: 'en,es',
+    autoDisplay: false
+  }, 'google_translate_element');
+}
+
+function traducir(lang) {
+  const combo = document.querySelector(".goog-te-combo");
+  if (combo) {
+    combo.value = lang;
+    combo.dispatchEvent(new Event("change"));
+  }
+}
+</script>
+
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
     <header>
         <h1>Mi Portafolio de Ciencia de Datos</h1>
     </header>
