@@ -28,3 +28,25 @@ a:hover {
     text-decoration: underline;
 }
 
+
+.lang-switch {
+    text-align: right;
+    margin: 15px 25px 0 0;
+}
+
+.lang-switch button {
+    background: #222;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-left: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.lang-switch button:hover {
+    background: #444;
+}
+
+
