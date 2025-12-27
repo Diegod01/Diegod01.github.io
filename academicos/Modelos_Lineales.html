@@ -65,11 +65,8 @@
       <p>1)  **Análisis exploratorio y preparación de los datos** </p>
       <p>Se realizó una descripción inicial de las variables, incluyendo la conversión de la variable Ingresos al tipo numérico. Se revisó la presencia de valores faltantes, se exploraron las distribuciones de cada variable y se analizaron relaciones bivariadas entre las dimensiones y el peso mediante gráficos de dispersión y medidas de correlación</p>
 
-      <p>2.  **Especificación del modelo de regresión lineal múltiple** </p>
-      <p>Se consideró inicialmente el siguiente modelo general: </p>
-     
-      <p>El modelo de regresión lineal propuesto es el siguiente:</p>
-     
+      <p>2)  **Especificación del modelo de regresión lineal múltiple** </p>
+      <p>Se consideró inicialmente el siguiente modelo general: </p>     
 \[
 \begin{aligned}
 Ingresos_i =\;& \beta_0 
@@ -82,6 +79,44 @@ Ingresos_i =\;& \beta_0
 + \epsilon_i
 \end{aligned}
 \]     
+
+    <p>3)  **Inferencia sobre parámetros y significancia de variables**</p>
+    <p>Se interpretaron los coeficientes $\beta$, evaluando su significancia individual mediante pruebas t, y del modelo completo mediante pruebas F. Se usó el resumen del modelo (`summary()`) y hotras funciones complementarias para este análisis. Detectamos multicolinealidad d  e este modelo a traves de VIF y tomamos las medidas correspondientes.</p>
+
+    <p>4)  **Evaluación de supuestos del modelo clásico de regresión**</p>
+    <p>Se verificaron los supuestos fundamentales del modelo de regresión lineal:</p>
+
+    <p>-   **Linealidad**: mediante gráficos de residuos vs. predichos y residuos parciales.</p>
+
+    <p>-   **Independencia de las observaciones**: asumida por diseño del estudio.</p>
+
+    <p>-   **Homoscedasticidad**: evaluada con gráficos y el test de Breusch-Pagan.</p>
+
+    <p>-   **Normalidad de los residuos**: evaluada con gráficos QQ-plot y pruebas estadísticas.</p>
+
+    <p>5)  **Diagnóstico de observaciones influyentes y outliers** Se detectaron posibles observaciones atípicas o influyentes mediante:</p>
+
+    <p>-   Residuos studentizados.</p>
+ 
+    <p>-   Distancia de Cook.</p>
+
+    <p>-   Se considera la influencia de estos atipicos</p>
+
+
+     
+    <p>6)  **Evaluación del desempeño predictivo del modelo**</p>
+    <p> Finalmente, se evaluó la capacidad predictiva del modelo utilizando métricas adicionales (como el RMSE) y validación cruzada, evitando confiar únicamente en el $R^2$.<p>
+      
+     
+     <h2>Análisis exploratorio y preparación de los datos:</h2>
+
+     <p>Para comenzar el análisis, se realizó una etapa de limpieza y transformación de los datos, orientada a garantizar la correcta interpretación de las variables y el cumplimiento de los supuestos del modelo lineal.<p>
+
+     <p>En primer lugar, se corrigió el tipo de dato de dos variables fundamentales. La variable Ingresos, que representa el peso del pez en gramos, se encontraba almacenada como texto (`character`). Dado que será la variable dependiente en el modelo de regresión, es indispensable que sea cuantitativa. Por ello, se convirtió a numérica. La variable Segmento representa una categoría nominal, por lo que se transformó a un objeto de clase `factor`, permitiendo su correcta inclusión como variable cualitativa en el modelo.<p>
+
+
+
+
      
     </section>
   </body>
