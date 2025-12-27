@@ -147,6 +147,8 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
+          <p>A continuación, se ajustó un modelo de regresión lineal múltiple tomando como variables predictoras Ventas_Q1, Costes, Margen y Segmento. Los resultados del modelo indican que las variables Costes y Margen no presentan significancia estadística individual, lo que sugiere que su exclusión podría mejorar la parsimonia del modelo sin comprometer sustancialmente su capacidad explicativa.</p>
+
                         <img 
                 src="../images/Imagen56.png"
                 alt="Título"
@@ -155,6 +157,18 @@ Ingresos_i =\;& \beta_0
             >
 
 
+
+     <p>Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemasde colinealidad. El VIF de Costes resultó mayor a 5, lo que refuerza la decisión de eliminarladel modelo. A continuación, se ajustó un nuevo modelo excluyendo esta variable, y se volvióa examinar la significancia de Margen, que seguía presentando un p-valor superior a 0.05.Por esta razón, también se eliminó Margen, obteniendo un modelo más simple que incluyeúnicamente Ventas_Q1 y Segmento como predictores.El VIF (Variance Inflation Factor) es una medida utilizada en modelos lineales para detectarcolinealidad entre las variables explicativas. Su interpretación es la siguiente:
+      
+      <p>- VIF = 1 → no hay colinealidad1</p>  
+
+      <p>- 1 < VIF < 5   → colinealidad moderada </p>
+         
+      <p>VIF > 5 → colinealidad alta.</p> 
+       
+    </p>En modelos lineales, se recomienda eliminar variables con VIF > 5 para mejorar la estabilidadde los coeficientes estimados</p>
+
+   <p>La evaluación del modelo reducido muestra que Ventas_Q1 es altamente significativa, con un impacto claro sobre los ingresos. En cuanto a la variable Segmento, algunos coeficientes asociados a sus niveles presentan p-valores más altos, por lo que se complementó el análisis con un test ANOVA para evaluar la significancia conjunta de esta variable categórica.</p>
                         <img 
                 src="../images/Imagen57.png"
                 alt="Título"
