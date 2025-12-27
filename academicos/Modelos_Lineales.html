@@ -421,24 +421,60 @@ En el modelo log-transformado (modelo 3), el gráfico de predichos versus residu
 
 <h2>Predicción</h2>
 
+ <p>Se evaluó la capacidad predictiva del modelo dividiendo los datos en un conjunto de entrenamiento (80 % de los datos) y un conjunto de prueba (20 % restante). A partir de esta partición, se calcularon distintas métricas de desempeño para cuantificar la precisión de las predicciones y la capacidad generalizadora del modelo.</p>    
+
+  <p>RMSE = 42.2358525</p> 
+  <p>MAE = 29.5571571</p> 
+  <p>\(R^2\) = 0.9825771</p> 
 
 
+<p>MAE mide el promedio del valor absoluto de los errores de prediccion.</p>
+
+<p>RMSE es la raíz cuadrada del promedio del error cuadrático.</p>
+
+<p>R2 es la proporción de la varianza total explicada por el modelo</p>
      
+<p>Para evaluar el rendimiento predictivo visualmente</p>     
                         <img 
                 src="../images/Imagen74.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
+     
+<p>De todas formas solo como posible respuesta a la curiosidad del lector, probamos quitar los outliers y vimos que el supuesto de normalidad se cumplía y que el rendimiento predictivo del modelo era mejor dado que obtuvimos RMSE de 0.0866, MAE de 0.0717 y R\^2 de 0.9937</p>
+
+
+
+     
+<h2>Resultados</h2>
+
+<p>Luego de un análisis exploratorio y diagnóstico detallado, se construyó un modelo de regresión lineal múltiple con transformación logarítmica, donde la variable dependiente es log(Ingresos) y las variables predictoras son log(Ventas_Q1) y Segmento. Esta transformación permitió estabilizar la varianza de los errores y mejorar la linealidad del modelo.</p>
+
+<p>Los resultados del modelo indican que la variable log(Ventas_Q1) tiene un efecto altamente significativo sobre los ingresos. Esto es coherente con lo esperado, ya que la longitud está directamente relacionada con el tamaño y, por ende, con los ingresos asociados. El coeficiente de esta variable es positivo, lo que implica que, a medida que aumenta la longitud, también aumentan los ingresos, de manera proporcional (dado el modelo en escala logarítmica).</p>
+
+<p>En cuanto a la variable categórica Segmento, el análisis muestra que también es significativa en su conjunto, aunque no todos sus niveles lo son individualmente. En particular, algunos segmentos como PYME y Corporativo presentan coeficientes claramente distintos del segmento de referencia (Particular), mientras que otros como Start-up y Premium no mostraron significancia estadística. Esto sugiere que la relación entre longitud e ingresos varía levemente entre segmentos, pero no en todos los casos.</p>
+
+<p>El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heterocedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.</p>
+
+<p>Finalmente, se identificaron algunas observaciones con leve influencia sobre el modelo, pero ninguna que comprometa su validez general. Se concluye que el modelo ajustado es adecuado para describir y predecir los ingresos en función de la longitud y el segmento, dentro del marco de los datos disponibles.</p>
+
+
       
+ 
+<h2>Conclusiones</h2>
 
+<p>El objetivo de este trabajo fue modelar y predecir los ingresos a partir de características representadas por la longitud de los registros, utilizando herramientas de regresión lineal múltiple. A lo largo del análisis, se aplicaron técnicas de limpieza y transformación de datos, selección de variables, verificación de supuestos y diagnóstico del modelo.</p>
 
+<p>Se concluyó que la variable más influyente en la predicción de los ingresos es la longitud de los registros, específicamente la medida Ventas_Q1. Además, la inclusión de la variable Segmento permitió capturar diferencias estructurales entre grupos, aunque no todos los segmentos mostraron efectos significativos.</p>
 
-      
-      
+<p>Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heterocedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Ingresos y Ventas_Q1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.</p>
 
+<p>El análisis de observaciones influyentes identificó algunos casos puntuales con mayor impacto en los coeficientes estimados. No obstante, se demostró que el modelo es robusto frente a estas observaciones, ya que los parámetros estimados no varían sustancialmente.</p>
 
-      Imagen
+<p>En suma, el modelo final en escala logarítmica se considera adecuado para describir y predecir los ingresos en función de la longitud y el segmento. Ofrece interpretaciones coherentes, cumple con los supuestos básicos del modelo lineal clásico y demuestra buen rendimiento predictivo en el marco de los datos analizados.</p>
+
+  
 
      
     </section>
