@@ -16,16 +16,56 @@
       
         <h2>Resumen Ejecutivo:</h2>
 
+<p>Se analiza la serie de tiempo del IMAE siguiendo una metodología de descripción, identificación, estimación, validación y predicción, con el objetivo de identificar un modelo adecuado para realizar pronósticos. Se aplican diversas técnicas, como la transformación logarítmica, la identificación y filtrado de tendencia y estacionalidad, y el análisis de la FAC y FACP para proponer un modelo SARIMA. Sin embargo, la transformación logarítmica redujo la significancia de los coeficientes, por lo que se descartó ese enfoque.</p>
+<p>Posteriormente, se evaluaron los residuos del modelo, detectándose incumplimientos de algunos supuestos, lo que llevó al ajuste de valores atípicos. Aunque esto mejoró el comportamiento de los residuos, generó nuevos problemas de significancia en los coeficientes, por lo que se consideró un modelo alternativo, repitiendo el proceso de validación y ajuste. Finalmente, se realizó una predicción a 8 meses, evaluando el desempeño predictivo dentro y fuera de la muestra mediante una partición train-test, y se obtuvieron las métricas de predicción correspondientes.</p>
+     
+
         <h2>Antecedentes sobre la variable:</h2>
+
+<p>En este documento lo que hacemos es analizar la serie de tiempo del IMAE (Indicador Mensual de Actividad Económica), que es un indicador económico sintético, construido a partir de otros indicadores individuales combinados, derivados de distintos sectores de actividad económica, como agropecuario, minería, manufactura, energía, salud, finanzas, etc. El IMAE es un indicador de corto plazo reportado mensualmente. Se basa en estadísticas y métodos contables. El IMAE es un índice de Laspeyres mensual con base 100 en el año 2016; indica la actividad económica con una frecuencia mensual a precios constantes de 2016. Para calcular el IMAE, vemos el valor agregado a precios básicos de cada una de las actividades económicas, agregando los impuestos netos de subsidios a los productos, utilizando las ponderaciones de las cuentas nacionales base 2016. La razón de usar indicadores mensuales es ver el valor agregado de las industrias y de los impuestos netos de subsidios sobre los productos. La publicación del IMAE se hace a los 60 días de que termina el mes.</p>
+
 
         <h2>Metodologia</h2>
 
+<p>PreProcesamiento de Datos: Los datos que tenemos los obtuvimos de la p´agina del Banco Central Del Uruguay. Los datos van desde Enero de 2016
+hasta Marzo de 2025 y son mensuales, mostrando el valor del IMAE para el primer d´ıa de cada mes. No hay valores nulos en nuestros datos. Convertimos los datos a tipo ts (time series) para poder operar mejor con ellos en el R.<p>
+
+<p>Medidas de Resumen de la serie: El m´ınimo valor que toma la serie es 85.03 y se alcanza en Abril de 2020, el m´aximo valor que toma la serie es 116.73
+y se alcanza en octubre de 2024. El primer cuartil vale 99.10, el tercero vale 107.21 y la mediana vale 102.36. La media vale 102.76. La varianza es 34.71 y
+el desv´ıo est´andar 5.89. El rango intercuart´ılico vale 8.10</p>
+     
+
         <h3>Logaritmo</h3>
+
+ <p>Se aplicó la transformación logarítmica a la serie para homogeneizar la varianza y linealizar la tendencia, logrando reducir la varianza de 34.71899 a 0.0033, sin cambios visibles en la forma del gráfico. Luego se analizaron la FAC y la FACP de la serie original y la logaritmizada, las cuales resultaron iguales. En la FAC se observaron varios rezagos significativos al inicio, con una convergencia lenta hacia cero y algunos rezagos estacionales (24 y 36) significativos. En la FACP, los rezagos hasta el 13 alternan entre significativos y no significativos, y posteriormente permanecen dentro de la banda de confianza. Con base en estos resultados, se concluye que la serie no es estacionaria.</p>    
 
         <h3>Tendencia</h3>
 
+ <p>En esta sección se analizó la presencia de tendencia en la serie mediante distintos tests estadísticos. Tras confirmarla, se aplicó una diferencia regular para filtrarla y se repitieron los tests sobre la serie diferenciada para verificar su eliminación. El análisis gráfico, junto con la FAC y la FACP de la serie diferenciada, mostró que la tendencia creciente fue efectivamente eliminada.</p>    
+
+<p>Se aplicó el test de Dickey-Fuller para evaluar la presencia de raíces unitarias y, por tanto, la estacionariedad de la serie. En la serie original, se utilizó el test con tendencia, seleccionando manualmente 6 rezagos para eliminar la autocorrelación de los residuos. Los resultados mostraron que no se rechaza la hipótesis nula, indicando la presencia de raíz unitaria, tendencia estocástica y no estacionariedad, lo cual fue confirmado tanto por el estadístico t como por los estadísticos F asociados a φ₂ y φ₃.</p>
+<p>Al aplicar el test a la serie con diferencia regular, los resultados cambiaron significativamente: se rechazó la hipótesis nula, evidenciando la ausencia de raíz unitaria, la eliminación de la tendencia y la estacionariedad de la serie diferenciada, conclusión respaldada por los estadísticos t y F.</p>
+
+<p>Se realizó un ajuste lineal a la serie original para detectar tendencia, obteniendo un p-valor menor a 0.05 y una pendiente positiva, lo que indica una tendencia creciente. En cambio, al ajustar una recta a la serie con diferencia regular, el p-valor fue mayor a 0.05 y la recta resultó prácticamente horizontal, evidenciando que la tendencia fue eliminada. Se aclara que este procedimiento no constituye una prueba formal de tendencia determinística, sino un método exploratorio para identificar comportamientos crecientes.</p>
+
+<p>Otro test de tendencia que hice fue el an´alisis del espectro que nos sirve para detectar tendencia, la cual se da cuando la frecuencia cero explica gran parte de la varianza (´area debajo del espectro), que es lo que ocurre en nuestra
+serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro para la serie diferenciada regularmente (imagen derecha), vemos que la frecuencia cero explica muy poco la varianza, lo que es un indicador de que filtramos la tendencia.</p>
+
+
+
+     
         <h3>Estacionalidad</h3>
-      
+
+<p>Se aplicó una diferencia estacional a la serie que ya tenía diferencia regular para reducir la estacionalidad, evaluando el resultado con distintos métodos. Al comparar los espectros, los picos en las frecuencias 2 y 4 —indicativos de estacionalidad— desaparecen tras la diferencia estacional, mostrando una reducción importante, aunque no total, de este componente.</p>
+<p>Además, la FAC de la serie con solo diferencia regular presentaba rezagos significativos en múltiplos de 6, señal clara de estacionalidad. Estos rezagos y su patrón desaparecen al aplicar tanto la diferencia regular como la estacional, confirmando que la estacionalidad fue en gran medida filtrada.</p>
+
+
+<p>La estacionalidad también se identificó mediante el ggmonthplot. En la serie con solo diferencia regular se observó un patrón mensual claro y repetitivo: valores bajos en enero, altos en mayo, octubre, noviembre y diciembre, y medias mensuales distintas, lo que confirma un comportamiento estacional anual. En cambio, en la serie con diferencia regular y estacional, estos patrones desaparecen y las medias mensuales se vuelven similares.</p>
+
+<p>Finalmente, se utilizó el test KPSS para verificar la estacionariedad. En la serie original se rechazó la estacionariedad (p < 0.05), mientras que en la serie con diferencia regular, y también con diferencia regular y estacional, no se rechazó la hipótesis nula (p ≥ 0.05), confirmando que las transformaciones lograron una serie estacionaria.</p>
+
+     
+     
         <h2>Eleccion de Modelo Posible</h2>
 
         <h3>Diagnostico y Re-Diagnostico:</h3>
