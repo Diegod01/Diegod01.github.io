@@ -100,33 +100,60 @@ Ingresos_i =\;& \beta_0
 \end{aligned}
 \]     
 
-    <p>3)  **Inferencia sobre parámetros y significancia de variables**</p>
-    <p>Se interpretaron los coeficientes $\beta$, evaluando su significancia individual mediante pruebas t, y del modelo completo mediante pruebas F. Se usó el resumen del modelo (`summary()`) y hotras funciones complementarias para este análisis. Detectamos multicolinealidad d  e este modelo a traves de VIF y tomamos las medidas correspondientes.</p>
+<ol start="3">
+  <li>
+    <strong>Inferencia sobre parámetros y significancia de variables</strong>
+    <p>
+      Se interpretaron los coeficientes &beta;, evaluando su significancia individual
+      mediante pruebas t, y la del modelo completo mediante pruebas F. Se utilizó el
+      resumen del modelo (<em>summary()</em>) y otras funciones complementarias para
+      este análisis. Se detectó multicolinealidad en el modelo a través del VIF y se
+      tomaron las medidas correspondientes.
+    </p>
+  </li>
 
-    <p>4)  **Evaluación de supuestos del modelo clásico de regresión**</p>
+  <li>
+    <strong>Evaluación de supuestos del modelo clásico de regresión</strong>
     <p>Se verificaron los supuestos fundamentales del modelo de regresión lineal:</p>
+    <ul>
+      <li>
+        <strong>Linealidad</strong>: mediante gráficos de residuos vs. valores predichos
+        y residuos parciales.
+      </li>
+      <li>
+        <strong>Independencia de las observaciones</strong>: asumida por diseño del estudio.
+      </li>
+      <li>
+        <strong>Homoscedasticidad</strong>: evaluada con gráficos y el test de Breusch-Pagan.
+      </li>
+      <li>
+        <strong>Normalidad de los residuos</strong>: evaluada con gráficos QQ-plot y pruebas
+        estadísticas.
+      </li>
+    </ul>
+  </li>
 
-    <p>-   **Linealidad**: mediante gráficos de residuos vs. predichos y residuos parciales.</p>
+  <li>
+    <strong>Diagnóstico de observaciones influyentes y outliers</strong>
+    <p>
+      Se detectaron posibles observaciones atípicas o influyentes mediante:
+    </p>
+    <ul>
+      <li>Residuos studentizados.</li>
+      <li>Distancia de Cook.</li>
+      <li>Evaluación de la influencia de estos valores atípicos.</li>
+    </ul>
+  </li>
 
-    <p>-   **Independencia de las observaciones**: asumida por diseño del estudio.</p>
-
-    <p>-   **Homoscedasticidad**: evaluada con gráficos y el test de Breusch-Pagan.</p>
-
-    <p>-   **Normalidad de los residuos**: evaluada con gráficos QQ-plot y pruebas estadísticas.</p>
-
-    <p>5)  **Diagnóstico de observaciones influyentes y outliers** Se detectaron posibles observaciones atípicas o influyentes mediante:</p>
-
-    <p>-   Residuos studentizados.</p>
- 
-    <p>-   Distancia de Cook.</p>
-
-    <p>-   Se considera la influencia de estos atipicos</p>
-
-
-     
-    <p>6)  **Evaluación del desempeño predictivo del modelo**</p>
-    <p> Finalmente, se evaluó la capacidad predictiva del modelo utilizando métricas adicionales (como el RMSE) y validación cruzada, evitando confiar únicamente en el $R^2$.<p>
-      
+  <li>
+    <strong>Evaluación del desempeño predictivo del modelo</strong>
+    <p>
+      Finalmente, se evaluó la capacidad predictiva del modelo utilizando métricas
+      adicionales (como el RMSE) y validación cruzada, evitando confiar únicamente
+      en el R<sup>2</sup>.
+    </p>
+  </li>
+</ol>
      
      <h2>Análisis exploratorio y preparación de los datos:</h2>
 
