@@ -306,7 +306,7 @@ Ingresos_i =\;& \beta_0
 <p>Estas interpretaciones permiten entender no solo la influencia de la longitud sobre los ingresos, sino también cómo varía esta relación según el segmento. En conjunto, el modelo ofrece un ajuste adecuado y coherente con el comportamiento esperado de las variables analizadas.</p>
 
 
-<h3>Nuevo Modelo</h3>
+<h3>Letras para el nuevo modelo</h3>
      
                         <img 
                 src="../images/Imagen64.png"
@@ -316,14 +316,30 @@ Ingresos_i =\;& \beta_0
             >
 
 
-                        <img 
+<p>Una vez obtenido el nuevo modelo, se procedió a rehacer la clasificación por letras. Se observaque, a diferencia del análisis anterior, ningún segmento contiene más de una letra; cada unoestá claramente definido dentro de su grupo correspondiente.</p>
+<p>Dado que el modelo ajusta por Ventas_Q1, el método de las letras clasifica cada segmentosuponiendo que todos tienen la misma longitud promedio. Por ello, se elaboró un gráfico debarras que representa los Ingresos promedio esperados, considerando que todos los registros delconjunto de datos tienen la misma longitud promedio. Esta visualización permite comparar demanera directa los segmentos ajustados por longitud, mostrando de forma clara las diferenciasrelativas entre ellos.</p>
+     
+        
+<h3>Calculo del \(R^2\)</h3>
+     
+<p>Se partió del modelo de regresión lineal logarítmico, en el que tanto la variable dependiente (Ingresos) como la variable explicativa (Ventas_Q1) fueron transformadas mediante logaritmo. Al obtener el summary() del modelo, se registró un $R^2$. de 0.9927, un valor muy alto que está sesgado por el uso de la transformación logarítmica y que no es directamente interpretable ni comparable con el $R^2$ del modelo ajustado en la escala original (Ingresos).</p>
+
+<p>Esto ocurre porque el $R^2$ del modelo logarítmico mide la proporción de varianza explicada en la escala logarítmica, no en la escala real de la variable dependiente. Al aplicar la función exponencial a las predicciones del modelo logarítmico para volver a la escala original, el error deja de ser aditivo y se convierte en multiplicativo, lo que modifica la forma en que se mide la varianza explicada.</p>
+
+<p>Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un $R^2$ alternativo, comparando los valores observados de Ingresos con las predicciones retransformadas (exp(predicciones logaritmicas))</p>
+
+<p>Esta versión del $R^2$ refleja la calidad del ajuste en la escala original. En nuestro caso, este $R^2$ alternativo resultó ser 0.9728, indicando un ajuste muy bueno del modelo a los datos originales.</p>
+   
+            <img 
                 src="../images/Imagen65.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
 
-
+<h3>Normalidad de los residuos</h3>
+     
+<p>Para evaluar el cumplimiento del supuesto de normalidad de los errores en el modelo transformado (modelo 3), se construyó un gráfico Q-Q plot a partir de los residuos studentizados externos. En dicho gráfico se observa que los puntos se alinean bastante bien con la línea de referencia, lo que visualmente sugiere un comportamiento cercano a la normalidad. Solo se detectan pequeñas desviaciones en los extremos, lo cual es común y no necesariamente preocupante.</p>
                         <img 
                 src="../images/Imagen66.png"
                 alt="Título"
@@ -332,6 +348,7 @@ Ingresos_i =\;& \beta_0
             >
 
 
+   <p>Tambien hicimos un grafico para comparar la distribucion de los residuos contra la distribucionde una normal estandar. Donde vemos que los residuosse aproximan a una normal.18</p>  
                         <img 
                 src="../images/Imagen67.png"
                 alt="Título"
@@ -339,19 +356,29 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
+ <p>Resaltamos esto porque al hacer los test estadisticos de Kolmogorov-Smirnov, Shapiro-Wilk,y Jarque-Bera, para dos de ellos obtuvimos p valores menores a 0.05 para los ultimos dos,rechazando la normalidad</p>    
                   <img 
                 src="../images/Imagen68.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
-      
+
+ <p>El test de Shapiro-Wilk arrojó un valor W = 0.96776 con un p-valor = 0.0009448, lo que indica que se rechaza la hipótesis nula de normalidad al nivel de significancia del 5%. No obstante, este test suele ser muy sensible a leves desviaciones cuando el tamaño muestral es relativamente grande, como en este caso. Por otro lado, el test de Kolmogorov-Smirnov reportó un estadístico D = 0.05098 con un p-valor = 0.7736 lo que implica que no se rechaza la hipótesis de que los residuos provienen de una distribución normal. El test de Jarque-Bera, que evalúa conjuntamente la simetría y la curtosis de los residuos, arrojó un estadístico JB = 39.26 con un p-valor menor a 0.0001. Esto también sugiere que los residuos no siguen una distribución normal perfecta. Al igual que el test de Shapiro-Wilk, es sensible a pequeñas desviaciones de la normalidad, especialmente cuando la muestra es amplia. Existe cierta inconsistencia entre los resultados: mientras que los tests de Shapiro-Wilk y Jarque-Bera indican una desviación significativa de la normalidad, el test de Kolmogorov-Smirnov no detecta diferencias respecto a la distribución normal. Esto es común en muestras moderadas o grandes, donde pequeños desvíos generan significancia estadística sin implicar una gran desviación visual. </p>
+
+ <p>Consideramos la posibilidad de quitar atipicos para lograr que los residuos del modelo distribuyeran normal, pero tuvimos un problema que fue que detectamos que todos los atipicos eran influyentes, y decidimos seguir la recomendacion de las notas del curso de no eliminar atipicos con el fin de cumplir supuestos, y menos si esos supuestos no son tan importantes como la normalidad. Ademas tenemos 158 observaciones, por lo que podemos considerar que por el TCL, tenemos un comportamiento normal. </p>
+
+     
                   <img 
                 src="../images/Imagen69.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
+
+ <p>Este gráfico tiene en el eje X el índice de observación y en el eje Y los residuos studentizados (t_i). Se usa para detectar observaciones atípicas (outliers). Los residuos studentizados sirven para comparar residuos entre sí, sin importar la escala. Si un residuo studentizado es alto o bajo, indica que esa observación puede ser atipica, estas son las observaciones que se encuentran por encima o por debajo de ±3. </p>
+
+ <p>Este gráfico también tiene el índice de observación en el eje X, y en el eje Y muestra la distancia de Cook de cada observación. Se dibujan barras verticales para cada observación, representando su influencia. La línea roja en 4/n es un umbral, el cual si es superado indica que esa observacion es potencialmente influyente. </p>
 
                         <img 
                 src="../images/Imagen70.png"
@@ -360,14 +387,17 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
+<h3>Linealidad</h3>
 
+ <p>Uno de los supuestos fundamentales del modelo lineal es que exista una relación lineal entre la variable dependiente y las variables independientes. Para evaluar este supuesto, se construyó un gráfico de residuos en función de los valores predichos. En este gráfico, los residuos deberían dispersarse aleatoriamente alrededor de cero, sin formar patrones sistemáticos.</p>    
                         <img 
                 src="../images/Imagen71.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
-
+<p>
+En el modelo log-transformado (modelo 3), el gráfico de predichos versus residuos muestra una dispersión razonablemente homogénea, lo cual es una buena señal. Sin embargo, para explorar más detalladamente la relación entre las variables independientes y la variable respuesta, se utilizó la herramienta de gráficos de residuos parciales (`crPlot`).</p>
 
                         <img 
                 src="../images/Imagen72.png"
@@ -375,16 +405,25 @@ Ingresos_i =\;& \beta_0
                 class="img-proyecto"
                 width="450"
             >
-
-
-                        <img 
+<p>En particular, el gráfico de residuos parciales para log(Ventas_Q1) muestra una tendencia lineal clara, confirmando que esta variable mantiene una relación aproximadamente lineal con la variable dependiente transformada (log(Ingresos)). En contraste, las variables Costes y Margen, que no fueron incluidas en el modelo final por no ser significativas, mostraban patrones menos definidos, lo que refuerza la decisión de haberlas excluido del modelo base.</p>
+ 
+     
+     
+     <img 
                 src="../images/Imagen73.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
+<p>Adicionalmente, se exploró un modelo extendido que incluía términos cuadráticos de Costesy Margen para evaluar la posible presencia de relaciones no lineales. Sin embargo, el ajusteno presentó mejoras sustanciales ni cambios significativos en la dispersión de los residuos (verFigura 10). Por esta razón, se decidió mantener el modelo log-lineal con log(Ventas_Q1) ySegmento como predictores principales.</p>
 
 
+
+<h2>Predicción</h2>
+
+
+
+     
                         <img 
                 src="../images/Imagen74.png"
                 alt="Título"
