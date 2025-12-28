@@ -28,24 +28,34 @@ a:hover {
     text-decoration: underline;
 }
 
-
+/* Selector de idioma */
 .lang-switch {
-    text-align: right;
-    margin: 15px 25px 0 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.lang-switch img {
+  width: 18px;
+  height: 12px;
+  margin-right: 6px;
 }
 
 .lang-switch button {
-    background: #222;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    margin-left: 8px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
+  display: flex;
+  align-items: center;
+  background: #222;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.2s;
 }
 
 .lang-switch button:hover {
-    background: #444;
+  background: #444;
 }
-
