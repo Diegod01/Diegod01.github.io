@@ -1,0 +1,2055 @@
+---
+title: "Tarea Final - Grupo 2"
+author: "Juan Apolo, Alen Cukier, Diego Da Rosa"
+format:
+  pdf:
+    toc: true                 
+    toc-depth: 2             
+    number-sections: true   
+    fig-caption: true        
+    geometry: [margin=2cm, a4paper]
+    tabular: ">{\\raggedright\\arraybackslash}p{2cm}>{\\centering\\arraybackslash}p{2cm}"
+    include-in-header:
+      text: |
+        \usepackage{float}
+        \usepackage{pdflscape}
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+  output: false
+---
+
+\newpage
+
+# Resumen Ejecutivo:
+
+Este trabajo analiza el uso del tiempo y las características sociodemográficas de jóvenes uruguayos que cursan educación secundaria, utilizando datos de la Encuesta de Uso del Tiempo (EUT) 2013. El objetivo principal es identificar perfiles diferenciados de estudiantes según sus actividades cotidianas, entorno familiar y contexto socioeconómico. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.
+
+Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar. Estas evidencias ofrecen insumos valiosos para el diseño de políticas públicas que promuevan la equidad educativa y social.
+
+# Introducción
+
+El presente estudio busca comprender cómo los estudiantes de secundaria en Uruguay organizan su tiempo diario, identificando posibles perfiles según variables personales, familiares y educativas. Se trabaja con datos de la Encuesta de Uso del Tiempo (EUT) 2013, considerando exclusivamente a quienes declararon asistir a educación secundaria.
+
+La estrategia metodológica combina análisis descriptivo con herramientas multivariadas. Inicialmente se realizó una limpieza de la base de datos y un resumen estadístico de las variables clave. Luego, se exploraron asociaciones entre variables mediante análisis bivariado y correlaciones. A partir de allí, se aplicó Análisis de Componentes Principales (PCA) para reducir la dimensionalidad y facilitar la interpretación de patrones complejos.
+
+Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de estudiantes según sus condiciones socioeducativas.
+
+Sobre la base de estas exploraciones, se implementaron distintas técnicas de agrupamiento (clustering), tanto jerárquicas como no jerárquicas, para detectar perfiles homogéneos de estudiantes. Posteriormente, se evaluó el ajuste de los datos a una distribución normal multivariante, aspecto fundamental para la validez de ciertas técnicas estadísticas. Finalmente, se utilizó el análisis discriminante como herramienta de validación para examinar la capacidad predictiva de las variables y consolidar la interpretación de los grupos encontrados.
+
+# Marco Metodológico
+
+Este trabajo emplea un enfoque cuantitativo basado en técnicas multivariadas aplicadas a datos previamente estandarizados. En primer lugar, se utilizó el Análisis de Componentes Principales (PCA), que permitió sintetizar la información de múltiples variables en un número reducido de componentes, facilitando la visualización e interpretación de las relaciones entre ellas.
+
+Para abordar las variables categóricas del estudio, se incorporó el Análisis de Correspondencias. En una primera etapa, se utilizaron gráficos de mosaico para explorar visualmente la dependencia entre pares de variables cualitativas como sexo, años de educación, trabajo remunerado, acceso a tecnologías o servicios, entre otras. Luego, mediante el Análisis de Correspondencias Simple (CA), se estudió la relación entre la edad y el año educativo, obteniendo una representación bidimensional que reveló asociaciones significativas entre ambas variables. Finalmente, el Análisis de Correspondencias Múltiple (MCA), aplicado sobre la tabla disyuntiva y la tabla de Burt, permitió visualizar el posicionamiento relativo de múltiples categorías y su contribución a las dimensiones latentes del espacio factorial.
+
+Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de estudiantes con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.
+
+Dado que muchas técnicas multivariadas presuponen normalidad multivariante, se evaluó esta condición a través de simulaciones, gráficos Q-Q y distancias de Mahalanobis. Finalmente, se aplicó análisis discriminante lineal para validar la segmentación obtenida, evaluando la capacidad de las variables seleccionadas para predecir correctamente la pertenencia a los grupos definidos.
+
+# Datos:
+
+El conjunto de variables disponibles es amplio y permite caracterizar a cada individuo tanto desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) como de su contexto sociodemográfico y familiar.
+
+Se incluyen variables continuas como las horas diarias dedicadas a dormir, estudiar, alimentarse, asearse, realizar tareas domésticas, asistir a consultas médicas o participar en actividades recreativas. También se consideran variables de contexto como la edad del encuestado, el año educativo que cursa, el logaritmo del ingreso mensual del hogar y el promedio de años de educación de los adultos del hogar.
+
+A nivel categórico, hay variables dicotómicas que indican la presencia o ausencia de determinadas condiciones (por ejemplo: si trabaja remuneradamente, si el hogar recibe Asignación Familiar, si tiene computadora o televisión con abono, si vive en Montevideo, etc.). Otras variables permiten identificar la composición del hogar en términos de activos, inactivos y personas con discapacidad.
+
+Este conjunto de variables brinda una visión multidimensional de la situación de los jóvenes, haciendo posible identificar perfiles diferenciados de uso del tiempo y asociarlos a factores sociales y económicos del hogar.
+
+```{r}
+# Cargar librerias a usar
+library(here)
+library(dplyr)
+library(ggplot2)
+library(summarytools)  
+library(corrplot)
+library(knitr)
+library(NbClust)
+library(cluster)       
+library(factoextra)  
+library(dendextend)  
+library(dendextend)
+library(pheatmap)
+library(kableExtra)
+library(nnet)
+library(pROC)
+library(mclust)
+library(tibble)
+library(fpc)
+library(clusterCrit)
+
+
+
+
+```
+
+```{r}
+#| warning: false
+#| output: true
+#| label: tabla1
+
+
+
+# Tabla descriptiva de los datos
+vars <- tibble(
+  Variable = c(
+    "h_dormir", "h_alimentarse", "h_cuipersonal", "h_estudio",
+    "h_domesticas", "h_ocio", "h_medico", "sexo", "edad",
+    "educ_in", "anio_ed", "publ", "trabaja_rem",
+    "hijos", "celular", "log_ing", "AFAM_h", "aniosed_h",
+    "act", "inact", "servdom_pag", "tv", "tv_abon", "compu",
+    "disc_h", "mdeo"
+  ),
+  Descripción = c(
+    "Horas dedicadas a dormir",
+    "Horas dedicadas a alimentarse",
+    "Horas dedicadas al cuidado personal y el aseo",
+    "Horas dedicadas al estudio",
+    "Horas dedicadas a las tareas domésticas",
+    "Horas destinadas a las actividades de recreación y ocio",
+    "Horas destinadas a consultas médicas",
+    "Sexo del encuestado",
+    "Edad del encuestado",
+    "Asistencia a educación preescolar",
+    "Año que cursa en educación secundaria",
+    "Asistencia a centro de educación secundaria público",
+    "Trabajo remunerado",
+    "Tiene hijos",
+    "Tiene celular",
+    "Logaritmo del ingreso mensual del hogar",
+    "El hogar cobra Asignación Familiar",
+    "Promedio de años de educación de los mayores de edad del hogar",
+    "Cantidad de activos económicamente en el hogar",
+    "Cantidad de inactivos económicamente en el hogar",
+    "El hogar paga servicio doméstico a personas que no son del hogar",
+    "Tiene televisor en el hogar",
+    "Tiene TV con servicios de abonado",
+    "Tiene computadora o microcomputador (incluye CEIBAL)",
+    "Cantidad de personas con discapacidad en el hogar",
+    "El hogar reside en Montevideo"
+  ),
+  Valores = c(
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "0 = Mujer ; 1 = Hombre",
+    "Numérico",
+    "0 = No ; 1 = Sí",
+    "1, 2, …, 6",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "Numérico",
+    "0 = No ; 1 = Sí",
+    "Numérico",
+    "Numérico",
+    "Numérico",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "0 = No ; 1 = Sí",
+    "Numérico",
+    "0 = No ; 1 = Sí"
+  )
+)
+
+kable(
+  vars,
+  caption = "Descripción completa de las variables usadas en el análisis",
+  align   = c("l", "l", "l"),
+  booktabs = TRUE
+)
+
+
+
+```
+
+\newpage
+
+# Análisis descriptivo:
+
+Nuestro objetivo es caracterizar la distribución de las principales variables de interés horas dedicadas a dormir, estudiar, ocio, tareas domésticas y otras actividades así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior.
+
+```{r}
+#| warning: false
+#| output: false
+
+# Datos
+datos <- read.table(here("archivos", "Multivariado", "EUT2013_estudiantessecundaria.txt"),
+                    header = TRUE,
+                    sep = ",",
+                    stringsAsFactors = FALSE)
+datos
+```
+
+## Pre-Procesamiento:
+
+Antes de realizar análisis multivariados, llevamos a cabo una etapa de limpieza y preparación de los datos. En primer lugar, identificamos valores faltantes en la base. La única variable con datos nulos es aniosed_h (años de educación promedio de los adultos del hogar), con un único valor faltante. Ese caso fue eliminado para evitar distorsiones en los cálculos posteriores, dado que representa menos del 0.1% del total de observaciones.
+
+```{r}
+#| warning: false
+#| output: false
+# Tenemos 1 valor nulo en la columna aniosed_h           
+print(colSums(is.na(datos)))
+
+
+# Filtrar las filas donde aniosed_h NO es NA
+datos <- datos[!is.na(datos$aniosed_h), ]
+sum(is.na(datos)) # eliminamos los nulos
+```
+
+```{r}
+#| warning: false
+#| output: false
+
+library(dplyr)
+library(skimr)
+
+cuantitativas <- dplyr::select(datos,
+                                h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+                                h_domesticas, h_ocio, h_medico, edad, anio_ed,
+                                log_ing, aniosed_h, act, inact, disc_h)
+
+summary(cuantitativas)
+
+skimmed <- skim_without_charts(cuantitativas)
+
+
+```
+
+creamos un nuevo objeto llamado `cuantitativas` que solo contiene las variables numéricas que nos interesan estudiar: horas dedicadas a dormir (`h_dormir`), alimentarse, cuidado personal, estudio, tareas domésticas, ocio y atención médica; junto con datos sociodemográficos como edad, año que cursa (`anio_ed`), logaritmo del ingreso del hogar (`log_ing`), años de escolaridad del hogar (`aniosed_h`), y marcadores de actividad (`act`, `inact`) y discapacidad (`disc_h`). De esta forma aislamos en un solo data frame todas las medidas cuantitativas relevantes para nuestro análisis descriptivo, facilitando los siguientes pasos de resumen y visualización.
+
+A continuación, utilizamos `summary(cuantitativas)` para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los estudiantes duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de estudio oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos jóvenes dedicaron tiempo a citas médicas en la jornada registrada
+
+## Visualización univariada
+
+La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los estudiantes.
+
+```{r}
+#| label: fig-dormir
+#| fig-cap: "Distribución de las horas dedicadas a dormir"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+ggplot(datos, aes(x = h_dormir)) +
+  geom_histogram(binwidth = 0.5, fill = "#FDBAA3", color = "black") +
+  labs(x = "Horas", y = "Frecuencia")
+
+
+```
+
+Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado que podrían ser útiles para estudios posteriores sobre salud y bienestar.
+
+```{r}
+#| label: fig-estudio-sexo
+#| fig-cap: "Horas de estudio según sexo"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+
+ggplot(datos, aes(x = as.factor(sexo), y = h_estudio, fill = as.factor(sexo))) +
+  geom_boxplot() +
+  scale_fill_manual(
+    values = c("0" = "#FDBAA3",  # Mujer (rosado)
+               "1" = "#90CAF9")  # Hombre (celeste)
+  ) +
+  labs(title = "Horas de estudio según sexo",
+       x = "Sexo (0=Mujer, 1=Hombre)",
+       y = "Horas de estudio") +
+  guides(fill = "none") 
+
+```
+
+También se analizó el tiempo de estudio en relación al sexo mediante un diagrama de caja (Figura 2).Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta, eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo al estudio, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.
+
+```{r}
+#| label: fig-horas-actividad
+#| fig-cap: "Distribución de horas según tipo de actividad"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(dplyr)
+library(tidyr)
+
+cuanti_long <- cuantitativas %>%
+  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio, h_domesticas,
+                h_ocio, h_medico) %>%
+  pivot_longer(cols = everything(), names_to = "actividad", values_to = "horas")
+
+ggplot(cuanti_long, aes(x = horas)) +
+  geom_histogram(binwidth = 0.5, fill = "#FDBAA3", color = "black") +
+  facet_wrap(~actividad, scales = "free_x") +
+  labs(title = "Distribución de horas según tipo de actividad",
+       x = "Horas", y = "Frecuencia")
+
+
+```
+
+Para ampliar el análisis, se graficó la distribución de horas dedicadas a todas las actividades del tiempo libre y obligaciones básicas (Figura 3). El histograma facetado permite ver que dormir y estudiar tienen distribuciones más concentradas, mientras que actividades como tareas médicas o tareas domésticas tienden a presentar mayor asimetría y frecuencias bajas, con muchos estudiantes que no realizaron esas actividades durante el día observado.
+
+```{r}
+#| label: tab-promedios-sexo
+#| tbl-cap: "Promedios y medianas de variables seleccionadas según sexo"
+#| warning: false
+#| results: asis
+#| output: true
+#| fig-pos: "H"
+
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+cuantitativas_con_sexo <- datos %>%
+  dplyr::select(sexo, h_dormir, h_estudio, h_ocio, log_ing) %>%
+  group_by(sexo) %>%
+  summarise(across(everything(), list(media = mean, mediana = median), na.rm = TRUE))
+
+cuantitativas_con_sexo %>%
+  kbl(digits = 2, align = "c", booktabs = TRUE) %>%
+  kable_styling(latex_options = c("striped", "hold_position", "scale_down"))
+
+
+
+```
+
+Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, estudio, ocio e ingreso del hogar. La tabla correspondiente se muestra en la tabla 2. Los resultados indican que las mujeres duermen y estudian más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.
+
+\newpage
+
+## Análisis de asociación entre variables
+
+Para comprender cómo se relacionan las distintas dimensiones del uso del tiempo y los factores sociodemográficos, se calculó la matriz de correlación entre las variables cuantitativas seleccionadas. En la tabla 3 vermos que se realizó utilizando el coeficiente de correlación de Pearson sobre pares completos de observaciones.
+
+```{r}
+#| label: tab-correlaciones
+#| tbl-cap: "Matriz de correlación entre variables cuantitativas"
+#| warning: false
+#| results: asis
+#| output: true
+#| fig-pos: "H"
+
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Calcular matriz de correlación
+correlaciones <- cor(cuantitativas, use = "complete.obs")
+correlaciones_red <- round(correlaciones, 2)
+
+
+kbl(correlaciones_red, 
+    align = "c") %>%
+  kable_styling(latex_options = c("striped", "hold_position", "scale_down"),
+                full_width = FALSE)
+
+
+
+```
+
+Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la figura 4. En él los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de estudio tienden a estar inversamente correlacionadas con las de sueño (quienes estudian más duermen un poco menos) y positivamente con las de ocio
+
+```{r}
+#| label: fig-correlacion
+#| fig-cap: "Mapa de calor de la matriz de correlación"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(corrplot)
+
+
+corrplot(correlaciones, method = "color", type = "upper", tl.cex = 0.8)
+```
+
+También se exploraron asociaciones específicas. En la Figura 5 se presenta un boxplot que compara las horas dedicadas al estudio según si el estudiante trabaja remuneradamente o no. Se observa una clara diferencia: quienes tienen empleo tienden a estudiar menos horas.
+
+```{r}
+#| label: fig-horas-estudio-trabajo
+#| fig-cap: "Horas de estudio según si trabaja remuneradamente"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+ggplot(datos, aes(x = as.factor(trabaja_rem), y = h_estudio, fill = as.factor(trabaja_rem))) +
+  geom_boxplot() +
+  scale_fill_manual(
+    values = c("0" = "#FDBAA3",  # No trabaja
+               "1" = "#90CAF9")  # Sí trabaja
+  ) +
+  labs(x = "Trabaja remuneradamente (0=No, 1=Sí)",
+       y = "Horas de estudio") +
+  guides(fill = "none")
+
+
+```
+
+```{r}
+#| warning: false
+#| output: false
+# Correlación entre ingreso logarítmico y horas de ocio
+cor(datos$log_ing, datos$h_ocio, use = "complete.obs")
+```
+
+Por último, se observo la asociación entre el ingreso del hogar y el tiempo de ocio. Un coeficiente positivo de 0.0418 que nos indica que los jóvenes de contextos más acomodados tienden a disfrutar de un poco más de tiempo libre, tal vez porque tienen mayor acceso a actividades recreativas pagas o porque su entorno les ofrece más facilidades para el ocio.
+
+\newpage
+
+# Tecnicas de análisis factorial
+
+Para entender mejor la estructura de nuestros datos y reducir la complejidad de la información, aplicamos un Análisis de Componentes Principales (PCA) sobre un conjunto de variables cuantitativas seleccionadas. Estas variables incluían horas dedicadas a distintas actividades como dormir, alimentarse, estudiar, ocio, tareas domésticas, visitas médicas, así como también variables como la edad, el año cursado en educación secundaria, el logaritmo del ingreso mensual del hogar y los años promedio de educación en el hogar.
+
+```{r}
+#| warning: false
+
+library(dplyr)
+library(FactoMineR)
+library(factoextra)
+
+cuanti <- dplyr::select(cuantitativas,
+                        h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+                        h_domesticas, h_ocio, h_medico, edad, anio_ed, log_ing, aniosed_h)
+
+
+
+cuanti
+
+
+```
+
+Antes de aplicar el PCA, las variables fueron estandarizadas (es decir, convertidas a una escala común) para que ninguna dominara el análisis solo por tener un rango mayor. Luego, se ejecutó el PCA, que automáticamente reemplazó los valores faltantes por la media de cada variable
+
+A continuación, visualizamos la disposición de las variables en el espacio de los primeros dos componentes, coloreadas según su contribución. Esto nos permite observar qué variables tienen mayor influencia en la construcción de estos componentes y cómo se relacionan entre sí.
+
+```{r}
+#| label: fig-pca-contrib
+#| fig-cap: "Contribución de las variables a los primeros componentes principales"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+res.pca <- PCA(cuanti, graph = FALSE)
+
+
+fviz_pca_var(res.pca, col.var = "contrib",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FDBAA3"),
+             repel = TRUE)
+```
+
+A partir de la figura 6, observamos agrupamientos entre variables que se comportan de forma similar. Por ejemplo, las horas de estudio y el nivel educativo suelen estar cercanas, indicando una posible asociación. Por otro lado, variables como las horas de dormir o las tareas domésticas se orientan en direcciones opuestas, mostrando que representan dimensiones distintas del uso del tiempo. Los colores más naranjas indican mayor contribución, los colores amarillos indican una contribución intermedia, los colores celestes indican una menor contribución.
+
+También quisimos analizar cómo se distribuyen los individuos en función de los dos primeros componentes, lo que nos ayuda a detectar posibles agrupamientos o patrones generales.
+
+```{r}
+#| label: fig-pca-individuos
+#| fig-cap: "Representación de los individuos en el plano de los dos primeros componentes principales"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+fviz_pca_ind(res.pca,
+             geom.ind = "point",
+             col.ind = "cos2", 
+             gradient.cols = c("#00AFBB", "#E7B800", "#FDBAA3"),
+             repel = TRUE)
+
+
+```
+
+La métrica cos² se usa para evaluar la calidad de la representación de una variable o de un individuo en un componente principal, indica cuánto contribuye un componente a explicar la varianza de una variable. Cuanto más cercano a 1, el vector está casi alineado con el componente, bien representado por ese componente. Cuanto más cercano a 0, el vector forma un ángulo cercano a 90° con el componente, esta mal representado por ese componente. Esta métrica se usa para saber qué variables están bien representadas por los primeros componentes, da la calidad de la representación del individuo sobre el plano definido por los componentes.
+
+En la figura 7, los puntos que están más alejados del centro y con colores más intensos son aquellos que están mejor representados en el plano de los dos primeros componentes. Esto indica que sus perfiles son más extremos o definidos con respecto a las variables incluidas.
+
+```{r}
+#| label: fig-pca-varianza
+#| fig-cap: "Varianza explicada por los componentes principales"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+
+fviz_eig(
+  res.pca,                   
+  addlabels = TRUE,          
+  barfill = "#FDBAA3",         
+  barcolor = "#00AFBB",      
+  linecolor = "black",       
+  title = "Varianza explicada por componentes", 
+  xlab = "Componentes Principales",            
+  ylab = "Porcentaje de varianza explicada"    
+)
+
+
+```
+
+En la figura 8 el Eje X son los componentes principales ordenados del 1 al 10, las dimensiones. El Eje Y es el porcentaje de varianza explicada por cada componente (desde 0% hasta 17.3%). Vemos que el Primer componente (PC1) explica el 17.3% de la varianza. Segundo componente (PC2) explica el 14.3%. Tercer componente (PC3) explica el 12.7%. Los demas componentes subsiguientes van decreciendo en sus porcentajes asociados a explicar la varianza (10.5%, 9.1%, 8.1%, etc.)
+
+```{r}
+#| label: fig-pca-cos2
+#| fig-cap: "Calidad de representación (cos²) de las variables en el plano principal"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+fviz_pca_var(res.pca,
+             col.var = "cos2",
+             gradient.cols = c("#00AFBB", "#E7B800", "#FDBAA3"),
+             repel = TRUE)
+```
+
+Las flechas son las variables, el eje X es la Dimension 1 y el eje Y es la Dimension 2, son los dos primeros componentes principales. La Dimension 1 explica el 17.3% de la varianza total, la dimension 2 explica el 14.3% de la varianza. En conjunto, explican un 31.6% de la varianza total del conjunto de datos. Las flechas mas largas indican que las variables están mejor representadas en el plano de los dos primeros componentes, las flechas mas cercanas al origen indican que las variables no se explican bien en este plano. Las flechas orientadas hacia la derecha indican correlación positiva. Las flechas orientadas hacia la izquierda indican correlación negativa.
+
+Luego los angulos pequeños entre flechas indican que las variables estan positivamente correlacionadas, un angulo recto de 90 grados, indica poca o nula correlación. Luego un angulo obstuso (180) indica correlación negativa.
+
+Luego cos2 da la calidad de representación de cada variable en el plano. El color rojo indica alta calidad de representación, luego el color verde indica una representacion intermedia, y el color violeta indica baja calidad
+
+Algunos ejemplos son que edad, aniosed_h, log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir, h_medico están mal representadas (azules/violetas). edad esta bien representada )roja= porque contribuye a la dimension 1, luego aniosed_h y log_ing estan bien representadas, y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_estudio es bastante perpendicular a la variable edad, por lo que no parecen tener relación directa. Por ultimo h_dormir esta mal representada en este plano.
+
+Luego, exploramos qué variables contribuyen más a cada uno de los componentes. Esto es importante porque nos permite interpretar el significado de cada eje principal del análisis.
+
+```{r}
+#| label: fig-contrib-pc1
+#| fig-cap: "Contribución de las variables al primer componente principal (PC1)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+fviz_contrib(res.pca,           
+             choice = "var",    
+             axes = 1,          
+             top = 10,        
+             fill = "#FDBAA3",  
+             color = "black",   
+             title = "Contribución de variables al PC1")
+
+
+
+
+```
+
+De la figura 10 observamos que el primer componente tiene una fuerte carga de variables relacionadas a la educación (como años de estudio, log_ing y aniosed_h), por lo que podríamos interpretarlo como un eje educativo o socioeconómico.
+
+```{r}
+#| label: fig-contrib-pc2
+#| fig-cap: "Contribución de las variables al segundo componente principal (PC2)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+fviz_contrib(res.pca,            
+             choice = "var",    
+             axes = 2,          
+             top = 10,           
+             fill = "#FDBAA3",  
+             color = "black",   
+             title = "Contribución de variables al PC2")
+
+```
+
+En cambio, el segundo componente está influido por la edad y las actividades domesticas, y en menor medida por las horas de estudio, este eje podría reflejar un perfil de rutina.
+
+Finalmente, obtuvimos los autovalores de los componentes principales, los cuales nos indican cuánta varianza explican. Esto nos ayuda a decidir cuántos componentes retener para el análisis.
+
+```{r}
+#| warning: false
+#| output: false
+eig.val <- get_eigenvalue(res.pca)
+eig.val
+
+
+```
+
+Los autovalores nos muestran que los primeros componentes explican una parte importante de la varianza total del conjunto de datos, lo que justifica el uso de un plano bidimensional para la representación gráfica. Los primeros 5 componentes tienen autovalores \> 1, explican en conjunto el 63.83% de la varianza total.
+
+# Analisis Correspondencia:
+
+El análisis de correspondencias es una técnica estadística que permite explorar la relación entre dos o más variables categóricas. A través de tablas de contingencia y representaciones gráficas como los gráficos mosaico, es posible detectar patrones de asociación entre categorías y comprender cómo se distribuyen las observaciones en función de dichas combinaciones. Esta herramienta resulta especialmente útil en investigaciones sociales, ya que permite visualizar desigualdades, coincidencias o exclusiones en el comportamiento de distintos grupos.
+
+En este trabajo, se construyeron mosaicos para observar cómo varía la distribución de distintas características educativas, sociales y económicas en función del sexo de los estudiantes.
+
+Los gráficos mosaico utilizan colores para mostrar los residuos de Pearson (diferencias entre valores observados y esperados bajo independencia): Azul indica más observaciones de las esperadas, Rojo indica menos observaciones de las esperadas, Gris indica coincidencia con la independencia
+
+```{r}
+#| label: cat-variables
+#| warning: false
+#| output: false
+
+cols <- c("sexo", "edad", "educ_in", "anio_ed", "publ", "trabaja_rem", 
+          "hijos", "celular", "AFAM_h", "servdom_pag", "tv", "tv_abon", 
+          "compu", "mdeo", "disc_h", "act", "inact", "aniosed_h")
+
+datos_cat <- datos %>%
+  dplyr::select(all_of(cols))
+
+
+head(datos_cat)
+
+
+# log_ing    
+# aniosed_h    
+# act
+# inact
+# disc_h     
+
+```
+
+```{r}
+#| label: funcion-tabla-contingencia
+#| warning: false
+#| output: false
+
+
+library(vcd)
+crear_tabla_contingencia <- function(df, var1, var2) {
+  tabla <- with(df, table(
+    setNames(list(df[[var1]], df[[var2]]), c(var1, var2))
+  ))
+  return(tabla)
+}
+
+```
+
+```{r}
+#| label: fig-mosaico-sexo-1
+#| fig-cap: "Gráficos de mosaico entre el sexo y otras variables categóricas (educación inicial, año educativo, tipo de centro, trabajo, hijos, celular)"
+#| warning: false
+#| output: true
+#| fig-width: 12
+#| fig-height: 12
+#| fig-pos: "H"
+
+
+
+library(vcd)
+library(gridExtra)
+library(grid)
+
+# 
+# g1 <- grid.grabExpr(mosaic(crear_tabla_contingencia(datos_cat, "anio_ed", "AFAM_h"), labeling = labeling_values, shade = TRUE))
+# g2 <- grid.grabExpr(mosaic(crear_tabla_contingencia(datos_cat, "publ", "AFAM_h"), labeling = labeling_values, shade = TRUE))
+# g3 <- grid.grabExpr(mosaic(crear_tabla_contingencia(datos_cat, "publ", "servdom_pag"), labeling = labeling_values, shade = TRUE))
+# g4 <- grid.grabExpr(mosaic(crear_tabla_contingencia(datos_cat, "AFAM_h", "mdeo"), labeling = labeling_values, shade = TRUE))
+# 
+# grid.arrange(g1, g2, g3, g4, nrow = 2)#,  width = 12, height = 8)
+
+
+```
+
+```{r}
+#| label: fig-ca-edad-anioed
+#| fig-cap: "Análisis de correspondencias entre edad y año educativo"
+#| warning: false
+#| output: true
+#| results: hide
+#| fig-pos: "H"
+
+
+library(ca)
+
+# Crear tabla de contingencia entre edad y año educativo
+
+# Mostrar resumen de resultados
+#resultado
+#
+# Gráfico del análisis de correspondencias
+
+resultado <- ca(crear_tabla_contingencia(datos_cat, "act", "disc_h"))
+plot(resultado)
+
+
+
+#datos_cat
+#str(datos_cat)
+#str(datos_cat)
+  
+```
+
+La figura 12 resultantes del análisis de correspondencias entre las variables categóricas `disc_h`, la cantidad de personas con discapacidad en el hogar (triángulos rojos) y `act`, la cantidad de personas activas económicamente en el hogar (puntos azules). Los puntos representan categorías de ambas variables proyectadas en un plano que explica la mayor parte de la variabilidad de la tabla en el eje X, captando una variabilidad del 95.8% y en el eje Y captado una variabilidad del 3.4%. Vemos que cuanto más cerca estén dos puntos (uno rojo y uno azul), más frecuente es esa combinación en los datos y cuanto más lejos estén del origen, más aportan a la estructura de la asociación (más "atípicos" respecto a independencia).
+
+Podemos ver que hay tres triángulos rojos que hacen referencia a número de discapacitados, que están más alejado hacia la derecha, puede indicar que hogares con bastante discapacitados tienden a tener pocos activos económicamente. Hay otra parte del plano con discapacitados cero que es donde se aglomera la actividad económica. Podemos plantear como conclusión que los hogares con mayor cantidad de discapacitados tienden a tener menos miembros activos económicamente, y los hogares sin discapacitados tienen una distribución más equilibrada, donde hay más activos económicamente.
+
+```{r}
+#| warning: false
+#| output: false
+
+library(FactoMineR)
+library(factoextra)
+
+
+datos_cat <- datos_cat %>%
+  mutate(across(c(edad, anio_ed), as.factor))
+
+```
+
+```{r}
+#| warning: false
+#| output: false
+# Tabla Disyuntiva Completa
+tabla_disyuntiva <- tab.disjonctif(datos_cat)
+head(tabla_disyuntiva)
+```
+
+```{r}
+#| label: fig-acm-screeplot
+#| fig-cap: "Porcentaje de varianza explicada por cada dimensión del Análisis de Correspondencias Múltiples (ACM)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Asegurarse de que todas las variables sean factores
+datos_cat <- datos_cat %>%
+  mutate(across(everything(), as.factor))
+
+# Análisis de correspondencias múltiples
+acm_resultado <- MCA(datos_cat, graph = FALSE)
+
+# Screeplot con paleta de colores personalizada
+fviz_screeplot(acm_resultado, 
+               addlabels = TRUE, 
+               barfill = "#FDBAA3", 
+               barcolor = "#00AFBB") +
+  theme_minimal()
+
+
+
+```
+
+El gráfico de la figura 13 de sedimentación (screeplot) muestra la proporción de varianza explicada por cada dimensión del ACM. Las primeras dos dimensiones suelen captar el mayor porcentaje de la variabilidad presente en los perfiles de las categorías. Si bien los porcentajes individuales son bajos (propio del ACM cuando hay muchas variables), se considera útil si las primeras dimensiones ayudan a discriminar perfiles típicos entre grupos sociales.\
+\
+
+```{r}
+#| label: fig-acm-vars
+#| fig-cap: "Representación de las variables categóricas en el espacio de las dos primeras dimensiones del ACM"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Mapa de las variables en el plano principal
+fviz_mca_var(acm_resultado, choice = "var", axes = c(1, 2))
+
+
+```
+
+En la figura 14 se observa cómo se distribuyen las categorías de las variables en el plano formado por las dos primeras dimensiones. Las categorías cercanas entre sí representan perfiles similares. Las más alejadas del centro (0,0) son las que más contribuyen a la estructura de la variabilidad. Las que están alineadas sobre un eje indican que explican mejor esa dimensión particular. Este mapa facilita la interpretación conjunta de asociaciones entre múltiples variables cualitativas.
+
+# Análisis de clúster:
+
+El análisis de clúster es una técnica estadística multivariada cuyo objetivo principal es agrupar observaciones similares entre sí en función de sus características, sin requerir categorías predefinidas. Se trata de un método de clasificación no supervisada, lo que significa que no hay una variable dependiente o “etiqueta” que guíe el agrupamiento. En lugar de ello, el algoritmo identifica patrones y similitudes dentro del conjunto de datos, formando grupos o clústeres de forma tal que los elementos de un mismo clúster son más parecidos entre sí que respecto a los elementos de otros clústeres.
+
+En este contexto, se parte del supuesto de que en el espacio multidimensional donde están representadas las observaciones, existen zonas con mayor densidad de individuos y zonas de baja densidad que los separan. Cada subconjunto representa una clase o perfil identificado a partir de las variables observadas.
+
+Esta técnica tiene múltiples aplicaciones. Por un lado, permite reducir la complejidad del análisis mediante la construcción de una tipología o taxonomía de individuos. Por otro, facilita la descripción de perfiles emergentes en el conjunto de datos, y también detecta relaciones latentes entre variables a través del comportamiento grupal. En el marco del aprendizaje estadístico (statistical learning), el análisis de clúster se considera una herramienta exploratoria fundamental para entender la estructura de los datos y generar hipótesis de investigación.
+
+En esta investigación, el análisis de clúster se emplea para identificar grupos de jóvenes con patrones similares de uso del tiempo y características sociodemográficas. Se utilizó un enfoque jerárquico aglomerativo con el método de Ward y distancia euclídea, adecuado para minimizar la varianza interna de los grupos formados.
+
+Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como h_dormir, h_estudio, h_ocio, h_domesticas, h_medico, etc.) como del contexto sociodemográfico (edad, anio_ed, log_ing, aniosed_h). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.
+
+A continuación, se aplicará el análisis jerárquico paso a paso, presentando las visualizaciones necesarias para justificar la elección del número de clústeres, así como una caracterización de los grupos resultantes.
+
+## Reglas de detención
+
+Las reglas de detención son criterios estadísticos que ayudan a decidir cuántos grupos (clusters) conviene conservar en un análisis de clúster jerárquico. Como este tipo de análisis produce una jerarquía anidada de grupos, necesitamos algún criterio para "cortar" el dendrograma en una cantidad adecuada de clusters. En esta sección se aplican varios indicadores para definir la cantidad óptima de agrupamientos, combinando la inspección visual del dendrograma con tres índices comunes: el índice pseudo-F, el pseudo-T² y el ancho promedio de silueta.
+
+```{r}
+#| warning: false
+#| output: false
+# Datos de cluster
+datos_cluster <- datos[, c("h_dormir", "h_alimentarse", "h_cuipersonal", "h_estudio", "h_domesticas", "h_ocio", "h_medico", "log_ing", "aniosed_h", "edad","anio_ed")]
+
+datos_cluster
+
+sum(is.na(datos_cluster))
+```
+
+En primer lugar, se seleccionan las variables cuantitativas más relevantes del conjunto de datos original. Estas variables representan actividades del uso del tiempo y características del entorno educativo y familiar. Se eliminan los valores faltantes para asegurar la correcta aplicación de los algoritmos de agrupamiento.
+
+```{r}
+#| label: fig-dendrograma-ward
+#| fig-cap: "Dendrograma del clustering jerárquico con método de Ward"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+datos_std <- scale(datos_cluster)  # Estandarizar datos
+distancia <- dist(datos_std, method = "euclidean")
+hc_ward <- hclust(distancia, method = "ward.D")
+
+# Dendrograma sin cortes
+plot(hc_ward, labels = FALSE, main = "Dendrograma - Método Ward")
+
+
+```
+
+A continuación, se estandarizan los datos y se calcula una matriz de distancias euclidianas. Luego se aplica el método de Ward para construir el dendrograma jerárquico, que muestra visualmente cómo se agrupan las observaciones de forma progresiva. Este primer dendrograma no tiene cortes, ya que todavía no se ha definido la cantidad de clusters a conservar.\
+\
+
+```{r}
+#| label: fig-criterios-detencion
+#| fig-cap: "Índices de detención para determinar el número óptimo de clusters: pseudo-F, pseudo-T² y silueta"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(NbClust)
+
+set.seed(123)
+
+# Pseudo-F
+pseudoF <- NbClust(datos_std , distance = "euclidean", method = "ward.D", index = "ch")
+
+# Pseudo-T²
+pseudot2 <- NbClust(datos_std , distance = "euclidean", method = "ward.D", index = "pseudot2")
+
+# Silueta
+sil <- NbClust(datos_std , distance = "euclidean", method = "ward.D", index = "silhouette")
+
+# Gráficos comparativos
+par(mfrow = c(2, 2))
+plot(pseudoF$All.index, type = "b", col = 1, main = "Índice pseudo-F", ylab = "Valor", xlab = "Cantidad de clusters")
+plot(pseudot2$All.index, type = "b", col = 2, main = "Índice pseudo-T²", ylab = "Valor", xlab = "Cantidad de clusters")
+plot(sil$All.index, type = "b", col = 3, main = "Ancho de silueta", ylab = "Valor", xlab = "Cantidad de clusters")
+
+
+```
+
+\
+Para definir la cantidad adecuada de clusters en el análisis jerárquico, se aplicaron tres criterios frecuentemente utilizados en este tipo de estudios: el ancho promedio de silueta, el índice pseudo-F y el índice pseudo-t². En todos los casos se trabajó con datos previamente estandarizados, utilizando la distancia euclidiana como medida de disimilitud y el método de Ward como estrategia de agrupamiento.
+
+En primer lugar, el análisis del ancho de silueta promedio indicó que el valor más alto se obtiene con 3 clusters, aunque los valores para 2 y 4 también son relativamente altos. Esto sugiere que esas configuraciones también logran una buena separación entre grupos, sin una pérdida significativa de cohesión interna.
+
+Respecto al índice pseudo-F, el mayor valor se encuentra en 2 clusters, y a partir de ahí comienza una disminución progresiva. Si bien esto apunta a una fuerte ganancia de heterogeneidad entre los grupos al usar 2 clusters, el descenso posterior no es abrupto, lo que deja cierto margen para considerar otras particiones cercanas.
+
+Por su parte, el índice pseudo-t² muestra una caída marcada al pasar de 4 clusters, lo que indica una pérdida de estructura al continuar fusionando grupos. Esta tendencia descendente se mantiene hasta alrededor de 12 clusters, lo que sugiere que más allá de ese punto los agrupamientos pierden sentido.\
+
+```{r}
+#| label: fig-dendrograma-coloreado
+#| fig-cap: "Dendrograma del clustering jerárquico coloreado por 3 clusters"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+library(dendextend)
+
+# Se elige k = 3 según resultados anteriores
+k <- 3
+grupos <- cutree(hc_ward, k = k)
+
+# Visualización del dendrograma coloreado
+dend <- as.dendrogram(hc_ward)
+dend_col <- color_branches(dend, k = k)
+
+plot(dend_col, main = paste("Dendrograma con", k, "Clusters"))
+
+
+```
+
+En base a la interpretación conjunta de los tres índices anteriores, se decidió conservar una solución de 3 clusters. Esta partición fue aplicada al dendrograma original de la figura 25, coloreando cada grupo resultante para facilitar su visualización. Se observa una separación clara entre los grupos, lo que refuerza la validez de la elección.
+
+```{r}
+#| warning: false
+#| output: false
+
+# Libreria
+library(NbClust)
+
+# Funcion
+res <- NbClust(data = datos_std, distance = "euclidean",
+               min.nc = 2, max.nc = 10,
+               method = "ward.D", index = "ch")
+
+
+# Resultado
+res$Best.nc # 3 es la mejor cantidad de clusters
+```
+
+Otra forma de ver esto es con la función `NbClust`, que nos muestra el número óptimo de clusters para nuestros datos en base a distintas métricas. En este caso, usando la distancia euclidiana y el método de Ward, obtenemos que el número óptimo de clusters es 3.\
+\
+En conjunto, los tres indicadores sugieren que la estructura más clara y consistente se encuentra entre 2 y 4 clusters. Considerando el equilibrio entre simplicidad y riqueza interpretativa, se decidió conservar 3 clusters como solución final. Esta elección permite capturar con mayor detalle las diferencias en los perfiles de uso del tiempo entre los estudiantes, sin perder solidez en la segmentación observada en el dendrograma.
+
+## Cluster Jerarquico Agregativo
+
+El análisis comienza con la inspección de la matriz de correlaciones entre las variables numéricas seleccionadas. Esto es importante porque si hay variables altamente correlacionadas, podrían dominar el cálculo de distancias y afectar tanto el clustering como el análisis de componentes principales.
+
+```{r}
+#| label: fig-correlacion-variables
+#| fig-cap: "Matriz de correlación entre las variables utilizadas para clustering"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(corrplot)
+datos_cor <- datos_cluster[, sapply(datos_cluster, is.numeric)]
+
+corrplot(cor(datos_cor, use = "complete.obs"), method = "color", type = "upper")
+
+```
+
+Se detecta una relación positiva entre el logaritmo del ingreso (`log_ing`) y los años de educación promedio del hogar (`aniosed_h`), lo que indica que mayores niveles educativos se asocian a mejores ingresos. También hay correlaciones entre edad y año que cursa (`anio_ed`), que deben considerarse en la interpretación posterior del agrupamiento.
+
+Luego se realiza el clustering jerárquico utilizando distancia euclídea y el método de Ward, que busca minimizar la varianza intra-grupo.
+
+```{r}
+#| label: fig-dendrograma-ward-2
+#| fig-cap: "Dendrograma del clustering jerárquico con método de Ward"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Estandarizar las variables
+datos_std <- scale(datos_cluster)
+
+# Matriz de distancias
+distancia <- dist(datos_std, method = "euclidean")
+
+# Aplicación del método de Ward
+cluster_jerarquico <- hclust(distancia, method = "ward.D")
+
+# Dendrograma
+plot(cluster_jerarquico, labels = FALSE, hang = -1, main = "Dendrograma del Clustering Jerárquico")
+
+
+
+
+
+```
+
+En la figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clusters. Este gráfico es una herramienta clave para decidir, en conjunto con otros criterios, cuántos grupos conservar en el análisis final.
+
+Una vez definida la cantidad óptima de clusters en tres grupos, se procedió a asignar a cada estudiante su correspondiente clasificación. Luego, se calcularon las medias de las variables de interés por grupo, permitiendo caracterizar los perfiles resultantes. La Tabla 4 resume estas medias para cada cluster.
+
+```{r}
+#| label: tab-perfiles-clusters
+#| tbl-cap: "Promedios de variables seleccionadas por grupo de clustering jerárquico"
+#| warning: false
+#| results: hold
+#| output: true
+#| fig-pos: "H"
+
+
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+# Cortamos el dendrograma en 3 clusters
+grupos <- cutree(cluster_jerarquico, k = 3)
+datos$cluster <- as.factor(grupos)
+
+# Promedios por grupo
+tabla_clusters <- datos %>%
+  group_by(cluster) %>%
+  summarise(across(c(h_dormir, h_alimentarse, h_cuipersonal, h_estudio, h_domesticas,
+                     h_ocio, h_medico, sexo, edad, educ_in, anio_ed, publ, trabaja_rem),
+                   mean, na.rm = TRUE))
+
+# Tabla prolija
+kbl(tabla_clusters,
+    digits = 2,
+    align = "c",
+    booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE,
+                latex_options = c("hold_position", "striped", "scale_down"),
+                font_size = 4)
+
+
+```
+
+A través de el gráfico y de esta tabla de resumen, logramos identificar tres tipos de estudiantes:
+
+Estudiantes equilibrados: Tienen horas de sueño similares al promedio general, dedican bastantes horas al estudio y pocas horas a actividades domésticas. Dedican bastante tiempo al ocio y su rango promedio de edad es de 17 años. Casi todos tienen educación inicial y muy pocos trabajan. El 44% de los pertenecientes a esta categoría son hombres.
+
+Estudiantes dormilones: Dedican muchas horas a dormir, dedican un tiempo considerable al estudio, muy pocas horas a actividades domésticas, menos horas que el grupo anterior al ocio. Su promedio de edad es de 15 años, un porcentaje muy bajo trabaja y el 53% son hombres.
+
+Estudiantes Responsables del hogar: Dedican en promedio 7 horas a dormir, dedican muchas horas a actividades domésticas y la menor cantidad de horas entre los tres grupos al estudio, también dedican muy poco al ocio. Su edad promedio es de 27 años, consideramos que esto puede deberse a que hay adultos que no completaron la educación secundaria y la están cursando ahora, por eso dedican tanto a otras responsabilidades que no son el estudio, esto se refuerza al ver que casi el 50% de los de este grupo trabaja. Además solo el 11% son hombres.
+
+Para visualizar los clusters en un plano reducido, se proyectan las observaciones sobre los dos primeros componentes principales (PCA). Los colores representan los clusters definidos anteriormente.
+
+```{r}
+#| label: fig-pca-clusters
+#| fig-cap: "Representación de los clusters en el plano de los dos primeros componentes principales"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# PCA gráfico
+pca <- prcomp(datos_std)
+
+# Calcular el porcentaje de varianza explicada
+var_explicada <- pca$sdev^2 / sum(pca$sdev^2) * 100
+
+pca_df <- data.frame(pca$x[,1:2], cluster = as.factor(grupos))
+
+ggplot(pca_df, aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(size = 2) +
+  labs(title = "Clusters según PCA (2D)") +
+  xlab(paste0("PC1 (", round(var_explicada[1], 1), "% de varianza explicada)")) +
+  ylab(paste0("PC2 (", round(var_explicada[2], 1), "% de varianza explicada)")) +
+  theme_minimal() +
+  scale_color_manual(values = c("1" = "#00AFBB",  
+                                "2" = "#E7B800",   
+                                "3" = "#FDBAA3"))
+
+```
+
+\
+Se observa que el grupo 3 presenta mayor dispersión, lo que sugiere una mayor heterogeneidad interna. En contraste, los grupos 1 y 2 se concentran en regiones específicas. Aunque la varianza explicada por los dos primeros componentes no es alta, el gráfico de la figura 20 permite una visualización útil de la segmentación.
+
+Para evaluar la calidad de la clasificación, se construye el gráfico de silueta, que nos indica que tan bien asignada esta una observacion en un cluster en base a la similitud con los demas elementos del grupo.
+
+```{r}
+#| label: fig-silueta-jerarquico
+#| fig-cap: "Análisis de silueta para los 3 clusters obtenidos por el método jerárquico (Ward)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Medir la calidad del clustering con silueta
+hc_ward <- hclust(dist(datos_std), method = "ward.D")
+grupos_ward <- cutree(hc_ward, k = 3)
+
+silueta <- silhouette(grupos_ward, dist(datos_std))
+fviz_silhouette(silueta, palette =  c("#00AFBB", "#E7B800", "#FDBAA3"))
+
+
+
+```
+
+Los valores de silueta sugieren que el grupo 1 tiene observaciones que indican que asignarlas en ese cluster no es lo correcto, estas son las observaciones con una silueta negativa. Los grupos 2 y 3 muestran mejores asignaciones de las observaciones en terminos de silueta.
+
+También puede visualizarse el dendrograma coloreado según los clusters elegidos:\
+
+```{r}
+#| label: fig-dendrograma-color
+#| fig-cap: "Dendrograma del clustering jerárquico con tres clusters coloreados"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Cortar en k clusters
+grupos <- cutree(cluster_jerarquico, k = 3)
+
+# Dendrograma coloreado
+dend <- as.dendrogram(cluster_jerarquico)
+dend_col <- color_branches(dend, k = 3, 
+                           col = c("#00AFBB", "#E7B800", "#FDBAA3"))  # Paleta armonizada
+
+plot(dend_col, main = "Dendrograma con Clusters Coloreados")
+
+
+```
+
+Finalmente, se analiza la descomposición de la varianza total entre varianza intra-grupo (WSS) y entre-grupo (BSS), mostrando que al aumentar el número de clusters, la varianza dentro de los grupos disminuye y la varianza entre los grupos aumenta.
+
+```{r}
+#| output: false
+# Calcular suma de cuadrados intra-cluster (SSW)
+ssw <- sum(silueta[, "sil_width"]^2)
+cat("Varianza intra-cluster (SSW):", ssw, "\n") # varianza dentro clusters
+cat("Varianza entre-cluster (SSW):", 100-ssw, "\n") # varianza entre clusters
+```
+
+Tiene sentido que al aumentar el numero de clusters, la varianza dentro de los grupos disminuya y la varianza entre los grupos aumente. Podemos visualizar esto graficamente:
+
+```{r}
+#| label: fig-varianza-clusters
+#| fig-cap: "Descomposición de la varianza total en WSS, BSS y TSS según número de clusters"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(cluster)
+library(factoextra)
+
+
+distancia <- dist(datos_std)
+hc <- hclust(distancia, method = "ward.D")
+
+# Calcular TSS
+TSS <- sum(scale(datos_std, center = TRUE, scale = FALSE)^2)
+
+
+wss <- numeric(); bss <- numeric(); kmax <- 10
+
+
+for (k in 1:kmax) {
+  grupos <- cutree(hc, k = k)
+  grupo_df <- data.frame(datos_std, cluster = grupos)
+  wss_k <- sum(sapply(split(grupo_df[, -ncol(grupo_df)], grupo_df$cluster),
+                      function(g) sum(scale(g, center = TRUE, scale = FALSE)^2)))
+  wss[k] <- wss_k
+  bss[k] <- TSS - wss_k
+}
+
+#
+plot(1:kmax, wss, type = "b", pch = 19, col = "#FDBAA3", ylim = c(0, TSS),
+     xlab = "Número de clusters", ylab = "Varianza", main = "WSS vs BSS")
+
+lines(1:kmax, bss, type = "b", pch = 19, col = "#00AFBB")
+abline(h = TSS, lty = 2, col = "#E7B800")
+
+
+par(xpd = NA)
+legend("topright", inset = c(-0.25, 0),
+       legend = c("WSS (Intra-grupo)", "BSS (Entre-grupo)", "TSS (Total)"),
+       col = c("#FDBAA3", "#00AFBB", "#E7B800"), 
+       lty = c(1, 1, 2), pch = 19, bty = "n")
+
+
+```
+
+En la figura 23 se evidencia que, a partir de cierto punto (en este caso k = 3), las ganancias de reducir la varianza intra-grupo se vuelven marginales, justificando así el número de clusters seleccionado.
+
+En el clustering jerárquico con Ward, los incrementos de varianza (hc_ward\$height) están ordenados de menor a mayor, ya que el algoritmo fusiona primero los pares de clusters que generan el menor aumento de varianza intra-clase y deja las fusiones más "costosas" (mayor incremento) para el final.
+
+## Cluster Jerarquico Divisivo
+
+Luego de aplicar un análisis de clúster jerárquico agregativo con el método de Ward, decidimos complementar el estudio con un enfoque jerárquico divisivo, que parte del conjunto total de observaciones y las va dividiendo sucesivamente en grupos más pequeños. Este procedimiento resulta útil cuando se busca detectar "grupos disidentes" en un conjunto relativamente homogéneo, y permite visualizar la estructura de disgregación desde una gran masa inicial.
+
+En este caso, empleamos el algoritmo DIANA (Divisive ANAlysis Clustering)
+
+Es un algoritmo de clustering jerárquico divisivo, que sigue la lógica de empezar con los elementos en un único grupo y luego los va dividiendo sucesivamente. Primero empieza con todos los objetos en un solo clúster, luego en cada paso, se selecciona el clúster actual que tenga la mayor disimilitud interna, el más heterogéneo. Luego se busca dividir ese clúster en dos partes, extrayendo el elemento más alejado (más disímil) del resto y se crea un nuevo clúster con él. Luego se asignan los demás elementos al nuevo clúster si están más cerca de este que del original (usando disimilitudes promedio), este método se repite iterativamente hasta lograr una división clara en dos subconjuntos. Se repiten los pasos 2 y 3 eligiendo el próximo clúster más disperso, hasta que cada objeto está en su propio clúster o se llega a una cantidad fijada de clústers.
+
+```{r}
+#|output: false
+cuanti_diana <- datos %>%
+  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+         h_domesticas, h_ocio, h_medico, edad, anio_ed,
+         log_ing, aniosed_h)
+
+cuanti_diana_std <- scale(cuanti_diana)
+
+```
+
+Seleccionamos un conjunto de variables cuantitativas relevantes relacionadas con el uso del tiempo (horas de sueño, alimentación, estudio, ocio, etc.) y variables sociodemográficas (edad, año cursado, ingreso logarítmico del hogar y escolaridad media del hogar). A continuación, se estandarizaron para asegurar comparabilidad entre escalas y evitar que variables con mayor rango numérico dominen el análisis.
+
+```{r}
+#| label: fig-diana-completo
+#| fig-cap: "Dendrograma con método DIANA sobre el conjunto completo de estudiantes"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+diana_clust <- diana(cuanti_diana_std)
+
+# fviz_dend(diana_clust,
+#            k = 3,
+#            rect = TRUE,
+#            rect_fill = TRUE,
+#            cex = 0.3,
+#            k_colors = c("#00AFBB", "#E7B800", "#FDBAA3"),
+#            main = "Dendrograma - Clustering Jerárquico Divisivo (DIANA)")
+# 
+
+
+#demora mucho en cargar el grafico por la cantidad de datos
+# Asignar los elementos a los grupos (k = 3)
+grupos_diana <- cutree(diana_clust, k = 3)
+
+# Ver cantidad de elementos en cada grupo
+#table(grupos_diana)
+
+
+
+# Eliminamos ese atipico
+# Crear vector de grupos
+grupos_diana <- cutree(diana_clust, k = 3)
+
+# Eliminar observaciones que pertenecen al grupo 3 (el atípico)
+cuanti_diana_filtrado <- cuanti_diana_std[grupos_diana != 3, ]
+
+# Si querés también actualizar los grupos sin el atípico:
+# Nuevo clustering sin el atípico
+diana_clust_filtrado <- diana(cuanti_diana_filtrado)
+
+# Dendrograma
+fviz_dend(diana_clust_filtrado,
+          k = 2,  # Solo dos grupos ahora
+          rect = TRUE,
+          rect_fill = TRUE,
+          cex = 0.4,
+          k_colors = c("#00AFBB", "#E7B800"),
+          main = "Dendrograma DIANA sin el atípico")
+
+
+```
+
+Primero utilizamos k=3 y vimos que la division agregaba un tercer grupo que tenia un unico elemento que era un estudiante que dedicaba muchas horas al medico y practicamente nada a las demas actividades, dado que nos parecio un caso atipico decidimos eliminarlo y volver a aplicar DIANA con k=2. Vemos en la figura 24 el resultado de aplicar el algoritmo diana sobre los datos estandarizados. Luego, se generó el dendrograma correspondiente , indicando una segmentación en 2 grupos (k = 2), para mantener la coherencia con la solución adoptada en el método agregativo.
+
+El dendrograma muestra cómo se fue separando el conjunto inicial en subgrupos cada vez más homogéneos. Si bien la cantidad de observaciones hace que la visualización sea muy densa, el gráfico es útil para ilustrar la estructura general de disociación y los niveles de altura en los que se realizó el corte.
+
+```{r}
+#| label: fig-diana-muestra100
+#| fig-cap: "Dendrograma con muestra de 100 estudiantes (DIANA)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+set.seed(124)
+muestra <- sample(1:nrow(cuanti_diana_filtrado), 100)
+diana_sub <- diana(cuanti_diana_filtrado[muestra, ])
+fviz_dend(diana_sub,
+          k = 2,
+          rect = TRUE,
+          cex = 0.5,
+          k_colors = c("#00AFBB", "#E7B800", "#FDBAA3"),
+          main = "Dendrograma con muestra de 100 estudiantes")
+
+
+
+
+```
+
+Dado que el dendrograma completo resulta difícil de interpretar visualmente por la cantidad de individuos, se generó un dendrograma alternativo con una muestra aleatoria de 100 estudiantes. Este gráfico permite apreciar mejor la estructura jerárquica del agrupamiento divisivo, mostrando con mayor claridad cómo se ramifican los grupos desde la raíz hasta los clusters finales.\
+\
+La tabla presenta los valores promedio de once variables cuantitativas para los tres grupos obtenidos mediante el algoritmo jerárquico divisivo DIANA. Este método parte de un único grupo general e intenta dividirlo iterativamente, buscando maximizar la heterogeneidad entre subgrupos.
+
+```{r}
+#| label: tab-diana-promedios
+#| tbl-cap: "Tabla 5"
+#| warning: false
+#| results: hold
+#| output: true
+#| fig-pos: "H"
+
+
+# Paquetes necesarios
+library(dplyr)
+library(cluster)
+library(knitr)
+library(kableExtra)
+
+# 1. Seleccionar las variables cuantitativas
+cuanti_diana <- datos %>%
+   dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+                 h_domesticas, h_ocio, h_medico, edad, anio_ed, log_ing, aniosed_h)
+
+# 2. Estandarizar variables
+cuanti_diana_std <- scale(cuanti_diana)
+
+# 3. Aplicar clustering DIANA
+diana_clust <- diana(cuanti_diana_std)
+
+# 4. Obtener los grupos con k = 3 (para detectar el atípico)
+grupos_diana_k3 <- cutree(as.hclust(diana_clust), k = 3)
+
+# 5. Visualizar la cantidad por grupo
+#table(grupos_diana_k3)
+# Detectamos que el grupo 3 tiene solo 1 observación → outlier
+
+# 6. Filtrar la observación atípica (grupo 3)
+cuanti_diana_filtrado <- cuanti_diana[grupos_diana_k3 != 3, ]
+datos_filtrado <- datos[grupos_diana_k3 != 3, ]
+
+# 7. Estandarizar de nuevo sin el outlier
+cuanti_diana_std_filtrado <- scale(cuanti_diana_filtrado)
+
+# 8. Aplicar clustering DIANA nuevamente
+diana_clust_filtrado <- diana(cuanti_diana_std_filtrado)
+
+# 9. Cortar en k = 2 grupos
+grupos_diana <- cutree(as.hclust(diana_clust_filtrado), k = 2)
+
+# 10. Agregar grupos al dataframe filtrado
+datos_filtrado$grupo_diana <- as.factor(grupos_diana)
+
+# 11. Tabla de medias por grupo
+tabla_diana <- aggregate(cuanti_diana_filtrado, by = list(Grupo = grupos_diana), mean)
+
+# 12. Visualizar tabla
+kbl(tabla_diana, digits = 2, align = "c", booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE,
+                latex_options = c("hold_position", "scale_down", "striped"),
+                font_size = 4)
+
+
+
+
+```
+
+Al observar los resultados en la tabla 5 logramos identificar 3 grupos de estudiantes obtenidos a través del método de cluster jerárquico divisivo:
+
+Grupo 1 – “Estudiantes balanceados” Son estudiantes que dedican más tiempo al ocio y tareas domésticas en comparación con el otro grupo. Dedican menos tiempo en estudio y menos tiempo en atención médica en comparación con el otro grupo, pero es un tiempo considerable. Su edad promedio es de 17 años. Cuentan con mayor nivel educativo del hogar y a nivel individual, encontrándose en tercero de educación secundaria.
+
+Grupo 2 – “Estudiantes Disciplinados” Son estudiantes que dedican más tiempo al estudio, también dedican mucho más tiempo a la atención médica y menos tiempo al ocio y a las tareas domésticas. Su edad promedio es de 16 años, y en promedio se encuentran a mitad del segundo año de educación secundaria. Presentan un menor nivel educativo y menor educación individual debido a que son más jóvenes. Tienen un ingreso logarítmico de los miembros del hogar levemente mayor.
+
+Esta segmentación permite enriquecer la lectura del fenómeno estudiado, destacando que no todos los jóvenes estudiantes secundarios comparten los mismos estilos de vida ni condiciones de contexto.
+
+## Cluster no jerarquico
+
+Además del enfoque jerárquico, exploramos métodos de clasificación no jerárquicos, que permiten agrupar a los estudiantes sin asumir una estructura en forma de árbol. A diferencia del clustering jerárquico, los métodos no jerárquicos como k-means, k-medoides y fuzzy clustering parten de una cantidad fija de grupos (k) y asignan directamente cada observación a uno (o varios) clusters. Esto se hace mediante un proceso iterativo que optimiza la coherencia interna de cada grupo.
+
+En esta sección aplicamos y comparamos tres enfoques no jerárquicos: k-means, que busca minimizar la variabilidad dentro de los grupos a partir de centroides móviles; k-medoides, que utiliza observaciones reales como centros representativos, lo que lo hace más robusto ante valores atípicos; y fuzzy clustering, que permite que una misma observación pertenezca parcialmente a más de un grupo, con distintos grados de pertenencia. Cada técnica se evalúa con herramientas gráficas (como siluetas) y se compara con las estructuras halladas en el análisis jerárquico.
+
+## K-Means
+
+El método K-Means es una técnica fundamental del análisis multivariado que busca dividir un conjunto de datos en K grupos distintos. Su lógica se basa en la similitud entre las observaciones: cada punto se asigna al grupo cuyo centroide (la media de todas las observaciones de ese grupo) es el más cercano.
+
+El proceso es iterativo. Comienza con una selección inicial de K centroides aleatorios. Luego, cada observación se asigna al centroide más cercano. Después de esta asignación, los centroides se recalculan como la media de los puntos ahora asignados a ellos. Este ciclo de asignación y actualización se repite hasta que los centroides se estabilizan, lo que significa que la agrupación ya no cambia significativamente.\
+\
+Además del análisis jerárquico, se implementó la técnica de k-means para realizar una partición no supervisada de los estudiantes según sus características. Este método parte de una cantidad fija de grupos y busca minimizar la variabilidad interna dentro de cada cluster, a partir de iteraciones sucesivas de asignación y actualización de centroides.
+
+Para determinar el número óptimo de clusters, se utilizó la función NbClust, que evalúa múltiples índices de validación interna. Según la regla de la mayoría, la mejor partición se obtiene al dividir los datos en 3 clusters. Esta elección fue respaldada además por los resultados del método del codo (WSS) y el análisis del ancho promedio de silueta, ambos implementados mediante la función fviz_nbclust. En ambos casos se observa que k=3 aparece como una buena elección en términos de balance entre cohesión y separación de grupos.
+
+Con base en esto, se ajustó el algoritmo de k-means para k=3. Se obtuvo una partición estable, con tamaños de grupo relativamente balanceados y una varianza entre grupos considerable respecto a la varianza total, lo que indica una buena diferenciación entre los clusters.
+
+```{r}
+#|output: false
+#| fig-pos: "H"
+
+# numero de grupos
+set.seed(12346)
+NB <- NbClust(datos_std , distance = "euclidean" , method = "kmeans" , index = "all")
+
+datos_std_limpios <- datos_std[complete.cases(datos_std), ]
+
+
+fviz_nbclust(datos_std_limpios, kmeans, method = "wss") +
+geom_vline(xintercept = 3, linetype = 2)
+
+fviz_nbclust(datos_std_limpios, kmeans, method = "silhouette")
+
+set.seed(12346)
+kmedias3 <- kmeans(datos_std_limpios ,3 , iter.max = 10000)
+
+# Realizamos un algoritmo K-medias para 3 grupos
+kmedias3
+kmedias3$cluster ##Grupos de cada observacion
+kmedias3$withinss ##Varianzas dentro de todos los grupos
+kmedias3$betweenss ##Varianza entre grupos
+kmedias3$size ##Tamano de los grupos
+
+
+set.seed(12346)
+kmedias4 <- kmeans(datos_std_limpios ,4 , iter.max = 10000) ##Idem pero con 4 grupos
+kmedias4$cluster
+kmedias4$withinss
+kmedias4$betweenss
+kmedias4$size
+```
+
+```{r}
+#| output: false
+# Calcular silueta para 3 clusters
+silueta3 <- silhouette(kmedias3$cluster, daisy(datos_std_limpios))
+```
+
+```{r}
+#| label: fig-silueta-kmedias3
+#| fig-cap: "Análisis de silueta para clustering k-medias con k = 3"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(cluster)
+library(factoextra)
+
+
+# Visualizar
+(fviz_silhouette(silueta3, palette = c("#00AFBB", "#E7B800", "#FDBAA3")))
+
+
+```
+
+\
+
+```{r}
+#| output: false
+# Calcular silueta para 4 clusters
+silueta4 <- silhouette(kmedias4$cluster, daisy(datos_std_limpios))
+```
+
+\
+
+```{r}
+#| label: fig-silueta-kmedias4
+#| fig-cap: "Análisis de silueta para clustering k-medias con k = 4"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Visualizar
+fviz_silhouette(silueta4, palette = c("#00AFBB", "#E7B800", "#FDBAA3", "#FC4E07"))
+
+```
+
+Como complemento, también se probó la partición para k=4, y se evaluaron ambas configuraciones con gráficos de silueta. En estos gráficos se observa que la solución con 3 clusters presenta mejores valores promedio, lo que indica una asignación más consistente de las observaciones a sus respectivos grupos. En cambio, la solución con 4 clusters incluye algunos casos con valores negativos de silueta, lo que sugiere que ciertas observaciones podrían estar mal asignadas en los grupos en los cuales fueron asignadas.
+
+En función de estos resultados, se concluye que la partición en 3 grupos ofrece un buen equilibrio entre simplicidad y separación, y fue seleccionada como solución final para el análisis con k-means.
+
+## K-medoides
+
+El método k-medoides, al igual que k-means, busca particionar las observaciones en k grupos a partir de la similitud entre ellas. La diferencia clave es que los centros de los grupos son observaciones reales del conjunto de datos —denominadas medoides—, en lugar de promedios. Esto hace que el método sea menos sensible a valores atípicos y más adecuado en contextos donde un centroide no tiene interpretación significativa.
+
+El procedimiento comienza seleccionando k medoides iniciales, y en cada iteración se agrupan las observaciones según su cercanía a estos. Si al intercambiar un medoide con otra observación del grupo se logra reducir la variabilidad interna, se realiza el cambio. El algoritmo continúa hasta que la estructura de los grupos se estabiliza.
+
+Esta técnica es especialmente útil cuando se requiere mayor robustez frente a datos extremos o cuando se desea trabajar exclusivamente con observaciones reales como referencia de cada grupo.
+
+```{r}
+#|output: false
+library(cluster)
+
+# Aplicar el algoritmo PAM con 3 grupos
+medoides3 <- pam(datos_std_limpios, k = 3)
+
+# Ver resultados básicos
+medoides3$clustering     # Grupo asignado a cada observación
+medoides3$medoids        # Índices de las observaciones elegidas como medoides
+medoides3$clusinfo       # Tamaños, distancias y siluetas promedio por grupo
+
+
+```
+
+Se observa que pam() retorna la asignación de cada observación a uno de los tres grupos (clustering), los índices de los medoides elegidos (medoids), y un resumen por grupo que incluye el número de elementos, la distancia media dentro del clúster y el ancho promedio de silueta.
+
+A continuación, representamos gráficamente la calidad de la partición mediante el gráfico de siluetas, que nos ayuda a visualizar qué tan bien asignadas están las observaciones a sus respectivos grupos.
+
+```{r}
+#| label: fig-silueta-medoides3
+#| fig-cap: "Análisis de silueta para clustering k-medoides con k = 3"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+fviz_silhouette(medoides3, 
+                palette = c("#FDBAA3",  # Cluster 1
+                            "#E7B800",  # Cluster 2
+                            "#00AFBB")  # Cluster 3
+)
+
+
+
+```
+
+En la Figura 28, cada barra representa una observación y su valor de silueta. Valores cercanos a 1 indican una buena asignación; valores cercanos a 0 o negativos indican asignaciones dudosas o incorrectas.
+
+El gráfico de siluetas muestra un valor promedio de 0.09, lo cual indica una estructura de clústeres débil. La mayoría de las observaciones tienen valores cercanos a cero e incluso negativos, en especial dentro del clúster 3. Esto sugiere que muchas asignaciones fueron poco consistentes y que las fronteras entre grupos son difusas.
+
+Finalmente, visualizamos los clústeres en el espacio reducido por PCA.
+
+```{r}
+#| label: fig-pca-medoides3
+#| fig-cap: "Representación de los clusters de k-medoides en el plano de los dos primeros componentes principales"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+pca <- prcomp(datos_std_limpios)
+pca_df_medoides <- data.frame(pca$x[,1:2],
+                              cluster = as.factor(medoides3$clustering))
+
+ggplot(pca_df_medoides, aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(size = 2) +
+  labs(title = "Clústeres de k-medoides en espacio PCA") +
+  scale_color_manual(values = c("1" = "#FDBAA3",  # Salmón
+                                "2" = "#E7B800",  # Mostaza
+                                "3" = "#00AFBB")) + # Celeste oscuro
+  theme_minimal()
+
+
+```
+
+La Figura 29 permite observar la separación entre los grupos definidos por k-medoides. Aunque esta proyección reduce la información de muchas variables a solo dos componentes, es útil para ilustrar la separación general entre clústeres.
+
+La proyección en el plano de componentes principales confirma la idea anterior. Si bien se observan concentraciones parciales de observaciones por grupo, no hay una separación clara entre clústeres. Los colores se superponen y las regiones asignadas a cada grupo se mezclan, lo que coincide con los bajos valores de silueta. En conjunto, estos resultados indican que la partición obtenida por k-medoides logra capturar algunas diferencias generales entre los estudiantes, pero no logra formar grupos bien definidos.
+
+## Fuzzy
+
+El fuzzy clustering se usa cuando no tenemos clara la pertenencia de una observacion a un gruoo o cuando hay solapamientos entre grupos. Lo que hace es no asignar cada observación a un único cluster, sino que una observacion pertenecer a varios clusters al mismo tiempo, con distintos grados de pertenencia, que nos indican que tan probable es que esa observacion pertenezca a ese cluster.
+
+```{r}
+#|warning: FALSE
+#|output: false
+
+library(cluster)
+# Aplicar fuzzy clustering con 3 grupos
+fanny_result <- fanny(datos_std, k = 2)
+
+# Ver asignación principal a cada cluster
+#fanny_result$clustering
+
+# Ver grados de pertenencia (cada fila: observación, cada columna: cluster)
+#fanny_result$membership
+
+
+# Ver silueta
+silueta1 <- silhouette(fanny_result$clustering , daisy(datos))
+```
+
+```{r}
+#| label: fig-silueta1
+#| fig-cap: "Gráfico de silueta para evaluación de cohesión y separación de los clusters"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Gráfico de silueta
+fviz_silhouette(silueta1)
+
+
+#print(datos_std)
+```
+
+Cada barra de la figura 30 es una observación de nuestros datos, la altura de la barra se relaciona con el eje Y que es la silueta, que indica qué tan bien asignada está una observacion al cluster correspondiente, si este valor es mayor a 1, quiere decir que la asignacion de la observacion en el grupo fue buena (el punto está cerca del centro del grupo). Si el valor es menor a cero, esto indica mala asignación. La linea roja punteada es la media global, en este caso vale 0.14
+
+Podemos representar el cluster fuzzy a traves de PCA, con 2 dimensiones.
+
+```{r}
+#| label: fig-fanny-pca
+#| fig-cap: "Fuzzy Clustering con `fanny()` representado en espacio PCA"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# PCA (ya estandarizaste antes los datos)
+pca <- prcomp(datos_std)
+pca_df <- data.frame(pca$x[,1:2], 
+                     cluster = as.factor(fanny_result$clustering))
+
+# Gráfico con colores por cluster "duro"
+ggplot(pca_df, aes(x = PC1, y = PC2, color = cluster)) +
+  geom_point(size = 2) +
+  labs(title = "Fuzzy Clustering con `fanny()` en espacio PCA") +
+  theme_minimal()
+
+
+```
+
+Otro grafico util es el siguiente, que nos indica para los 2 cluster que obtenemos con PCA a traves de reducir la variabilidad, para todas las observaciones, cual es su grado de pertenencia, donde las observaciones mas claras tienen una pertenencia menos probable al grupo, y las mas ocuras tienen una perenencia mas probable al grupo.
+
+```{r}
+#| label: fig-fanny-alpha
+#| fig-cap: "Fuzzy Clustering con `fanny()` en espacio PCA. La opacidad indica el grado de pertenencia al cluster"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+pca_df$cluster <- as.factor(fanny_result$clustering)
+
+# Obtener el grado de pertenencia al cluster asignado
+pca_df$grado <- apply(fanny_result$membership, 1, max)
+
+# Gráfico con alpha proporcional al grado de pertenencia
+ggplot(pca_df, aes(x = PC1, y = PC2, color = cluster, alpha = grado)) +
+  geom_point(size = 2) +
+  labs(title = "Fuzzy Clustering con `fanny()` (alpha = pertenencia)") +
+  theme_minimal()
+
+
+```
+
+### Comparación entre métodos:
+
+```{r}
+#| warning: false
+#| output: true
+
+
+library(cluster)
+library(clusterCrit)
+library(fpc)
+library(e1071)
+library(dplyr)
+library(mclust)
+
+
+
+# Jerárquico Ward
+distancia <- dist(datos_std, method = "euclidean")
+cluster_jerarquico <- hclust(distancia, method = "ward.D")
+grupos_ward <- cutree(cluster_jerarquico, k = 3)
+
+# Jerárquico divisivo
+diana_clust <- diana(cuanti_diana_std)
+grupos_diana <- cutree(as.hclust(diana_clust), k = 3)
+
+# K-medias
+kmedias3 <- kmeans(datos_std_limpios, 3, iter.max = 10000)
+grupos_kmeans <- kmedias3$cluster
+
+# K-medoides
+medoides3 <- pam(datos_std_limpios, k = 3)
+grupos_pam <- medoides3$clustering
+
+# Fuzzy (FANNY)
+fanny_result <- fanny(datos_std, k = 3)
+grupos_fuzzy <- fanny_result$clustering  # o: apply(fanny_result$membership, 1, which.max)
+
+
+
+# Lista de métodos y datos
+datos_list <- list(
+  Ward     = list(grupos = grupos_ward,     datos = datos_std),
+  DIANA    = list(grupos = grupos_diana,    datos = cuanti_diana_std),
+  Kmeans   = list(grupos = grupos_kmeans,   datos = datos_std_limpios),
+  Kmedoide = list(grupos = grupos_pam,      datos = datos_std_limpios),
+  Fuzzy    = list(grupos = grupos_fuzzy,    datos = datos_std)
+)
+
+# Función para índices internos
+obtener_indices <- function(grupos, datos) {
+  criterios <- intCriteria(as.matrix(datos), as.integer(grupos),
+                           c("Dunn", "Davies_Bouldin", "Calinski_Harabasz"))
+  return(criterios)
+}
+
+# Calcular índices internos
+indices <- lapply(datos_list, function(x) obtener_indices(x$grupos, x$datos))
+
+# Extraer valores individuales
+dunn_vals     <- sapply(indices, function(x) x[["dunn"]])
+db_vals       <- sapply(indices, function(x) x[["davies_bouldin"]])
+ch_vals       <- sapply(indices, function(x) x[["calinski_harabasz"]])
+
+# Calcular Silhouette
+sil_ward   <- mean(silhouette(grupos_ward,   dist(datos_std))[, 3])
+sil_diana  <- mean(silhouette(grupos_diana,  dist(cuanti_diana_std))[, 3])
+sil_kmeans <- mean(silhouette(grupos_kmeans, dist(datos_std_limpios))[, 3])
+sil_pam    <- mean(silhouette(grupos_pam,    dist(datos_std_limpios))[, 3])
+sil_fuzzy  <- mean(silhouette(grupos_fuzzy,  dist(datos_std))[, 3])
+
+# Calcular ARI (respecto a Ward)
+ari_diana  <- adjustedRandIndex(grupos_ward, grupos_diana)
+ari_kmeans <- adjustedRandIndex(grupos_ward, grupos_kmeans)
+ari_pam    <- adjustedRandIndex(grupos_ward, grupos_pam)
+ari_fuzzy  <- adjustedRandIndex(grupos_ward, grupos_fuzzy)
+
+# Crear tabla final
+tabla_indices <- data.frame(
+  Metodo = c("Ward", "DIANA", "Kmeans", "Kmedoide", "Fuzzy"),
+  Silueta = c(sil_ward, sil_diana, sil_kmeans, sil_pam, sil_fuzzy),
+  ARI_vs_Ward = c(NA, ari_diana, ari_kmeans, ari_pam, ari_fuzzy),
+  Dunn = dunn_vals,
+  Davies_Bouldin = db_vals,
+  Calinski_Harabasz = ch_vals
+)
+
+# Mostrar tabla
+#print(tabla_indices)
+
+
+
+
+
+# tabla comparativa
+
+
+kbl(tabla_indices,
+    digits = 2,
+    align = "c",
+    booktabs = TRUE) %>%
+  kable_styling(full_width = TRUE,
+                latex_options = c("hold_position", "striped", "scale_down"),
+                font_size = 4)
+
+
+
+
+
+```
+
+Interpretación de las comparaciones:
+
+1)  El coeficiente de Silueta se mueve en un rango entre -1 y 1, donde los valores cercanos a 1 indican que las observaciones están bien asignadas en el cluster y cercanos a -1 indican que están mal asignadas en ese cluster. Vemos que DIANA obtuvo el mejor valor (0.36), sugiriendo la estructura de clusters más clara. K-means (0.13) y Fuzzy (0.096) tuvieron resultados mediocres. Ward y K-medoides tuvieron los valores más bajos (\~0.09)
+
+2)  Índice Rand Ajustado (ARI_vs_Ward): Compara que tan bien asignan y dividen los demás métodos en términos de similitud entre los resultados de los métodos, comparado con el método de Ward. K-means mostró la mayor similitud (ARI=0.34), DIANA y K-medoides tuvieron concordancia baja, pero positiva, Fuzzy mostró peor similitud al ser comparado con Ward.
+
+3)  Índice Dunn: Mide separación entre clusters, valores altos son mejores, DIANA destacó nuevamente (0.107), seguido de Fuzzy (0.084), los otros métodos tuvieron un peor rendimiento con valores bajos.
+
+4)  Davies-Bouldin mide compacidad y separación, acá los valores bajos son mejores, Fuzzy fue el mejor con un valor de 0.77, seguido por DIANA con un valor de 0.99, Ward y K-medoides tuvieron peores valores.
+
+5)  Calinski-Harabasz es un ratio entre dispersión inter e intra-cluster, acá los valores altos son mejores. Vemos que K-means obtuvo un valor de 82.27, fue el mejor con respecto a otros métodos, vemos que DIANA en este caso no tuvo buen rendimiento al igual que fuzzy.
+
+Conclusiones en general: DIANA resultó el método más eficiente debido a mayor coeficiente de silueta (0.36), mejor balance en índices Dunn y Davies-Bouldin, aunque su ARI con Ward fue moderado (0.12), su estructura de clusters parece más natural. K-means tuvo resultados variados con un buen valor en Calinski-Harabasz (82.27), menos desempeño en silueta (0.13) y Dunn (0.033), aunque tuvo alta concordancia con Ward (ARI=0.34). Fuzzy tuvo buen rendimiento en Davies-Bouldin (0.77) pero mal rendimiento en Calinski-Harabasz (1.42), además de casi nula correlación con Ward (ARI≈0). Luego Ward y K-medoides tuvieron peor rendimiento en las distintas métricas
+
+```{r}
+
+```
+
+# Distribución normal multivariante
+
+La distribución normal multivariante es la generalización de la distribución normal univariada al caso de vectores aleatorios. Un vector $X \in \mathbb{R}^p$ tiene distribución $N_p(\mu, \Sigma)$ si su función de densidad está dada por:
+
+$$
+f_X(x) = \frac{1}{(2\pi)^{p/2} |\Sigma|^{1/2}} \exp\left\{ -\frac{1}{2}(x - \mu)' \Sigma^{-1} (x - \mu) \right\}
+$$
+
+donde $\mu$ es el vector de medias y $\Sigma$ la matriz de covarianzas, que debe ser simétrica y definida positiva.
+
+Esta distribución es fundamental porque muchas técnicas multivariadas como el análisis discriminante, MANOVA o incluso los métodos de inferencia aplicados al clustering asumen normalidad multivariante. Esta condición garantiza que los estimadores de máxima verosimilitud de $\mu$ y $\Sigma$ coincidan con la media y la matriz de covarianza muestrales, respectivamente.
+
+Además, la normal multivariante permite aplicar resultados clave como la distribución de Wishart para matrices de covarianza, y facilita el uso de herramientas de inferencia basadas en la teoría asintótica, lo que resulta especialmente útil al interpretar estructuras de grupos en análisis de conglomerados y PCA.
+
+```{r}
+#| label: fig-qq-mahalanobis
+#| fig-cap: "Gráfico Q-Q de distancias de Mahalanobis frente a la distribución chi-cuadrado (df=2)"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+library(MASS)
+library(ggplot2)
+
+# Simular datos normales multivariados
+mu <- c(5, 10)
+Sigma <- matrix(c(4, 3, 3, 9), nrow = 2)
+set.seed(123)
+datos <- as.data.frame(mvrnorm(n = 500, mu = mu, Sigma = Sigma))
+colnames(datos) <- c("X1", "X2")
+
+# Calcular distancia de Mahalanobis
+d_mahal <- mahalanobis(datos, colMeans(datos), cov(datos))
+
+# Graficar contra cuantiles teóricos de chi-cuadrado (df = 2)
+qq_data <- data.frame(
+  quantiles_theoretical = qchisq(ppoints(500), df = 2),
+  distances = sort(d_mahal)
+)
+
+ggplot(qq_data, aes(x = quantiles_theoretical, y = distances)) +
+  geom_point(color = "#FDBAA3", alpha = 0.6) +
+  geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+  labs(title = "Gráfico Q-Q de distancias de Mahalanobis",
+       x = "Cuantiles teóricos (Chi-cuadrado df=2)",
+       y = "Distancias observadas de Mahalanobis") +
+  theme_minimal()
+
+```
+
+El gráfico de la Figura 33 de cuantiles teóricos contra distancias de Mahalanobis observadas, vemos que los puntos iniciales se alinean bien con la línea diagonal punteada, pero las observaciones en los extremos se alejan de esa línea, especialmente en la parte superior derecha. Estas desviaciones sugieren la presencia de valores atípicos o casos con mayor distancia al centro de la distribución. Hay una desviación sistemática en la cola superior porque los puntos en la parte superior derecha del gráfico se desvían significativamente por encima de la línea teórica. Esto indica que hay valores atípicos multivariados, por lo que la distribución que sigue tiene colas más pesadas que una normal multivariada, además la curtosis multivariada es mayor que la esperada bajo normalidad. Otro factor es la discontinuidad en los valores observados, la presencia de saltos en los puntos indica el no cumplimiento del supuesto de multinormalidad. Otro factor que usamos para afirmar el cumplimiento del no supuesto de multinormalidad fue el uso de la función testes.R que nos servía para verificar este supuesto, donde obtuvimos un p-valor muy pequeño (menor a 0.05), por lo que rechazamos la hipótesis nula que indicaba multinormalidad.
+
+# Análisis Discriminante
+
+```{r}
+#| warning: false
+#| output: false
+
+datos <- read.table(here("archivos", "Multivariado", "EUT2013_estudiantessecundaria.txt"),
+                    header = TRUE,
+                    sep = ",",
+                    stringsAsFactors = FALSE)
+
+
+datos <- datos[!is.na(datos$aniosed_h), ]
+sum(is.na(datos)) # eliminamos los nulos
+
+head(datos)
+
+# Funcion de Distribucion Acumulada:
+# Crear la función ECDF
+f_ecdf <- ecdf(datos$h_estudio)
+
+# Graficar la función ECDF
+plot(f_ecdf,
+     main = "Función de Cuantía Acumulada Empírica de horas de estudio",
+     xlab = "Horas de estudio",
+     ylab = "F(x)",
+     col = "blue",
+     lwd = 2,
+     verticals = TRUE,
+     do.points = FALSE)
+
+
+plot(ecdf(datos$h_estudio))
+```
+
+La variable dependiente Y_estudio fue construida a partir de la variable original h_estudio, que representa el número de horas dedicadas al estudio y se presenta como una variable cuantitativa continua. Convertimos h_estudio en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para hacer esto usamos los terciles de la distribución de h_studio, los cuales particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron: De 0.0 a 0.5 horas: categoría “poco” De 0.5 a 5 horas: categoría “intermedio” De 5 a 11 horas: categoría “mucho” Las frecuencias observadas en cada categoría fueron: 241 individuos en “poco”, 265 en “intermedio”, y 180 en “mucho”, esta particion es balanceada.
+
+```{r}
+#| warning: false
+#| output: false
+# Calcular los terciles de h_estudio
+terciles <- quantile(datos$h_estudio, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
+
+
+
+# Crear variable Y categórica basada en esos cortes de terciles
+datos$Y_estudio <- cut(
+  datos$h_estudio,
+  breaks = terciles,
+  include.lowest = TRUE,
+  labels = c("poco", "intermedio", "mucho")
+)
+
+datos$h_estudio <- NULL # quitar h_estudio, que ya esta transformada
+
+head(datos)
+
+# Categorias balanceadas
+table(datos$Y_estudio)
+
+
+# Particiones
+tabla <- data.frame(
+  Inicio = c(0, 0.5, 5),
+  Final = c(0.5, 5, 11),
+  Categoria = c("poco", "intermedio", "mucho")
+)
+tabla
+
+
+
+
+
+```
+
+```{r}
+# Cargar funcion testes creadas por los profesores para chequear multinormalidad, homoscedasticidad, igualdad de medias:
+
+source(here("archivos", "Multivariado", "testes.R"))
+testes(datos[,c(1:25)], datos$Y_estudio)
+
+
+
+
+```
+
+Utilizamos la funcion testes.r creada por los profesores para verificar multinormalidad, homoscedasticidad, igualdad de medias, pero obtuvimos que en nuestos datos no se cumplia la multinormalidad, por lo que no nos servia analisis discrimintante lineal ni cuadratico. Entonces probamos con analisis discriminante logistico. Otro motivo para esto es que en nuestros datos existen variabels cualitativas y cuantitativas.
+
+```{r}
+#| warning: false
+#| output: false
+# Convertir a factor algunas variables para mejorar las predicciones:
+datos$edad <- factor(datos$edad)
+datos$anio_ed <- factor(datos$anio_ed)
+datos$act <- factor(datos$act)
+datos$inact <- factor(datos$inact)
+datos$disc_h <- factor(datos$disc_h)
+```
+
+Decidimos ajustar un modelo que explique las horas de estudio en funcion de todas las demas variables.
+
+```{r}
+#| warning: false
+#| output: false
+# Modelo planteado
+
+modelo_log <- multinom(Y_estudio ~ h_dormir + h_alimentarse + h_cuipersonal +
+                         h_domesticas + h_ocio + h_medico +
+                         sexo + edad + educ_in + anio_ed +
+                         publ + trabaja_rem + hijos + celular +
+                         log_ing + AFAM_h + aniosed_h +
+                         act + inact + servdom_pag + tv +
+                         tv_abon + compu + disc_h + mdeo,
+                       data = datos)
+```
+
+Hicimos las predicciones y obtuvimos la siguiente matriz de confusion 3x3.
+
+```{r}
+#| warning: false
+#| output: true
+
+#summary(modelo_log)
+
+# Predicciones
+predicciones <- predict(modelo_log, newdata = datos)
+
+# Matriz de confusión
+table(Real = datos$Y_estudio, Predicho = predicciones)
+
+```
+
+Curva ROC:
+
+Para evaluar el rendimiento del modelo de regresión logística multinomial ajustado para predecir la variable categórica Y_estudio (poco, intermedio, mucho), se construyeron curvas ROC (Receiver Operating Characteristic) para cada una de las tres clases. En el grafico vemos que Clase "poco" (azul) tiene un AUC de 0.797. Clase "intermedio" (rojo) tiene un AUC de 0.687. Clase "mucho" (verde) tiene un AUC de 0.780.
+
+Esta curva es una métrica que refleja la capacidad del modelo para discriminar entre las clases. Cuanto mas cercano a 1 sea el AUC, mejor es la capacidad discriminativa, si el valor es cercano a 0.5, es como discriminar al azar. En nuestro caso, para los casos “poco” y “mucho”, el AUC es mayor a 0.75, esta bien. Para la categoría “intermedio” tiene un rendimiento más bajo, de 0.687.
+
+```{r}
+#| warning: false
+#| output: false
+probs <- predict(modelo_log, type = "probs")
+
+
+# Convertimos Y_estudio a factor (por si acaso)
+datos$Y_estudio <- as.factor(datos$Y_estudio)
+
+# Inicializamos lista para guardar curvas ROC
+rocs <- list()
+
+# Para cada clase, construimos la curva ROC (one-vs-all)
+for (clase in levels(datos$Y_estudio)) {
+  # Vector binario: 1 si pertenece a la clase, 0 en otro caso
+  clase_real <- ifelse(datos$Y_estudio == clase, 1, 0)
+  
+  # Probabilidades predichas para esa clase
+  clase_prob <- probs[, clase]
+  
+  # Curva ROC
+  rocs[[clase]] <- roc(clase_real, clase_prob, plot = TRUE, legacy.axes = TRUE,
+                       main = paste("ROC para clase:", clase))
+}
+
+
+
+```
+
+```{r}
+#| label: fig-ROC
+#| fig-cap: "Gráfico Curva ROC"
+#| warning: false
+#| output: true
+#| fig-pos: "H"
+
+
+# Gráfico ROC con paleta personalizada
+plot.roc(rocs[[1]], col = "#00AFBB", print.auc = TRUE, legacy.axes = TRUE)
+plot.roc(rocs[[2]], add = TRUE, col = "#E7B800", print.auc = TRUE, print.auc.y = 0.4)
+plot.roc(rocs[[3]], add = TRUE, col = "#FDBAA3", print.auc = TRUE, print.auc.y = 0.3)
+
+legend("bottomright", 
+       legend = names(rocs), 
+       col = c("#00AFBB", "#E7B800", "#FDBAA3"), 
+       lwd = 2)
+
+
+```
+
+```{r}
+library(pROC)
+tabla_metricas <- lapply(rocs, function(roc_obj) {
+  # Obtener las coordenadas (thresholds) de la curva
+  coords_df <- coords(roc_obj, x = "best", best.method = "closest.topleft", 
+                      ret = c("threshold", "sensitivity", "specificity"), 
+                      transpose = FALSE)
+  return(coords_df)
+})
+
+
+# Combinar en un data.frame
+tabla_metricas <- do.call(rbind, tabla_metricas)
+
+# Agregar nombres de modelos
+rownames(tabla_metricas) <- names(rocs)
+
+# Ver tabla
+tabla_metricas
+
+
+# Si aumentás el threshold (por ejemplo a 0.7), el modelo será más estricto para predecir positivos → ↑ especificidad, ↓ sensibilidad.
+# Si bajás el threshold (por ejemplo a 0.3), el modelo será más laxo para predecir positivos → ↑ sensibilidad, ↓ especificidad.
+
+t(tabla_metricas)
+```
+
+```{r}
+# AUC de cada clase
+auc_por_clase <- sapply(rocs, auc)
+
+# Mostrar
+auc_por_clase
+
+
+
+# Esta función calcula el AUC multiclase de Hand & Till (2001)
+roc_multi <- multiclass.roc(response = datos$Y_estudio, predictor = probs)
+
+# Ver AUC
+auc(roc_multi)
+```
+
+# Conclusión
+
+El análisis de los datos provenientes de la Encuesta de Uso del Tiempo 2013 permitió caracterizar de forma profunda y estructurada los patrones de organización temporal de los estudiantes de educación media en Uruguay. A través de una combinación de técnicas descriptivas, análisis factorial, métodos de agrupamiento y análisis de correspondencias, se obtuvieron hallazgos significativos que aportan a la comprensión del uso del tiempo en este grupo poblacional.
+
+En la etapa descriptiva, se observaron diferencias claras según el sexo, destacándose una mayor carga de trabajo no remunerado y menor tiempo libre entre las mujeres. También se detectaron desigualdades vinculadas al trabajo remunerado, la edad y el entorno educativo, lo cual fue respaldado por medidas de tendencia central y dispersión, así como por visualizaciones detalladas de la distribución de actividades y tiempos.
+
+Desde una perspectiva estadística multivariada, se asumió una distribución normal multivariante para justificar la aplicación de técnicas como el Análisis de Componentes Principales (PCA), el cual permitió reducir la dimensionalidad del problema, identificando combinaciones lineales de variables que explican gran parte de la varianza observada. Este paso fue clave para interpretar los perfiles subyacentes de los estudiantes según sus patrones de actividad.
+
+Se incorporó el análisis de correspondencias para profundizar en las relaciones entre variables categóricas. Mediante gráficos de mosaico se visualizaron asociaciones relevantes entre el sexo, la educación inicial, la tenencia de hijos, el uso de tecnología, el tipo de centro educativo y otras condiciones del entorno familiar y social. A través del Análisis de Correspondencias Simple (CA) entre edad y año educativo, se identificaron patrones de asociación coherentes con la progresión esperada en el sistema educativo. Por otro lado, el Análisis de Correspondencias Múltiple (MCA), utilizando tablas disyuntivas y de Burt, permitió representar en el espacio de dos dimensiones las categorías con mayor peso explicativo, ofreciendo una visión sintética y robusta de las relaciones entre múltiples dimensiones cualitativas.
+
+Además, el uso de técnicas de agrupamiento jerárquico (Ward y DIANA) y no jerárquico (k-medoides, k-medias, y clustering difuso tipo fanny) facilitó la identificación de grupos relativamente homogéneos dentro de la población estudiantil. En general, se observó una estructura óptima de tres clusters, con perfiles diferenciados en términos de carga horaria, edad, ingreso y nivel educativo del hogar. Estas técnicas permitieron corroborar que existen patrones significativos y estables de dedicación temporal entre los jóvenes.
+
+El análisis discriminante, por su parte, aportó evidencia adicional sobre la relevancia de variables como el estudio, el trabajo doméstico, el ocio y el nivel educativo del hogar para diferenciar a los estudiantes, validando estadísticamente la solidez de los clusters formados.
+
+En conjunto, el trabajo muestra que el uso del tiempo entre los estudiantes secundarios no es homogéneo ni aleatorio, sino que responde a configuraciones estructurales, sociales y económicas que se reflejan en los datos. La combinación de técnicas multivariadas permitió enriquecer sustancialmente el análisis y ofrecer una mirada más compleja y precisa sobre los determinantes del tiempo cotidiano en esta población. La inclusión del análisis de correspondencias aportó una capa adicional de interpretación sobre cómo las condiciones del entorno y los recursos del hogar están profundamente entrelazados con las trayectorias educativas y las experiencias cotidianas de los jóvenes.
+
+# Referencias bibliográficas
+
+-   Wickham H, François R, Henry L, Müller K, Vaughan D (2023). dplyr: A Grammar of Data Manipulation. R package version 1.1.4, https://CRAN.R-project.org/package=dplyr.
+
+-   Wickham H, Vaughan D, Girlich M (2024). tidyr: Tidy Messy Data. R package version 1.3.1, https://CRAN.R-project.org/package=tidyr.
+
+-   Xie Y (2025). knitr: A General-Purpose Package for Dynamic Report Generation in R. R package version 1.50, https://yihui.org/knitr/.
+
+-   Xie Y (2015). Dynamic Documents with R and knitr. 2nd edition. Chapman and Hall/CRC. ISBN 978-1498716963.
+
+-   Xie Y (2014). knitr: A Comprehensive Tool for Reproducible Research in R. In Stodden V, Leisch F, Peng RD (eds), Implementing Reproducible Computational Research. Chapman and Hall/CRC. ISBN 978-1466561595.
+
+-   Müller K (2020). here: A Simpler Way to Find Your Files. R package version 1.0.1, https://CRAN.R-project.org/package=here.
+
+-   Wickham H (2016). ggplot2: Elegant Graphics for Data Analysis. Springer-Verlag New York.
+
+-   Comtois D (2025). summarytools: Tools to Quickly and Neatly Summarize Data. R package version 1.1.4, https://CRAN.R-project.org/package=summarytools.
+
+-   Taiyun Wei, Simko V (2024). corrplot: Visualization of a Correlation Matrix. R package version 0.95, https://github.com/taiyun/corrplot.
+
+-   Waring E, Quinn M, McNamara A, Arino de la Rubia E, Zhu H, Ellis S (2022). skimr: Compact and Flexible Summaries of Data. R package version 2.1.5, https://CRAN.R-project.org/package=skimr.
+
+-   Le S, Josse J, Husson F (2008). FactoMineR: An R Package for Multivariate Analysis. Journal of Statistical Software, 25(1), 1–18. https://doi.org/10.18637/jss.v025.i01
+
+-   Kassambara A, Mundt F (2020). factoextra: Extract and Visualize the Results of Multivariate Data Analyses. R package version 1.0.7, https://CRAN.R-project.org/package=factoextra.
+
+-   Kassambara A (2020). ggpubr: 'ggplot2' Based Publication Ready Plots. R package version 0.4.0, https://CRAN.R-project.org/package=ggpubr.
+
+-   Zeileis A (2023). NbClust: Determining the Number of Clusters in a Dataset. R package version 3.0.1, https://CRAN.R-project.org/package=NbClust.
+
+-   Galili T (2015). dendextend: an R package for visualizing, adjusting and comparing trees of hierarchical clustering. Bioinformatics, 31(22), 3718–3720. https://doi.org/10.1093/bioinformatics/btv428
+
+-   Schloerke B, Crowley J, Cook D, Hofmann H, Wickham H, … (2021). GGally: Extension to ggplot2. R package version 2.1.2, https://CRAN.R-project.org/package=GGally.
+
+-   Neuwirth E (2014). RColorBrewer: ColorBrewer Palettes. R package version 1.1-2, https://CRAN.R-project.org/package=RColorBrewer.
+
+-   Zhang C, Moore D, Ma Y, Wendelberger J (2011). NbClust: An R Package for Determining the Relevant Number of Clusters in a Data Set. Journal of Statistical Software, 61(6), 1–36.
+
+-   Hope RM (2013). Rmisc: R Miscellaneous. R package version 1.5, https://CRAN.R-project.org/package=Rmisc.
+
+-   Venables WN, Ripley BD (2002). Modern Applied Statistics with S, Fourth Edition. Springer, New York. ISBN 0-387-95457-0 (para la librería MASS).
+
+-   Wei T, Simko V (2021). corrplot: Visualization of a Correlation Matrix. R package version 0.92, https://CRAN.R-project.org/package=corrplot.
+
+-   Zamar D, McNeil D, Zeileis A (2021). ellipse: Functions for Drawing Ellipses and Ellipse-Based Plots. R package version 0.4.2, https://CRAN.R-project.org/package=ellipse.
+
+-   Zhu H (2021). kableExtra: Construct Complex Table with kable and Pipe Syntax. R package version 1.3.4, https://CRAN.R-project.org/package=kableExtra.
