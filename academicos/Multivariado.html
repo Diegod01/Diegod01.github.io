@@ -55,18 +55,71 @@
     
 
         <h2>Análisis descriptivo:</h2>
+<p>Nuestro objetivo es caracterizar la distribución de las principales variables de interés horas dedicadas a dormir, a consumir Netflix, ocio, tareas domésticas y otras actividades así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior.  Es importante aclarar que las horas dedicas a consumir Netflix no se incluyen como actividad de ocio.</p>
 
+    
 
             <h3>Pre-Procesamiento</h3>
+<p>Antes de realizar análisis multivariados, llevamos a cabo una etapa de limpieza y preparación de los datos. En primer lugar, identificamos valores faltantes en la base. La única variable con datos nulos es aniosed_h (años de educación promedio de los adultos del hogar), con un único valor faltante. Ese caso fue eliminado para evitar distorsiones en los cálculos posteriores, dado que representa menos del 0.1% del total de observaciones.</p>
+
+<p>Creamos un nuevo objeto llamado "cuantitativas"  que solo contiene las variables numéricas que nos interesan estudiar: horas dedicadas a dormir (`h_dormir`), alimentarse, cuidado personal, estudio, tareas domésticas, ocio y atención médica; junto con datos sociodemográficos como edad, año que cursa (`anio_ed`), logaritmo del ingreso del hogar (`log_ing`), años de escolaridad del hogar (`aniosed_h`), y marcadores de actividad (`act`, `inact`) y discapacidad (`disc_h`). De esta forma aislamos en un solo data frame todas las medidas cuantitativas relevantes para nuestro análisis descriptivo, facilitando los siguientes pasos de resumen y visualización.</p>
+
+<p>A continuación, utilizamos "summary(cuantitativas)" para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los usuarios de Netflix duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de consumo de Netflix oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos usuarios dedicaron tiempo a citas médicas en la jornada registrada</p>    
 
 
+    
             <h3>Visualización Univariada</h3>
 
-            <h3>Análisis de asociación entre variables</h3>
+<p>La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los usuarios de Netflix</p>
+
+<img src="../images/Imagen92.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado.</p>
+    
+<img src="../images/Imagen93.png" alt="Título" class="img-proyecto" width="450">
+
+<p>También se analizó el tiempo de consumo de Netflix en relación al sexo mediante un diagrama de caja (Figura 2). Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta, eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo a consumir Netflix, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.</p>
+
+<img src="../images/Imagen94.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Para ampliar el análisis, se graficó la distribución de horas dedicadas a todas las actividades del tiempo libre y obligaciones básicas (Figura 3). El histograma facetado permite ver que dormir y consumir Netflix tienen distribuciones más concentradas, mientras que actividades como tareas médicas o tareas domésticas tienden a presentar mayor asimetría y frecuencias bajas, con muchos estudiantes que no realizaron esas actividades durante el día observado.</p>
+
+<img src="../images/Imagen95.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, horas de consumo de Netflix, horas de ocio e ingreso del hogar. La tabla correspondiente se muestra en la tabla 2. Los resultados indican que las mujeres duermen y consumen Netflix más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.</p>
+
+
+    
+       <h3>Análisis de asociación entre variables</h3>
+
+<p>Para comprender cómo se relacionan las distintas dimensiones del uso del tiempo y los factores sociodemográficos, se calculó la matriz de correlación entre las variables cuantitativas seleccionadas. En la tabla 3 vermos que se realizó utilizando el coeficiente de correlación de Pearson sobre pares completos de observaciones.</p>
+<p>Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la figura 4. En él los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de consumo de Netflix tienden a estar inversamente correlacionadas con las de sueño (quienes consumen mas Netflix duermen un poco menos) y positivamente con las de ocio</p>
+
+<img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="450">
+
+<p>También se exploraron asociaciones específicas. En la Figura 5 se presenta un boxplot que compara las horas dedicadas an consumir Netflix según si el usuario trabaja remuneradamente o no. Se observa una clara diferencia: quienes tienen empleo tienden a consumir Netflix menos horas.</p>
+
+<img src="../images/Imagen97.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Por último, se observo la asociación entre el ingreso del hogar y el tiempo de ocio. Un coeficiente positivo de 0.0418 que nos indica que los usuarios de contextos más acomodados tienden a disfrutar de un poco más de tiempo libre, tal vez porque tienen mayor acceso a actividades recreativas pagas o porque su entorno les ofrece más facilidades para el ocio.</p>
 
 
         <h2>Tecnicas de análisis factorial</h2>
 
+<p>Para entender mejor la estructura de nuestros datos y reducir la complejidad de la información, aplicamos un Análisis de Componentes Principales (PCA) sobre un conjunto de variables cuantitativas seleccionadas. Estas variables incluían horas dedicadas a distintas actividades como dormir, alimentarse, consumir Netflix, ocio, tareas domésticas, visitas médicas, así como también variables como la edad, el año cursado en educación secundaria, el logaritmo del ingreso mensual del hogar y los años promedio de educación en el hogar.</p>
+
+<p>Antes de aplicar el PCA, las variables fueron estandarizadas (es decir, convertidas a una escala común) para que ninguna dominara el análisis solo por tener un rango mayor. Luego, se ejecutó el PCA, que automáticamente reemplazó los valores faltantes por la media de cada variable</p>
+
+<p>A continuación, visualizamos la disposición de las variables en el espacio de los primeros dos componentes, coloreadas según su contribución. Esto nos permite observar qué variables tienen mayor influencia en la construcción de estos componentes y cómo se relacionan entre sí.</p>
+
+<img src="../images/Imagen98.png" alt="Título" class="img-proyecto" width="450">
+
+<p>A partir de la figura 6, observamos agrupamientos entre variables que se comportan de forma similar. Por ejemplo, las horas de consumo de Netflix y el nivel educativo suelen estar cercanas, indicando una posible asociación. Por otro lado, variables como las horas de dormir o las tareas domésticas se orientan en direcciones opuestas, mostrando que representan dimensiones distintas del uso del tiempo. Los colores más naranjas indican mayor contribución, los colores amarillos indican una contribución intermedia, los colores celestes indican una menor contribución.</p>
+
+<p>También quisimos analizar cómo se distribuyen los individuos en función de los dos primeros componentes, lo que nos ayuda a detectar posibles agrupamientos o patrones generales.</p>
+    
+
+    
         <h2>Analisis Correspondencia:</h2>
 
         <h2>Análisis de clúster:</h2>
