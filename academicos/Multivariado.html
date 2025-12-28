@@ -27,13 +27,32 @@
 
 <section>
         <h2>Resumen Ejecutivo:</h2>
-        <p>Hola</p>
+        <p>Este trabajo busca entender el uso de tiempo que le dan los usuarios que consumen la plataforma de streaming Netflix, ademas se analizan características sociodemográficas de ususarios de la plataforma. El objetivo principal es identificar perfiles diferenciados de usuarios según sus actividades cotidianas, entorno familiar y contexto socioeconómico, ademas de entender porque no estan dedicando tiempo a la plataforma. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.</p>
+        <p>Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar.</p>
+
+
 
         <h2>Introducción</h2>
+<p>El presente estudio busca comprender cómo los usuarios de Netflix organizan su tiempo diario, identificando posibles perfiles según variables personales, familiares y educativas. Se trabaja con datos exclusivamente de usuarios que declararon estar suscritos a la plataforma.</p>
+<p>La estrategia metodológica combina análisis descriptivo con herramientas multivariadas. Inicialmente se realizó una limpieza de la base de datos y un resumen estadístico de las variables clave. Luego, se exploraron asociaciones entre variables mediante análisis bivariado y correlaciones. A partir de allí, se aplicó Análisis de Componentes Principales (PCA) para reducir la dimensionalidad y facilitar la interpretación de patrones complejos.</p>
+<p>Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de usuarios según sus condiciones y como estas se relacionan con el uso de tiempo en la plataforma de Netflix</p>
+<p>Sobre la base de estas exploraciones, se implementaron distintas técnicas de agrupamiento (clustering), tanto jerárquicas como no jerárquicas, para detectar perfiles homogéneos de estudiantes. Posteriormente, se evaluó el ajuste de los datos a una distribución normal multivariante, aspecto fundamental para la validez de ciertas técnicas estadísticas. Finalmente, se utilizó el análisis discriminante como herramienta de validación para examinar la capacidad predictiva de las variables y consolidar la interpretación de los grupos encontrados.</p>
+    
 
         <h2>Marco Metodológico</h2>
 
+  <p>Este trabajo emplea un enfoque cuantitativo basado en técnicas multivariadas aplicadas a datos previamente estandarizados. En primer lugar, se utilizó el Análisis de Componentes Principales (PCA), que permitió sintetizar la información de múltiples variables en un número reducido de componentes, facilitando la visualización e interpretación de las relaciones entre ellas.<p>
+  <p>Para abordar las variables categóricas del estudio, se incorporó el Análisis de Correspondencias. En una primera etapa, se utilizaron gráficos de mosaico para explorar visualmente la dependencia entre pares de variables cualitativas como sexo, años de educación, trabajo remunerado, acceso a tecnologías o servicios, entre otras. Luego, mediante el Análisis de Correspondencias Simple (CA), se estudió la relación entre la edad y el año educativo, obteniendo una representación bidimensional que reveló asociaciones significativas entre ambas variables. Finalmente, el Análisis de Correspondencias Múltiple (MCA), aplicado sobre la tabla disyuntiva y la tabla de Burt, permitió visualizar el posicionamiento relativo de múltiples categorías y su contribución a las dimensiones latentes del espacio factorial.<p>
+  <p>Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de usuarios con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.<p>
+  <p>Dado que muchas técnicas multivariadas presuponen normalidad multivariante, se evaluó esta condición a través de simulaciones, gráficos Q-Q y distancias de Mahalanobis. Finalmente, se aplicó análisis discriminante lineal para validar la segmentación obtenida, evaluando la capacidad de las variables seleccionadas para predecir correctamente la pertenencia a los grupos definidos.</p>  
+
         <h2>Datos</h2>
+
+<p>El conjunto de variables disponibles es amplio y permite caracterizar a cada usuarios desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) y de su contexto sociodemográfico y familiar.<p>
+<p>Se incluyen variables continuas como las horas diarias dedicadas a dormir, estudiar, alimentarse, asearse, realizar tareas domésticas, asistir a consultas médicas o participar en actividades recreativas. También se consideran variables de contexto como la edad del encuestado, el año educativo que cursa, el logaritmo del ingreso mensual del hogar y el promedio de años de educación de los adultos del hogar.<p>
+<p>A nivel categórico, hay variables dicotómicas que indican la presencia o ausencia de determinadas condiciones (por ejemplo: si trabaja remuneradamente, si el hogar recibe Asignación Familiar, si tiene computadora o televisión con abono, si vive en Montevideo, etc.). Otras variables permiten identificar la composición del hogar en términos de activos, inactivos y personas con discapacidad.<p>
+<p>Este conjunto de variables brinda una visión multidimensional de la situación de los usuarios, haciendo posible identificar perfiles diferenciados de uso del tiempo y asociarlos a factores sociales y económicos del hogar.</p>
+    
 
         <h2>Análisis descriptivo:</h2>
 
