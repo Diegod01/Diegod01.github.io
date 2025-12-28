@@ -118,24 +118,267 @@
 
 <p>También quisimos analizar cómo se distribuyen los individuos en función de los dos primeros componentes, lo que nos ayuda a detectar posibles agrupamientos o patrones generales.</p>
     
+<img src="../images/Imagen99.png" alt="Título" class="img-proyecto" width="450">
+
+
+<p>La métrica $cos^2$ se usa para evaluar la calidad de la representación de una variable o de un individuo en un componente principal, indica cuánto contribuye un componente a explicar la varianza de una variable. Cuanto más cercano a 1, el vector está casi alineado con el componente, bien representado por ese componente. Cuanto más cercano a 0, el vector forma un ángulo cercano a 90° con el componente, esta mal representado por ese componente. Esta métrica se usa para saber qué variables están bien representadas por los primeros componentes, da la calidad de la representación del individuo sobre el plano definido por los componentes.</p>
+
+<p>En la figura 7, los puntos que están más alejados del centro y con colores más intensos son aquellos que están mejor representados en el plano de los dos primeros componentes. Esto indica que sus perfiles son más extremos o definidos con respecto a las variables incluidas.</p>
+
+<img src="../images/Imagen100.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En la figura 8 el Eje X son los componentes principales ordenados del 1 al 10, las dimensiones. El Eje Y es el porcentaje de varianza explicada por cada componente (desde 0% hasta 17.3%). Vemos que el Primer componente (PC1) explica el 17.3% de la varianza. Segundo componente (PC2) explica el 14.3%. Tercer componente (PC3) explica el 12.7%. Los demas componentes subsiguientes van decreciendo en sus porcentajes asociados a explicar la varianza (10.5%, 9.1%, 8.1%, etc.)</p>
+
+<img src="../images/Imagen101.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Las flechas son las variables, el eje X es la Dimension 1 y el eje Y es la Dimension 2, son los dos primeros componentes principales. La Dimension 1 explica el 17.3% de la varianza total, la dimension 2 explica el 14.3% de la varianza. En conjunto, explican un 31.6% de la varianza total del conjunto de datos. Las flechas mas largas indican que las variables están mejor representadas en el plano de los dos primeros componentes, las flechas mas cercanas al origen indican que las variables no se explican bien en este plano. Las flechas orientadas hacia la derecha indican correlación positiva. Las flechas orientadas hacia la izquierda indican correlación negativa.</p>
+
+<p>Luego los angulos pequeños entre flechas indican que las variables estan positivamente correlacionadas, un angulo recto de 90 grados, indica poca o nula correlación. Luego un angulo obstuso (180) indica correlación negativa.</p>
+
+<p>Luego $cos^2$ da la calidad de representación de cada variable en el plano. El color rojo indica alta calidad de representación, luego el color verde indica una representacion intermedia, y el color violeta indica baja calidad.</p>
+
+<p>Algunos ejemplos son que edad, aniosed_h, log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir, h_medico están mal representadas (azules/violetas). edad esta bien representada, porque contribuye a la dimension 1, luego aniosed_h y log_ing estan bien representadas, y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_netflix es bastante perpendicular a la variable edad, por lo que no parecen tener relación directa. Por ultimo h_dormir esta mal representada en este plano.</p>
+
+<p>Luego, exploramos qué variables contribuyen más a cada uno de los componentes. Esto es importante porque nos permite interpretar el significado de cada eje principal del análisis.</p>
+
+<img src="../images/Imagen102.png" alt="Título" class="img-proyecto" width="450">
+
+<p>De la figura 10 observamos que el primer componente tiene una fuerte carga de variables relacionadas a la educación (como años de educación, log_ing y año actual de educativo), por lo que podríamos interpretarlo como un eje educativo o socioeconómico.</p>
+
+<img src="../images/Imagen103.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En cambio, el segundo componente está influido por la edad y las actividades domesticas, y en menor medida por las horas de consumo de Netflix, este eje podría reflejar un perfil de rutina.</p>
+
+<p>Finalmente, obtuvimos los autovalores de los componentes principales, los cuales nos indican cuánta varianza explican. Esto nos ayuda a decidir cuántos componentes retener para el análisis.</p>
+
+<p>Los autovalores nos muestran que los primeros componentes explican una parte importante de la varianza total del conjunto de datos, lo que justifica el uso de un plano bidimensional para la representación gráfica. Los primeros 5 componentes tienen autovalores \> 1, explican en conjunto el 63.83% de la varianza total.</p>   
+
+
 
     
         <h2>Analisis Correspondencia:</h2>
 
+<p>El análisis de correspondencias es una técnica estadística que permite explorar la relación entre dos o más variables categóricas. A través de tablas de contingencia y representaciones gráficas como los gráficos mosaico, es posible detectar patrones de asociación entre categorías y comprender cómo se distribuyen las observaciones en función de dichas combinaciones.</p>
+
+ <p>En este trabajo, se construyeron mosaicos para observar cómo varía la distribución de distintas características educativas, sociales y económicas en función del sexo de los usuarios, y como esto se relaciona con el consumo de Netflix.</p>
+
+ <p>Los gráficos mosaico utilizan colores para mostrar los residuos de Pearson (diferencias entre valores observados y esperados bajo independencia): Azul indica más observaciones de las esperadas, Rojo indica menos observaciones de las esperadas, Gris indica coincidencia con la independencia.</p>
+
+<img src="../images/Imagen104.png" alt="Título" class="img-proyecto" width="450">
+
+
+ <p>La figura 12 resultantes del análisis de correspondencias entre las variables categóricas `disc_h`, la cantidad de personas con discapacidad en el hogar (triángulos rojos) y `act`, la cantidad de personas activas económicamente en el hogar (puntos azules). Los puntos representan categorías de ambas variables proyectadas en un plano que explica la mayor parte de la variabilidad de la tabla en el eje X, captando una variabilidad del 95.8% y en el eje Y captado una variabilidad del 3.4%. Vemos que cuanto más cerca estén dos puntos (uno rojo y uno azul), más frecuente es esa combinación en los datos y cuanto más lejos estén del origen, más aportan a la estructura de la asociación (más "atípicos" respecto a independencia).</p>
+
+ <p>Podemos ver que hay tres triángulos rojos que hacen referencia a número de discapacitados, que están más alejado hacia la derecha, puede indicar que hogares con bastante discapacitados tienden a tener pocos activos económicamente. Hay otra parte del plano con discapacitados cero que es donde se aglomera la actividad económica. Podemos plantear como conclusión que los hogares con mayor cantidad de discapacitados tienden a tener menos miembros activos económicamente, y los hogares sin discapacitados tienen una distribución más equilibrada, donde hay más activos económicamente.</p>
+
+<img src="../images/Imagen105.png" alt="Título" class="img-proyecto" width="450">
+
+<p>El gráfico de la figura 13 de sedimentación (screeplot) muestra la proporción de varianza explicada por cada dimensión del ACM. Las primeras dos dimensiones suelen captar el mayor porcentaje de la variabilidad presente en los perfiles de las categorías. Si bien los porcentajes individuales son bajos (propio del ACM cuando hay muchas variables), se considera útil si las primeras dimensiones ayudan a discriminar perfiles típicos entre grupos sociales.</p>
+
+<img src="../images/Imagen106.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En la figura 14 se observa cómo se distribuyen las categorías de las variables en el plano formado por las dos primeras dimensiones. Las categorías cercanas entre sí representan perfiles similares. Las más alejadas del centro (0,0) son las que más contribuyen a la estructura de la variabilidad. Las que están alineadas sobre un eje indican que explican mejor esa dimensión particular. Este mapa facilita la interpretación conjunta de asociaciones entre múltiples variables cualitativas.</p>
+    
+
+
         <h2>Análisis de clúster:</h2>
+
+
+<p>El análisis de clúster es una técnica estadística multivariada cuyo objetivo principal es agrupar observaciones similares entre sí en función de sus características, sin requerir categorías predefinidas. Se trata de un método de clasificación no supervisada, lo que significa que no hay una variable dependiente o “etiqueta” que guíe el agrupamiento. En lugar de ello, el algoritmo identifica patrones y similitudes dentro del conjunto de datos, formando grupos o clústeres de forma tal que los elementos de un mismo clúster son más parecidos entre sí que respecto a los elementos de otros clústeres.</p>
+
+<p>En este contexto, se parte del supuesto de que en el espacio multidimensional donde están representadas las observaciones, existen zonas con mayor densidad de individuos y zonas de baja densidad que los separan. Cada subconjunto representa una clase o perfil identificado a partir de las variables observadas.</p>
+
+<p>Esta técnica tiene múltiples aplicaciones. Por un lado, permite reducir la complejidad del análisis mediante la construcción de una tipología o taxonomía de individuos. Por otro, facilita la descripción de perfiles emergentes en el conjunto de datos, y también detecta relaciones latentes entre variables a través del comportamiento grupal. En el marco del aprendizaje estadístico (statistical learning), el análisis de clúster se considera una herramienta exploratoria fundamental para entender la estructura de los datos y generar hipótesis de investigación.</p>
+
+<p>En esta investigación, el análisis de clúster se emplea para identificar grupos de usuarios con patrones similares de uso del tiempo y características sociodemográficas. Se utilizó un enfoque jerárquico aglomerativo con el método de Ward y distancia euclídea, adecuado para minimizar la varianza interna de los grupos formados.</p>
+
+<p>Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como h_dormir, h_netflix, h_ocio, h_domesticas, h_medico, etc.) como del contexto sociodemográfico (edad, anio_ed, log_ing, aniosed_h). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.</p>
+
+<p>A continuación, se aplicará el análisis jerárquico paso a paso, presentando las visualizaciones necesarias para justificar la elección del número de clústeres, así como una caracterización de los grupos de usuarios resultantes.</p>
+
+
+
 
              <h3>Reglas de detención</h3>
 
-            <h3>Cluster Jerarquico Agregativo</h3>
+    <p>Las reglas de detención son criterios estadísticos que ayudan a decidir cuántos grupos (clusters) conviene conservar en un análisis de clúster jerárquico. Como este tipo de análisis produce una jerarquía anidada de grupos, necesitamos algún criterio para "cortar" el dendrograma en una cantidad adecuada de clusters. En esta sección se aplican varios indicadores para definir la cantidad óptima de agrupamientos, combinando la inspección visual del dendrograma con tres índices comunes: el índice pseudo-F, el pseudo-T² y el ancho promedio de silueta.</p>
+    <p>En primer lugar, se seleccionan las variables cuantitativas más relevantes del conjunto de datos original. Estas variables representan actividades del uso del tiempo y características del entorno educativo y familiar. Se eliminan los valores faltantes para asegurar la correcta aplicación de los algoritmos de agrupamiento.</p>
 
+<img src="../images/Imagen107.png" alt="Título" class="img-proyecto" width="450">
+
+<p>A continuación, se estandarizan los datos y se calcula una matriz de distancias euclidianas. Luego se aplica el método de Ward para construir el dendrograma jerárquico, que muestra visualmente cómo se agrupan las observaciones de forma progresiva. Este primer dendrograma no tiene cortes, ya que todavía no se ha definido la cantidad de clusters a conservar.</p>
+
+<img src="../images/Imagen108.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Para definir la cantidad adecuada de clusters en el análisis jerárquico, se aplicaron tres criterios frecuentemente utilizados en este tipo de estudios: el ancho promedio de silueta, el índice pseudo-F y el índice pseudo-t². En todos los casos se trabajó con datos previamente estandarizados, utilizando la distancia euclidiana como medida de disimilitud y el método de Ward como estrategia de agrupamiento.</p>
+
+<p>En primer lugar, el análisis del ancho de silueta promedio indicó que el valor más alto se obtiene con 3 clusters, aunque los valores para 2 y 4 también son relativamente altos. Esto sugiere que esas configuraciones también logran una buena separación entre grupos, sin una pérdida significativa de cohesión interna.</p>
+
+<p>Respecto al índice pseudo-F, el mayor valor se encuentra en 2 clusters, y a partir de ahí comienza una disminución progresiva. Si bien esto apunta a una fuerte ganancia de heterogeneidad entre los grupos al usar 2 clusters, el descenso posterior no es abrupto, lo que deja cierto margen para considerar otras particiones cercanas.</p>
+
+<p>Por su parte, el índice pseudo-t² muestra una caída marcada al pasar de 4 clusters, lo que indica una pérdida de estructura al continuar fusionando grupos. Esta tendencia descendente se mantiene hasta alrededor de 12 clusters, lo que sugiere que más allá de ese punto los agrupamientos pierden sentido.</p>
+
+<img src="../images/Imagen109.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En base a la interpretación conjunta de los tres índices anteriores, se decidió conservar una solución de 3 clusters. Esta partición fue aplicada al dendrograma original de la figura 25, coloreando cada grupo resultante para facilitar su visualización. Se observa una separación clara entre los grupos, lo que refuerza la validez de la elección.</p>    
+
+<p>Otra forma de ver esto es con la función "NbClust", que nos muestra el número óptimo de clusters para nuestros datos en base a distintas métricas. En este caso, usando la distancia euclidiana y el método de Ward, obtenemos que el número óptimo de clusters es 3.</p>
+
+<p>En conjunto, los tres indicadores sugieren que la estructura más clara y consistente se encuentra entre 2 y 4 clusters. Considerando el equilibrio entre simplicidad y riqueza interpretativa, se decidió conservar 3 clusters como solución final. Esta elección permite capturar con mayor detalle las diferencias en los perfiles de uso del tiempo entre los usuarios de Netflix, sin perder solidez en la segmentación observada en el dendrograma.</p>
+    
+    
+
+    <h3>Cluster Jerarquico Agregativo</h3>
+
+<p>El análisis comienza con la inspección de la matriz de correlaciones entre las variables numéricas seleccionadas. Esto es importante porque si hay variables altamente correlacionadas, podrían dominar el cálculo de distancias y afectar tanto el clustering como el análisis de componentes principales.</p>
+    
+<img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Se detecta una relación positiva entre el logaritmo del ingreso (`log_ing`) y los años de educación promedio del hogar (`aniosed_h`), lo que indica que mayores niveles educativos se asocian a mejores ingresos. También hay correlaciones entre edad y año que cursa ("anio_ed"), que deben considerarse en la interpretación posterior del agrupamiento.</p>
+
+<p>Luego se realiza el clustering jerárquico utilizando distancia euclídea y el método de Ward, que busca minimizar la varianza intra-grupo.</p>
+
+
+<img src="../images/Imagen110.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En la figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clusters. Este gráfico es una herramienta clave para decidir, en conjunto con otros criterios, cuántos grupos conservar en el análisis final.</p>
+
+<p>Una vez definida la cantidad óptima de clusters en tres grupos, se procedió a asignar a cada usuario de Netflix su correspondiente clasificación. Luego, se calcularon las medias de las variables de interés por grupo, permitiendo caracterizar los perfiles resultantes. La Tabla 4 resume estas medias para cada cluster.</p>
+
+<img src="../images/Imagen111.png" alt="Título" class="img-proyecto" width="450">
+
+<p>A través de el gráfico y de esta tabla de resumen, logramos identificar tres tipos de usuarios de Netflix:</p>
+
+<p>Usuarios de Netflix equilibrados: Tienen horas de sueño similares al promedio general, dedican bastantes horas al consumo de Netflix y pocas horas a actividades domésticas. Dedican bastante tiempo al ocio y su rango promedio de edad es de 17 años. Casi todos tienen educación inicial y muy pocos trabajan. El 44% de los pertenecientes a esta categoría son hombres.</p>
+
+<p>Usuarios de Netflix dormilones: Dedican muchas horas a dormir, dedican un tiempo considerable al consumo de Netflix, muy pocas horas a actividades domésticas, menos horas que el grupo anterior al ocio. Su promedio de edad es de 15 años, un porcentaje muy bajo trabaja y el 53% son hombres.</p>
+
+<p>Usuarios de Netflix Responsables del hogar: Dedican en promedio 7 horas a dormir, dedican muchas horas a actividades domésticas y la menor cantidad de horas entre los tres grupos al consumo de Netflix, también dedican muy poco al ocio. Su edad promedio es de 27 años, ya son adultos por eso dedican tanto a otras responsabilidades que no son el consumo de Netflix, esto se refuerza al ver que casi el 50% de los de este grupo trabaja. Además solo el 11% son hombres.</p>
+
+<p>Para visualizar los clusters en un plano reducido, se proyectan las observaciones sobre los dos primeros componentes principales (PCA). Los colores representan los clusters definidos anteriormente.</p>
+
+<img src="../images/Imagen112.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Se observa que el grupo 3 presenta mayor dispersión, lo que sugiere una mayor heterogeneidad interna. En contraste, los grupos 1 y 2 se concentran en regiones específicas. Aunque la varianza explicada por los dos primeros componentes no es alta, el gráfico de la figura 20 permite una visualización útil de la segmentación.</p>
+
+<p>Para evaluar la calidad de la clasificación, se construye el gráfico de silueta, que nos indica que tan bien asignada esta una observacion en un cluster en base a la similitud con los demas elementos del grupo.</p>
+
+<img src="../images/Imagen113.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Los valores de silueta sugieren que el grupo 1 tiene observaciones que indican que asignarlas en ese cluster no es lo correcto, estas son las observaciones con una silueta negativa. Los grupos 2 y 3 muestran mejores asignaciones de las observaciones en terminos de silueta.</p>
+
+<p>También puede visualizarse el dendrograma coloreado según los clusters elegidos:</p>
+    
+<img src="../images/Imagen114.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Finalmente, se analiza la descomposición de la varianza total entre varianza intra-grupo (WSS) y entre-grupo (BSS), mostrando que al aumentar el número de clusters, la varianza dentro de los grupos disminuye y la varianza entre los grupos aumenta.</p>    
+
+<p>Varianza intra-cluster (SSW): 18.84748</p>
+<p>Varianza entre-cluster (SSW): 81.15252</p>
+
+    
+<p>Tiene sentido que al aumentar el numero de clusters, la varianza dentro de los grupos disminuya y la varianza entre los grupos aumente. Podemos visualizar esto graficamente:</p>    
+
+    <img src="../images/Imagen115.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En la figura 23 se evidencia que, a partir de cierto punto (en este caso k = 3), las ganancias de reducir la varianza intra-grupo se vuelven marginales, justificando así el número de clusters seleccionado.</p>
+
+<p>En el clustering jerárquico con Ward, los incrementos de varianza (hc_ward\$height) están ordenados de menor a mayor, ya que el algoritmo fusiona primero los pares de clusters que generan el menor aumento de varianza intra-clase y deja las fusiones más "costosas" (mayor incremento) para el final.</p>
+
+    
+    
             <h3>Cluster Jerarquico Divisivo</h3>
+
+<p>Luego de aplicar un análisis de clúster jerárquico agregativo con el método de Ward, decidimos complementar el estudio con un enfoque jerárquico divisivo, que parte del conjunto total de observaciones y las va dividiendo sucesivamente en grupos más pequeños. Este procedimiento resulta útil cuando se busca detectar "grupos disidentes" en un conjunto relativamente homogéneo, y permite visualizar la estructura de disgregación desde una gran masa inicial.</p>
+
+<p>En este caso, empleamos el algoritmo DIANA (Divisive ANAlysis Clustering)</p>
+
+<p>Es un algoritmo de clustering jerárquico divisivo, que sigue la lógica de empezar con los elementos en un único grupo y luego los va dividiendo sucesivamente. Primero empieza con todos los objetos en un solo clúster, luego en cada paso, se selecciona el clúster actual que tenga la mayor disimilitud interna, el más heterogéneo. Luego se busca dividir ese clúster en dos partes, extrayendo el elemento más alejado (más disímil) del resto y se crea un nuevo clúster con él. Luego se asignan los demás elementos al nuevo clúster si están más cerca de este que del original (usando disimilitudes promedio), este método se repite iterativamente hasta lograr una división clara en dos subconjuntos. Se repiten los pasos 2 y 3 eligiendo el próximo clúster más disperso, hasta que cada objeto está en su propio clúster o se llega a una cantidad fijada de clústers.</p>
+
+<p>Seleccionamos un conjunto de variables cuantitativas relevantes relacionadas con el uso del tiempo (horas de sueño, alimentación, consumo de Netflix, ocio, etc.) y variables sociodemográficas (edad, año cursado, ingreso logarítmico del hogar y escolaridad media del hogar). A continuación, se estandarizaron para asegurar comparabilidad entre escalas y evitar que variables con mayor rango numérico dominen el análisis.</p>    
+
+
+    <img src="../images/Imagen116.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Primero utilizamos k=3 y vimos que la division agregaba un tercer grupo que tenia un unico elemento que era un usuario de Netflix que dedicaba muchas horas al medico y practicamente nada a las demas actividades, dado que nos parecio un caso atipico decidimos eliminarlo y volver a aplicar DIANA con k=2. Vemos en la figura 24 el resultado de aplicar el algoritmo diana sobre los datos estandarizados. Luego, se generó el dendrograma correspondiente , indicando una segmentación en 2 grupos (k = 2), para mantener la coherencia con la solución adoptada en el método agregativo.</p>
+
+<p>El dendrograma muestra cómo se fue separando el conjunto inicial en subgrupos cada vez más homogéneos. Si bien la cantidad de observaciones hace que la visualización sea muy densa, el gráfico es útil para ilustrar la estructura general de disociación y los niveles de altura en los que se realizó el corte.</p>
+
+    <img src="../images/Imagen117.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Dado que el dendrograma completo resulta difícil de interpretar visualmente por la cantidad de individuos, se generó un dendrograma alternativo con una muestra aleatoria de 100 usuarios de Netflix. Este gráfico permite apreciar mejor la estructura jerárquica del agrupamiento divisivo, mostrando con mayor claridad cómo se ramifican los grupos desde la raíz hasta los clusters finales.</p>
+
+<p>La tabla presenta los valores promedio de once variables cuantitativas para los tres grupos obtenidos mediante el algoritmo jerárquico divisivo DIANA. Este método parte de un único grupo general e intenta dividirlo iterativamente, buscando maximizar la heterogeneidad entre subgrupos.</p>
+
+    <img src="../images/Imagen118.png" alt="Título" class="img-proyecto" width="450">
+
+    
+<p>Al observar los resultados en la tabla 5 logramos identificar 3 grupos de usuarios de Netflix obtenidos a través del método de cluster jerárquico divisivo:</p>
+
+<p>Grupo 1 – “usuarios de Netflix balanceados” Son usuarios de Netflix que dedican más tiempo al ocio y tareas domésticas en comparación con el otro grupo. Dedican menos tiempo al consumo de Netflix y menos tiempo en atención médica en comparación con el otro grupo, pero es un tiempo considerable. Su edad promedio es de 17 años. Cuentan con mayor nivel educativo del hogar y a nivel individual, encontrándose en tercero de educación secundaria.</p>
+
+<p>Grupo 2 – “usuarios de Netflix Disciplinados” Son usuarios de Netflix que dedican más tiempo al consumo de Netflix, también dedican mucho más tiempo a la atención médica y menos tiempo al ocio y a las tareas domésticas. Su edad promedio es de 16 años, y en promedio se encuentran a mitad del segundo año de educación secundaria. Presentan un menor nivel educativo y menor educación individual debido a que son más jóvenes. Tienen un ingreso logarítmico de los miembros del hogar levemente mayor.</p>
+
+<p>Esta segmentación permite enriquecer la lectura del fenómeno estudiado, destacando que no todos los jóvenes usuarios de Netflix comparten los mismos estilos de vida ni condiciones de contexto.</p>
 
             <h3>Cluster no jerarquico</h3>
 
+<p>Además del enfoque jerárquico, exploramos métodos de clasificación no jerárquicos, que permiten agrupar a los usuarios de Netflix sin asumir una estructura en forma de árbol. A diferencia del clustering jerárquico, los métodos no jerárquicos como k-means, k-medoides y fuzzy clustering parten de una cantidad fija de grupos (k) y asignan directamente cada observación a uno (o varios) clusters. Esto se hace mediante un proceso iterativo que optimiza la coherencia interna de cada grupo.</p>
+
+<p>En esta sección aplicamos y comparamos tres enfoques no jerárquicos: k-means, que busca minimizar la variabilidad dentro de los grupos a partir de centroides móviles; k-medoides, que utiliza observaciones reales como centros representativos, lo que lo hace más robusto ante valores atípicos; y fuzzy clustering, que permite que una misma observación pertenezca parcialmente a más de un grupo, con distintos grados de pertenencia. Cada técnica se evalúa con herramientas gráficas (como siluetas) y se compara con las estructuras halladas en el análisis jerárquico.</p>
+    
+
             <h3>K-Means</h3>
+
+<p>El método K-Means es una técnica fundamental del análisis multivariado que busca dividir un conjunto de datos en K grupos distintos. Su lógica se basa en la similitud entre las observaciones: cada punto se asigna al grupo cuyo centroide (la media de todas las observaciones de ese grupo) es el más cercano.</p>
+
+<p>El proceso es iterativo. Comienza con una selección inicial de K centroides aleatorios. Luego, cada observación se asigna al centroide más cercano. Después de esta asignación, los centroides se recalculan como la media de los puntos ahora asignados a ellos. Este ciclo de asignación y actualización se repite hasta que los centroides se estabilizan, lo que significa que la agrupación ya no cambia significativamente.</p>
+
+<p>Además del análisis jerárquico, se implementó la técnica de k-means para realizar una partición no supervisada de los estudiantes según sus características. Este método parte de una cantidad fija de grupos y busca minimizar la variabilidad interna dentro de cada cluster, a partir de iteraciones sucesivas de asignación y actualización de centroides.</p>
+
+<p>Para determinar el número óptimo de clusters, se utilizó la función NbClust, que evalúa múltiples índices de validación interna. Según la regla de la mayoría, la mejor partición se obtiene al dividir los datos en 3 clusters. Esta elección fue respaldada además por los resultados del método del codo (WSS) y el análisis del ancho promedio de silueta, ambos implementados mediante la función fviz_nbclust. En ambos casos se observa que k=3 aparece como una buena elección en términos de balance entre cohesión y separación de grupos.</p>
+
+<p>Con base en esto, se ajustó el algoritmo de k-means para k=3. Se obtuvo una partición estable, con tamaños de grupo relativamente balanceados y una varianza entre grupos considerable respecto a la varianza total, lo que indica una buena diferenciación entre los clusters.</p>
+
+
+        <img src="../images/Imagen119.png" alt="Título" class="img-proyecto" width="450">
+
+        <img src="../images/Imagen120.png" alt="Título" class="img-proyecto" width="450">
+
+
+<p>Como complemento, también se probó la partición para k=4, y se evaluaron ambas configuraciones con gráficos de silueta. En estos gráficos se observa que la solución con 3 clusters presenta mejores valores promedio, lo que indica una asignación más consistente de las observaciones a sus respectivos grupos. En cambio, la solución con 4 clusters incluye algunos casos con valores negativos de silueta, lo que sugiere que ciertas observaciones podrían estar mal asignadas en los grupos en los cuales fueron asignadas.</p>
+
+<p>En función de estos resultados, se concluye que la partición en 3 grupos ofrece un buen equilibrio entre simplicidad y separación, y fue seleccionada como solución final para el análisis con k-means.</p>
+
+
 
             <h3>K-medoides</h3>
 
+<p>El método k-medoides, al igual que k-means, busca particionar las observaciones en k grupos a partir de la similitud entre ellas. La diferencia clave es que los centros de los grupos son observaciones reales del conjunto de datos —denominadas medoides—, en lugar de promedios. Esto hace que el método sea menos sensible a valores atípicos y más adecuado en contextos donde un centroide no tiene interpretación significativa.</p>
+
+<p>El procedimiento comienza seleccionando k medoides iniciales, y en cada iteración se agrupan las observaciones según su cercanía a estos. Si al intercambiar un medoide con otra observación del grupo se logra reducir la variabilidad interna, se realiza el cambio. El algoritmo continúa hasta que la estructura de los grupos se estabiliza.</p>
+
+<p>Esta técnica es especialmente útil cuando se requiere mayor robustez frente a datos extremos o cuando se desea trabajar exclusivamente con observaciones reales como referencia de cada grupo.</p>
+    
+<p>Se observa que pam() retorna la asignación de cada observación a uno de los tres grupos (clustering), los índices de los medoides elegidos (medoids), y un resumen por grupo que incluye el número de elementos, la distancia media dentro del clúster y el ancho promedio de silueta.</p>
+
+<p>A continuación, representamos gráficamente la calidad de la partición mediante el gráfico de siluetas, que nos ayuda a visualizar qué tan bien asignadas están las observaciones a sus respectivos grupos.</p>
+
+        <img src="../images/Imagen121.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En la Figura 28, cada barra representa una observación y su valor de silueta. Valores cercanos a 1 indican una buena asignación; valores cercanos a 0 o negativos indican asignaciones dudosas o incorrectas.</p>
+
+<p>El gráfico de siluetas muestra un valor promedio de 0.09, lo cual indica una estructura de clústeres débil. La mayoría de las observaciones tienen valores cercanos a cero e incluso negativos, en especial dentro del clúster 3. Esto sugiere que muchas asignaciones fueron poco consistentes y que las fronteras entre grupos son difusas.</p>
+
+<p>Finalmente, visualizamos los clústeres en el espacio reducido por PCA.</p>
+    
+       <img src="../images/Imagen122.png" alt="Título" class="img-proyecto" width="450">
+
+<p>La Figura 29 permite observar la separación entre los grupos definidos por k-medoides. Aunque esta proyección reduce la información de muchas variables a solo dos componentes, es útil para ilustrar la separación general entre clústeres.</p>
+
+<p>La proyección en el plano de componentes principales confirma la idea anterior. Si bien se observan concentraciones parciales de observaciones por grupo, no hay una separación clara entre clústeres. Los colores se superponen y las regiones asignadas a cada grupo se mezclan, lo que coincide con los bajos valores de silueta. En conjunto, estos resultados indican que la partición obtenida por k-medoides logra capturar algunas diferencias generales entre los usuarios de Netflix, pero no logra formar grupos bien definidos.</p>
+    
+    
             <h3>Fuzzy</h3>
 
             <h3>Comparación entre métodos:</h3>
