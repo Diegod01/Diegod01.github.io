@@ -25,17 +25,20 @@ execute:
 
 # Resumen Ejecutivo:
 
-Este trabajo analiza el uso del tiempo y las características sociodemográficas de jóvenes uruguayos que cursan educación secundaria, utilizando datos de la Encuesta de Uso del Tiempo (EUT) 2013. El objetivo principal es identificar perfiles diferenciados de estudiantes según sus actividades cotidianas, entorno familiar y contexto socioeconómico. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.
 
-Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar. Estas evidencias ofrecen insumos valiosos para el diseño de políticas públicas que promuevan la equidad educativa y social.
+Este trabajo busca entender el uso de tiempo que le dan los usuarios que consumen la plataforma de streaming Netflix, ademas se analizan características sociodemográficas de ususarios de la plataforma. El objetivo principal es identificar perfiles diferenciados de usuarios según sus actividades cotidianas, entorno familiar y contexto socioeconómico, ademas de entender porque no estan dedicando tiempo a la plataforma. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.
+
+Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar. 
+
+
 
 # Introducción
 
-El presente estudio busca comprender cómo los estudiantes de secundaria en Uruguay organizan su tiempo diario, identificando posibles perfiles según variables personales, familiares y educativas. Se trabaja con datos de la Encuesta de Uso del Tiempo (EUT) 2013, considerando exclusivamente a quienes declararon asistir a educación secundaria.
+El presente estudio busca comprender cómo los usuarios de Netflix organizan su tiempo diario, identificando posibles perfiles según variables personales, familiares y educativas. Se trabaja con datos exclusivamente de usuarios que declararon estar suscritos a la plataforma.
 
 La estrategia metodológica combina análisis descriptivo con herramientas multivariadas. Inicialmente se realizó una limpieza de la base de datos y un resumen estadístico de las variables clave. Luego, se exploraron asociaciones entre variables mediante análisis bivariado y correlaciones. A partir de allí, se aplicó Análisis de Componentes Principales (PCA) para reducir la dimensionalidad y facilitar la interpretación de patrones complejos.
 
-Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de estudiantes según sus condiciones socioeducativas.
+Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de usuarios según sus condiciones y como estas se relacionan con el uso de tiempo en la plataforma de Netflix
 
 Sobre la base de estas exploraciones, se implementaron distintas técnicas de agrupamiento (clustering), tanto jerárquicas como no jerárquicas, para detectar perfiles homogéneos de estudiantes. Posteriormente, se evaluó el ajuste de los datos a una distribución normal multivariante, aspecto fundamental para la validez de ciertas técnicas estadísticas. Finalmente, se utilizó el análisis discriminante como herramienta de validación para examinar la capacidad predictiva de las variables y consolidar la interpretación de los grupos encontrados.
 
@@ -45,19 +48,19 @@ Este trabajo emplea un enfoque cuantitativo basado en técnicas multivariadas ap
 
 Para abordar las variables categóricas del estudio, se incorporó el Análisis de Correspondencias. En una primera etapa, se utilizaron gráficos de mosaico para explorar visualmente la dependencia entre pares de variables cualitativas como sexo, años de educación, trabajo remunerado, acceso a tecnologías o servicios, entre otras. Luego, mediante el Análisis de Correspondencias Simple (CA), se estudió la relación entre la edad y el año educativo, obteniendo una representación bidimensional que reveló asociaciones significativas entre ambas variables. Finalmente, el Análisis de Correspondencias Múltiple (MCA), aplicado sobre la tabla disyuntiva y la tabla de Burt, permitió visualizar el posicionamiento relativo de múltiples categorías y su contribución a las dimensiones latentes del espacio factorial.
 
-Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de estudiantes con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.
+Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de usuarios con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.
 
 Dado que muchas técnicas multivariadas presuponen normalidad multivariante, se evaluó esta condición a través de simulaciones, gráficos Q-Q y distancias de Mahalanobis. Finalmente, se aplicó análisis discriminante lineal para validar la segmentación obtenida, evaluando la capacidad de las variables seleccionadas para predecir correctamente la pertenencia a los grupos definidos.
 
 # Datos:
 
-El conjunto de variables disponibles es amplio y permite caracterizar a cada individuo tanto desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) como de su contexto sociodemográfico y familiar.
+El conjunto de variables disponibles es amplio y permite caracterizar a cada usuarios desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) y de su contexto sociodemográfico y familiar.
 
 Se incluyen variables continuas como las horas diarias dedicadas a dormir, estudiar, alimentarse, asearse, realizar tareas domésticas, asistir a consultas médicas o participar en actividades recreativas. También se consideran variables de contexto como la edad del encuestado, el año educativo que cursa, el logaritmo del ingreso mensual del hogar y el promedio de años de educación de los adultos del hogar.
 
 A nivel categórico, hay variables dicotómicas que indican la presencia o ausencia de determinadas condiciones (por ejemplo: si trabaja remuneradamente, si el hogar recibe Asignación Familiar, si tiene computadora o televisión con abono, si vive en Montevideo, etc.). Otras variables permiten identificar la composición del hogar en términos de activos, inactivos y personas con discapacidad.
 
-Este conjunto de variables brinda una visión multidimensional de la situación de los jóvenes, haciendo posible identificar perfiles diferenciados de uso del tiempo y asociarlos a factores sociales y económicos del hogar.
+Este conjunto de variables brinda una visión multidimensional de la situación de los usuarios, haciendo posible identificar perfiles diferenciados de uso del tiempo y asociarlos a factores sociales y económicos del hogar.
 
 ```{r}
 # Cargar librerias a usar
@@ -96,7 +99,7 @@ library(clusterCrit)
 # Tabla descriptiva de los datos
 vars <- tibble(
   Variable = c(
-    "h_dormir", "h_alimentarse", "h_cuipersonal", "h_estudio",
+    "h_dormir", "h_alimentarse", "h_cuipersonal", "h_netflix",
     "h_domesticas", "h_ocio", "h_medico", "sexo", "edad",
     "educ_in", "anio_ed", "publ", "trabaja_rem",
     "hijos", "celular", "log_ing", "AFAM_h", "aniosed_h",
@@ -107,7 +110,7 @@ vars <- tibble(
     "Horas dedicadas a dormir",
     "Horas dedicadas a alimentarse",
     "Horas dedicadas al cuidado personal y el aseo",
-    "Horas dedicadas al estudio",
+    "Horas dedicadas a la plataforma Netflix",
     "Horas dedicadas a las tareas domésticas",
     "Horas destinadas a las actividades de recreación y ocio",
     "Horas destinadas a consultas médicas",
@@ -176,18 +179,25 @@ kable(
 
 # Análisis descriptivo:
 
-Nuestro objetivo es caracterizar la distribución de las principales variables de interés horas dedicadas a dormir, estudiar, ocio, tareas domésticas y otras actividades así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior.
+Nuestro objetivo es caracterizar la distribución de las principales variables de interés horas dedicadas a dormir, a consumir Netflix, ocio, tareas domésticas y otras actividades así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior.
 
 ```{r}
 #| warning: false
 #| output: false
 
 # Datos
+library(dplyr)
+
 datos <- read.table(here("archivos", "Multivariado", "EUT2013_estudiantessecundaria.txt"),
                     header = TRUE,
                     sep = ",",
                     stringsAsFactors = FALSE)
-datos
+
+
+datos <- datos %>%
+  rename(h_netflix = h_estudio)
+
+
 ```
 
 ## Pre-Procesamiento:
@@ -214,7 +224,7 @@ library(dplyr)
 library(skimr)
 
 cuantitativas <- dplyr::select(datos,
-                                h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+                                h_dormir, h_alimentarse, h_cuipersonal, h_netflix,
                                 h_domesticas, h_ocio, h_medico, edad, anio_ed,
                                 log_ing, aniosed_h, act, inact, disc_h)
 
@@ -227,11 +237,11 @@ skimmed <- skim_without_charts(cuantitativas)
 
 creamos un nuevo objeto llamado `cuantitativas` que solo contiene las variables numéricas que nos interesan estudiar: horas dedicadas a dormir (`h_dormir`), alimentarse, cuidado personal, estudio, tareas domésticas, ocio y atención médica; junto con datos sociodemográficos como edad, año que cursa (`anio_ed`), logaritmo del ingreso del hogar (`log_ing`), años de escolaridad del hogar (`aniosed_h`), y marcadores de actividad (`act`, `inact`) y discapacidad (`disc_h`). De esta forma aislamos en un solo data frame todas las medidas cuantitativas relevantes para nuestro análisis descriptivo, facilitando los siguientes pasos de resumen y visualización.
 
-A continuación, utilizamos `summary(cuantitativas)` para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los estudiantes duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de estudio oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos jóvenes dedicaron tiempo a citas médicas en la jornada registrada
+A continuación, utilizamos `summary(cuantitativas)` para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los usuarios de Netflix duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de consumo de Netflix oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos usuarios dedicaron tiempo a citas médicas en la jornada registrada
 
 ## Visualización univariada
 
-La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los estudiantes.
+La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los usuarios de Netflix
 
 ```{r}
 #| label: fig-dormir
@@ -248,7 +258,7 @@ ggplot(datos, aes(x = h_dormir)) +
 
 ```
 
-Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado que podrían ser útiles para estudios posteriores sobre salud y bienestar.
+Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado.
 
 ```{r}
 #| label: fig-estudio-sexo
@@ -259,20 +269,20 @@ Para observar la distribución de las horas dedicadas a dormir, se construyó un
 
 
 
-ggplot(datos, aes(x = as.factor(sexo), y = h_estudio, fill = as.factor(sexo))) +
+ggplot(datos, aes(x = as.factor(sexo), y = h_netflix, fill = as.factor(sexo))) +
   geom_boxplot() +
   scale_fill_manual(
     values = c("0" = "#FDBAA3",  # Mujer (rosado)
                "1" = "#90CAF9")  # Hombre (celeste)
   ) +
-  labs(title = "Horas de estudio según sexo",
+  labs(title = "Horas de consumo de Netflix según sexo",
        x = "Sexo (0=Mujer, 1=Hombre)",
-       y = "Horas de estudio") +
+       y = "Horas de consumo de Netflix") +
   guides(fill = "none") 
 
 ```
 
-También se analizó el tiempo de estudio en relación al sexo mediante un diagrama de caja (Figura 2).Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta, eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo al estudio, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.
+También se analizó el tiempo de consumo de Netflix en relación al sexo mediante un diagrama de caja (Figura 2). Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta, eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo a consumir Netflix, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.
 
 ```{r}
 #| label: fig-horas-actividad
@@ -286,7 +296,7 @@ library(dplyr)
 library(tidyr)
 
 cuanti_long <- cuantitativas %>%
-  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio, h_domesticas,
+  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_netflix, h_domesticas,
                 h_ocio, h_medico) %>%
   pivot_longer(cols = everything(), names_to = "actividad", values_to = "horas")
 
@@ -299,7 +309,7 @@ ggplot(cuanti_long, aes(x = horas)) +
 
 ```
 
-Para ampliar el análisis, se graficó la distribución de horas dedicadas a todas las actividades del tiempo libre y obligaciones básicas (Figura 3). El histograma facetado permite ver que dormir y estudiar tienen distribuciones más concentradas, mientras que actividades como tareas médicas o tareas domésticas tienden a presentar mayor asimetría y frecuencias bajas, con muchos estudiantes que no realizaron esas actividades durante el día observado.
+Para ampliar el análisis, se graficó la distribución de horas dedicadas a todas las actividades del tiempo libre y obligaciones básicas (Figura 3). El histograma facetado permite ver que dormir y consumir Netflix tienen distribuciones más concentradas, mientras que actividades como tareas médicas o tareas domésticas tienden a presentar mayor asimetría y frecuencias bajas, con muchos estudiantes que no realizaron esas actividades durante el día observado.
 
 ```{r}
 #| label: tab-promedios-sexo
@@ -315,7 +325,7 @@ library(knitr)
 library(kableExtra)
 
 cuantitativas_con_sexo <- datos %>%
-  dplyr::select(sexo, h_dormir, h_estudio, h_ocio, log_ing) %>%
+  dplyr::select(sexo, h_dormir, h_netflix, h_ocio, log_ing) %>%
   group_by(sexo) %>%
   summarise(across(everything(), list(media = mean, mediana = median), na.rm = TRUE))
 
@@ -327,7 +337,7 @@ cuantitativas_con_sexo %>%
 
 ```
 
-Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, estudio, ocio e ingreso del hogar. La tabla correspondiente se muestra en la tabla 2. Los resultados indican que las mujeres duermen y estudian más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.
+Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, horas de consumo de Netflix, horas de ocio e ingreso del hogar. La tabla correspondiente se muestra en la tabla 2. Los resultados indican que las mujeres duermen y consumen Netflix más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.
 
 \newpage
 
@@ -362,7 +372,7 @@ kbl(correlaciones_red,
 
 ```
 
-Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la figura 4. En él los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de estudio tienden a estar inversamente correlacionadas con las de sueño (quienes estudian más duermen un poco menos) y positivamente con las de ocio
+Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la figura 4. En él los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de consumo de Netflix tienden a estar inversamente correlacionadas con las de sueño (quienes consumen mas Netflix duermen un poco menos) y positivamente con las de ocio
 
 ```{r}
 #| label: fig-correlacion
@@ -388,7 +398,7 @@ También se exploraron asociaciones específicas. En la Figura 5 se presenta un 
 #| fig-pos: "H"
 
 
-ggplot(datos, aes(x = as.factor(trabaja_rem), y = h_estudio, fill = as.factor(trabaja_rem))) +
+ggplot(datos, aes(x = as.factor(trabaja_rem), y = h_netflix, fill = as.factor(trabaja_rem))) +
   geom_boxplot() +
   scale_fill_manual(
     values = c("0" = "#FDBAA3",  # No trabaja
@@ -424,7 +434,7 @@ library(FactoMineR)
 library(factoextra)
 
 cuanti <- dplyr::select(cuantitativas,
-                        h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+                        h_dormir, h_alimentarse, h_cuipersonal, h_netflix,
                         h_domesticas, h_ocio, h_medico, edad, anio_ed, log_ing, aniosed_h)
 
 
@@ -524,7 +534,7 @@ Luego los angulos pequeños entre flechas indican que las variables estan positi
 
 Luego cos2 da la calidad de representación de cada variable en el plano. El color rojo indica alta calidad de representación, luego el color verde indica una representacion intermedia, y el color violeta indica baja calidad
 
-Algunos ejemplos son que edad, aniosed_h, log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir, h_medico están mal representadas (azules/violetas). edad esta bien representada )roja= porque contribuye a la dimension 1, luego aniosed_h y log_ing estan bien representadas, y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_estudio es bastante perpendicular a la variable edad, por lo que no parecen tener relación directa. Por ultimo h_dormir esta mal representada en este plano.
+Algunos ejemplos son que edad, aniosed_h, log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir, h_medico están mal representadas (azules/violetas). edad esta bien representada )roja= porque contribuye a la dimension 1, luego aniosed_h y log_ing estan bien representadas, y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_netflix es bastante perpendicular a la variable edad, por lo que no parecen tener relación directa. Por ultimo h_dormir esta mal representada en este plano.
 
 Luego, exploramos qué variables contribuyen más a cada uno de los componentes. Esto es importante porque nos permite interpretar el significado de cada eje principal del análisis.
 
@@ -767,7 +777,7 @@ Esta técnica tiene múltiples aplicaciones. Por un lado, permite reducir la com
 
 En esta investigación, el análisis de clúster se emplea para identificar grupos de jóvenes con patrones similares de uso del tiempo y características sociodemográficas. Se utilizó un enfoque jerárquico aglomerativo con el método de Ward y distancia euclídea, adecuado para minimizar la varianza interna de los grupos formados.
 
-Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como h_dormir, h_estudio, h_ocio, h_domesticas, h_medico, etc.) como del contexto sociodemográfico (edad, anio_ed, log_ing, aniosed_h). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.
+Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como h_dormir, h_netflix, h_ocio, h_domesticas, h_medico, etc.) como del contexto sociodemográfico (edad, anio_ed, log_ing, aniosed_h). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.
 
 A continuación, se aplicará el análisis jerárquico paso a paso, presentando las visualizaciones necesarias para justificar la elección del número de clústeres, así como una caracterización de los grupos resultantes.
 
@@ -779,7 +789,7 @@ Las reglas de detención son criterios estadísticos que ayudan a decidir cuánt
 #| warning: false
 #| output: false
 # Datos de cluster
-datos_cluster <- datos[, c("h_dormir", "h_alimentarse", "h_cuipersonal", "h_estudio", "h_domesticas", "h_ocio", "h_medico", "log_ing", "aniosed_h", "edad","anio_ed")]
+datos_cluster <- datos[, c("h_dormir", "h_alimentarse", "h_cuipersonal", "h_netflix", "h_domesticas", "h_ocio", "h_medico", "log_ing", "aniosed_h", "edad","anio_ed")]
 
 datos_cluster
 
@@ -966,7 +976,7 @@ datos$cluster <- as.factor(grupos)
 # Promedios por grupo
 tabla_clusters <- datos %>%
   group_by(cluster) %>%
-  summarise(across(c(h_dormir, h_alimentarse, h_cuipersonal, h_estudio, h_domesticas,
+  summarise(across(c(h_dormir, h_alimentarse, h_cuipersonal, h_netflix, h_domesticas,
                      h_ocio, h_medico, sexo, edad, educ_in, anio_ed, publ, trabaja_rem),
                    mean, na.rm = TRUE))
 
@@ -1144,7 +1154,7 @@ Es un algoritmo de clustering jerárquico divisivo, que sigue la lógica de empe
 ```{r}
 #|output: false
 cuanti_diana <- datos %>%
-  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+  dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_netflix,
          h_domesticas, h_ocio, h_medico, edad, anio_ed,
          log_ing, aniosed_h)
 
@@ -1254,7 +1264,7 @@ library(kableExtra)
 
 # 1. Seleccionar las variables cuantitativas
 cuanti_diana <- datos %>%
-   dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_estudio,
+   dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_netflix,
                  h_domesticas, h_ocio, h_medico, edad, anio_ed, log_ing, aniosed_h)
 
 # 2. Estandarizar variables
@@ -1770,15 +1780,20 @@ datos <- read.table(here("archivos", "Multivariado", "EUT2013_estudiantessecunda
                     sep = ",",
                     stringsAsFactors = FALSE)
 
+datos <- datos %>%
+  rename(h_netflix = h_estudio)
+
 
 datos <- datos[!is.na(datos$aniosed_h), ]
 sum(is.na(datos)) # eliminamos los nulos
-
 head(datos)
+
 
 # Funcion de Distribucion Acumulada:
 # Crear la función ECDF
-f_ecdf <- ecdf(datos$h_estudio)
+f_ecdf <- ecdf(datos$h_netflix)
+#sum(is.na(datos$h_netflix))
+
 
 # Graficar la función ECDF
 plot(f_ecdf,
@@ -1791,28 +1806,28 @@ plot(f_ecdf,
      do.points = FALSE)
 
 
-plot(ecdf(datos$h_estudio))
+plot(ecdf(datos$h_netflix))
 ```
 
-La variable dependiente Y_estudio fue construida a partir de la variable original h_estudio, que representa el número de horas dedicadas al estudio y se presenta como una variable cuantitativa continua. Convertimos h_estudio en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para hacer esto usamos los terciles de la distribución de h_studio, los cuales particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron: De 0.0 a 0.5 horas: categoría “poco” De 0.5 a 5 horas: categoría “intermedio” De 5 a 11 horas: categoría “mucho” Las frecuencias observadas en cada categoría fueron: 241 individuos en “poco”, 265 en “intermedio”, y 180 en “mucho”, esta particion es balanceada.
+La variable dependiente Y_estudio fue construida a partir de la variable original h_netflix, que representa el número de horas dedicadas al estudio y se presenta como una variable cuantitativa continua. Convertimos h_netflix en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para hacer esto usamos los terciles de la distribución de h_netflix, los cuales particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron: De 0.0 a 0.5 horas: categoría “poco” De 0.5 a 5 horas: categoría “intermedio” De 5 a 11 horas: categoría “mucho” Las frecuencias observadas en cada categoría fueron: 241 individuos en “poco”, 265 en “intermedio”, y 180 en “mucho”, esta particion es balanceada.
 
 ```{r}
 #| warning: false
 #| output: false
-# Calcular los terciles de h_estudio
-terciles <- quantile(datos$h_estudio, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
+# Calcular los terciles de h_netflix
+terciles <- quantile(datos$h_netflix, probs = c(0, 1/3, 2/3, 1), na.rm = TRUE)
 
 
 
 # Crear variable Y categórica basada en esos cortes de terciles
 datos$Y_estudio <- cut(
-  datos$h_estudio,
+  datos$h_netflix,
   breaks = terciles,
   include.lowest = TRUE,
   labels = c("poco", "intermedio", "mucho")
 )
 
-datos$h_estudio <- NULL # quitar h_estudio, que ya esta transformada
+datos$h_netflix <- NULL # quitar h_netflix, que ya esta transformada
 
 head(datos)
 
