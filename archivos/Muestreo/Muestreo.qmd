@@ -683,6 +683,371 @@ print(media_clusters)
 
 
 
+Coeficiente de heterogeneidad intra-cluster 
+
+```{r}
+# Usando la librería 'ICC' o calculándolo a través de un modelo lineal
+if(!require(ICC)) install.packages("ICC")
+library(ICC)
+
+# Calculamos el ICC (rho) para la variable 'balance' según los 'cluster_id'
+# (Usando los clusters que simulamos en el paso anterior)
+resultado_icc <- ICCbare(x = factor(cluster_id), y = balance, data = bank_data)
+
+print(paste("El Coeficiente de Correlación Intraclase (rho) es:", round(resultado_icc, 4)))
+```
 
 
+
+
+Muestreo en dos etapas:
+
+```{r}
+library(sampling)
+library(tidyverse)
+
+library(tidyverse)
+library(survey)
+
+# 1. Definir los parámetros
+n_upm <- 5  # Número de sucursales a elegir (Etapa 1)
+n_usm <- 10 # Número de clientes por sucursal (Etapa 2)
+
+# 2. ETAPA 1: Seleccionar las sucursales (UPM)
+set.seed(123)
+sucursales_poblacion <- unique(bank_data$cluster_id)
+sucursales_elegidas <- sample(sucursales_poblacion, size = n_upm)
+
+# 3. ETAPA 2: Seleccionar clientes dentro de esas sucursales (USM)
+muestra_2etapas <- bank_data %>%
+  filter(cluster_id %in% sucursales_elegidas) %>%
+  group_by(cluster_id) %>%
+  sample_n(size = n_usm) %>% # Elegimos 10 de cada una
+  ungroup()
+
+# 4. Verificar la muestra
+print(table(muestra_2etapas$cluster_id))
+
+```
+
+```{r}
+library(tidyverse)
+library(survey)
+
+# 1. Parámetros del diseño
+n_upm <- 5   # Cuántas sucursales elegimos
+n_usm <- 10  # Cuántos clientes por sucursal
+N_total_upm <- 20 # Total de sucursales en la población
+
+# 2. Selección de la muestra
+set.seed(123)
+sucursales_elegidas <- sample(unique(bank_data$cluster_id), size = n_upm)
+
+muestra_2etapas <- bank_data %>%
+  filter(cluster_id %in% sucursales_elegidas) %>%
+  group_by(cluster_id) %>%
+  mutate(Mi = n()) %>%               # Clientes totales en ESTA sucursal
+  sample_n(size = n_usm) %>%         # Seleccionamos 10
+  ungroup()
+
+# 3. Cálculo manual de Probabilidades y Pesos (Aquí corregimos el error)
+muestra_2etapas <- muestra_2etapas %>%
+  mutate(
+    prob_etapa1 = n_upm / N_total_upm,   # P(seleccionar sucursal)
+    prob_etapa2 = n_usm / Mi,            # P(seleccionar cliente | sucursal)
+    pi_total = prob_etapa1 * prob_etapa2, # Probabilidad de inclusión global
+    peso_w = 1 / pi_total                 # Factor de expansión (HT)
+  )
+
+# 4. Verificación: La suma de pesos debe ser cercana al N poblacional
+cat("Suma de pesos (debe ser aprox", nrow(bank_data), "):", sum(muestra_2etapas$peso_w), "\n")
+
+# 5. Diseño y Estimación
+diseno_final <- svydesign(
+  id = ~cluster_id, 
+  weights = ~peso_w, 
+  data = muestra_2etapas
+)
+
+resultado <- svymean(~balance, diseno_final)
+print(resultado)
+
+
+```
+
+
+
+
+Supuestos de Invarianza y de Independencia
+
+
+Independencia:
+
+```{r}
+# Si rho es cercano a 0, hay "cuasi-independencia"
+# Si rho es alto, confirmamos que el diseño de clusters es necesario
+library(ICC)
+ICCbare(x = factor(cluster_id), y = balance, data = muestra_2etapas)
+```
+
+Invarianza
+
+```{r}
+# Comparamos la media del balance en dos dominios (con y sin préstamo personal)
+# Si hay invarianza, el comportamiento del diseño debe ser similar en ambos
+
+dominio_prestamo <- subset(diseno_final, loan == "yes")
+dominio_no_prestamo <- subset(diseno_final, loan == "no")
+
+mean_yes <- svymean(~balance, dominio_prestamo)
+mean_no <- svymean(~balance, dominio_no_prestamo)
+
+# Visualización de Invarianza de la Media
+res_inv <- data.frame(
+  Grupo = c("Con Préstamo", "Sin Préstamo"),
+  Media = c(coef(mean_yes), coef(mean_no)),
+  SE = c(SE(mean_yes), SE(mean_no))
+)
+
+ggplot(res_inv, aes(x = Grupo, y = Media, fill = Grupo)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = Media - 1.96*SE, ymax = Media + 1.96*SE), width = 0.2) +
+  theme_minimal() +
+  labs(title = "Test de Invarianza por Dominio",
+       subtitle = "Intervalos de confianza basados en el diseño de dos etapas")
+```
+
+```{r}
+# Calculamos residuos del diseño
+muestra_2etapas$residuos <- residuals(svyglm(balance ~ 1, design = diseno_final))
+
+# Correlación entre Peso y Residuo
+# Un valor cercano a 0 indica que el peso es invariante respecto al error
+cor_test <- cor.test(muestra_2etapas$peso_w, muestra_2etapas$residuos)
+print(paste("Correlación Peso-Residuo:", round(cor_test$estimate, 4)))
+
+ggplot(muestra_2etapas, aes(x = peso_w, y = residuos)) +
+  geom_point(alpha = 0.5, color = "darkgreen") +
+  geom_smooth(method = "lm", color = "red") +
+  labs(title = "Diagnóstico de Invarianza de Pesos",
+       x = "Peso de Diseño (w_i)", y = "Residuos del Modelo")
+```
+
+
+```{r}
+# Calculamos la varianza por cada sucursal (cluster) seleccionada
+varianza_clusters <- muestra_2etapas %>%
+  group_by(cluster_id) %>%
+  summarise(var_balance = var(balance), n = n())
+
+# Test de Levene para homogeneidad de varianza entre clusters
+# Si p > 0.05, aceptamos el supuesto de invarianza de la varianza
+if(!require(car)) install.packages("car")
+car::leveneTest(balance ~ factor(cluster_id), data = muestra_2etapas)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+library(survey)
+library(tidyverse)
+
+# 1. Aseguramos que el diseño esté bien declarado
+# (Usando los pesos calculados en el paso anterior)
+diseno_final <- svydesign(
+  id = ~cluster_id, 
+  weights = ~peso_w, 
+  data = muestra_2etapas
+)
+
+# 2. Calculamos la media y guardamos el objeto res_media
+res_media <- svymean(~balance, diseno_final)
+
+# 3. Cálculo de Sesgo y Precisión
+valor_real <- mean(bank_data$balance) # Valor real de la población
+valor_est  <- coef(res_media)[[1]]     # Valor que estimamos con la muestra
+error_est  <- SE(res_media)[[1]]       # Error estándar
+
+sesgo_abs <- valor_est - valor_real
+sesgo_rel <- (sesgo_abs / valor_real) * 100
+
+# 4. Cálculo de Intervalos de Confianza (95%)
+ic <- confint(res_media)
+
+# --- REPORTE DE CALIDAD ---
+cat("--- RESULTADOS DEL ANÁLISIS ---\n")
+cat("Valor Real Poblacional: ", round(valor_real, 2), "\n")
+cat("Valor Estimado (Muestra):", round(valor_est, 2), "\n")
+cat("Sesgo Relativo:         ", round(sesgo_rel, 2), "%\n")
+cat("Intervalo de Confianza: [", round(ic[1], 2), ",", round(ic[2], 2), "]\n")
+```
+
+
+
+
+Efecto de Sesgo
+
+```{r}
+# Valor Real
+valor_real <- mean(bank_data$balance)
+
+# Valor Estimado (del diseño de dos etapas anterior)
+valor_est <- coef(res_media) # Extraemos la media del objeto de survey
+
+# Sesgo Absoluto y Relativo
+sesgo_abs <- valor_est - valor_real
+sesgo_rel <- (sesgo_abs / valor_real) * 100
+
+cat("Sesgo Absoluto:", sesgo_abs, "\n")
+cat("Sesgo Relativo:", sesgo_rel, "%\n")
+```
+
+
+
+
+Intervalos de Confianza
+
+```{r}
+# Intervalo de confianza al 95% para el diseño de dos etapas
+intervalo <- confint(res_media, level = 0.95)
+print(intervalo)
+
+# Visualización del IC
+res_plot <- data.frame(
+  Metodo = "Dos Etapas",
+  Media = as.numeric(valor_est),
+  Lower = intervalo[1],
+  Upper = intervalo[2]
+)
+
+ggplot(res_plot, aes(x = Metodo, y = Media)) +
+  geom_point(size = 4, color = "darkblue") +
+  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.2, lwd = 1) +
+  geom_hline(yintercept = valor_real, linetype = "dashed", color = "red") +
+  annotate("text", x = 1.2, y = valor_real, label = "Valor Real", color = "red") +
+  labs(title = "Intervalo de Confianza (95%)",
+       subtitle = "La línea roja es el valor real de la población",
+       y = "Balance Promedio") +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+Linearizacion de Taylor
+
+```{r}
+library(survey)
+
+# 1. Definimos el diseño (esto activa internamente Taylor para las varianzas)
+diseno_complejo <- svydesign(
+  id = ~cluster_id, 
+  weights = ~peso_w, 
+  data = muestra_2etapas
+)
+
+# 2. Cuando calculamos la media, R usa Taylor para el Error Estándar (SE)
+res_media <- svymean(~balance, diseno_complejo)
+
+# 3. Podemos ver la varianza linealizada explícitamente
+vcov(res_media)
+```
+
+
+```{r}
+# Calculamos el CV para ver la estabilidad de la linealización
+cv_estimacion <- cv(res_media)
+print(paste("El CV es:", round(cv_estimacion * 100, 2), "%"))
+```
+
+
+
+
+
+Estimador de una Razon R
+
+
+```{r}
+library(survey)
+
+# Supongamos que queremos la razón entre 'balance' (saldo) y 'age' (edad)
+# Es decir: ¿Cuánto saldo promedio hay por cada año de vida del cliente?
+
+# 1. Usamos el diseño de dos etapas que ya definimos
+razon_balance_edad <- svyratio(numerator = ~balance, 
+                               denominator = ~age, 
+                               design = diseno_final)
+
+# 2. Ver el resultado y su error estándar
+print(razon_balance_edad)
+
+# 3. Obtener el intervalo de confianza de la razón
+confint(razon_balance_edad)
+
+
+
+
+```
+```{r}
+
+# Razón Saldo / Duración de la llamada
+razon_campana <- svyratio(~balance, ~duration, diseno_final)
+print(razon_campana)
+```
+
+
+
+
+
+
+
+
+
+Jackknife y Bootstrap
+
+
+
+
+```{r}
+# Convertir el diseño a réplicas Jackknife (JK1 o JKn)
+diseno_jk <- as.svrepdesign(diseno_final, type = "JK1")
+
+# Estimar la media usando Jackknife
+media_jk <- svymean(~balance, diseno_jk)
+print(media_jk)
+```
+```{r}
+# Convertir a diseño de réplicas Bootstrap
+# R = 500 significa que hará 500 simulaciones
+diseno_boot <- as.svrepdesign(diseno_final, type = "bootstrap", replicates = 500)
+
+# Estimar la media usando Bootstrap
+media_boot <- svymean(~balance, diseno_boot)
+print(media_boot)
+```
+
+```{r}
+# Comparar Errores Estándar
+comparativa_se <- data.frame(
+  Metodo = c("Taylor", "Jackknife", "Bootstrap"),
+  SE = c(SE(res_media), SE(media_jk), SE(media_boot))
+)
+print(comparativa_se)
+```
 
