@@ -1051,3 +1051,463 @@ comparativa_se <- data.frame(
 print(comparativa_se)
 ```
 
+
+
+
+
+
+
+
+
+
+Problemas y sesgo de cobertura
+
+```{r}
+# 1. Definimos la población real
+media_poblacion_total <- mean(bank_data$balance)
+
+# 2. Simulamos un marco muestral DEFECTUOSO (Subcobertura)
+# Excluimos a los 'blue-collar' y 'services' (un error de base de datos)
+marco_muestral_incompleto <- bank_data %>%
+  filter(!job %in% c("blue-collar", "services"))
+
+# 3. Estimamos la media desde este marco defectuoso usando MAS
+set.seed(789)
+muestra_sesgada <- marco_muestral_incompleto[sample(nrow(marco_muestral_incompleto), 500), ]
+media_estimada_sesgada <- mean(muestra_sesgada$balance)
+
+# 4. Calculamos el Sesgo de Cobertura
+sesgo_cobertura <- media_estimada_sesgada - media_poblacion_total
+
+cat("Media Real:", round(media_poblacion_total, 2), "\n")
+cat("Media con Subcobertura:", round(media_estimada_sesgada, 2), "\n")
+cat("Sesgo de Cobertura Acumulado:", round(sesgo_cobertura, 2), "\n")
+```
+
+
+
+```{r}
+# Visualización del peligro: Precisión vs Exactitud
+ic_sesgado <- t.test(muestra_sesgada$balance)$conf.int
+
+df_cobertura <- data.frame(
+  Tipo = c("Muestra con Subcobertura"),
+  Media = media_estimada_sesgada,
+  LI = ic_sesgado[1],
+  LS = ic_sesgado[2]
+)
+
+ggplot(df_cobertura, aes(x = Tipo, y = Media)) +
+  geom_point(size = 4, color = "purple") +
+  geom_errorbar(aes(ymin = LI, ymax = LS), width = 0.2, color = "purple") +
+  geom_hline(yintercept = media_poblacion_total, linetype = "dashed", color = "red") +
+  annotate("text", x = 1, y = media_poblacion_total + 150, label = "Verdadera Población", color = "red") +
+  labs(title = "Efecto del Sesgo de Cobertura",
+       subtitle = "El IC no toca la realidad a pesar de parecer preciso",
+       y = "Balance") +
+  theme_minimal()
+```
+
+
+
+Inferencia basada en el diseño
+
+Estimador asististido por modelos 
+
+
+```{r}
+library(survey)
+
+# 1. Obtenemos los totales poblacionales (lo que el banco sabe de verdad)
+# Queremos que la muestra represente bien el total de personas y la suma de edades
+total_poblacion <- nrow(bank_data)
+total_edad_poblacion <- sum(bank_data$age)
+
+# Creamos un vector con los totales conocidos
+totales_poblacion <- c(`(Intercept)` = total_poblacion, age = total_edad_poblacion)
+
+# 2. Calibración (Estimador GREG)
+# Esto ajusta los pesos peso_w para que la muestra sea "perfecta" respecto a la edad
+diseno_calibrado <- calibrate(design = diseno_final, 
+                              formula = ~age, 
+                              population = totales_poblacion)
+
+# 3. Estimación asistida por modelo
+res_greg <- svymean(~balance, diseno_calibrado)
+print(res_greg)
+
+# Comparar pesos: antes vs después
+summary(weights(diseno_final))
+summary(weights(diseno_calibrado))
+```
+
+
+```{r}
+# Comparar Intervalos de Confianza
+comparativa_greg <- data.frame(
+  Metodo = c("HT (Dos Etapas)", "GREG (Calibrado)"),
+  Media = c(coef(res_media), coef(res_greg)),
+  SE = c(SE(res_media), SE(res_greg))
+)
+
+ggplot(comparativa_greg, aes(x = Metodo, y = Media)) +
+  geom_point(size = 4) +
+  geom_errorbar(aes(ymin = Media - 1.96*SE, ymax = Media + 1.96*SE), width = 0.2) +
+  geom_hline(yintercept = mean(bank_data$balance), color = "red", linetype = "dashed") +
+  labs(title = "Eficiencia del Estimador Asistido por Modelo (GREG)",
+       subtitle = "La calibración reduce el error estándar usando la variable 'Edad'") +
+  theme_minimal()
+```
+
+
+
+
+
+Calibracion de ponderadores
+
+```{r}
+library(survey)
+
+# 1. Definir los Totales de Control (Data del banco/censo)
+# Supongamos que conocemos el conteo real por nivel educativo
+totales_educacion <- table(bank_data$education)
+print(totales_educacion)
+
+# 2. Crear el objeto de totales para la función calibrate
+# Debe incluir el total de la población (Intercept) y los niveles de la variable
+pop_totals <- c(`(Intercept)` = nrow(bank_data), totales_educacion[-1]) 
+# Nota: se quita el primer nivel porque está implícito en el Intercept
+
+# 3. Aplicar Calibración (Raking / Lineal)
+diseno_calibrado <- calibrate(design = diseno_final, 
+                              formula = ~education, 
+                              population = pop_totals,
+                              calfun = "raking") # o "linear" para GREG
+
+# 4. Verificación: ¿La muestra ahora suma el total real?
+svytotal(~education, diseno_calibrado)
+```
+
+
+
+```{r}
+# Comparar el peso promedio antes y después
+muestra_2etapas$peso_original <- weights(diseno_final)
+muestra_2etapas$peso_calibrado <- weights(diseno_calibrado)
+
+# Visualizar la dispersión de los nuevos pesos
+ggplot(muestra_2etapas, aes(x = peso_original, y = peso_calibrado, color = education)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
+  labs(title = "Ajuste de Pesos por Calibración",
+       subtitle = "Los puntos sobre la línea no cambiaron; los alejados se ajustaron para corregir la muestra",
+       x = "Peso Original (Diseño)", y = "Peso Calibrado") +
+  theme_minimal()
+```
+
+
+
+
+
+
+Regression Thinking
+
+```{r}
+library(survey)
+
+# 1. Definir el modelo de regresión dentro del diseño
+# Queremos predecir 'balance' en función de 'age'
+modelo_greg <- svyglm(balance ~ age, design = diseno_final)
+
+# 2. El 'Regression Thinking' nos dice que el total estimado es:
+# Total = (Predicción para toda la población) + (Suma de los errores en la muestra)
+total_poblacion_age <- sum(bank_data$age)
+N_pob <- nrow(bank_data)
+
+# Usamos predict con el total poblacional para obtener la estimación GREG
+estimacion_greg <- predict(modelo_greg, 
+                           newdata = data.frame(age = mean(bank_data$age)))
+
+print(estimacion_greg)
+```
+
+```{r}
+muestra_2etapas$prediccion <- predict(modelo_greg, type = "response")
+muestra_2etapas$residuos <- muestra_2etapas$balance - muestra_2etapas$prediccion
+
+ggplot(muestra_2etapas, aes(x = age, y = balance)) +
+  geom_point(alpha = 0.3) +
+  geom_smooth(method = "lm", color = "blue") +
+  geom_segment(aes(xend = age, yend = prediccion), color = "red", alpha = 0.2) +
+  labs(title = "Pensamiento de Regresión: Balance vs Edad",
+       subtitle = "Las líneas rojas son los residuos que el estimador debe capturar",
+       x = "Edad", y = "Saldo") +
+  theme_minimal()
+```
+
+
+
+Post-estratificacion 
+
+
+```{r}
+library(survey)
+
+# 1. Definir los Totales de Control (Data real de bank_data)
+# Estos son los valores que el banco sabe que son "La Verdad"
+pob_marital <- bank_data %>% 
+  group_by(marital) %>% 
+  summarise(Freq = n())
+
+# 2. Aplicar la Post-estratificación al diseño de dos etapas
+diseno_post <- postStratify(
+  design = diseno_final, 
+  strata = ~marital, 
+  population = pob_marital
+)
+
+# 3. Comparar estimaciones
+res_antes <- svymean(~balance, diseno_final)
+res_despues <- svymean(~balance, diseno_post)
+
+print(res_antes)
+print(res_despues)
+```
+
+```{r}
+# Si el Deff es mucho mayor a 1, la post-estratificación está "inflando" mucho los pesos
+deff_post <- svymean(~balance, diseno_post, deff = TRUE)
+print(deff_post)
+```
+
+
+
+Raking
+
+```{r}
+library(survey)
+
+library(survey)
+
+# 1. Aseguramos que los nombres de las columnas en los totales coincidan exactamente
+# La columna de frecuencia DEBE llamarse 'Freq'
+pop_educacion <- data.frame(
+  education = c("primary", "secondary", "tertiary", "unknown"),
+  Freq = c(6851, 23202, 13301, 1857)
+)
+
+pop_civil <- data.frame(
+  marital = c("divorced", "married", "single"),
+  Freq = c(5207, 27214, 12790)
+)
+
+# 2. Aplicar el Raking (Nota el PUNTO en los nombres de los argumentos)
+diseno_raking <- rake(
+  design = diseno_final,
+  sample.margins = list(~education, ~marital), 
+  population.margins = list(pop_educacion, pop_civil)
+)
+
+# 3. Verificación de convergencia y resultados
+res_raking <- svymean(~balance, diseno_raking)
+print(res_raking)
+
+# 4. Comprobar que los marginales ahora son perfectos
+svytotal(~education, diseno_raking)
+svytotal(~marital, diseno_raking)
+```
+
+
+
+Trimming
+
+
+```{r}
+library(survey)
+
+# 1. Aplicar el recorte (Trimming)
+# lower: límite inferior | upper: límite superior
+# strict = TRUE: obliga a que los pesos sumen exactamente el N poblacional tras el recorte
+diseno_trimmed <- trimWeights(
+  diseno_raking, 
+  lower = 0.3, 
+  upper = 3.0, 
+  strict = TRUE
+)
+
+# 2. Comparar la distribución de pesos
+summary(weights(diseno_raking))
+summary(weights(diseno_trimmed))
+
+# 3. Ver el impacto en la estimación del balance
+res_antes <- svymean(~balance, diseno_raking)
+res_despues <- svymean(~balance, diseno_trimmed)
+
+print(res_antes)
+print(res_despues)
+```
+
+```{r}
+# Comparar el Error Estándar
+cat("SE antes del trimming:", SE(res_antes), "\n")
+cat("SE después del trimming:", SE(res_despues), "\n")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+No Respuesta:
+
+
+```{r}
+# Simulamos una columna de 'Respuesta' (1 = respondió, 0 = no respondió)
+# Generalmente, los clientes con menos saldo responden menos (un sesgo común)
+set.seed(123)
+muestra_2etapas$responde <- rbinom(nrow(muestra_2etapas), 1, prob = 0.8)
+
+# 1. Calculamos la Tasa de Respuesta por estrato o cluster
+tasas_respuesta <- muestra_2etapas %>%
+  group_by(cluster_id) %>%
+  summarise(tasa_r = mean(responde))
+
+# 2. Ajustamos los pesos originales dividiéndolos por la tasa de respuesta
+muestra_respondientes <- muestra_2etapas %>%
+  filter(responde == 1) %>%
+  left_join(tasas_respuesta, by = "cluster_id") %>%
+  mutate(peso_ajustado_nr = peso_w / tasa_r)
+
+# Verificación: La suma de pesos ajustados debe acercarse a la población original
+cat("Suma pesos ajustados:", sum(muestra_respondientes$peso_ajustado_nr))
+```
+
+```{r}
+# Simulamos valores perdidos (NA) en el balance
+muestra_respondientes$balance_con_na <- muestra_respondientes$balance
+muestra_respondientes$balance_con_na[sample(1:nrow(muestra_respondientes), 5)] <- NA
+
+# Usamos imputación simple por mediana dentro de grupos parecidos (ej. por trabajo)
+muestra_imputada <- muestra_respondientes %>%
+  group_by(job) %>%
+  mutate(balance_final = ifelse(is.na(balance_con_na), 
+                                 median(balance_con_na, na.rm = TRUE), 
+                                 balance_con_na)) %>%
+  ungroup()
+```
+
+```{r}
+# Media de los que respondieron (sin ajuste)
+media_cruda <- mean(muestra_respondientes$balance)
+# Media con pesos ajustados por no respuesta
+media_corregida <- sum(muestra_respondientes$balance * muestra_respondientes$peso_ajustado_nr) / 
+                   sum(muestra_respondientes$peso_ajustado_nr)
+
+cat("Efecto del sesgo de no respuesta:", media_corregida - media_cruda)
+```
+
+
+
+
+
+"Mecanismos de Pérdida" (MCAR, MAR, MNAR)
+
+```{r}
+# Creamos un modelo logístico para predecir quién responde
+# Si las variables son significativas, estamos ante un caso MAR (corregible)
+modelo_no_respuesta <- glm(responde ~ age + job + education, 
+                           data = muestra_2etapas, 
+                           family = binomial)
+
+summary(modelo_no_respuesta)
+```
+
+```{r}
+ggplot(muestra_2etapas, aes(x = age, fill = as.factor(responde))) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Análisis de No Respuesta por Edad",
+       subtitle = "Si las curvas son muy diferentes, hay un sesgo de selección",
+       fill = "¿Respondió?") +
+  theme_minimal()
+```
+
+
+Comentar sobre estimador BLUP
+
+
+
+
+
+
+
+
+
+
+Muestras no probabilisticas
+
+```{r}
+# 1. Creamos la muestra no probabilística (Sesgada)
+# Los jóvenes (age < 30) tienen 5 veces más probabilidad de participar
+muestra_no_prob <- bank_data %>%
+  mutate(prob_participar = ifelse(age < 30, 0.5, 0.1)) %>%
+  slice_sample(n = 500, weight_by = prob_participar)
+
+# 2. Comparamos las medias
+media_real <- mean(bank_data$balance)
+media_no_prob <- mean(muestra_no_prob$balance)
+
+cat("Media Real Poblacional: ", media_real, "\n")
+cat("Media Muestra No Probabilística: ", media_no_prob, "\n")
+cat("Sesgo de Selección: ", media_no_prob - media_real, "\n")
+```
+
+
+
+
+
+
+Estimacion en dominios:
+
+```{r}
+# Supongamos que nuestro "Dominio" de interés son los clientes con educación 'tertiary'
+
+# 1. Creamos el subconjunto del diseño (mantiene la estructura de pesos y clusters)
+diseno_terciario <- subset(diseno_final, education == "tertiary")
+
+# 2. Estimamos la media para ese dominio
+res_dominio <- svymean(~balance, diseno_terciario)
+
+# 3. Comparamos con la media global
+print(res_dominio)
+print(svymean(~balance, diseno_final))
+```
+
+```{r}
+# Saldo promedio por tipo de trabajo (Dominios)
+reporte_trabajos <- svyby(~balance, by = ~job, 
+                          design = diseno_final, 
+                          FUN = svymean)
+
+print(reporte_trabajos)
+
+# Visualización de Dominios con sus Intervalos de Confianza
+ggplot(reporte_trabajos, aes(x = reorder(job, balance), y = balance)) +
+  geom_point(size = 3, color = "darkgreen") +
+  geom_errorbar(aes(ymin = balance - 1.96*se, ymax = balance + 1.96*se), width = 0.2) +
+  coord_flip() +
+  labs(title = "Estimación por Dominios: Saldo por Profesión",
+       subtitle = "Los intervalos reflejan la incertidumbre de cada subgrupo",
+       x = "Profesión", y = "Saldo Promedio") +
+  theme_minimal()
+```
+
