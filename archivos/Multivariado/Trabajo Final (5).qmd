@@ -1,6 +1,6 @@
 ---
 title: "Tarea Final - Grupo 2"
-author: "Juan Apolo, Alen Cukier, Diego Da Rosa"
+author: "Diego Da Rosa"
 format:
   pdf:
     toc: true                 
@@ -951,10 +951,6 @@ cluster_jerarquico <- hclust(distancia, method = "ward.D")
 # Dendrograma
 plot(cluster_jerarquico, labels = FALSE, hang = -1, main = "Dendrograma del Clustering Jerárquico")
 
-
-
-
-
 ```
 
 En la figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clusters. Este gráfico es una herramienta clave para decidir, en conjunto con otros criterios, cuántos grupos conservar en el análisis final.
@@ -1158,6 +1154,10 @@ Es un algoritmo de clustering jerárquico divisivo, que sigue la lógica de empe
 
 ```{r}
 #|output: false
+
+
+
+
 cuanti_diana <- datos %>%
   dplyr::select(h_dormir, h_alimentarse, h_cuipersonal, h_netflix,
          h_domesticas, h_ocio, h_medico, edad, anio_ed,
@@ -1165,9 +1165,12 @@ cuanti_diana <- datos %>%
 
 cuanti_diana_std <- scale(cuanti_diana)
 
+
+datos
 ```
 
 Seleccionamos un conjunto de variables cuantitativas relevantes relacionadas con el uso del tiempo (horas de sueño, alimentación, consumo de Netflix, ocio, etc.) y variables sociodemográficas (edad, año cursado, ingreso logarítmico del hogar y escolaridad media del hogar). A continuación, se estandarizaron para asegurar comparabilidad entre escalas y evitar que variables con mayor rango numérico dominen el análisis.
+
 
 ```{r}
 #| label: fig-diana-completo
@@ -1818,7 +1821,7 @@ plot(f_ecdf,
 
 plot(ecdf(datos$h_netflix))
 ```
-DIEGOD
+
 La variable dependiente Y_netflix fue construida a partir de la variable original h_netflix la cual representaba el número de horas dedicadas al consumo de Netflix y se presenta como una variable cuantitativa continua. Con Y_netflix convertimos h_netflix en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para hacer esto usamos los terciles de la distribución de h_netflix, los cuales particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron: De 0.0 a 0.5 horas: categoría “poco” De 0.5 a 5 horas: categoría “intermedio” De 5 a 11 horas: categoría “mucho” Las frecuencias observadas en cada categoría fueron: 241 individuos en “poco”, 265 en “intermedio”, y 180 en “mucho”, esta particion es balanceada.
 
 ```{r}
