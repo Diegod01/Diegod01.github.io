@@ -11,6 +11,13 @@ diamonds
 
 
 
+
+
+
+
+
+
+
 Contiene datos sobre clientes de un banco (edad, trabajo, saldo, si aceptaron un préstamo).
 
 ```{r}
@@ -387,6 +394,84 @@ print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
 
 
 
+
+Estimacion por dominios
+
+```{r}
+library(survey)
+
+# 1. Definimos el diseño completo primero (importante)
+diseno_completo <- svydesign(
+  id = ~1, 
+  data = bank_data, 
+  fpc = rep(nrow(bank_data), nrow(bank_data))
+)
+
+# 2. Creamos el dominio (subpoblación de interés)
+# Ejemplo: Queremos estimar el balance solo para personas con educación 'tertiary'
+diseno_dominio <- subset(diseno_completo, education == "tertiary")
+
+# 3. Estimación
+estimacion_dom <- svymean(~balance, diseno_dominio)
+print(estimacion_dom)
+
+# 4. Comparación: ¿Cómo cambia el error si el dominio es pequeño?
+# Intentemos con un dominio más específico (ej. 'entrepreneur' con deuda)
+diseno_pequeno <- subset(diseno_completo, job == "entrepreneur" & loan == "yes")
+svymean(~balance, diseno_pequeno)
+```
+
+
+```{r}
+# Estimación del total en el dominio
+svytotal(~balance, diseno_dominio)
+```
+
+
+
+
+
+
+
+
+
+Diseño Sistemático
+
+```{r}
+
+
+# 1. Parámetros
+N <- nrow(bank_data)
+n <- 500
+k <- floor(N / n)
+
+# 2. Arranque aleatorio
+set.seed(123)
+arranque <- sample(1:k, 1)
+
+# 3. Selección de índices
+indices_sist <- seq(from = arranque, to = N, by = k)
+
+# 4. Crear la muestra
+muestra_sistematica <- bank_data[indices_sist, ]
+
+# Verificación
+nrow(muestra_sistematica)
+```
+
+```{r}
+library(survey)
+
+# Definimos el diseño sistemático en 'survey'
+# Se suele aproximar como MAS si no hay periodicidad
+diseno_sist <- svydesign(
+  id = ~1, 
+  data = muestra_sistematica, 
+  fpc = rep(N, nrow(muestra_sistematica))
+)
+
+svymean(~balance, diseno_sist)
+```
 
 
 
