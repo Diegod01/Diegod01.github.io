@@ -101,12 +101,12 @@ media_real
 ```
 
 
-### Muestreo Aleatorio Simple
+## Muestreo Aleatorio Simple sin Reemplazo
 
 Todos los clientes de tu base de datos tienen exactamente la misma probabilidad de ser seleccionados, la cual es $\pi_i = \frac{n}{N}$, es decir, la probabilidad de seleccionar al individuo i es el tamaño de la muestra dividido el tamaño de la poblacion, por ejemplo si nuestra poblacion tuviera 1000 datos y sacamos una muestra de 100 personas, la probabilidad de que cualquier persona de la muestra sea seleccionado es 100/1000 = 0.1.
-Este diseño cumple el supuesto de Independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Ademas este diseño considera que el tamaño de la muestra es fijo, que no varia y nosotros podemos obtener una muestra de un tamaño que nos interese.
+Este diseño cumple el supuesto de Independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Este diseño considera que el tamaño de la muestra es fijo, que no varia y nosotros podemos obtener una muestra de un tamaño que nos interese.  En este MAS asumimos que no hay reemplazo, cuando sale un elemento de la muestra, entonces no puede volver a salir de vuelta.
 
-Realizamos una estimacion de la media poblacional usando a la muestra, obteniendo el valor de 1458.8
+Realizamos una estimacion de la media poblacional usando una muestra de tamaño 500, obteniendo el valor de 1458.8
 
 ```{r}
 # 2. MAS (Simple)
@@ -134,7 +134,7 @@ Ahora el problema que tenemos con este diseño es que como vimos en el histogram
 
 
 
-### Diseño Bernoulli
+## Diseño Bernoulli
 
 Este Diseño asume que cada unidad de la población del banco tiene una probabilidad de inclusión independiente e idéntica ($\pi$). A diferencia del Muestreo Aleatorio Simple (MAS), donde el tamaño de la muestra ($n$) es fijo, en el diseño Bernoulli el tamaño de la muestra es aleatorio, varia segun la extraccion que hagamos, no siempre es el mismo. Se puede probar matematicamente que el número final de clientes seleccionados sigue una distribución Binomial $B(N, \pi)$ y en promedio tendremos $N \times \pi$ clientes, pero el número exacto variará cada vez que ejecutemos el proceso.
 
@@ -188,37 +188,74 @@ data.frame(Metodo = c("Real", "Simple", "Bernoulli"),
 
 
 
-
+Ahora debemos tener cuidado con las interpretaciones ya que estas estimaciones se hicieron con una UNICA muestra, generalmente los estimadores, que son funciones de los datos muestrales se evaluan en multiples muestras, para las cuales los estimadores tomaran valores distintos, obteniendo asi una distribucion de probabilidad para estos estimadores. Probaremos esto usando 1000 muestras para evaluar el rendimiento del MAS contra el Bernoulli. 
 
 ```{r}
 set.seed(123)
-simulaciones <- 1000
-resultados <- data.frame(metodo = character(), media = numeric())
+iteraciones <- 1000
+N <- nrow(bank_data)
+pi_prob <- 0.05
+n_fijo <- round(N * pi_prob) 
 
-for(i in 1:simulaciones) {
-  # MAS (Tamaño fijo)
-  m_mas <- bank_data %>% sample_n(226)
-  resultados <- rbind(resultados, data.frame(metodo = "MAS", media = mean(m_mas$balance)))
+# Crear contenedor para los resultados
+simulacion <- data.frame(
+  MAS = numeric(iteraciones),
+  Bernoulli = numeric(iteraciones)
+)
+
+for(i in 1:iteraciones) {
+  # 1. Simulación MAS (n fijo)
+  muestra_mas <- bank_data[sample(N, n_fijo), ]
+  simulacion$MAS[i] <- mean(muestra_mas$balance)
   
-  # Bernoulli (Tamaño aleatorio)
-  m_bern <- bank_data %>% filter(rbinom(n(), 1, 0.05) == 1)
-  # Usamos la media de Hajek para mayor precisión
-  media_h <- sum(m_bern$balance / 0.05) / sum(1 / 0.05)
-  resultados <- rbind(resultados, data.frame(metodo = "Bernoulli", media = media_h))
+  # 2. Simulación Bernoulli (n aleatorio)
+  # Seleccionamos con probabilidad pi_prob cada fila
+  seleccion_bern <- rbinom(N, 1, pi_prob)
+  muestra_bern <- bank_data[seleccion_bern == 1, ]
+  
+  # Estimador de Horvitz-Thompson para la media en Bernoulli:
+  # (Suma de valores observados) / (N * pi)
+  simulacion$Bernoulli[i] <- sum(muestra_bern$balance) / (N * pi_prob)
 }
 
-# Visualización
-ggplot(resultados, aes(x = media, fill = metodo)) +
-  geom_density(alpha = 0.5) +
-  geom_vline(xintercept = media_real, linetype = "dashed", color = "red") +
-  theme_minimal() +
-  labs(title = "Distribución de Medias: MAS vs Bernoulli",
-       subtitle = "La línea roja es la media poblacional real",
-       x = "Saldo Promedio Estimado", y = "Densidad")
+# 3. Preparar datos para ggplot (usando tidyr en lugar de reshape2 para evitar avisos)
+library(tidyr)
+sim_long <- pivot_longer(simulacion, cols = everything(), names_to = "Diseno", values_to = "Media")
+
+# 4. Graficar comparativa corregida
+library(ggplot2)
+ggplot(sim_long, aes(x = Media, fill = Diseno)) +
+  geom_density(alpha = 0.4) +
+  # CORRECCIÓN: xintercept en lugar de x_intercept
+  geom_vline(xintercept = mean(bank_data$balance), linetype = "dashed", color = "black", size = 1) +
+  labs(title = "Distribución de los Estimadores: MAS vs Bernoulli",
+       subtitle = paste("Comparación de 1,000 muestras del Saldo Bancario (n aprox =", n_fijo, ")"),
+       x = "Saldo Promedio Estimado ($)", 
+       y = "Densidad",
+       fill = "Diseño de Muestreo") +
+  theme_minimal()
 ```
 
+Vemos en el gráfico de Densidad de los Estimadores, que si bien ambos diseños son insesgados, es decir, en promedio tienden a estimar bien el valor promedio real, y esto se observa en que las curvas de los estimadores se centran correctamente en la media real de 1422.658, la curva azul del MAS es notablemente más estrecha y alta. Esto demuestra que el MAS es un diseño más preciso para este banco. La mayor dispersión de la curva roja de Bernoulli se debe a que, en ese diseño, el tamaño de la muestra es aleatorio; esa incertidumbre sobre cuántos clientes terminan siendo encuestados añade variabilidad que sube el error. Aunque seguimos teniendo los problemas mencionados de asimetria, alta variabilidad, y no consideracion de usuarios bancarios con alto ingreso.
 
 
+
+
+
+Al tener los estimadores distribucino de probabilidad, podemos calcular distintos estadisticos como 
+
+El sesgo es la comparacion entre la media obtenida con los estimadores usando las multiples muestra extraidas y la media poblacional, el sesgo mide la exactitud de nuestras estimaciones. Un sesgo cercano a cero indica que tu diseño no tiene preferencias ni errores sistemáticos, no está inflado ni subestimado. 
+
+La Varianza mide la precisión o estabilidad, vimos que el saldo bancario es muy volátil (con clientes de $0 y otros de $60,000), una varianza alta hace que con cada muestra extraida el resultado pueda cambiar mucho. 
+
+El MSE (Error Cuadrático Medio) indica el error total, es la suma del sesgo elevado al cuadrado y de la varianza. Esta métrica sirve para decidir qué diseño es mejor, a menor MSE, más eficiente es el muestreo. 
+
+El RMSE da el error promedio en las mismas unidades que el saldo (que esta en dolares), si el RMSE es de \$200, significa que, en promedio, las estimaciones se desvían \$200 del valor real.
+
+El CV (Coeficiente de Variación) da la incertidumbre como un porcentaje. Un CV menor al 5% o 10% indica que el  error es pequeño en relación con la magnitud de los saldos que estamos midiendo.
+
+
+Si hacemos la tabla comparativa del MAS y el Bernoulli
 
 ```{r}
 library(tidyverse)
@@ -226,144 +263,80 @@ library(tidyverse)
 # Asumiendo que ya tienes el dataframe 'resultados' de la simulación anterior
 # con las columnas 'metodo' y 'media'
 
+# Calculamos la media poblacional real como parámetro de referencia
 media_real <- mean(bank_data$balance)
 
-metricas <- resultados %>%
-  group_by(metodo) %>%
+# Transformamos los resultados de la simulación para el análisis
+metricas <- sim_long %>%
+  group_by(Diseno) %>%
   summarise(
-    Media_Estimadores = mean(media),
-    Sesgo = mean(media) - media_real,
-    Varianza = var(media),
-    MSE = mean((media - media_real)^2),
+    Media_Estimadores = mean(Media),
+    Sesgo = mean(Media) - media_real,
+    Varianza = var(Media),
+    MSE = mean((Media - media_real)^2),
     RMSE = sqrt(MSE),
-    CV = (sd(media) / mean(media)) * 100
+    # Coeficiente de Variación del estimador (mide precisión relativa)
+    CV = (sd(Media) / mean(Media)) * 100
   )
 
 print(metricas)
 ```
 
-
-```{r}
-ggplot(resultados, aes(x = media, color = metodo, fill = metodo)) +
-  geom_density(alpha = 0.2) +
-  geom_vline(xintercept = media_real, linetype = "dashed", size = 1) +
-  labs(
-    title = "Distribución de los Estimadores vs. Valor Real",
-    subtitle = "La cercanía al centro es el Sesgo; la anchura es la Varianza",
-    x = "Estimación del Saldo Promedio",
-    y = "Densidad"
-  ) +
-  theme_minimal()
-```
+Podemos decir en general que el MAS es mejor que el Bernoulli aunque a gran escala tenemos el problema de asimetria y seleccion sesgada dada la poca precencia de clientes con mucho dinero en el banco.
 
 
+
+## Muestreo Aleatorio Simple con Reemplazo
+
+El Muestreo Aleatorio Simple con Reemplazo (SIR) es una variante del MAS donde cada vez que seleccionas a un cliente de la poblacion para ponerlo en la muestra, este puede aparecer dos o más veces en la muestra final. La varianza del estimador bajo posibilidad de reemplazo suele ser mayor que si no hubiera posibilidad de reemplazo, porque al permitir repeticiones, la muestra es menos informativa, tenemos menos individuos únicos para representar a la población.
 
 
 ```{r}
-library(tidyverse)
-
-# 1. Definimos probabilidades desiguales
-# Clientes con hipoteca: 10% de prob. | Sin hipoteca: 5% de prob.
-bank_data <- bank_data %>%
-  mutate(pi_i = ifelse(housing == "yes", 0.10, 0.05))
-
-# 2. Extraemos la muestra basada en esas probabilidades (Bernoulli Desigual)
-set.seed(456)
-muestra_ht <- bank_data %>%
-  filter(runif(n()) <= pi_i)
-
-# 3. Aplicamos el Estimador de Horvitz-Thompson para el TOTAL del Balance
-total_poblacional_real <- sum(bank_data$balance)
-
-total_est_ht <- sum(muestra_ht$balance / muestra_ht$pi_i)
-
-# 4. Estimador de la MEDIA (Hajek)
-# El estimador HT para la media usa el tamaño poblacional N
+# 1. Definir parámetros
+n <- 500
 N <- nrow(bank_data)
-media_est_ht <- total_est_ht / N
 
-# Comparación
-data.frame(
-  Concepto = c("Total", "Media"),
-  Real = c(total_poblacional_real, mean(bank_data$balance)),
-  Estimado_HT = c(total_est_ht, media_est_ht)
+# 2. Extraer la muestra SIR (con reemplazo)
+set.seed(123)
+indices_sir <- sample(1:N, size = n, replace = TRUE)
+muestra_sir <- bank_data[indices_sir, ]
+
+# 3. Verificar si hay duplicados
+n_unicos <- length(unique(indices_sir))
+cat("Individuos únicos seleccionados:", n_unicos, "de", n, "\n")
+
+# 4. Definir el diseño en el paquete survey
+# Para SIR, no se incluye el argumento 'fpc'
+diseno_sir <- svydesign(
+  id = ~1, 
+  weights = ~rep(N/n, n), 
+  data = muestra_sir
 )
+
+# 5. Estimar la media del balance
+res_sir <- svymean(~balance, diseno_sir)
+print(res_sir)
 ```
-
-
-
-```{r}
-muestra_ht <- muestra_ht %>%
-  mutate(peso = 1 / pi_i)
-
-ggplot(muestra_ht, aes(x = balance, y = peso, color = housing)) +
-  geom_point(alpha = 0.5) +
-  labs(title = "Relación entre Balance y Peso de Expansión",
-       subtitle = "Los clientes con pi=0.05 tienen un peso de 20; con pi=0.10 tienen un peso de 10",
-       x = "Saldo (y_i)", y = "Peso (1/pi_i)") +
-  theme_minimal()
-```
-
-
-```{r}
-# Probabilidad de seleccion
-# Visualizando la relación inversa
-ejemplo_pesos <- data.frame(
-  Probabilidad = seq(0.01, 0.5, by = 0.01)
-) %>%
-  mutate(Peso_Expansion = 1 / Probabilidad)
-
-ggplot(ejemplo_pesos, aes(x = Probabilidad, y = Peso_Expansion)) +
-  geom_line(color = "firebrick", size = 1) +
-  labs(title = "Relación entre Probabilidad de Selección y Peso (Incluso)",
-       x = "Probabilidad (Pi)", y = "Factor de Expansión (W)") +
-  theme_minimal()
-```
+ 
+En media, tanto reemplazo como no reemplazo son insesgados (muy cerca del valor real). En Varianza y RMSE, con reemplazo es mayor debido a la reduccion de la diversidad de la muestra.
+En CV (Coeficiente de Variación), con reemplazo tendra una precisió menor.
 
 
 
 
+Hasta ahora la lógica detrás de todas las estimaciones se basaba en expandir la muestra y estabamos usando el estimador Horvitz-Thompson (HT). Con la formula
 
-SIR y Con reemplazo (Simple)
-```{r}
-n_muestra <- 500
+$$\hat{Y}_{HT} = \sum_{i \in s} \frac{y_i}{\pi_i} = \sum_{i \in s} y_i \cdot w_i$$
 
-# MAS Sin Reemplazo (Por defecto en R)
-set.seed(123)
-muestra_sin <- bank_data[sample(nrow(bank_data), n_muestra, replace = FALSE), ]
+Lo que hace es para todos los individuos de la muestra, dividirlos entre su probabilidad de seleccion. Este estimador siempre insesgado, pero se usa solo para diseños sin reemplazo. Para el caso de diseños con reemplazo, usamos el estimador Hansen-Hurwitz (pwr).
 
-# MAS Con Reemplazo
-set.seed(123)
-muestra_con <- bank_data[sample(nrow(bank_data), n_muestra, replace = TRUE), ]
-
-# ¿Hubo repetidos en la muestra con reemplazo?
-anyDuplicated(muestra_con) # Si devuelve > 0, hay filas repetidas
-```
-
-```{r}
-sim_varianza <- replicate(1000, {
-  m_sin <- bank_data$balance[sample(nrow(bank_data), 200, replace = FALSE)]
-  m_con <- bank_data$balance[sample(nrow(bank_data), 200, replace = TRUE)]
-  c(media_sin = mean(m_sin), media_con = mean(m_con))
-})
-
-# Convertir a data frame y comparar desviaciones estándar
-sim_res <- as.data.frame(t(sim_varianza))
-sd(sim_res$media_sin) # Debería ser ligeramente menor
-sd(sim_res$media_con)
-```
+$$\hat{Y}_{pwr} = \frac{1}{n} \sum \frac{y_i}{p_i}$$
 
 
 
 
+Etimador pwr
 
-
-
-
-
-
-
-estimador pwr
 
 ```{r}
 library(tidyverse)
@@ -396,176 +369,83 @@ media_real <- mean(bank_data$balance)
 print(paste("Media Real:", round(media_real, 2)))
 print(paste("Media Estimador pwr:", round(media_pwr, 2)))
 ```
+Si comparamos ambos usando un diseño simple (sin reemplazo para el HT y con reemplazo para el pwr) vemos que las estimaciones de pwr se aleja mas de la media real que es 1422.658, mientras que HT se acerca bastante
+
+Esto se debe a que el diseño PWR (Hansen-Hurwitz) usa el saldo como medida de probabilidad. Este estimador es muy sensible a la relación entre el saldo y su peso. Si la mayoría de los clientes tienen saldos bajos (como se ve en el histograma), el PWR tiende a estabilizarse en esos valores. Al asignar probabilidades altas a los saldos grandes, el diseño selecciona repetidamente a los mismos clientes extremos (recuerda que es con reemplazo), la varianza del estimador se dispara
+
+Para el HT, la media vale 1735.6, es más alta porque, en un muestreo aleatorio simple, si atrapamaos por azar a uno de los pocos clientes con $60,000, ese valor empuja el promedio hacia arriba sin ninguna ponderación que lo suavice. Aunque conceptualmente tiene mas sentido usar un diseño sin reemplazo porque repetir los ingresos de los usuarios del banco tiende a ser informacion redundante.
 
 
 
-```{r}
-# Cálculo de la varianza del total en R
-valores_expandidos <- muestra_pwr$balance / muestra_pwr$p_i
-var_total_pwr <- (1 / (n_muestras * (n_muestras - 1))) * sum((valores_expandidos - total_pwr)^2)
-
-# Error estándar de la media
-se_media_pwr <- sqrt(var_total_pwr) / nrow(bank_data)
-```
-
-
-
-
-
-
-
-Efecto Diseño (deff)
-
-```{r}
-# Instalación y carga
-if(!require(survey)) install.packages("survey")
-library(survey)
-
-# 1. Definir el diseño de muestreo (ej. Estratificado por Educación)
-# Usamos 'fpc' para indicar que es sin reemplazo
-diseno_estrat <- svydesign(
-  id = ~1, 
-  strata = ~education, 
-  data = bank_data, 
-  fpc = rep(nrow(bank_data), nrow(bank_data))
-)
-
-# 2. Calcular la media y pedir el DEFF
-resultado <- svymean(~balance, diseno_estrat, deff = TRUE)
-
-# Ver el resultado
-print(resultado)
-deff_valor <- deff(resultado)
-print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
-```
-
-
-
-
-
-Estimacion por dominios
 
 ```{r}
 library(survey)
+library(dplyr)
+library(tidyr)
 
-# 1. Definimos el diseño completo primero (importante)
-diseno_completo <- svydesign(
+# 1. Limpieza rigurosa: Solo saldos positivos y sin NAs
+bank_clean <- bank_data %>% 
+  filter(balance > 0) %>% 
+  drop_na(balance)
+
+N_pob <- nrow(bank_clean)
+n_muest <- 500
+
+# 2. Definir Probabilidades de Selección (p_i) por extracción
+# Estas deben sumar exactamente 1
+p_pob <- bank_clean$balance / sum(bank_clean$balance)
+
+# 3. Muestreo con Reemplazo (PPS)
+set.seed(123)
+indices <- sample(1:N_pob, size = n_muest, replace = TRUE, prob = p_pob)
+muestra_final <- bank_clean[indices, ]
+
+# Extraemos las probabilidades específicas de los elementos seleccionados
+p_muest <- p_pob[indices]
+
+# ---------------------------------------------------------
+# A. DISEÑO PWR (Hansen-Hurwitz)
+# ---------------------------------------------------------
+# Usamos 'probs' para las probabilidades de selección en cada extracción
+diseno_pwr <- svydesign(
   id = ~1, 
-  data = bank_data, 
-  fpc = rep(nrow(bank_data), nrow(bank_data))
+  probs = ~p_muest, 
+  data = muestra_final
 )
 
-# 2. Creamos el dominio (subpoblación de interés)
-# Ejemplo: Queremos estimar el balance solo para personas con educación 'tertiary'
-diseno_dominio <- subset(diseno_completo, education == "tertiary")
-
-# 3. Estimación
-estimacion_dom <- svymean(~balance, diseno_dominio)
-print(estimacion_dom)
-
-# 4. Comparación: ¿Cómo cambia el error si el dominio es pequeño?
-# Intentemos con un dominio más específico (ej. 'entrepreneur' con deuda)
-diseno_pequeno <- subset(diseno_completo, job == "entrepreneur" & loan == "yes")
-svymean(~balance, diseno_pequeno)
-```
-
-
-```{r}
-# Estimación del total en el dominio
-svytotal(~balance, diseno_dominio)
-```
-
-
-
-
-
-
-
-
-
-Diseño Sistemático
-
-```{r}
-
-
-# 1. Parámetros
-N <- nrow(bank_data)
-n <- 500
-k <- floor(N / n)
-
-# 2. Arranque aleatorio
+# ---------------------------------------------------------
+# B. DISEÑO HT (Muestreo Aleatorio Simple como base)
+# ---------------------------------------------------------
+# Para comparar, extraemos una muestra MAS de la misma población limpia
 set.seed(123)
-arranque <- sample(1:k, 1)
-
-# 3. Selección de índices
-indices_sist <- seq(from = arranque, to = N, by = k)
-
-# 4. Crear la muestra
-muestra_sistematica <- bank_data[indices_sist, ]
-
-# Verificación
-nrow(muestra_sistematica)
-```
-
-```{r}
-library(survey)
-
-# Definimos el diseño sistemático en 'survey'
-# Se suele aproximar como MAS si no hay periodicidad
-diseno_sist <- svydesign(
+muestra_mas <- bank_clean[sample(N_pob, n_muest, replace = FALSE), ]
+diseno_ht <- svydesign(
   id = ~1, 
-  data = muestra_sistematica, 
-  fpc = rep(N, nrow(muestra_sistematica))
+  fpc = rep(N_pob, n_muest), 
+  data = muestra_mas
 )
 
-svymean(~balance, diseno_sist)
+# 4. Cálculo de Métricas Comparativas
+res_pwr <- svymean(~balance, diseno_pwr)
+res_ht <- svymean(~balance, diseno_ht)
+
+print(res_pwr)
+print(res_ht)
+
+
+
+# Extraer las varianzas directamente de los objetos de estimación
+var_pwr <- vcov(res_pwr)[1,1]
+var_ht  <- vcov(res_ht)[1,1]
+
+# Calcular la Eficiencia Relativa
+eficiencia_relativa <- var_ht / var_pwr
+
+cat("Varianza HT (MAS):", var_ht, "\n")
+cat("Varianza PWR (PPS):", var_pwr, "\n")
+cat("Eficiencia Relativa (HT/PWR):", eficiencia_relativa, "\n")
 ```
-
-
-Diseño Poisson
-
-```{r}
-library(tidyverse)
-
-# 1. Definir probabilidades pi_i individuales
-# Usamos el balance absoluto para evitar problemas con saldos negativos
-# y escalamos para que la suma de pi_i sea igual al tamaño de muestra deseado (n=500)
-n_deseado <- 500
-bank_data <- bank_data %>%
-  mutate(balance_adj = abs(balance) + 1) %>% # Evitar ceros
-  mutate(pi_i = n_deseado * (balance_adj / sum(balance_adj))) %>%
-  mutate(pi_i = pmin(pi_i, 1)) # Asegurar que ninguna prob sea > 1
-
-# 2. Ejecutar el proceso de Poisson
-set.seed(321)
-muestra_poisson <- bank_data %>%
-  filter(runif(n()) <= pi_i)
-
-# El tamaño de muestra será cercano a 500, pero no exacto
-nrow(muestra_poisson)
-```
-
-```{r}
-# Estimación del Total Poblacional
-total_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i)
-
-# Estimación de la Media (Hajek) - Más estable para Poisson
-media_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i) / 
-                       sum(1 / muestra_poisson$pi_i)
-
-# Comparación con la realidad
-media_real <- mean(bank_data$balance)
-print(paste("Real:", round(media_real, 2), "| Poisson:", round(media_est_poisson, 2)))
-```
-
-
-```{r}
-# Cálculo de la varianza estimada del total
-var_total_poisson <- sum((1 - muestra_poisson$pi_i) * (muestra_poisson$balance / muestra_poisson$pi_i)^2)
-var_total_poisson
-# Error estándar de la media
-se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
-```
+Por los factores que mencionamos relacionados a que la varianza de diseños con reemplazo es mas alta que diseños sin reemplazo, vemos que en este caso se cumple, siendo la varianza del pwr casi 6 veces mas grande que la varianza del HT.
 
 
 
@@ -574,60 +454,7 @@ se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
 
 
 
-
-
-
-
-
-
-Diseño pps y πps
-
-```{r}
-if(!require(sampling)) install.packages("sampling")
-library(sampling)
-library(tidyverse)
-
-# --- Preparación de la variable de tamaño (Size) ---
-# Usamos el balance absoluto para que siempre sea positivo
-bank_data <- bank_data %>%
-  mutate(size_var = abs(balance) + 1)
-
-n_muestra <- 500
-
-# 1. DISEÑO PPS (Con reemplazo)
-set.seed(123)
-# Calculamos p_i (probabilidades de selección en cada sorteo, suman 1)
-p_i <- bank_data$size_var / sum(bank_data$size_var)
-indices_pps <- sample(1:nrow(bank_data), size = n_muestra, replace = TRUE, prob = p_i)
-muestra_pps <- bank_data[indices_pps, ]
-
-# Estimador pwr (Hansen-Hurwitz)
-total_pps <- (1/n_muestra) * sum(muestra_pps$balance / p_i[indices_pps])
-
-
-# 2. DISEÑO pips (Sin reemplazo - Algoritmo Sistemático)
-# Calculamos pi_i (probabilidades de inclusión, suman n)
-pi_i <- inclusionprobabilities(bank_data$size_var, n_muestra)
-
-set.seed(123)
-# Usamos el método sistemático para pips
-indicador_pips <- UPsystematic(pi_i)
-muestra_pips <- bank_data[indicador_pips == 1, ]
-
-# Estimador Horvitz-Thompson
-total_pips <- sum(muestra_pips$balance / pi_i[indicador_pips == 1])
-
-# --- Resultados ---
-media_real <- mean(bank_data$balance)
-data.frame(
-  Metodo = c("Real", "PPS (H-H)", "piPS (H-T)"),
-  Media_Estimada = c(media_real, total_pps/nrow(bank_data), total_pips/nrow(bank_data))
-)
-```
-
-
-
-Diseño Estratificado 
+## Diseño Estratificado 
 
 
 ```{r}
@@ -692,7 +519,163 @@ ggplot(comp_proporciones, aes(x = Trabajo)) +
 
 
 
-Muestreo por Conglomerados
+
+
+
+
+
+
+
+
+
+## Diseño Sistemático
+
+```{r}
+
+
+# 1. Parámetros
+N <- nrow(bank_data)
+n <- 500
+k <- floor(N / n)
+
+# 2. Arranque aleatorio
+set.seed(123)
+arranque <- sample(1:k, 1)
+
+# 3. Selección de índices
+indices_sist <- seq(from = arranque, to = N, by = k)
+
+# 4. Crear la muestra
+muestra_sistematica <- bank_data[indices_sist, ]
+
+# Verificación
+nrow(muestra_sistematica)
+```
+
+```{r}
+library(survey)
+
+# Definimos el diseño sistemático en 'survey'
+# Se suele aproximar como MAS si no hay periodicidad
+diseno_sist <- svydesign(
+  id = ~1, 
+  data = muestra_sistematica, 
+  fpc = rep(N, nrow(muestra_sistematica))
+)
+
+svymean(~balance, diseno_sist)
+```
+
+
+
+## Diseño Poisson
+
+```{r}
+library(tidyverse)
+
+# 1. Definir probabilidades pi_i individuales
+# Usamos el balance absoluto para evitar problemas con saldos negativos
+# y escalamos para que la suma de pi_i sea igual al tamaño de muestra deseado (n=500)
+n_deseado <- 500
+bank_data <- bank_data %>%
+  mutate(balance_adj = abs(balance) + 1) %>% # Evitar ceros
+  mutate(pi_i = n_deseado * (balance_adj / sum(balance_adj))) %>%
+  mutate(pi_i = pmin(pi_i, 1)) # Asegurar que ninguna prob sea > 1
+
+# 2. Ejecutar el proceso de Poisson
+set.seed(321)
+muestra_poisson <- bank_data %>%
+  filter(runif(n()) <= pi_i)
+
+# El tamaño de muestra será cercano a 500, pero no exacto
+nrow(muestra_poisson)
+```
+
+```{r}
+# Estimación del Total Poblacional
+total_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i)
+
+# Estimación de la Media (Hajek) - Más estable para Poisson
+media_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i) / 
+                       sum(1 / muestra_poisson$pi_i)
+
+# Comparación con la realidad
+media_real <- mean(bank_data$balance)
+print(paste("Real:", round(media_real, 2), "| Poisson:", round(media_est_poisson, 2)))
+```
+
+
+```{r}
+# Cálculo de la varianza estimada del total
+var_total_poisson <- sum((1 - muestra_poisson$pi_i) * (muestra_poisson$balance / muestra_poisson$pi_i)^2)
+var_total_poisson
+# Error estándar de la media
+se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Diseño pps y πps
+
+```{r}
+if(!require(sampling)) install.packages("sampling")
+library(sampling)
+library(tidyverse)
+
+# --- Preparación de la variable de tamaño (Size) ---
+# Usamos el balance absoluto para que siempre sea positivo
+bank_data <- bank_data %>%
+  mutate(size_var = abs(balance) + 1)
+
+n_muestra <- 500
+
+# 1. DISEÑO PPS (Con reemplazo)
+set.seed(123)
+# Calculamos p_i (probabilidades de selección en cada sorteo, suman 1)
+p_i <- bank_data$size_var / sum(bank_data$size_var)
+indices_pps <- sample(1:nrow(bank_data), size = n_muestra, replace = TRUE, prob = p_i)
+muestra_pps <- bank_data[indices_pps, ]
+
+# Estimador pwr (Hansen-Hurwitz)
+total_pps <- (1/n_muestra) * sum(muestra_pps$balance / p_i[indices_pps])
+
+
+# 2. DISEÑO pips (Sin reemplazo - Algoritmo Sistemático)
+# Calculamos pi_i (probabilidades de inclusión, suman n)
+pi_i <- inclusionprobabilities(bank_data$size_var, n_muestra)
+
+set.seed(123)
+# Usamos el método sistemático para pips
+indicador_pips <- UPsystematic(pi_i)
+muestra_pips <- bank_data[indicador_pips == 1, ]
+
+# Estimador Horvitz-Thompson
+total_pips <- sum(muestra_pips$balance / pi_i[indicador_pips == 1])
+
+# --- Resultados ---
+media_real <- mean(bank_data$balance)
+data.frame(
+  Metodo = c("Real", "PPS (H-H)", "piPS (H-T)"),
+  Media_Estimada = c(media_real, total_pps/nrow(bank_data), total_pips/nrow(bank_data))
+)
+```
+
+
+
+
+
+## Muestreo por Conglomerados
 
 ```{r}
 library(survey)
@@ -731,7 +714,7 @@ print(media_clusters)
 
 
 
-Coeficiente de heterogeneidad intra-cluster 
+### Coeficiente de heterogeneidad intra-cluster 
 
 ```{r}
 # Usando la librería 'ICC' o calculándolo a través de un modelo lineal
@@ -748,7 +731,7 @@ print(paste("El Coeficiente de Correlación Intraclase (rho) es:", round(resulta
 
 
 
-Muestreo en dos etapas:
+## Muestreo en dos etapas:
 
 ```{r}
 library(sampling)
@@ -826,7 +809,7 @@ print(resultado)
 
 
 
-Supuestos de Invarianza y de Independencia
+### Supuestos de Invarianza y de Independencia
 
 
 Independencia:
@@ -901,6 +884,69 @@ car::leveneTest(balance ~ factor(cluster_id), data = muestra_2etapas)
 
 
 
+## Efecto Diseño (deff)
+
+```{r}
+# Instalación y carga
+if(!require(survey)) install.packages("survey")
+library(survey)
+
+# 1. Definir el diseño de muestreo (ej. Estratificado por Educación)
+# Usamos 'fpc' para indicar que es sin reemplazo
+diseno_estrat <- svydesign(
+  id = ~1, 
+  strata = ~education, 
+  data = bank_data, 
+  fpc = rep(nrow(bank_data), nrow(bank_data))
+)
+
+# 2. Calcular la media y pedir el DEFF
+resultado <- svymean(~balance, diseno_estrat, deff = TRUE)
+
+# Ver el resultado
+print(resultado)
+deff_valor <- deff(resultado)
+print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
+```
+
+
+
+
+
+## Estimacion por dominios
+
+```{r}
+library(survey)
+
+# 1. Definimos el diseño completo primero (importante)
+diseno_completo <- svydesign(
+  id = ~1, 
+  data = bank_data, 
+  fpc = rep(nrow(bank_data), nrow(bank_data))
+)
+
+# 2. Creamos el dominio (subpoblación de interés)
+# Ejemplo: Queremos estimar el balance solo para personas con educación 'tertiary'
+diseno_dominio <- subset(diseno_completo, education == "tertiary")
+
+# 3. Estimación
+estimacion_dom <- svymean(~balance, diseno_dominio)
+print(estimacion_dom)
+
+# 4. Comparación: ¿Cómo cambia el error si el dominio es pequeño?
+# Intentemos con un dominio más específico (ej. 'entrepreneur' con deuda)
+diseno_pequeno <- subset(diseno_completo, job == "entrepreneur" & loan == "yes")
+svymean(~balance, diseno_pequeno)
+```
+
+
+```{r}
+# Estimación del total en el dominio
+svytotal(~balance, diseno_dominio)
+```
+
+
+
 
 
 
@@ -946,7 +992,7 @@ cat("Intervalo de Confianza: [", round(ic[1], 2), ",", round(ic[2], 2), "]\n")
 
 
 
-Efecto de Sesgo
+## Efecto de Sesgo y Intervalos de Confianza
 
 ```{r}
 # Valor Real
@@ -966,7 +1012,6 @@ cat("Sesgo Relativo:", sesgo_rel, "%\n")
 
 
 
-Intervalos de Confianza
 
 ```{r}
 # Intervalo de confianza al 95% para el diseño de dos etapas
@@ -998,7 +1043,7 @@ ggplot(res_plot, aes(x = Metodo, y = Media)) +
 
 
 
-Linearizacion de Taylor
+## Linearizacion de Taylor
 
 ```{r}
 library(survey)
@@ -1028,7 +1073,7 @@ print(paste("El CV es:", round(cv_estimacion * 100, 2), "%"))
 
 
 
-Estimador de una Razon R
+## Estimador de una Razon R
 
 
 ```{r}
@@ -1067,7 +1112,7 @@ print(razon_campana)
 
 
 
-Jackknife y Bootstrap
+## Jackknife y Bootstrap
 
 
 
@@ -1108,7 +1153,7 @@ print(comparativa_se)
 
 
 
-Problemas y sesgo de cobertura
+## Problemas y sesgo de cobertura
 
 ```{r}
 # 1. Definimos la población real
@@ -1158,9 +1203,9 @@ ggplot(df_cobertura, aes(x = Tipo, y = Media)) +
 
 
 
-Inferencia basada en el diseño
+## Inferencia basada en el diseño
 
-Estimador asististido por modelos 
+## Estimador asististido por modelos 
 
 
 ```{r}
@@ -1211,7 +1256,7 @@ ggplot(comparativa_greg, aes(x = Metodo, y = Media)) +
 
 
 
-Calibracion de ponderadores
+## Calibracion de ponderadores
 
 ```{r}
 library(survey)
@@ -1258,7 +1303,7 @@ ggplot(muestra_2etapas, aes(x = peso_original, y = peso_calibrado, color = educa
 
 
 
-Regression Thinking
+## Regression Thinking
 
 ```{r}
 library(survey)
@@ -1295,7 +1340,7 @@ ggplot(muestra_2etapas, aes(x = age, y = balance)) +
 
 
 
-Post-estratificacion 
+## Post-estratificacion 
 
 
 ```{r}
@@ -1330,7 +1375,7 @@ print(deff_post)
 
 
 
-Raking
+## Raking
 
 ```{r}
 library(survey)
@@ -1367,7 +1412,7 @@ svytotal(~marital, diseno_raking)
 
 
 
-Trimming
+## Trimming
 
 
 ```{r}
@@ -1416,7 +1461,7 @@ cat("SE después del trimming:", SE(res_despues), "\n")
 
 
 
-No Respuesta:
+## No Respuesta:
 
 
 ```{r}
@@ -1468,7 +1513,7 @@ cat("Efecto del sesgo de no respuesta:", media_corregida - media_cruda)
 
 
 
-"Mecanismos de Pérdida" (MCAR, MAR, MNAR)
+### "Mecanismos de Pérdida" (MCAR, MAR, MNAR)
 
 ```{r}
 # Creamos un modelo logístico para predecir quién responde
@@ -1490,7 +1535,7 @@ ggplot(muestra_2etapas, aes(x = age, fill = as.factor(responde))) +
 ```
 
 
-Comentar sobre estimador BLUP
+## Estimador BLUP
 
 
 
@@ -1501,7 +1546,7 @@ Comentar sobre estimador BLUP
 
 
 
-Muestras no probabilisticas
+## Muestras no probabilisticas
 
 ```{r}
 # 1. Creamos la muestra no probabilística (Sesgada)
@@ -1524,7 +1569,7 @@ cat("Sesgo de Selección: ", media_no_prob - media_real, "\n")
 
 
 
-Estimacion en dominios:
+## Estimacion en dominios:
 
 ```{r}
 # Supongamos que nuestro "Dominio" de interés son los clientes con educación 'tertiary'
