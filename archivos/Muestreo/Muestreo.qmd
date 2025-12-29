@@ -1,0 +1,392 @@
+---
+title: "Muestreo"
+format: pdf
+---
+
+```{r}
+library(ggplot2)
+data(diamonds)
+diamonds
+```
+
+
+
+Contiene datos sobre clientes de un banco (edad, trabajo, saldo, si aceptaron un préstamo).
+
+```{r}
+library(tidyverse)
+
+# Carga de datos (puedes descargarlo o leerlo directamente si tienes el link)
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/00222/bank.zip"
+temp <- tempfile()
+download.file(url, temp)
+bank_data <- read.table(unz(temp, "bank.csv"), sep = ";", header = TRUE)
+unlink(temp)
+
+# Ver la estructura
+str(bank_data)
+#bank_data
+
+
+sum(is.na(bank_data))
+```
+
+
+
+
+
+
+
+
+```{r}
+# Resumen estadístico
+summary(bank_data$balance)
+
+# Visualización de la distribución
+library(ggplot2)
+ggplot(bank_data, aes(x = balance)) +
+  geom_histogram(bins = 50, fill = "steelblue", color = "white") +
+  theme_minimal() +
+  labs(title = "Distribución del Saldo Bancario", x = "Saldo", y = "Frecuencia")
+```
+
+
+
+```{r}
+ggplot(bank_data, aes(x = job, y = balance, fill = job)) +
+  geom_boxplot() +
+  coord_flip() + # Para leer mejor los nombres de los trabajos
+  theme_minimal() +
+  theme(legend.position = "none") +
+  labs(title = "Saldo por Tipo de Trabajo")
+```
+
+
+
+```{r}
+# 1. Real
+media_real <- mean(bank_data$balance)
+```
+
+
+```{r}
+# 2. MAS (Simple)
+set.seed(123) # Para que tus resultados sean reproducibles
+muestra_simple <- bank_data %>% sample_frac(0.05)
+media_mas <- mean(muestra_simple$balance)
+
+
+
+```
+
+
+
+
+```{r}
+
+# 3. Estratificado (por job)
+muestra_estrat <- bank_data %>%
+  group_by(job) %>%
+  sample_frac(0.05) %>%
+  ungroup()
+media_estrat <- mean(muestra_estrat$balance)
+
+
+```
+
+
+
+
+
+```{r}
+# Definimos la probabilidad de inclusión (ej. 5%)
+prob_inclusion <- 0.05
+
+set.seed(123)
+# Cada fila tiene su propio "lanzamiento de moneda"
+muestra_bernoulli <- bank_data %>%
+  filter(rbinom(n(), 1, prob_inclusion) == 1)
+
+# ¿Cuántos clientes terminaron en la muestra?
+nrow(muestra_bernoulli)
+```
+
+
+```{r}
+# Estimador del Total de saldos (Horvitz-Thompson)
+total_est_ht <- sum(muestra_bernoulli$balance / prob_inclusion)
+
+# Estimador de la Media (Hajek)
+media_est_bernoulli <- sum(muestra_bernoulli$balance / prob_inclusion) / 
+                       sum(1 / prob_inclusion)
+
+# Comparar con la real
+media_real <- mean(bank_data$balance)
+print(paste("Real:", media_real, "| Bernoulli:", media_est_bernoulli))
+```
+
+
+
+
+```{r}
+# Comparación rápida
+data.frame(Metodo = c("Real", "Simple", "Estratificado"),
+           Media = c(media_real, media_mas, media_estrat))
+```
+
+
+```{r}
+set.seed(123)
+simulaciones <- 1000
+resultados <- data.frame(metodo = character(), media = numeric())
+
+for(i in 1:simulaciones) {
+  # MAS (Tamaño fijo)
+  m_mas <- bank_data %>% sample_n(226)
+  resultados <- rbind(resultados, data.frame(metodo = "MAS", media = mean(m_mas$balance)))
+  
+  # Bernoulli (Tamaño aleatorio)
+  m_bern <- bank_data %>% filter(rbinom(n(), 1, 0.05) == 1)
+  # Usamos la media de Hajek para mayor precisión
+  media_h <- sum(m_bern$balance / 0.05) / sum(1 / 0.05)
+  resultados <- rbind(resultados, data.frame(metodo = "Bernoulli", media = media_h))
+}
+
+# Visualización
+ggplot(resultados, aes(x = media, fill = metodo)) +
+  geom_density(alpha = 0.5) +
+  geom_vline(xintercept = media_real, linetype = "dashed", color = "red") +
+  theme_minimal() +
+  labs(title = "Distribución de Medias: MAS vs Bernoulli",
+       subtitle = "La línea roja es la media poblacional real",
+       x = "Saldo Promedio Estimado", y = "Densidad")
+```
+
+
+
+
+```{r}
+library(tidyverse)
+
+# Asumiendo que ya tienes el dataframe 'resultados' de la simulación anterior
+# con las columnas 'metodo' y 'media'
+
+media_real <- mean(bank_data$balance)
+
+metricas <- resultados %>%
+  group_by(metodo) %>%
+  summarise(
+    Media_Estimadores = mean(media),
+    Sesgo = mean(media) - media_real,
+    Varianza = var(media),
+    MSE = mean((media - media_real)^2),
+    RMSE = sqrt(MSE),
+    CV = (sd(media) / mean(media)) * 100
+  )
+
+print(metricas)
+```
+
+
+```{r}
+ggplot(resultados, aes(x = media, color = metodo, fill = metodo)) +
+  geom_density(alpha = 0.2) +
+  geom_vline(xintercept = media_real, linetype = "dashed", size = 1) +
+  labs(
+    title = "Distribución de los Estimadores vs. Valor Real",
+    subtitle = "La cercanía al centro es el Sesgo; la anchura es la Varianza",
+    x = "Estimación del Saldo Promedio",
+    y = "Densidad"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+```{r}
+library(tidyverse)
+
+# 1. Definimos probabilidades desiguales
+# Clientes con hipoteca: 10% de prob. | Sin hipoteca: 5% de prob.
+bank_data <- bank_data %>%
+  mutate(pi_i = ifelse(housing == "yes", 0.10, 0.05))
+
+# 2. Extraemos la muestra basada en esas probabilidades (Bernoulli Desigual)
+set.seed(456)
+muestra_ht <- bank_data %>%
+  filter(runif(n()) <= pi_i)
+
+# 3. Aplicamos el Estimador de Horvitz-Thompson para el TOTAL del Balance
+total_poblacional_real <- sum(bank_data$balance)
+
+total_est_ht <- sum(muestra_ht$balance / muestra_ht$pi_i)
+
+# 4. Estimador de la MEDIA (Hajek)
+# El estimador HT para la media usa el tamaño poblacional N
+N <- nrow(bank_data)
+media_est_ht <- total_est_ht / N
+
+# Comparación
+data.frame(
+  Concepto = c("Total", "Media"),
+  Real = c(total_poblacional_real, mean(bank_data$balance)),
+  Estimado_HT = c(total_est_ht, media_est_ht)
+)
+```
+
+
+
+```{r}
+muestra_ht <- muestra_ht %>%
+  mutate(peso = 1 / pi_i)
+
+ggplot(muestra_ht, aes(x = balance, y = peso, color = housing)) +
+  geom_point(alpha = 0.5) +
+  labs(title = "Relación entre Balance y Peso de Expansión",
+       subtitle = "Los clientes con pi=0.05 tienen un peso de 20; con pi=0.10 tienen un peso de 10",
+       x = "Saldo (y_i)", y = "Peso (1/pi_i)") +
+  theme_minimal()
+```
+
+
+```{r}
+# Probabilidad de seleccion
+# Visualizando la relación inversa
+ejemplo_pesos <- data.frame(
+  Probabilidad = seq(0.01, 0.5, by = 0.01)
+) %>%
+  mutate(Peso_Expansion = 1 / Probabilidad)
+
+ggplot(ejemplo_pesos, aes(x = Probabilidad, y = Peso_Expansion)) +
+  geom_line(color = "firebrick", size = 1) +
+  labs(title = "Relación entre Probabilidad de Selección y Peso (Incluso)",
+       x = "Probabilidad (Pi)", y = "Factor de Expansión (W)") +
+  theme_minimal()
+```
+
+
+
+
+
+SIR y Con reemplazo (Simple)
+```{r}
+n_muestra <- 500
+
+# MAS Sin Reemplazo (Por defecto en R)
+set.seed(123)
+muestra_sin <- bank_data[sample(nrow(bank_data), n_muestra, replace = FALSE), ]
+
+# MAS Con Reemplazo
+set.seed(123)
+muestra_con <- bank_data[sample(nrow(bank_data), n_muestra, replace = TRUE), ]
+
+# ¿Hubo repetidos en la muestra con reemplazo?
+anyDuplicated(muestra_con) # Si devuelve > 0, hay filas repetidas
+```
+
+```{r}
+sim_varianza <- replicate(1000, {
+  m_sin <- bank_data$balance[sample(nrow(bank_data), 200, replace = FALSE)]
+  m_con <- bank_data$balance[sample(nrow(bank_data), 200, replace = TRUE)]
+  c(media_sin = mean(m_sin), media_con = mean(m_con))
+})
+
+# Convertir a data frame y comparar desviaciones estándar
+sim_res <- as.data.frame(t(sim_varianza))
+sd(sim_res$media_sin) # Debería ser ligeramente menor
+sd(sim_res$media_con)
+```
+
+
+
+
+
+
+
+
+
+
+
+estimador pwr
+
+```{r}
+library(tidyverse)
+
+# 1. Definir probabilidades de selección (p_i)
+# Deben sumar 1 en toda la población
+bank_data <- bank_data %>%
+  mutate(prioridad = case_when(
+    education == "tertiary" ~ 3,
+    education == "secondary" ~ 2,
+    TRUE ~ 1
+  )) %>%
+  mutate(p_i = prioridad / sum(prioridad))
+
+# 2. Realizar el muestreo CON reemplazo (n = 500)
+n_muestras <- 500
+set.seed(789)
+indices_pwr <- sample(1:nrow(bank_data), size = n_muestras, replace = TRUE, prob = bank_data$p_i)
+muestra_pwr <- bank_data[indices_pwr, ]
+
+# 3. Calcular el Estimador pwr para el TOTAL
+# Aplicamos la fórmula: (1/n) * suma(y_i / p_i)
+total_pwr <- (1 / n_muestras) * sum(muestra_pwr$balance / muestra_pwr$p_i)
+
+# 4. Calcular la MEDIA estimada
+media_pwr <- total_pwr / nrow(bank_data)
+
+# Comparación
+media_real <- mean(bank_data$balance)
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Estimador pwr:", round(media_pwr, 2)))
+```
+
+
+
+```{r}
+# Cálculo de la varianza del total en R
+valores_expandidos <- muestra_pwr$balance / muestra_pwr$p_i
+var_total_pwr <- (1 / (n_muestras * (n_muestras - 1))) * sum((valores_expandidos - total_pwr)^2)
+
+# Error estándar de la media
+se_media_pwr <- sqrt(var_total_pwr) / nrow(bank_data)
+```
+
+
+
+
+
+
+
+Efecto Diseño (deff)
+
+```{r}
+# Instalación y carga
+if(!require(survey)) install.packages("survey")
+library(survey)
+
+# 1. Definir el diseño de muestreo (ej. Estratificado por Educación)
+# Usamos 'fpc' para indicar que es sin reemplazo
+diseno_estrat <- svydesign(
+  id = ~1, 
+  strata = ~education, 
+  data = bank_data, 
+  fpc = rep(nrow(bank_data), nrow(bank_data))
+)
+
+# 2. Calcular la media y pedir el DEFF
+resultado <- svymean(~balance, diseno_estrat, deff = TRUE)
+
+# Ver el resultado
+print(resultado)
+deff_valor <- deff(resultado)
+print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
+```
+
+
+
+
+
+
+
