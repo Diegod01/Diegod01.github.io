@@ -474,4 +474,215 @@ svymean(~balance, diseno_sist)
 ```
 
 
+Diseño Poisson
+
+```{r}
+library(tidyverse)
+
+# 1. Definir probabilidades pi_i individuales
+# Usamos el balance absoluto para evitar problemas con saldos negativos
+# y escalamos para que la suma de pi_i sea igual al tamaño de muestra deseado (n=500)
+n_deseado <- 500
+bank_data <- bank_data %>%
+  mutate(balance_adj = abs(balance) + 1) %>% # Evitar ceros
+  mutate(pi_i = n_deseado * (balance_adj / sum(balance_adj))) %>%
+  mutate(pi_i = pmin(pi_i, 1)) # Asegurar que ninguna prob sea > 1
+
+# 2. Ejecutar el proceso de Poisson
+set.seed(321)
+muestra_poisson <- bank_data %>%
+  filter(runif(n()) <= pi_i)
+
+# El tamaño de muestra será cercano a 500, pero no exacto
+nrow(muestra_poisson)
+```
+
+```{r}
+# Estimación del Total Poblacional
+total_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i)
+
+# Estimación de la Media (Hajek) - Más estable para Poisson
+media_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i) / 
+                       sum(1 / muestra_poisson$pi_i)
+
+# Comparación con la realidad
+media_real <- mean(bank_data$balance)
+print(paste("Real:", round(media_real, 2), "| Poisson:", round(media_est_poisson, 2)))
+```
+
+
+```{r}
+# Cálculo de la varianza estimada del total
+var_total_poisson <- sum((1 - muestra_poisson$pi_i) * (muestra_poisson$balance / muestra_poisson$pi_i)^2)
+var_total_poisson
+# Error estándar de la media
+se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Diseño pps y πps
+
+```{r}
+if(!require(sampling)) install.packages("sampling")
+library(sampling)
+library(tidyverse)
+
+# --- Preparación de la variable de tamaño (Size) ---
+# Usamos el balance absoluto para que siempre sea positivo
+bank_data <- bank_data %>%
+  mutate(size_var = abs(balance) + 1)
+
+n_muestra <- 500
+
+# 1. DISEÑO PPS (Con reemplazo)
+set.seed(123)
+# Calculamos p_i (probabilidades de selección en cada sorteo, suman 1)
+p_i <- bank_data$size_var / sum(bank_data$size_var)
+indices_pps <- sample(1:nrow(bank_data), size = n_muestra, replace = TRUE, prob = p_i)
+muestra_pps <- bank_data[indices_pps, ]
+
+# Estimador pwr (Hansen-Hurwitz)
+total_pps <- (1/n_muestra) * sum(muestra_pps$balance / p_i[indices_pps])
+
+
+# 2. DISEÑO pips (Sin reemplazo - Algoritmo Sistemático)
+# Calculamos pi_i (probabilidades de inclusión, suman n)
+pi_i <- inclusionprobabilities(bank_data$size_var, n_muestra)
+
+set.seed(123)
+# Usamos el método sistemático para pips
+indicador_pips <- UPsystematic(pi_i)
+muestra_pips <- bank_data[indicador_pips == 1, ]
+
+# Estimador Horvitz-Thompson
+total_pips <- sum(muestra_pips$balance / pi_i[indicador_pips == 1])
+
+# --- Resultados ---
+media_real <- mean(bank_data$balance)
+data.frame(
+  Metodo = c("Real", "PPS (H-H)", "piPS (H-T)"),
+  Media_Estimada = c(media_real, total_pps/nrow(bank_data), total_pips/nrow(bank_data))
+)
+```
+
+
+
+Diseño Estratificado 
+
+
+```{r}
+library(tidyverse)
+library(sampling)
+
+# 1. Preparar los datos (ordenar por estrato es buena práctica)
+bank_data <- bank_data %>% arrange(job)
+N <- nrow(bank_data)
+n_total <- 500
+
+# 2. Calcular tamaños de estrato en la población (Nh)
+estratos_info <- bank_data %>%
+  group_by(job) %>%
+  summarise(Nh = n(), Sh = sd(balance)) %>%
+  mutate(wh = Nh / N) # Pesos poblacionales
+
+# 3. Afijación Proporcional (nh)
+estratos_info <- estratos_info %>%
+  mutate(n_prop = round(n_total * wh))
+
+# 4. Extraer la muestra estratificada (Proporcional)
+set.seed(123)
+muestra_estrat <- strata(bank_data, 
+                         stratanames = "job", 
+                         size = estratos_info$n_prop, 
+                         method = "srswor") # Sin reemplazo dentro del estrato
+
+# 5. Recuperar los datos de la muestra
+datos_muestra_estrat <- getdata(bank_data, muestra_estrat)
+```
+
+```{r}
+# Cálculo manual del estimador estratificado
+estimacion_estrat <- datos_muestra_estrat %>%
+  group_by(job) %>%
+  summarise(media_h = mean(balance)) %>%
+  left_join(estratos_info, by = "job") %>%
+  summarise(media_global_st = sum(media_h * wh))
+
+media_real <- mean(bank_data$balance)
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Estratificada:", round(estimacion_estrat$media_global_st, 2)))
+```
+
+```{r}
+# Comparar proporciones
+comp_proporciones <- data.frame(
+  Trabajo = estratos_info$job,
+  Poblacion = estratos_info$wh,
+  Muestra = as.vector(table(datos_muestra_estrat$job) / nrow(datos_muestra_estrat))
+)
+
+ggplot(comp_proporciones, aes(x = Trabajo)) +
+  geom_bar(aes(y = Poblacion), stat = "identity", fill = "gray", alpha = 0.5) +
+  geom_point(aes(y = Muestra), color = "red", size = 3) +
+  coord_flip() +
+  labs(title = "Representatividad: Población (barras) vs Muestra (puntos)",
+       subtitle = "La afijación proporcional clava las proporciones reales")
+```
+
+
+
+
+Muestreo por Conglomerados
+
+```{r}
+library(survey)
+library(tidyverse)
+
+# 1. Simulamos 20 "sucursales" o clusters (ID_sucursal)
+set.seed(456)
+bank_data <- bank_data %>%
+  mutate(cluster_id = sample(1:20, nrow(.), replace = TRUE))
+
+# 2. Selección de Clusters: Vamos a elegir 4 sucursales al azar
+sucursales_elegidas <- sample(1:20, size = 4)
+
+# 3. Nuestra muestra son TODOS los clientes de esas 4 sucursales
+muestra_conglomerados <- bank_data %>%
+  filter(cluster_id %in% sucursales_elegidas)
+
+# Tamaño de la muestra (es aleatorio dependiendo de cuánta gente haya en cada sucursal)
+nrow(muestra_conglomerados)
+```
+
+
+```{r}
+# 4. Definir el diseño de conglomerados
+# id = ~cluster_id indica que la unidad de muestreo es el cluster
+diseno_clusters <- svydesign(
+  id = ~cluster_id, 
+  data = muestra_conglomerados, 
+  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
+)
+
+# 5. Estimar la media
+media_clusters <- svymean(~balance, diseno_clusters, deff = TRUE)
+print(media_clusters)
+```
+
+
+
+
+
 
