@@ -37,7 +37,7 @@ colnames(bank_data)
 ```
 
 
-En muestreo lo que hacemos es obtener una muestra para realizar una estimacion del total de una variable de interes, en nuestro caso nuestra variable de interes para obtener un total es "balance" que es una variable continua con alta asimetría y valores atípicos, lo cual nos influira al querer obtener una estimacion del total de esta variable.
+En muestreo lo que hacemos es obtener una muestra para realizar una estimacion del promedio de una variable de interes, en nuestro caso nuestra variable de interes es "balance" que representa el dinero que tiene un usuario del banco y nos interesa estimar el promedio de esta variable (que en realidad el promedio es estimar el total y dividir esa estimacion entre el tamaño de la poblacion si es conocido o entre el tamaño de la muestra) que es una variable continua con alta asimetría y valores atípicos, lo cual nos influira al querer obtener una estimacion del promedio de esta variable.
 
 Luego contamos con variables auxiliares, que son todas las demas variables del set de datos, como job, education, marital, age, etc que puede o no tener una correlacion con nuestra variables de interes que es balance, cuanto mas correlacion haya entre alguna de estas variables auxiliares y balance, mejores seran las estimaciones. Estas variables tambien nos serviran para diversos metodos que veremos mas adelante como Estratificación, Raking, Post-estratificación.
 
@@ -48,6 +48,7 @@ Los datos provienen de una base de datos institucional. Dado que los recursos pa
 
 
 
+Si empezamos explorando la distribucion de nuestra variable de interes balance
 
 ```{r}
 # Resumen estadístico
@@ -61,7 +62,22 @@ ggplot(bank_data, aes(x = balance)) +
   labs(title = "Distribución del Saldo Bancario", x = "Saldo", y = "Frecuencia")
 ```
 
+Vemos que tenemos asimetría extrema con un sesgo a la derecha.
 
+La gráfica muestra una concentración masiva de clientes en saldos bajos, cercanos a 0, y una cola muy larga hacia la derecha. Esta asimetria nos causara problemas mas adelante los cuales resolveremos.  
+
+
+Si hacemos un Muestreo Aleatorio Simple (MAS), tienes una probabilidad altísima de no seleccionar a ninguno de los clientes con saldos altos (los que están en la cola derecha). Esto causaría una subestimación sistemática del saldo promedio del banco.
+
+
+
+
+
+
+
+
+
+Ahora en cuanto a las distintas profesiones
 
 ```{r}
 ggplot(bank_data, aes(x = job, y = balance, fill = job)) +
@@ -71,79 +87,107 @@ ggplot(bank_data, aes(x = job, y = balance, fill = job)) +
   theme(legend.position = "none") +
   labs(title = "Saldo por Tipo de Trabajo")
 ```
+Observamos los valores atipicos que pueden generar problemas al usar esta covariable para explicar a nuestra variable de interes balance, ademas vemos que hay grupos como retired (jubilados) o management que tienen cajas más anchas y bigotes más largos (más variabilidad), y hay otros grupos mas uniformes como services o blue-collar. Ademas la variabilidad cambia según el trabajo, por lo que seria bueno que el diseño muestral a usar considere el empleo como variable de control, porque uno que no lo haga será ineficiente.
 
 
+
+
+Para obtener la media real (de nuestra poblacion) usamos el siguiente codigo y obtenemos el valor de  1422.658
 
 ```{r}
 # 1. Real
 media_real <- mean(bank_data$balance)
+media_real
 ```
 
+
+### Muestreo Aleatorio Simple
+
+Todos los clientes de tu base de datos tienen exactamente la misma probabilidad de ser seleccionados, la cual es $\pi_i = \frac{n}{N}$, es decir, la probabilidad de seleccionar al individuo i es el tamaño de la muestra dividido el tamaño de la poblacion, por ejemplo si nuestra poblacion tuviera 1000 datos y sacamos una muestra de 100 personas, la probabilidad de que cualquier persona de la muestra sea seleccionado es 100/1000 = 0.1.
+Este diseño cumple el supuesto de Independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Ademas este diseño considera que el tamaño de la muestra es fijo, que no varia y nosotros podemos obtener una muestra de un tamaño que nos interese.
+
+Realizamos una estimacion de la media poblacional usando a la muestra, obteniendo el valor de 1458.8
 
 ```{r}
 # 2. MAS (Simple)
-set.seed(123) # Para que tus resultados sean reproducibles
-muestra_simple <- bank_data %>% sample_frac(0.05)
-media_mas <- mean(muestra_simple$balance)
 
+# Selección de una muestra aleatoria simple
+n <- 500
+muestra_mas <- bank_data[sample(nrow(bank_data), n), ]
 
+# Definición del diseño en el paquete survey
+library(survey)
+diseno_mas <- svydesign(id = ~1, data = muestra_mas)
 
-```
+# Estimación de la media del balance
+res_mas <- svymean(~balance, diseno_mas)
+ic_mas <- confint(res_mas)
 
-
-
-
-```{r}
-
-# 3. Estratificado (por job)
-muestra_estrat <- bank_data %>%
-  group_by(job) %>%
-  sample_frac(0.05) %>%
-  ungroup()
-media_estrat <- mean(muestra_estrat$balance)
+print(res_mas)
 
 
 ```
 
+Ahora el problema que tenemos con este diseño es que como vimos en el histograma de saldos, el MAS sera ineficiente porque hay mucha variabilidad y una asimetría extrema, esto causa que la muestra aleatoria simple  no incluya suficientes individuos de la "cola derecha", los usuarios de saldos altos, lo que resultaría en una estimación sesgada y erronea del promedio de la riqueza de los usuarios del banco. En nuestro caso vemos que la estimacion del promedio hecha con la muestra esta considerablemente alejada de la media real.
 
 
+
+
+
+### Diseño Bernoulli
+
+Este Diseño asume que cada unidad de la población del banco tiene una probabilidad de inclusión independiente e idéntica ($\pi$). A diferencia del Muestreo Aleatorio Simple (MAS), donde el tamaño de la muestra ($n$) es fijo, en el diseño Bernoulli el tamaño de la muestra es aleatorio, varia segun la extraccion que hagamos, no siempre es el mismo. Se puede probar matematicamente que el número final de clientes seleccionados sigue una distribución Binomial $B(N, \pi)$ y en promedio tendremos $N \times \pi$ clientes, pero el número exacto variará cada vez que ejecutemos el proceso.
+
+Este Diseño sigue cumpliendo la Independencia, donde la selección de un cliente no afecta en absoluto la probabilidad de seleccionar a otro.
 
 
 ```{r}
-# Definimos la probabilidad de inclusión (ej. 5%)
-prob_inclusion <- 0.05
+library(survey)
 
+# 1. Definir la probabilidad de inclusión (pi)
+pi <- 0.05 
+N <- nrow(bank_data)
+
+# 2. Ejecutar el muestreo Bernoulli
+# Generamos una variable indicadora (0 o 1) para cada registro
 set.seed(123)
-# Cada fila tiene su propio "lanzamiento de moneda"
-muestra_bernoulli <- bank_data %>%
-  filter(rbinom(n(), 1, prob_inclusion) == 1)
+seleccion <- rbinom(N, 1, pi)
+muestra_bernoulli <- bank_data[seleccion == 1, ]
 
-# ¿Cuántos clientes terminaron en la muestra?
-nrow(muestra_bernoulli)
+# 3. Definir el diseño en el paquete survey
+# En el diseño Bernoulli, la probabilidad de inclusión es constante
+diseno_bernoulli <- svydesign(
+  id = ~1, 
+  prob = ~rep(pi, nrow(muestra_bernoulli)), 
+  data = muestra_bernoulli
+)
+
+# 4. Estimar la media de la variable 'balance'
+estimacion_media <- svymean(~balance, diseno_bernoulli)
+
+# 5. Mostrar resultados e Intervalo de Confianza
+print(estimacion_media)
+confint(estimacion_media)
+
+# Ver el tamaño de muestra obtenido
+cat("Tamaño de muestra esperado:", N * pi, "\n")
+cat("Tamaño de muestra obtenido:", nrow(muestra_bernoulli), "\n")
 ```
 
 
-```{r}
-# Estimador del Total de saldos (Horvitz-Thompson)
-total_est_ht <- sum(muestra_bernoulli$balance / prob_inclusion)
-
-# Estimador de la Media (Hajek)
-media_est_bernoulli <- sum(muestra_bernoulli$balance / prob_inclusion) / 
-                       sum(1 / prob_inclusion)
-
-# Comparar con la real
-media_real <- mean(bank_data$balance)
-print(paste("Real:", media_real, "| Bernoulli:", media_est_bernoulli))
-```
+Vemos que la estimacion esta bastante alejada de el valor poblacional de la media, esto se debe a que el diseño Bernoulli tambien se ve afectado por la asimetría observada en el histograma de saldos, donde la variable balance tiene una cola derecha muy larga. En un diseño Bernoulli con una $\pi$ baja, hay un alto riesgo de que el tamaño de muestra efectivo sea pequeño en los sectores de saldos altos, lo que sube el error estándar. Ademas la varianza en el diseño Bernoulli es mayor por la incertidumbre adicional sobre cuántos sujetos terminarán en la muestra.
 
 
 
-
+Si queremos hacer una tabla comparativa:
 ```{r}
 # Comparación rápida
-data.frame(Metodo = c("Real", "Simple", "Estratificado"),
-           Media = c(media_real, media_mas, media_estrat))
+data.frame(Metodo = c("Real", "Simple", "Bernoulli"),
+           Media = c(media_real, res_mas[1], estimacion_media))
 ```
+
+
+
 
 
 ```{r}
