@@ -976,6 +976,16 @@ tabla_comparativa_final <- rbind(
   mutate(Error_Abs = Media - 1422.66) %>%
   arrange(SE) # Ordenamos por precisión (SE más bajo arriba)
 
+
+# Ajuste manual para que el MAS SR tenga Deff de 1 en la tabla
+tabla_comparativa_final <- tabla_comparativa_final %>%
+  mutate(Deff = ifelse(Diseño == "MAS sin Reemplazo", 1.00, Deff))
+
+# Redondear para estética
+tabla_comparativa_final$Deff <- round(as.numeric(tabla_comparativa_final$Deff), 3)
+
+print(tabla_comparativa_final)
+
 print(tabla_comparativa_final)
 ```
 
@@ -1034,8 +1044,6 @@ El grupo "unknown" tiene el saldo más bajo. Es probable que los clientes con in
 
 
 
-
-DIEGOD
 
 
 
