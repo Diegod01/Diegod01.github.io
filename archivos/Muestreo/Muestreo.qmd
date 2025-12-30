@@ -117,12 +117,11 @@ muestra_mas <- bank_data[sample(nrow(bank_data), n), ]
 
 # Definición del diseño en el paquete survey
 library(survey)
-diseno_mas <- svydesign(id = ~1, data = muestra_mas)
 
-# Estimación de la media del balance
-res_mas <- svymean(~balance, diseno_mas)
-ic_mas <- confint(res_mas)
-res_mas
+diseno_mas <- svydesign(id = ~1, data = muestra_mas, fpc = rep(nrow(bank_data), nrow(muestra_mas)))
+
+res_mas  <- svymean(~balance, diseno_mas, deff = TRUE) # MAS SI
+#res_mas
 
 
 print(paste("Media Real:", round(media_real, 2)))
@@ -163,8 +162,12 @@ diseno_bernoulli <- svydesign(
   data = muestra_bernoulli
 )
 
+
+
+
 # 4. Estimar la media de la variable 'balance'
-estimacion_media <- svymean(~balance, diseno_bernoulli)
+estimacion_media  <- svymean(~balance, diseno_bernoulli, deff = TRUE) # bernoulli
+
 
 # 5. Mostrar resultados e Intervalo de Confianza
 print(estimacion_media)
@@ -319,9 +322,13 @@ diseno_sir <- svydesign(
   data = muestra_sir
 )
 
+
+
+
 # 5. Estimar la media del balance
-res_sir <- svymean(~balance, diseno_sir)
-print(res_sir)
+res_sir  <- svymean(~balance, diseno_sir, deff = TRUE)   # MAS con reemplazo
+
+
 
 
 
@@ -513,6 +520,9 @@ muestra_estrat <- strata(bank_data,
                          size = estratos_info$n_prop, 
                          method = "srswor") # Sin reemplazo dentro del estrato
 
+
+
+
 # 5. Recuperar los datos de la muestra
 datos_muestra_estrat <- getdata(bank_data, muestra_estrat)
 datos_muestra_estrat
@@ -520,15 +530,28 @@ datos_muestra_estrat
 
 ```{r}
 # Cálculo manual del estimador estratificado
-estimacion_estrat <- datos_muestra_estrat %>%
-  group_by(job) %>%
-  summarise(media_h = mean(balance)) %>%
-  left_join(estratos_info, by = "job") %>%
-  summarise(media_global_st = sum(media_h * wh))
+# estimacion_estrat <- datos_muestra_estrat %>%
+#   group_by(job) %>%
+#   summarise(media_h = mean(balance)) %>%
+#   left_join(estratos_info, by = "job") %>%
+#   summarise(media_global_st = sum(media_h * wh))
+
+
+
+# --- Estratificado Manual (por Job) ---
+# Requiere unir Nh (tamaño poblacional del estrato) para el cálculo del SE
+datos_muestra_estrat_completa <- datos_muestra_estrat %>%
+  left_join(estratos_info %>% dplyr::select(job, Nh), by = "job")
+
+diseno_estrat_manual <- svydesign(id = ~1, strata = ~job, data = datos_muestra_estrat_completa, fpc = ~Nh)
+
+
+estimacion_estrat <- svymean(~balance, diseno_estrat_manual, deff = TRUE)  # Estratificado
+estimacion_estrat
 
 media_real <- mean(bank_data$balance)
 print(paste("Media Real:", round(media_real, 2)))
-print(paste("Media Estratificada:", round(estimacion_estrat$media_global_st, 2)))
+print(paste("Media Estratificada:", round(estimacion_estrat, 2)))
 ```
 
 Obtenemos una estimacion bastante buena.
@@ -611,17 +634,28 @@ library(survey)
 
 # Definimos el diseño sistemático en 'survey'
 # Se suele aproximar como MAS si no hay periodicidad
-diseno_sist <- svydesign(
-  id = ~1, 
-  data = muestra_sistematica, 
-  fpc = rep(N, nrow(muestra_sistematica))
-)
+# diseno_sist <- svydesign(
+#   id = ~1, 
+#   data = muestra_sistematica, 
+#   fpc = rep(N, nrow(muestra_sistematica))
+# )
+# 
+# 
+# 
+# svymean(~balance, diseno_sist)
 
-svymean(~balance, diseno_sist)
 
+
+# --- Sistemático ---
+# Se aproxima como un MAS asumiendo que el orden de la lista es aleatorio
+diseno_sist <- svydesign(id = ~1, data = muestra_sistematica, fpc = rep(nrow(bank_data), nrow(muestra_sistematica)))
+
+
+res_sist_table  <- svymean(~balance, diseno_sist, deff = TRUE)  # sistematico
+res_sist_table
 
 print(paste("Media Real:", round(media_real, 2)))
-print(paste("Media Diseño Sistemático:", round(svymean(~balance, diseno_sist), 2)))
+print(paste("Media Diseño Sistemático:", round(res_sist_table, 2)))
 ```
 Obtenemos una estimacion algo lejana de la media real, esto se puede deber a algunos problemas asociados al diseño sistemático como que no todos los elementos tienen probabilidad de inclusion mayor a cero, dado que como vamos dando saltos, hay individuos que no salen en esos saltos y no son considerados, otro problema es que la población tenga un patrón cíclico que coincida con el intervalo $k$. Por ejemplo, si en tu lista cada 90 clientes hay un registro de una sucursal específica, la muestra podría estar sesgada hacia esa sucursal
 
@@ -672,6 +706,23 @@ media_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i) /
 # Comparación con la realidad
 media_real <- mean(bank_data$balance)
 print(paste("Real:", round(media_real, 2), "| Poisson:", round(media_est_poisson, 2)))
+
+# --- Poisson ---
+# Probabilidades pi_i individuales, n es aleatorio
+prob_poi_muestra <- muestra_poisson$pi_i
+diseno_poi_completo <- svydesign(id = ~1, probs = ~prob_poi_muestra, data = muestra_poisson)
+
+
+
+res_poi_table <- svymean(~balance, diseno_poi_completo, deff = TRUE) # Poisson
+res_poi_table
+
+
+
+
+
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Diseño Sistemático:", round(res_poi_table, 2)))
 ```
 Obtenemos una estimacion lejana de la media poblacional, por lo que este diseño no parece ser muy bueno.
 
@@ -698,7 +749,7 @@ La diferencia entre ambos es que pps es un diseño con reemplazo (existe posibil
 Mientras que πps es sin reemplazo, cada cliente aparezca máximo una vez en la muestra.
 
 ```{r}
-if(!require(sampling)) install.packages("sampling")
+#if(!require(sampling)) install.packages("sampling")
 library(sampling)
 library(tidyverse)
 
@@ -719,6 +770,19 @@ muestra_pps <- bank_data[indices_pps, ]
 # Estimador pwr (Hansen-Hurwitz)
 total_pps <- (1/n_muestra) * sum(muestra_pps$balance / p_i[indices_pps])
 
+# --- PPS (Hansen-Hurwitz) ---
+# Probabilidades de selección p_i (suman 1 en la población)
+prob_pps_muestra <- p_i[indices_pps] 
+diseno_pps_completo <- svydesign(id = ~1, probs = ~prob_pps_muestra, data = muestra_pps)
+
+
+res_pps_table <- svymean(~balance, diseno_pps_completo, deff = TRUE)  # pps
+
+```
+
+
+
+```{r}
 
 # 2. DISEÑO pips (Sin reemplazo - Algoritmo Sistemático)
 # Calculamos pi_i (probabilidades de inclusión, suman n)
@@ -738,8 +802,28 @@ data.frame(
   Metodo = c("Real", "PPS (H-H)", "piPS (H-T)"),
   Media_Estimada = c(media_real, total_pps/nrow(bank_data), total_pips/nrow(bank_data))
 )
+
+
+
+
+# --- piPS (Horvitz-Thompson) ---
+# Probabilidades de inclusión pi_i (suman n en la población)
+prob_pips_muestra <- pi_i[indicador_pips == 1]
+diseno_pips_completo <- svydesign(id = ~1, probs = ~prob_pips_muestra, data = muestra_pips)
+
+
+
+res_pips_table <- svymean(~balance, diseno_pips_completo, deff = TRUE) # πps
+
+
 ```
 
+```{r}
+# Resultados
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Diseño pps:", round(res_pps_table, 2)))
+print(paste("Media Diseño pips:", round(res_pips_table, 2)))
+```
 Vemos que ambos diseños al estimar la media se alejan un poco de su verdadero valor poblacion y es curioso que ese alejamiento es de una magnitud similar, donde PPS  subestima el valor real de la media, y πps sobreestima el valor real de la media.
 
 
@@ -775,17 +859,21 @@ nrow(muestra_conglomerados)
 
 
 ```{r}
-# 4. Definir el diseño de conglomerados
-# id = ~cluster_id indica que la unidad de muestreo es el cluster
-diseno_clusters <- svydesign(
-  id = ~cluster_id, 
-  data = muestra_conglomerados, 
-  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
+
+# --- Conglomerados (Clusters) ---
+# El id especifica la variable que agrupa (sucursal o job)
+diseno_clusters <- svydesign(id = ~cluster_id, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
 )
 
-# 5. Estimar la media
-media_clusters <- svymean(~balance, diseno_clusters, deff = TRUE)
-print(media_clusters)
+
+# Conglomerados
+res_cong_table  <- svymean(~balance, diseno_clusters, deff = TRUE) # conglomerados
+res_cong_table
+
+
+
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Diseño por Conglomerados:", round(res_cong_table, 2)))
 ```
 Obtenemos un valor de 1406.363 que no es muy cercano a el valor real de la media poblacional que era 1422.658, esto puede deberse a los atipicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.
 
@@ -894,16 +982,22 @@ muestra_2etapas <- muestra_2etapas %>%
 cat("Suma de pesos (debe ser aprox", nrow(bank_data), "):", sum(muestra_2etapas$peso_w), "\n")
 
 # 5. Diseño y Estimación
-diseno_final <- svydesign(
+diseno_dos_etapas <- svydesign(
   id = ~cluster_id, 
   weights = ~peso_w, 
   data = muestra_2etapas
 )
 
-resultado <- svymean(~balance, diseno_final)
-print(resultado)
+resultado <- svymean(~balance, diseno_dos_etapas)
+#print(resultado)
 
 
+
+
+# Otro
+res_2etap_table <- svymean(~balance, diseno_dos_etapas, deff = TRUE)  # dos etapas
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Diseño Dos Etapas:", round(res_2etap_table, 2)))
 ```
 Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.
 
@@ -924,15 +1018,98 @@ datos_muestra_estrat_completa <- datos_muestra_estrat %>%
 ```
 
 
+```{r}
+# DEFINICION DE LOS DISEÑOS
+
+library(survey)
+
+# --- MAS Sin Reemplazo ---
+# id = ~1 indica que la unidad de muestreo es el individuo
+diseno_mas <- svydesign(id = ~1, data = muestra_mas, fpc = rep(nrow(bank_data), nrow(muestra_mas)))
+
+# --- MAS Con Reemplazo (SIR) ---
+# Al ser con reemplazo, no se incluye el argumento fpc
+diseno_sir <- svydesign(id = ~1, weights = ~rep(nrow(bank_data)/500, nrow(muestra_sir)), data = muestra_sir)
+
+# --- Bernoulli ---
+# Probabilidad constante para todos, pero n es aleatorio
+diseno_bernoulli <- svydesign(id = ~1, prob = ~rep(0.05, nrow(muestra_bernoulli)), data = muestra_bernoulli)
+
+
+
+# --- PPS (Hansen-Hurwitz) ---
+# Probabilidades de selección p_i (suman 1 en la población)
+prob_pps_muestra <- p_i[indices_pps] 
+diseno_pps_completo <- svydesign(id = ~1, probs = ~prob_pps_muestra, data = muestra_pps)
+
+# --- piPS (Horvitz-Thompson) ---
+# Probabilidades de inclusión pi_i (suman n en la población)
+prob_pips_muestra <- pi_i[indicador_pips == 1]
+diseno_pips_completo <- svydesign(id = ~1, probs = ~prob_pips_muestra, data = muestra_pips)
+
+# --- Poisson ---
+# Probabilidades pi_i individuales, n es aleatorio
+prob_poi_muestra <- muestra_poisson$pi_i
+diseno_poi_completo <- svydesign(id = ~1, probs = ~prob_poi_muestra, data = muestra_poisson)
+
+
+
+
+# --- Estratificado Manual (por Job) ---
+# Requiere unir Nh (tamaño poblacional del estrato) para el cálculo del SE
+datos_muestra_estrat_completa <- datos_muestra_estrat %>%
+  left_join(estratos_info %>% dplyr::select(job, Nh), by = "job")
+
+diseno_estrat_manual <- svydesign(id = ~1, strata = ~job, data = datos_muestra_estrat_completa, fpc = ~Nh)
+
+# --- Sistemático ---
+# Se aproxima como un MAS asumiendo que el orden de la lista es aleatorio
+diseno_sist <- svydesign(id = ~1, data = muestra_sistematica, fpc = rep(nrow(bank_data), nrow(muestra_sistematica)))
+
+# --- Conglomerados (Clusters) ---
+# El id especifica la variable que agrupa (sucursal o job)
+
+diseno_clusters <- svydesign(id = ~cluster_id, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
+)
+
+
+
+# --- Dos Etapas (Final) ---
+# id = ~cluster_id + id_cliente define la jerarquía de selección
+# 5. Diseño y Estimación
+
+
+muestra_2etapas <- bank_data %>%
+  filter(cluster_id %in% sucursales_elegidas) %>%
+  group_by(cluster_id) %>%
+  mutate(Mi = n()) %>%               # Clientes totales en ESTA sucursal
+  sample_n(size = n_usm) %>%         # Seleccionamos 10
+  ungroup()
+
+
+muestra_2etapas <- muestra_2etapas %>%
+  mutate(
+    prob_etapa1 = n_upm / N_total_upm,   # P(seleccionar sucursal)
+    prob_etapa2 = n_usm / Mi,            # P(seleccionar cliente | sucursal)
+    pi_total = prob_etapa1 * prob_etapa2, # Probabilidad de inclusión global
+    peso_w = 1 / pi_total                 # Factor de expansión (HT)
+  )
+
+diseno_dos_etapas <- svydesign(
+  id = ~cluster_id, 
+  weights = ~peso_w, 
+  data = muestra_2etapas
+)
+```
+
+
 
 ```{r}
-res_mas_table  <- svymean(~balance, diseno_mas, deff = TRUE)
+# VALORES
+
+res_mas_table  <- svymean(~balance, diseno_mas, deff = TRUE) # MAS SI
 
 
-# --- 1. Preparación Blindada de Diseños ---
-
-# Para PPS (Hansen-Hurwitz)
-# Aseguramos que usamos las probabilidades exactas de los índices seleccionados
 prob_pps_muestra <- p_i[indices_pps]
 diseno_pps_completo <- svydesign(id=~1, probs=~prob_pps_muestra, data=muestra_pps)
 res_pps_table <- svymean(~balance, diseno_pps_completo, deff = TRUE)  # pps
@@ -941,17 +1118,16 @@ prob_pips_muestra <- pi_i[indicador_pips == 1]
 diseno_pips_completo <- svydesign(id=~1, probs=~prob_pips_muestra, data=muestra_pips)  
 res_pips_table <- svymean(~balance, diseno_pips_completo, deff = TRUE) # πps
 
-res_mas_table  <- svymean(~balance, diseno_mas, deff = TRUE) # MAS SI
 
 prob_poi_muestra <- muestra_poisson$pi_i
 diseno_poi_completo <- svydesign(id=~1, probs=~prob_poi_muestra, data=muestra_poisson)
-res_poi_table <- svymean(~balance, diseno_poi_completo, deff = TRUE)
+res_poi_table <- svymean(~balance, diseno_poi_completo, deff = TRUE) # Poisson
 
 res_bern_table  <- svymean(~balance, diseno_bernoulli, deff = TRUE) # bernoulli
 res_sir_table   <- svymean(~balance, diseno_sir, deff = TRUE)   # MAS con reemplazo
 res_sist_table  <- svymean(~balance, diseno_sist, deff = TRUE)  # sistematico
 res_cong_table  <- svymean(~balance, diseno_clusters, deff = TRUE) # conglomerados
-res_2etap_table <- svymean(~balance, diseno_final, deff = TRUE)  # dos etapas
+res_2etap_table <- svymean(~balance, diseno_dos_etapas, deff = TRUE)  # dos etapas
 
 diseno_estrat_manual <- svydesign(id = ~1, strata = ~job, data = datos_muestra_estrat_completa, fpc = ~Nh)
 res_est_table <- svymean(~balance, diseno_estrat_manual, deff = TRUE)  # Estratificado
@@ -998,6 +1174,9 @@ tabla_comparativa_final$Deff <- round(as.numeric(tabla_comparativa_final$Deff), 
 print(tabla_comparativa_final)
 
 ```
+
+
+
 
 
 
@@ -1071,14 +1250,14 @@ library(tidyverse)
 
 # 1. Aseguramos que el diseño esté bien declarado
 # (Usando los pesos calculados en el paso anterior)
-diseno_final <- svydesign(
+diseno_dos_etapas <- svydesign(
   id = ~cluster_id, 
   weights = ~peso_w, 
   data = muestra_2etapas
 )
 
 # 2. Calculamos la media y guardamos el objeto res_media
-res_media <- svymean(~balance, diseno_final)
+res_media <- svymean(~balance, diseno_dos_etapas)
 
 # 3. Cálculo de Sesgo y Precisión
 valor_real <- mean(bank_data$balance) # Valor real de la población
@@ -1194,7 +1373,7 @@ library(survey)
 # 1. Usamos el diseño de dos etapas que ya definimos
 razon_balance_edad <- svyratio(numerator = ~balance, 
                                denominator = ~age, 
-                               design = diseno_final)
+                               design = diseno_dos_etapas)
 
 # 2. Ver el resultado y su error estándar
 print(razon_balance_edad)
@@ -1209,7 +1388,7 @@ confint(razon_balance_edad)
 ```{r}
 
 # Razón Saldo / Duración de la llamada
-razon_campana <- svyratio(~balance, ~duration, diseno_final)
+razon_campana <- svyratio(~balance, ~duration, diseno_dos_etapas)
 print(razon_campana)
 ```
 
@@ -1228,7 +1407,7 @@ print(razon_campana)
 
 ```{r}
 # Convertir el diseño a réplicas Jackknife (JK1 o JKn)
-diseno_jk <- as.svrepdesign(diseno_final, type = "JK1")
+diseno_jk <- as.svrepdesign(diseno_dos_etapas, type = "JK1")
 
 # Estimar la media usando Jackknife
 media_jk <- svymean(~balance, diseno_jk)
@@ -1237,7 +1416,7 @@ print(media_jk)
 ```{r}
 # Convertir a diseño de réplicas Bootstrap
 # R = 500 significa que hará 500 simulaciones
-diseno_boot <- as.svrepdesign(diseno_final, type = "bootstrap", replicates = 500)
+diseno_boot <- as.svrepdesign(diseno_dos_etapas, type = "bootstrap", replicates = 500)
 
 # Estimar la media usando Bootstrap
 media_boot <- svymean(~balance, diseno_boot)
@@ -1330,7 +1509,7 @@ totales_poblacion <- c(`(Intercept)` = total_poblacion, age = total_edad_poblaci
 
 # 2. Calibración (Estimador GREG)
 # Esto ajusta los pesos peso_w para que la muestra sea "perfecta" respecto a la edad
-diseno_calibrado <- calibrate(design = diseno_final, 
+diseno_calibrado <- calibrate(design = diseno_dos_etapas, 
                               formula = ~age, 
                               population = totales_poblacion)
 
@@ -1339,7 +1518,7 @@ res_greg <- svymean(~balance, diseno_calibrado)
 print(res_greg)
 
 # Comparar pesos: antes vs después
-summary(weights(diseno_final))
+summary(weights(diseno_dos_etapas))
 summary(weights(diseno_calibrado))
 ```
 
@@ -1381,7 +1560,7 @@ pop_totals <- c(`(Intercept)` = nrow(bank_data), totales_educacion[-1])
 # Nota: se quita el primer nivel porque está implícito en el Intercept
 
 # 3. Aplicar Calibración (Raking / Lineal)
-diseno_calibrado <- calibrate(design = diseno_final, 
+diseno_calibrado <- calibrate(design = diseno_dos_etapas, 
                               formula = ~education, 
                               population = pop_totals,
                               calfun = "raking") # o "linear" para GREG
@@ -1394,7 +1573,7 @@ svytotal(~education, diseno_calibrado)
 
 ```{r}
 # Comparar el peso promedio antes y después
-muestra_2etapas$peso_original <- weights(diseno_final)
+muestra_2etapas$peso_original <- weights(diseno_dos_etapas)
 muestra_2etapas$peso_calibrado <- weights(diseno_calibrado)
 
 # Visualizar la dispersión de los nuevos pesos
@@ -1419,7 +1598,7 @@ library(survey)
 
 # 1. Definir el modelo de regresión dentro del diseño
 # Queremos predecir 'balance' en función de 'age'
-modelo_greg <- svyglm(balance ~ age, design = diseno_final)
+modelo_greg <- svyglm(balance ~ age, design = diseno_dos_etapas)
 
 # 2. El 'Regression Thinking' nos dice que el total estimado es:
 # Total = (Predicción para toda la población) + (Suma de los errores en la muestra)
@@ -1463,13 +1642,13 @@ pob_marital <- bank_data %>%
 
 # 2. Aplicar la Post-estratificación al diseño de dos etapas
 diseno_post <- postStratify(
-  design = diseno_final, 
+  design = diseno_dos_etapas, 
   strata = ~marital, 
   population = pob_marital
 )
 
 # 3. Comparar estimaciones
-res_antes <- svymean(~balance, diseno_final)
+res_antes <- svymean(~balance, diseno_dos_etapas)
 res_despues <- svymean(~balance, diseno_post)
 
 print(res_antes)
@@ -1505,7 +1684,7 @@ pop_civil <- data.frame(
 
 # 2. Aplicar el Raking (Nota el PUNTO en los nombres de los argumentos)
 diseno_raking <- rake(
-  design = diseno_final,
+  design = diseno_dos_etapas,
   sample.margins = list(~education, ~marital), 
   population.margins = list(pop_educacion, pop_civil)
 )
@@ -1684,20 +1863,20 @@ cat("Sesgo de Selección: ", media_no_prob - media_real, "\n")
 # Supongamos que nuestro "Dominio" de interés son los clientes con educación 'tertiary'
 
 # 1. Creamos el subconjunto del diseño (mantiene la estructura de pesos y clusters)
-diseno_terciario <- subset(diseno_final, education == "tertiary")
+diseno_terciario <- subset(diseno_dos_etapas, education == "tertiary")
 
 # 2. Estimamos la media para ese dominio
 res_dominio <- svymean(~balance, diseno_terciario)
 
 # 3. Comparamos con la media global
 print(res_dominio)
-print(svymean(~balance, diseno_final))
+print(svymean(~balance, diseno_dos_etapas))
 ```
 
 ```{r}
 # Saldo promedio por tipo de trabajo (Dominios)
 reporte_trabajos <- svyby(~balance, by = ~job, 
-                          design = diseno_final, 
+                          design = diseno_dos_etapas, 
                           FUN = svymean)
 
 print(reporte_trabajos)
