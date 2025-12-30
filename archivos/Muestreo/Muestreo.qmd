@@ -122,10 +122,11 @@ diseno_mas <- svydesign(id = ~1, data = muestra_mas)
 # Estimación de la media del balance
 res_mas <- svymean(~balance, diseno_mas)
 ic_mas <- confint(res_mas)
+res_mas
 
-print(res_mas)
 
-
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media  MAS sin Reemplazo:", round(res_mas, 2)))
 ```
 
 Ahora el problema que tenemos con este diseño es que como vimos en el histograma de saldos, el MAS sera ineficiente porque hay mucha variabilidad y una asimetría extrema, esto causa que la muestra aleatoria simple  no incluya suficientes individuos de la "cola derecha", los usuarios de saldos altos, lo que resultaría en una estimación sesgada y erronea del promedio de la riqueza de los usuarios del banco. En nuestro caso vemos que la estimacion del promedio hecha con la muestra esta considerablemente alejada de la media real.
@@ -172,6 +173,11 @@ confint(estimacion_media)
 # Ver el tamaño de muestra obtenido
 cat("Tamaño de muestra esperado:", N * pi, "\n")
 cat("Tamaño de muestra obtenido:", nrow(muestra_bernoulli), "\n")
+
+
+
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media  Bernoulli:", round(estimacion_media, 2)))
 ```
 
 
@@ -316,6 +322,11 @@ diseno_sir <- svydesign(
 # 5. Estimar la media del balance
 res_sir <- svymean(~balance, diseno_sir)
 print(res_sir)
+
+
+
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media  MAS con Reemplazo:", round(res_sir, 2)))
 ```
  
 En media, tanto reemplazo como no reemplazo son insesgados (muy cerca del valor real). En Varianza y RMSE, con reemplazo es mayor debido a la reduccion de la diversidad de la muestra.
@@ -429,10 +440,14 @@ diseno_ht <- svydesign(
 res_pwr <- svymean(~balance, diseno_pwr)
 res_ht <- svymean(~balance, diseno_ht)
 
-print(res_pwr)
-print(res_ht)
+# print(res_pwr)
+# print(res_ht)
 
 
+print(paste("Media Estimador HT:", round(res_pwr, 2)))
+print(paste("Media Estimador pwr:", round(res_ht, 2)))
+
+cat("\n")
 
 # Extraer las varianzas directamente de los objetos de estimación
 var_pwr <- vcov(res_pwr)[1,1]
@@ -602,6 +617,10 @@ diseno_sist <- svydesign(
 )
 
 svymean(~balance, diseno_sist)
+
+
+print(paste("Media Real:", round(media_real, 2)))
+print(paste("Media Diseño Sistemático:", round(svymean(~balance, diseno_sist), 2)))
 ```
 Obtenemos una estimacion algo lejana de la media real, esto se puede deber a algunos problemas asociados al diseño sistemático como que no todos los elementos tienen probabilidad de inclusion mayor a cero, dado que como vamos dando saltos, hay individuos que no salen en esos saltos y no son considerados, otro problema es que la población tenga un patrón cíclico que coincida con el intervalo $k$. Por ejemplo, si en tu lista cada 90 clientes hay un registro de una sucursal específica, la muestra podría estar sesgada hacia esa sucursal
 
@@ -898,99 +917,67 @@ Obtenemos un valor bastante alejado de la media real, por lo que este diseño no
 
 El Deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una caracteristica deseable en un diseño.
 
+
+
+
 ```{r}
-library(survey)
-library(dplyr)
-library(tidyr)
+# --- 1. Preparación Blindada de Diseños ---
 
-library(survey)
-library(dplyr)
-library(ggplot2)
+# Para PPS (Hansen-Hurwitz)
+# Aseguramos que usamos las probabilidades exactas de los índices seleccionados
+prob_pps_muestra <- p_i[indices_pps]
+diseno_pps_completo <- svydesign(id=~1, probs=~prob_pps_muestra, data=muestra_pps)
+res_pps_table <- svymean(~balance, diseno_pps_completo, deff = TRUE)
 
-# --- 0. Preparación Robusta ---
-# Es vital que 'N' sea exactamente el número de filas de la data que entra al diseño
-bank_clean <- bank_data %>% filter(balance > 0) %>% drop_na(balance, job, education)
-N <- nrow(bank_clean)
-n_target <- 500
+# Para pi-PS (Horvitz-Thompson)
+# Filtramos pi_i para que coincida exactamente con las filas de muestra_pips
+prob_pips_muestra <- pi_i[indicador_pips == 1]
+diseno_pips_completo <- svydesign(id=~1, probs=~prob_pips_muestra, data=muestra_pips)
+res_pips_table <- svymean(~balance, diseno_pips_completo, deff = TRUE)
 
-# Función auxiliar para extraer métricas sin errores
-get_metrics <- function(res, name) {
+res_mas_table   <- svymean(~balance, diseno_mas, deff = TRUE)
+
+# Para Poisson
+# Aseguramos que pi_i solo contenga los valores de los seleccionados en la muestra
+prob_poi_muestra <- muestra_poisson$pi_i
+diseno_poi_completo <- svydesign(id=~1, probs=~prob_poi_muestra, data=muestra_poisson)
+res_poi_table <- svymean(~balance, diseno_poi_completo, deff = TRUE)
+res_bern_table  <- svymean(~balance, diseno_bernoulli, deff = TRUE)
+res_sir_table   <- svymean(~balance, diseno_sir, deff = TRUE)
+res_sist_table  <- svymean(~balance, diseno_sist, deff = TRUE)
+res_cong_table  <- svymean(~balance, diseno_clusters, deff = TRUE)
+res_2etap_table <- svymean(~balance, diseno_final, deff = TRUE)
+
+
+# --- 2. Función de extracción (La que ya definimos) ---
+extraer_metricas <- function(resultado_svy, nombre) {
+  deff_val <- tryCatch(deff(resultado_svy), error = function(e) NA)
+  
   data.frame(
-    Diseño = name,
-    Media = as.numeric(coef(res)),
-    SE = as.numeric(SE(res)),
-    Deff = as.numeric(deff(res))
+    Diseño = nombre,
+    Media = as.numeric(coef(resultado_svy)),
+    SE = as.numeric(SE(resultado_svy)),
+    Deff = deff_val
   )
 }
 
-# --- 1. Ejecución de Diseños ---
+# --- 3. Construcción de la Tabla Final ---
+tabla_comparativa_final <- rbind(
+  extraer_metricas(res_mas_table, "MAS sin Reemplazo"),
+  extraer_metricas(res_bern_table, "Bernoulli"),
+  extraer_metricas(res_sir_table, "MAS con Reemplazo"),
+  extraer_metricas(res_sist_table, "Sistemático"),
+  extraer_metricas(res_cong_table, "Conglomerados"),
+  extraer_metricas(res_2etap_table, "Dos Etapas"),
+  extraer_metricas(res_pps_table, "PPS (H-H)"),
+  extraer_metricas(res_pips_table, "piPS (H-T)"),
+  extraer_metricas(res_poi_table, "Poisson")
+) %>%
+  mutate(Error_Abs = Media - 1422.66) %>%
+  arrange(SE) # Ordenamos por precisión (SE más bajo arriba)
 
-# 1. MAS sin reemplazo (Referencia)
-set.seed(123)
-m_mas_sr <- bank_clean[sample(N, n_target), ]
-d_mas_sr <- svydesign(id=~1, fpc=rep(N, n_target), data=m_mas_sr)
-r1 <- get_metrics(svymean(~balance, d_mas_sr, deff=TRUE), "MAS SR")
-
-# 2. Bernoulli
-p_b <- n_target/N
-m_bern <- bank_clean[rbinom(N, 1, p_b) == 1, ]
-d_bern <- svydesign(id=~1, probs=rep(p_b, nrow(m_bern)), data=m_bern)
-r2 <- get_metrics(svymean(~balance, d_bern, deff=TRUE), "Bernoulli")
-
-# 3. MAS con reemplazo
-m_mas_cr <- bank_clean[sample(N, n_target, replace=TRUE), ]
-d_mas_cr <- svydesign(id=~1, weights=rep(N/n_target, n_target), data=m_mas_cr)
-r3 <- get_metrics(svymean(~balance, d_mas_cr, deff=TRUE), "MAS CR")
-
-# 4. Estratificado (Job)
-m_est <- bank_clean %>% group_by(job) %>% sample_frac(n_target/N) %>% ungroup()
-N_h <- bank_clean %>% group_by(job) %>% summarize(N_h = n())
-m_est <- m_est %>% left_join(N_h, by="job")
-d_est <- svydesign(id=~1, strata=~job, fpc=~N_h, data=m_est)
-r4 <- get_metrics(svymean(~balance, d_est, deff=TRUE), "Estratificado")
-
-# 5. Sistemático (Corregido para evitar error de dims)
-k <- floor(N/n_target)
-idx_sis <- seq(sample(1:k, 1), N, by=k)
-m_sis <- bank_clean[idx_sis, ]
-d_sis <- svydesign(id=~1, fpc=rep(N, nrow(m_sis)), data=m_sis)
-r5 <- get_metrics(svymean(~balance, d_sis, deff=TRUE), "Sistemático")
-
-# 6. Poisson
-pi_p <- pmin((bank_clean$age / sum(bank_clean$age)) * n_target, 1)
-sel_p <- rbinom(N, 1, pi_p) == 1
-d_poi <- svydesign(id=~1, probs=pi_p[sel_p], data=bank_clean[sel_p,])
-r6 <- get_metrics(svymean(~balance, d_poi, deff=TRUE), "Poisson")
-
-# 7. PPS (Con reemplazo)
-p_pps <- bank_clean$balance / sum(bank_clean$balance)
-idx_pps <- sample(N, n_target, replace=TRUE, prob=p_pps)
-d_pps <- svydesign(id=~1, probs=p_pps[idx_pps], data=bank_clean[idx_pps,])
-r7 <- get_metrics(svymean(~balance, d_pps, deff=TRUE), "PPS")
-
-# 8. PI-PS (Sin reemplazo - Brewer)
-pi_pips <- pmin(n_target * (bank_clean$balance / sum(bank_clean$balance)), 1)
-# Usamos una muestra más pequeña para pi_ps si el algoritmo falla por tamaño
-d_pips <- svydesign(id=~1, probs=pi_pips, data=bank_clean, pps="brewer")
-r8 <- get_metrics(svymean(~balance, d_pips, deff=TRUE), "PI-PS")
-
-# 9. Conglomerados (Education)
-d_cong <- svydesign(id=~education, data=bank_clean)
-r9 <- get_metrics(svymean(~balance, d_cong, deff=TRUE), "Conglomerados")
-
-# 10. Dos Etapas (UPM: Job)
-m_2et <- bank_clean %>% group_by(job) %>% sample_frac(0.1) %>% ungroup()
-d_2et <- svydesign(id=~job + 1, data=m_2et)
-r10 <- get_metrics(svymean(~balance, d_2et, deff=TRUE), "Dos Etapas")
-
-# --- 2. Tabla de Resultados ---
-tabla_final <- bind_rows(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10) %>% arrange(Deff)
-print(tabla_final)
-
-
+print(tabla_comparativa_final)
 ```
-
-
 
 
 
@@ -1008,6 +995,11 @@ Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una est
 ```{r}
 library(survey)
 
+N_h <- bank_data %>%
+  group_by(job) %>%
+  summarise(N_h = n())
+
+m_est <- bank_clean %>% group_by(job) %>% sample_frac(n/N) %>% ungroup() %>% left_join(N_h, by="job")
 # 1. Definir el diseño global (usaremos el Estratificado como ejemplo, que fue el más eficiente)
 # Es vital que el diseño contenga TODA la muestra
 diseno_global <- svydesign(
