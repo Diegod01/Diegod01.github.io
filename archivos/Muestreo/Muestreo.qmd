@@ -934,8 +934,9 @@ res_pps_table <- svymean(~balance, diseno_pps_completo, deff = TRUE)
 prob_pips_muestra <- pi_i[indicador_pips == 1]
 diseno_pips_completo <- svydesign(id=~1, probs=~prob_pips_muestra, data=muestra_pips)
 res_pips_table <- svymean(~balance, diseno_pips_completo, deff = TRUE)
-
 res_mas_table   <- svymean(~balance, diseno_mas, deff = TRUE)
+
+
 
 # Para Poisson
 # Aseguramos que pi_i solo contenga los valores de los seleccionados en la muestra
@@ -986,6 +987,56 @@ tabla_comparativa_final$Deff <- round(as.numeric(tabla_comparativa_final$Deff), 
 
 print(tabla_comparativa_final)
 
+print(tabla_comparativa_final)
+```
+
+Media real 1422.658
+
+
+
+
+```{r}
+# --- 1. Definir el diseño estratificado correctamente para la tabla ---
+# Usamos la muestra que ya tenías 'datos_muestra_estrat'
+# Es vital incluir 'strata = ~job' para que R sepa que debe calcular la varianza por estratos
+# 1. Aseguramos que la muestra tenga la columna Nh
+# Unimos los datos de la muestra con la información de los estratos que calculaste
+# 1. Aseguramos que la muestra tenga la columna Nh (usando dplyr:: explícito)
+datos_muestra_estrat_completa <- datos_muestra_estrat %>%
+  left_join(estratos_info %>% dplyr::select(job, Nh), by = "job")
+
+# 2. Definimos el diseño (ahora Nh existe dentro del dataframe)
+diseno_estrat_manual <- svydesign(
+  id = ~1, 
+  strata = ~job, 
+  data = datos_muestra_estrat_completa, 
+  fpc = ~Nh
+)
+
+# 3. Calculamos la media (respetando tus 1488.30)
+res_est_table <- svymean(~balance, diseno_estrat_manual, deff = TRUE)
+
+# 4. Construcción de la Tabla Final Unificada (Con todos los métodos)
+tabla_comparativa_final <- rbind(
+  extraer_metricas(res_mas_table, "MAS sin Reemplazo"),
+  extraer_metricas(res_est_table, "Estratificado (por Job)"),
+  extraer_metricas(res_bern_table, "Bernoulli"),
+  extraer_metricas(res_sir_table, "MAS con Reemplazo"),
+  extraer_metricas(res_sist_table, "Sistemático"),
+  extraer_metricas(res_cong_table, "Conglomerados"),
+  extraer_metricas(res_2etap_table, "Dos Etapas"),
+  extraer_metricas(res_pps_table, "PPS (H-H)"),
+  extraer_metricas(res_pips_table, "piPS (H-T)"),
+  extraer_metricas(res_poi_table, "Poisson")
+) %>%
+  mutate(
+    Error_Abs = Media - 1422.66,
+    # Limpiamos el Deff Inf del MAS y convertimos a numérico para redondear
+    Deff = ifelse(Diseño == "MAS sin Reemplazo", 1.000, round(as.numeric(Deff), 3))
+  ) %>%
+  arrange(SE) # Ordenar por precisión
+
+# 5. Ver el resultado final impecable
 print(tabla_comparativa_final)
 ```
 
