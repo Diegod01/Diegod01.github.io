@@ -457,6 +457,21 @@ Por los factores que mencionamos relacionados a que la varianza de diseños con 
 ## Diseño Estratificado 
 
 
+El Muestreo Estratificado es una técnica de diseño donde la población se divide en grupos mutuamente excluyentes llamados estratos, y luego se selecciona una muestra independiente dentro de cada uno de ellos. Nosotros decidimos la estructura de la muestra para asegurar que todos los sectores importantes del banco estén representados.
+
+Como vimos en el boxplot, los estratos los podemos hacer con las categorias de empleo del banco, esto debido a:
+
+- Homogeneidad Interna: En el boxplot, los saldos de los "estudiantes" se parecen mucho entre sí, pero son muy diferentes a los de los "jubilados". Al estratificar, el error estándar solo depende de la variación dentro de cada grupo, eliminando la gran diferencia que hay entre grupos.
+
+- Protección contra "Malas Muestras": En el MAS, existe el riesgo de que tu muestra no incluya a nadie de una categoría pequeña pero importante (como los desempleados). En el estratificado, garantizas una cuota mínima para cada profesión.
+
+- Mayor Precisión (Menor Varianza): Matemáticamente, si los estratos están bien elegidos (es decir, si la profesión realmente influye en el saldo), la varianza del estimador estratificado siempre será menor o igual a la del muestreo aleatorio simple.
+
+
+En cada estrato podemos aplicar el diseño que querramos, simple, bernoulli, etc.
+
+
+
 ```{r}
 library(tidyverse)
 library(sampling)
@@ -500,6 +515,11 @@ print(paste("Media Real:", round(media_real, 2)))
 print(paste("Media Estratificada:", round(estimacion_estrat$media_global_st, 2)))
 ```
 
+Obtenemos una estimacion bastante buena.
+
+
+
+
 ```{r}
 # Comparar proporciones
 comp_proporciones <- data.frame(
@@ -516,6 +536,13 @@ ggplot(comp_proporciones, aes(x = Trabajo)) +
        subtitle = "La afijación proporcional clava las proporciones reales")
 ```
 
+Este gráfico compara el peso de cada profesión en la población total (barras grises) contra su presencia en la muestra (puntos rojos). Los puntos rojos caen aproximadamente al final de cada barra gris, se logro una Afijación Proporcional perfecta.
+
+En un muestreo aleatorio simple, por puro azar, podrías haberte quedado sin "estudiantes" o con demasiados "jubilados". Aquí forzamos que la muestra sea representativa de la poblacion del banco. Al asegurar que cada grupo (estrato) esté representado en su justa medida, quitamos el error derivado de una muestra sesgada hacia profesiones con saldos muy altos o muy bajos.
+
+
+
+
 
 
 
@@ -529,6 +556,17 @@ ggplot(comp_proporciones, aes(x = Trabajo)) +
 
 
 ## Diseño Sistemático
+
+En lugar de elegir a cada individuo al azar, seleccionamos a los elementos de la población a intervalos regulares de una lista ordenada. En nestro caso
+
+Si tenemos a todos los clientes ordenados en una lista, para aplicar el Diseño Sistemático hacemos un proceso de tres pasos:
+
+1) Calcular el salto (Intervalo $k$): Si tienes $N = 45,211$ clientes y quieres una muestra de $n = 500$, tu intervalo será $k = N/n \approx 90$.
+
+2) Arranque aleatorio ($A$): Eliges un número al azar entre 1 y 90 (por ejemplo, el 12).
+
+3) Selección sistemática: El primer seleccionado es el cliente 12, el segundo es el $12 + 90$, el tercero el $12 + 180$, y así sucesivamente hasta recorrer toda la lista.
+
 
 ```{r}
 
@@ -565,11 +603,23 @@ diseno_sist <- svydesign(
 
 svymean(~balance, diseno_sist)
 ```
+Obtenemos una estimacion algo lejana de la media real, esto se puede deber a algunos problemas asociados al diseño sistemático como que no todos los elementos tienen probabilidad de inclusion mayor a cero, dado que como vamos dando saltos, hay individuos que no salen en esos saltos y no son considerados, otro problema es que la población tenga un patrón cíclico que coincida con el intervalo $k$. Por ejemplo, si en tu lista cada 90 clientes hay un registro de una sucursal específica, la muestra podría estar sesgada hacia esa sucursal
+
+
+
+
 
 
 
 ## Diseño Poisson
 
+
+El Diseño de Poisson es una extensión natural del muestreo de Bernoulli que permite aplicar probabilidades de selección desiguales a cada individuo, pero manteniendo la independencia entre las selecciones.Mientras que en el diseño de Bernoulli todos los clientes tienen la misma probabilidad $\pi$, en el muestreo de Poisson cada cliente $i$ tiene su propia probabilidad de inclusión $\pi_i$. Es una herramienta sumamente flexible porque permite que el diseño se adapte a la importancia de cada registro.
+
+A un cliente con saldo alto le asignas una moneda con 80% de probabilidad de salir "cara" (incluido). A un cliente con saldo bajo le asignas una moneda con solo 5% de probabilidad.  Al igual que en el Bernoulli, el tamaño de la muestra ($n$) es aleatorio, lo que significa que no sabes exactamente cuántos clientes tendrás hasta que terminas de "lanzar todas las monedas".
+
+Se cumple la Independencia Total, la inclusión del cliente A no afecta en nada la probabilidad del cliente B. Esto simplifica mucho los cálculos teóricos de la varianza. Al igual que el Bernoulli, su mayor debilidad es que el tamaño de muestra final varía. Si por azar obtienes una muestra muy pequeña, el error estándar de tu estimación de saldo se disparará
+ 
 ```{r}
 library(tidyverse)
 
@@ -603,15 +653,8 @@ media_est_poisson <- sum(muestra_poisson$balance / muestra_poisson$pi_i) /
 media_real <- mean(bank_data$balance)
 print(paste("Real:", round(media_real, 2), "| Poisson:", round(media_est_poisson, 2)))
 ```
+Obtenemos una estimacion lejana de la media poblacional, por lo que este diseño no parece ser muy bueno.
 
-
-```{r}
-# Cálculo de la varianza estimada del total
-var_total_poisson <- sum((1 - muestra_poisson$pi_i) * (muestra_poisson$balance / muestra_poisson$pi_i)^2)
-var_total_poisson
-# Error estándar de la media
-se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
-```
 
 
 
@@ -627,6 +670,12 @@ se_media_poisson <- sqrt(var_total_poisson) / nrow(bank_data)
 
 
 ## Diseño pps y πps
+
+Aunque diseños le dan mas importancia a los elementos "grandes", o sea, a los clientes con saldos altos. Las probabilidades de inclusion son proporcionales al tamaño del inviduo en la poblacion.
+
+La diferencia entre ambos es que pps es un diseño con reemplazo (existe posibilidad de volver a extraer a un elemento ya extraido en la muestra). Un cliente con un saldo muy alto puede ser seleccionado varias veces. Esto simplifica mucho el cálculo de la varianza, pero "desperdicia" espacio en la muestra al repetir información.
+
+Mientras que πps es sin reemplazo, cada cliente aparezca máximo una vez en la muestra.
 
 ```{r}
 if(!require(sampling)) install.packages("sampling")
@@ -671,11 +720,18 @@ data.frame(
 )
 ```
 
+Vemos que ambos diseños al estimar la media se alejan un poco de su verdadero valor poblacion y es curioso que ese alejamiento es de una magnitud similar, donde PPS  subestima el valor real de la media, y πps sobreestima el valor real de la media.
 
 
 
 
 ## Muestreo por Conglomerados
+
+El Muestreo por Conglomerados (Cluster Sampling) es un diseño donde, en lugar de seleccionar individuos uno por uno, seleccionas grupos completos de personas que ya están agrupadas de forma natural. En los datos bancarios, podemos no elegir clientes al azar, sino que decidimos elegir ocupaciones específicas y estudiar a todos los clientes que pertenecen a esas ocupaciones, que vienen dadas, nosotros no elegimos a que se dedica cada cliente.
+
+En este diseño, la unidad de muestreo ya no es el cliente, sino el "conglomerado" (la ocupacion del cliente). 
+
+Primero dividimos la población en $N$ conglomerados. Luego seleccionas una muestra aleatoria de $n$ conglomerados, por ultimo censamos (muestreamos a todos) dentro de los conglomerados elegidos.
 
 ```{r}
 library(survey)
@@ -711,6 +767,9 @@ diseno_clusters <- svydesign(
 media_clusters <- svymean(~balance, diseno_clusters, deff = TRUE)
 print(media_clusters)
 ```
+Obtenemos un valor de 1406.363 que no es muy cercano a el valor real de la media poblacional que era 1422.658, esto puede deberse a los atipicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.
+
+
 
 
 
@@ -729,9 +788,30 @@ print(paste("El Coeficiente de Correlación Intraclase (rho) es:", round(resulta
 ```
 
 
+El valor de rho mide qué tan parecidos son los individuos dentro de un mismo grupo (conglomerado).
+
+Si rho fuera 1: Todos los usuarios a traves de sus trabajos tendrían exactamente el mismo saldo. El muestreo por conglomerados sería ineficiente porque un solo cliente te diría todo lo que necesitas saber del grupo.
+
+Si rho es 0: No hay ninguna relación entre el grupo y la variable. El saldo de un cliente no tiene nada que ver con la ocupacion que tiene.
+
+En nuestro caso, el valor de $-0.0008$ indica que los clientes dentro de los conglomerados por ocupacion son tan diferentes entre sí como si los hubieras elegido al azar de toda la población. Tenemos más diversidad dentro de los grupos de la que esperarías por puro azar. Es decir, tus grupos son muy heterogéneos internamente, que es algo deseado, porque queremos tener clientes variados dentro de los clusters que vienen dados.
+
+
+
 
 
 ## Muestreo en dos etapas:
+
+Primera Etapa (Unidades Primarias de Muestreo - UPM): Seleccionas una muestra aleatoria de empleos (conglomerados).
+
+Segunda Etapa (Unidades Secundarias de Muestreo - USM): Dentro de cada empleo seleccionado, seleccionamos una muestra aleatoria de clientes.
+
+
+Para que este diseño sea eficiente deben cumplirse dos supestos:
+
+Independencia: Que la inclusión de una unidad en la muestra no afecta la probabilidad de inclusión de otra.
+
+Invarianza: Que el valor de la variable de interés ($y_i$, el balance) de un individuo no cambia independientemente de si otros individuos son seleccionados o de qué otros elementos conformen la muestra
 
 ```{r}
 library(sampling)
@@ -805,77 +885,7 @@ print(resultado)
 
 
 ```
-
-
-
-
-### Supuestos de Invarianza y de Independencia
-
-
-Independencia:
-
-```{r}
-# Si rho es cercano a 0, hay "cuasi-independencia"
-# Si rho es alto, confirmamos que el diseño de clusters es necesario
-library(ICC)
-ICCbare(x = factor(cluster_id), y = balance, data = muestra_2etapas)
-```
-
-Invarianza
-
-```{r}
-# Comparamos la media del balance en dos dominios (con y sin préstamo personal)
-# Si hay invarianza, el comportamiento del diseño debe ser similar en ambos
-
-dominio_prestamo <- subset(diseno_final, loan == "yes")
-dominio_no_prestamo <- subset(diseno_final, loan == "no")
-
-mean_yes <- svymean(~balance, dominio_prestamo)
-mean_no <- svymean(~balance, dominio_no_prestamo)
-
-# Visualización de Invarianza de la Media
-res_inv <- data.frame(
-  Grupo = c("Con Préstamo", "Sin Préstamo"),
-  Media = c(coef(mean_yes), coef(mean_no)),
-  SE = c(SE(mean_yes), SE(mean_no))
-)
-
-ggplot(res_inv, aes(x = Grupo, y = Media, fill = Grupo)) +
-  geom_bar(stat = "identity") +
-  geom_errorbar(aes(ymin = Media - 1.96*SE, ymax = Media + 1.96*SE), width = 0.2) +
-  theme_minimal() +
-  labs(title = "Test de Invarianza por Dominio",
-       subtitle = "Intervalos de confianza basados en el diseño de dos etapas")
-```
-
-```{r}
-# Calculamos residuos del diseño
-muestra_2etapas$residuos <- residuals(svyglm(balance ~ 1, design = diseno_final))
-
-# Correlación entre Peso y Residuo
-# Un valor cercano a 0 indica que el peso es invariante respecto al error
-cor_test <- cor.test(muestra_2etapas$peso_w, muestra_2etapas$residuos)
-print(paste("Correlación Peso-Residuo:", round(cor_test$estimate, 4)))
-
-ggplot(muestra_2etapas, aes(x = peso_w, y = residuos)) +
-  geom_point(alpha = 0.5, color = "darkgreen") +
-  geom_smooth(method = "lm", color = "red") +
-  labs(title = "Diagnóstico de Invarianza de Pesos",
-       x = "Peso de Diseño (w_i)", y = "Residuos del Modelo")
-```
-
-
-```{r}
-# Calculamos la varianza por cada sucursal (cluster) seleccionada
-varianza_clusters <- muestra_2etapas %>%
-  group_by(cluster_id) %>%
-  summarise(var_balance = var(balance), n = n())
-
-# Test de Levene para homogeneidad de varianza entre clusters
-# Si p > 0.05, aceptamos el supuesto de invarianza de la varianza
-if(!require(car)) install.packages("car")
-car::leveneTest(balance ~ factor(cluster_id), data = muestra_2etapas)
-```
+Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.
 
 
 
@@ -886,28 +896,103 @@ car::leveneTest(balance ~ factor(cluster_id), data = muestra_2etapas)
 
 ## Efecto Diseño (deff)
 
+El Deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una caracteristica deseable en un diseño.
+
 ```{r}
-# Instalación y carga
-if(!require(survey)) install.packages("survey")
 library(survey)
+library(dplyr)
+library(tidyr)
 
-# 1. Definir el diseño de muestreo (ej. Estratificado por Educación)
-# Usamos 'fpc' para indicar que es sin reemplazo
-diseno_estrat <- svydesign(
-  id = ~1, 
-  strata = ~education, 
-  data = bank_data, 
-  fpc = rep(nrow(bank_data), nrow(bank_data))
-)
+library(survey)
+library(dplyr)
+library(ggplot2)
 
-# 2. Calcular la media y pedir el DEFF
-resultado <- svymean(~balance, diseno_estrat, deff = TRUE)
+# --- 0. Preparación Robusta ---
+# Es vital que 'N' sea exactamente el número de filas de la data que entra al diseño
+bank_clean <- bank_data %>% filter(balance > 0) %>% drop_na(balance, job, education)
+N <- nrow(bank_clean)
+n_target <- 500
 
-# Ver el resultado
-print(resultado)
-deff_valor <- deff(resultado)
-print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
+# Función auxiliar para extraer métricas sin errores
+get_metrics <- function(res, name) {
+  data.frame(
+    Diseño = name,
+    Media = as.numeric(coef(res)),
+    SE = as.numeric(SE(res)),
+    Deff = as.numeric(deff(res))
+  )
+}
+
+# --- 1. Ejecución de Diseños ---
+
+# 1. MAS sin reemplazo (Referencia)
+set.seed(123)
+m_mas_sr <- bank_clean[sample(N, n_target), ]
+d_mas_sr <- svydesign(id=~1, fpc=rep(N, n_target), data=m_mas_sr)
+r1 <- get_metrics(svymean(~balance, d_mas_sr, deff=TRUE), "MAS SR")
+
+# 2. Bernoulli
+p_b <- n_target/N
+m_bern <- bank_clean[rbinom(N, 1, p_b) == 1, ]
+d_bern <- svydesign(id=~1, probs=rep(p_b, nrow(m_bern)), data=m_bern)
+r2 <- get_metrics(svymean(~balance, d_bern, deff=TRUE), "Bernoulli")
+
+# 3. MAS con reemplazo
+m_mas_cr <- bank_clean[sample(N, n_target, replace=TRUE), ]
+d_mas_cr <- svydesign(id=~1, weights=rep(N/n_target, n_target), data=m_mas_cr)
+r3 <- get_metrics(svymean(~balance, d_mas_cr, deff=TRUE), "MAS CR")
+
+# 4. Estratificado (Job)
+m_est <- bank_clean %>% group_by(job) %>% sample_frac(n_target/N) %>% ungroup()
+N_h <- bank_clean %>% group_by(job) %>% summarize(N_h = n())
+m_est <- m_est %>% left_join(N_h, by="job")
+d_est <- svydesign(id=~1, strata=~job, fpc=~N_h, data=m_est)
+r4 <- get_metrics(svymean(~balance, d_est, deff=TRUE), "Estratificado")
+
+# 5. Sistemático (Corregido para evitar error de dims)
+k <- floor(N/n_target)
+idx_sis <- seq(sample(1:k, 1), N, by=k)
+m_sis <- bank_clean[idx_sis, ]
+d_sis <- svydesign(id=~1, fpc=rep(N, nrow(m_sis)), data=m_sis)
+r5 <- get_metrics(svymean(~balance, d_sis, deff=TRUE), "Sistemático")
+
+# 6. Poisson
+pi_p <- pmin((bank_clean$age / sum(bank_clean$age)) * n_target, 1)
+sel_p <- rbinom(N, 1, pi_p) == 1
+d_poi <- svydesign(id=~1, probs=pi_p[sel_p], data=bank_clean[sel_p,])
+r6 <- get_metrics(svymean(~balance, d_poi, deff=TRUE), "Poisson")
+
+# 7. PPS (Con reemplazo)
+p_pps <- bank_clean$balance / sum(bank_clean$balance)
+idx_pps <- sample(N, n_target, replace=TRUE, prob=p_pps)
+d_pps <- svydesign(id=~1, probs=p_pps[idx_pps], data=bank_clean[idx_pps,])
+r7 <- get_metrics(svymean(~balance, d_pps, deff=TRUE), "PPS")
+
+# 8. PI-PS (Sin reemplazo - Brewer)
+pi_pips <- pmin(n_target * (bank_clean$balance / sum(bank_clean$balance)), 1)
+# Usamos una muestra más pequeña para pi_ps si el algoritmo falla por tamaño
+d_pips <- svydesign(id=~1, probs=pi_pips, data=bank_clean, pps="brewer")
+r8 <- get_metrics(svymean(~balance, d_pips, deff=TRUE), "PI-PS")
+
+# 9. Conglomerados (Education)
+d_cong <- svydesign(id=~education, data=bank_clean)
+r9 <- get_metrics(svymean(~balance, d_cong, deff=TRUE), "Conglomerados")
+
+# 10. Dos Etapas (UPM: Job)
+m_2et <- bank_clean %>% group_by(job) %>% sample_frac(0.1) %>% ungroup()
+d_2et <- svydesign(id=~job + 1, data=m_2et)
+r10 <- get_metrics(svymean(~balance, d_2et, deff=TRUE), "Dos Etapas")
+
+# --- 2. Tabla de Resultados ---
+tabla_final <- bind_rows(r1, r2, r3, r4, r5, r6, r7, r8, r9, r10) %>% arrange(Deff)
+print(tabla_final)
+
+
 ```
+
+
+
+
 
 
 
@@ -915,45 +1000,59 @@ print(paste("El Efecto de Diseño es:", round(deff_valor, 4)))
 
 ## Estimacion por dominios
 
+La Estimación por Dominiosconsiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.
+
+
+Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una estimación por dominios. Las categorias de job que entren en la muestra seran al azar. Si el dominio es muy pequeño la estimación será muy inestable (un SE muy alto).
+
 ```{r}
 library(survey)
 
-# 1. Definimos el diseño completo primero (importante)
-diseno_completo <- svydesign(
+# 1. Definir el diseño global (usaremos el Estratificado como ejemplo, que fue el más eficiente)
+# Es vital que el diseño contenga TODA la muestra
+diseno_global <- svydesign(
   id = ~1, 
-  data = bank_data, 
-  fpc = rep(nrow(bank_data), nrow(bank_data))
+  strata = ~job, 
+  fpc = ~N_h, 
+  data = m_est
 )
 
-# 2. Creamos el dominio (subpoblación de interés)
-# Ejemplo: Queremos estimar el balance solo para personas con educación 'tertiary'
-diseno_dominio <- subset(diseno_completo, education == "tertiary")
+# 2. Estimación por Dominios (Media de balance por cada tipo de job)
+estimacion_dominios <- svyby(
+  formula = ~balance, 
+  by = ~job, 
+  design = diseno_global, 
+  FUN = svymean,
+  deff = TRUE # También calculamos el Deff para cada dominio
+)
 
-# 3. Estimación
-estimacion_dom <- svymean(~balance, diseno_dominio)
-print(estimacion_dom)
+# 3. Ver resultados
+print(estimacion_dominios)
 
-# 4. Comparación: ¿Cómo cambia el error si el dominio es pequeño?
-# Intentemos con un dominio más específico (ej. 'entrepreneur' con deuda)
-diseno_pequeno <- subset(diseno_completo, job == "entrepreneur" & loan == "yes")
-svymean(~balance, diseno_pequeno)
+# 4. Visualización para tu reporte
+barplot(estimacion_dominios, main="Saldo Promedio por Ocupación (Estimación por Dominios)")
 ```
 
+Los grupos entrepreneur (emprendedores) y retired (jubilados) tienen, con diferencia, los saldos promedio más altos. Superan los $4,000,. Los primeros manejan capital de trabajo y los segundos han acumulado ahorros de toda una vida.
 
-```{r}
-# Estimación del total en el dominio
-svytotal(~balance, diseno_dominio)
-```
+Profesiones como management, admin., services y technician muestran saldos moderados y muy similares entre sí (entre $1,000 y $2,000).
 
-
+El grupo "unknown" tiene el saldo más bajo. Es probable que los clientes con información incompleta sean también los menos activos o con cuentas básicas.
 
 
 
 
 
+DIEGOD
 
 
 
+
+
+
+
+
+## Efecto de Sesgo y Intervalos de Confianza
 
 ```{r}
 library(survey)
@@ -992,7 +1091,6 @@ cat("Intervalo de Confianza: [", round(ic[1], 2), ",", round(ic[2], 2), "]\n")
 
 
 
-## Efecto de Sesgo y Intervalos de Confianza
 
 ```{r}
 # Valor Real
