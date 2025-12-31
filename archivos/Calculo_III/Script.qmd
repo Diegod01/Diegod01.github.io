@@ -1,0 +1,407 @@
+---
+title: "Calculo III, Modelo Lotka-Volterra"
+author: "Diego Da Rosa"
+format: pdf
+execute:
+  echo: false        # oculta el código
+  warning: false     # oculta warnings
+  message: false     # oculta mensajes de R
+  output: true
+---
+
+
+# Introduccion
+
+Este proyecto utiliza el modelo matemático de Lotka-Volterra que describe la interacción entre depredadores y presas para analizar la dinámica financiera de la acción de Twitter. En lugar de especies biológicas, el modelo analiza la relación entre el Precio (Presa) y el Volumen de transacciones (Depredador), demostrando que los mercados financieros operan con ciclos de retroalimentación y límites de recursos.
+
+
+Este modelo en su forma clasica contiene dos variables que son:
+
+$x(t):$ es el tamaño de los precios 
+
+$y(t):$ es el tamaño del volumen de transacciones
+
+
+Y cuatro parámetros:
+
+$\alpha$ que es la tasa de crecimiento intrínseco de los precios (sin transacciones).
+
+$\beta$ que es la tasa de decrecimiento de los precios por encuentro con volumen de transacciones
+
+$\gamma$ que es la tasa de crecimiento del volumen de transaccione por interactuar con los precios
+
+$\delta$ que es la tasa de decrecimiento intrínseca del volumen de transacciones (sin precios).
+
+
+Con esto se forma el siguiente sistema de ecuaciones diferenciales:
+
+$\frac{\partial x}{\partial t} = \alpha x - \beta x y$
+
+
+$\frac{\partial y}{\partial t} = \gamma x y - \delta y$
+
+
+
+
+Para los precios $\frac{\partial x}{\partial t}$, tenemos que:
+
+$\alpha x$ es el crecimiento exponencial de los precios
+
+$-\beta x y$ es el decrecimiento debido a la interaccion del precio con el volumen de transacciones.
+
+
+Para el volumen de transacciones $\frac{\partial y}{\partial t}$ tenemos que:
+
+$\gamma x y$ es el crecimiento del volumen de transacciones por interactuar con los precios.
+
+$- \delta y$ es el decrecimiento natural del volumen de transacciones (en ausencia de precios).
+
+
+
+Un elemento importante en este modelo son los puntos de equilibrio, en estos puntos ocurre que el sistema se encuentra en equilibrio y las poblaciones tanto de precios como de volumen de transacciones son constantes.
+
+El primero de estos puntos es el $(0, 0)$, en este punto no hay precio ni volumen de transacciones, dado que no hay operaciones el sistema se mantiene siempre estatico en este punto.
+
+
+El otro de estos puntos es $\left(\frac{\delta}{\gamma}, \frac{\alpha}{\beta} \right) = (x*, y*)$
+
+
+$x* = \frac{\delta}{\gamma}$, la cantidad de precio en equilibrio es proporcional a la tasa de decrecimiento del volumen de transacciones ($\delta$) e inversamente proporcional a su eficiencia de conversión ($\gamma$). Si el volumen de transacciones decrece rápido ($\delta$ grande) , se necesitan más precios para mantenerlos. Si el volumen de transacciones es muy eficiente ($\gamma$ grande) , se necesitan menos precios.
+
+
+$y* = \frac{\alpha}{\beta}$, el volumen de transacciones en equilibrio es proporcional a la tasa de crecimiento del precio ($\alpha$) e inversamente proporcional a su tasa de captura ($\beta$). Si los precios aumentan rápido ($\alpha$ grande)  pueden sostener más volumen de transacciones. Si el volumen de transacciones es muy efectivos ($\beta$ habrá menos volumen de transacciones (porque bajan mucho los precios).
+
+
+Cualquier otro punto que no sea alguno de estos hace que el sistema sea inestable y no constante, ademas es importante mencionar que el modelo de Lotka-Volterra tiene una estabilidad no lineal, el centro es inestable porque cualquier pequeña perturbación en el modelo cambia radicalmente el comportamiento, cuando se llega a un punto de equilibrio, hay un comportamiento de orbita, pero las órbitas son cíclicas y no asintóticas, no se acercan ni alejan del equilibrio, solo giran alrededor.
+
+
+
+Graficos!!!
+
+
+
+
+
+```{r}
+# Librerias
+library(tidyverse)
+library(quantmod) # Por si necesitas rellenar datos faltantes
+library(readr)
+library(dplyr)
+library(tidyr)
+library(zoo) # Para medias móviles
+```
+
+```{r}
+#| output: false
+
+
+# Datos
+df <- read_csv("TWTR.csv") %>%
+  mutate(Date = as.Date(Date))
+df
+```
+
+
+```{r}
+# No hay datos nulos
+sum(is.na(df))
+```
+
+
+
+Calculamos la tasa de crecimiento con la siguiente formula, primero definimos el precio en un momento de tiempo t, denominado $P_t$, 
+
+Si definimos $P_t$ como el precio (o población) en el tiempo $t$, y $P_{t-1}$ como el precio en el periodo de tiempo anterior, la fórmula para el crecimiento nos queda: $\frac{P_t - P_{t-1}}{P_{t-1}}$
+
+Mide el cambio porcentual directo respecto al día anterior, por ejemplo el precio crecio un $x\%$. Basicamente esta tasa de crecimiento aritmética sirve para representar las variaciones porcentuales diarias de la acción y el volumen, sirviendo como aproximación discreta de las derivadas en las ecuaciones de Lotka-Volterra.
+
+
+```{r}
+#|  output: false
+
+
+# Formula
+df <- df %>%
+  mutate(
+    growth_rate = (Close - lag(Close)) / lag(Close),
+    vol_change  = (Volume - lag(Volume)) / lag(Volume)
+  ) %>%
+  drop_na()
+
+df
+
+```
+
+
+
+
+```{r}
+# Instalar y cargar el paquete necesario
+# install.packages("deSolve")
+library(deSolve)
+
+# install.packages("deSolve")
+library(deSolve)
+
+# Modelo Lotka–Volterra
+lotka_volterra <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)), {
+    dx <- alpha * x - beta * x * y
+    dy <- delta * x * y - gamma * y
+    list(c(dx, dy))
+  })
+}
+
+# Parámetros
+parameters <- c(
+  alpha = 1.0,
+  beta  = 0.1,
+  delta = 0.075,
+  gamma = 1.5
+)
+
+# Tiempo
+times <- seq(0, 50, by = 0.01)
+
+# ==========================
+# 1. SERIES TEMPORALES
+# ==========================
+
+# Condición inicial base
+state <- c(x = 10, y = 5)
+
+out <- as.data.frame(
+  ode(y = state, times = times,
+      func = lotka_volterra, parms = parameters)
+)
+
+# Forzar que el eje y incluya el 0
+ymax <- max(out$x, out$y)
+
+# Aumentar margen superior
+par(mar = c(5, 4, 7, 2) + 0.1)
+
+plot(out$time, out$x, type = "l", col = "blue", lwd = 2,
+     xlab = "Tiempo", ylab = "Población",
+     ylim = c(0, ymax),
+     main = "Lotka–Volterra: Series Temporales")
+
+lines(out$time, out$y, col = "red", lwd = 2)
+
+# Permitir dibujar fuera del gráfico
+par(xpd = NA)
+
+legend("top",
+       inset = c(0, -0.15),   # mueve la leyenda hacia arriba
+       horiz = TRUE,
+       legend = c("Presas", "Depredadores"),
+       col = c("blue", "red"),
+       lwd = 2,
+       bty = "n")
+
+# Volver a normal
+par(xpd = FALSE)
+
+
+
+
+
+# ==========================
+# 0. LIBRERÍAS
+# ==========================
+library(deSolve)
+
+# ==========================
+# 1. MODELO LOTKA–VOLTERRA
+# ==========================
+lotka_volterra <- function(t, state, parameters) {
+  with(as.list(c(state, parameters)), {
+    dx <- alpha * x - beta * x * y
+    dy <- delta * x * y - gamma * y
+    list(c(dx, dy))
+  })
+}
+
+# ==========================
+# 2. PARÁMETROS
+# Equilibrio deseado:
+# (gamma/delta, alpha/beta) = (0.3890509, 0.3208804)
+# ==========================
+parameters <- c(
+  alpha = 0.3208804,
+  beta  = 1,
+  gamma = 0.3890509,
+  delta = 1
+)
+
+# ==========================
+# 3. TIEMPO
+# ==========================
+times <- seq(0, 200, by = 0.1)
+
+# ==========================
+# 4. CONDICIONES INICIALES
+# (alrededor del equilibrio)
+# ==========================
+initial_conditions <- list(
+  c(x = 0.25, y = 0.20),
+  c(x = 0.35, y = 0.45),
+  c(x = 0.55, y = 0.30),
+  c(x = 0.45, y = 0.15),
+  c(x = 0.60, y = 0.50)
+)
+
+colors <- rainbow(length(initial_conditions))
+
+# ==========================
+# 5. RESOLVER ÓRBITAS
+# ==========================
+trajectories <- lapply(initial_conditions, function(ic) {
+  as.data.frame(
+    ode(y = ic,
+        times = times,
+        func = lotka_volterra,
+        parms = parameters)
+  )
+})
+
+# ==========================
+# 6. LÍMITES AUTOMÁTICOS
+# ==========================
+x_min <- min(sapply(trajectories, function(df) min(df$x)))
+x_max <- max(sapply(trajectories, function(df) max(df$x)))
+y_min <- min(sapply(trajectories, function(df) min(df$y)))
+y_max <- max(sapply(trajectories, function(df) max(df$y)))
+
+margin <- 0.05
+xlim <- c(x_min, x_max) + c(-1, 1) * margin * diff(c(x_min, x_max))
+ylim <- c(y_min, y_max) + c(-1, 1) * margin * diff(c(y_min, y_max))
+
+# ==========================
+# 7. GRÁFICO PLANO DE FASES
+# ==========================
+plot(0, 0, type = "n",
+     xlim = xlim, ylim = ylim,
+     xlab = "Presas (Precio)",
+     ylab = "Depredadores (Volumen)",
+     main = "Lotka–Volterra: Órbitas en el Plano de Fases")
+
+# Dibujar órbitas
+for (i in seq_along(trajectories)) {
+  lines(trajectories[[i]]$x,
+        trajectories[[i]]$y,
+        col = colors[i], lwd = 2)
+  
+  points(initial_conditions[[i]]["x"],
+         initial_conditions[[i]]["y"],
+         pch = 19, col = colors[i])
+}
+
+# ==========================
+# 8. PUNTO DE EQUILIBRIO
+# ==========================
+points(0.3890509, 0.3208804,
+       pch = 8, cex = 1.8, lwd = 2, col = "black")
+
+text(0.3890509, 0.3208804,
+     labels = "Equilibrio",
+     pos = 4, cex = 0.9)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```{r}
+
+
+# 1. Cargar y procesar datos
+df_twitter <- read_csv("TWTR.csv") %>%
+  mutate(Date = as.Date(Date)) %>%
+  arrange(Date) %>%
+  # Suavizamos a 30 días para eliminar el 'ruido' y ver el ciclo real
+  mutate(
+    price_smooth = rollmean(Close, k = 30, fill = NA),
+    vol_smooth = rollmean(Volume, k = 30, fill = NA)
+  ) %>%
+  drop_na()
+
+# 2. Normalizar para que ambos queden en escala 0-1 y se puedan comparar
+df_norm <- df_twitter %>%
+  mutate(
+    Precio = (price_smooth - min(price_smooth)) / (max(price_smooth) - min(price_smooth)),
+    Volumen = (vol_smooth - min(vol_smooth)) / (max(vol_smooth) - min(vol_smooth))
+  ) %>%
+  select(Date, Precio, Volumen) %>%
+  pivot_longer(cols = c(Precio, Volumen), names_to = "Variable", values_to = "Valor")
+
+# 3. Gráfico de Series Temporales traslapadas
+ggplot(df_norm, aes(x = Date, y = Valor, fill = Variable)) +
+  geom_area(alpha = 0.5, position = "identity") +
+  scale_fill_manual(values = c("Precio" = "#3498db", "Volumen" = "#2ecc71")) +
+  labs(
+    title = "Dinámica Lotka-Volterra: Twitter (Acciones)",
+    subtitle = "Interacción suavizada entre Valor de Mercado y Energía de Transacción",
+    x = "Año",
+    y = "Nivel Normalizado (0-1)"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+
+```{r}
+# ¿El Volumen reacciona al Precio? 
+# Usamos la función de correlación cruzada
+ccf_result <- ccf(df_twitter$price_smooth, df_twitter$vol_smooth, 
+                  main = "Correlación Cruzada: Precio vs Volumen")
+
+# Esto te dirá exactamente cuántos días de retraso hay 
+# entre que la 'Presa' se mueve y el 'Depredador' ataca.
+```
+
+
+
+Punto de equilibrio
+
+
+```{r}
+
+# Aumentamos k a 90 (aprox. un trimestre) para ver la "órbita real" y no el ruido diario
+df_orbitas <- df_twitter %>%
+  mutate(
+    price_ultra_smooth = rollmean(Close, k = 90, fill = NA),
+    vol_ultra_smooth = rollmean(Volume, k = 90, fill = NA)
+  ) %>%
+  drop_na() %>%
+  mutate(
+    Precio_Norm = (price_ultra_smooth - min(price_ultra_smooth)) / (max(price_ultra_smooth) - min(price_ultra_smooth)),
+    Volumen_Norm = (vol_ultra_smooth - min(vol_ultra_smooth)) / (max(vol_ultra_smooth) - min(vol_ultra_smooth))
+  )
+
+
+# El punto crítico en un sistema dinámico simple se puede estimar 
+# como el promedio de los estados a lo largo del tiempo.
+punto_critico_x <- mean(df_orbitas$Precio_Norm, na.rm = TRUE)
+punto_critico_y <- mean(df_orbitas$Volumen_Norm, na.rm = TRUE)
+
+# Añadir el punto de equilibrio al gráfico anterior
+# + geom_point(aes(x = punto_critico_x, y = punto_critico_y), color = "black", shape = 3, size = 5)
+print(punto_critico_x)
+print(punto_critico_y)
+```
+
+
+
+
+
+(0.3890509, 0.3208804)

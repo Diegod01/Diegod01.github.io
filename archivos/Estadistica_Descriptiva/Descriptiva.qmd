@@ -1,0 +1,718 @@
+---
+title: "Proyecto_Descriptiva"
+format:
+  pdf:
+    toc: true        # opcional: agrega tabla de contenidos
+    number-sections: true
+execute:
+  echo: false        # oculta el código
+  warning: false     # oculta warnings
+  message: false     # oculta mensajes de R
+  output: true
+---
+
+# Datos
+
+
+El dataset **Amazon Customer Behavior Survey** contiene información de **602 encuestados** y **23 variables**, que registran aspectos demográficos, hábitos de compra, comportamiento de navegación, percepción de reseñas y satisfacción con la plataforma Amazon. Los datos fueron recopilados durante junio de 2023 y están destinados a analizar el comportamiento de los clientes en línea.
+
+
+
+### Perfil de los encuestados
+
+La encuesta recoge información demográfica básica de los participantes, incluyendo **edad** y **género**. La edad de los encuestados varía principalmente entre jóvenes y adultos jóvenes, lo que permite identificar el rango etario predominante en los clientes de Amazon encuestados. Respecto al género, la mayoría de los participantes se identifican como femenino, aunque también hay una proporción de masculino y algunos que prefieren no declarar su género. Esta información permite entender mejor quiénes son los clientes que responden la encuesta.
+
+
+
+### Hábitos de compra
+
+El dataset incluye variables que reflejan los **hábitos de compra de los clientes**. Se registra la **frecuencia con la que realizan compras**, las **categorías de productos que adquieren** y su comportamiento en relación al carrito de compras, incluyendo la **frecuencia de finalizar la compra**, el **abandono del carrito** y los factores que influyen en ello, como precios o costos de envío. También se observa si los usuarios **agregan productos mientras navegan** y con qué frecuencia los **guardan para más tarde**.
+
+Estos datos permiten identificar patrones de compra, detectar categorías populares y analizar los motivos por los cuales algunos clientes no completan sus pedidos.
+
+
+### Comportamiento de navegación y búsqueda
+
+El conjunto de datos también registra cómo los clientes **interactúan con la plataforma** antes de realizar una compra. Esto incluye la **frecuencia de navegación**, el **método de búsqueda de productos** (por palabra clave o por categoría) y hasta qué punto exploran los resultados de búsqueda. Estos aspectos permiten entender cómo los clientes buscan y filtran productos dentro de Amazon.
+
+
+
+### Opinión sobre reseñas y recomendaciones
+
+Varias variables están enfocadas en la **percepción de reseñas y recomendaciones personalizadas**. Se registra la **importancia que los clientes le dan a las reseñas**, si ellos mismos **dejan reseñas**, la **confiabilidad percibida de estas** y si consideran las reseñas **útiles**. Además, se analiza la **frecuencia de uso de recomendaciones personalizadas** y su **utilidad percibida**. Esto permite evaluar cómo las reseñas y recomendaciones influyen en las decisiones de compra de los usuarios.
+
+
+
+### Satisfacción y apreciación del servicio
+
+El dataset contiene información sobre la **satisfacción general de los clientes** y la **percepción de la plataforma**, incluyendo la precisión de las calificaciones, el nivel de satisfacción con la experiencia de compra y los aspectos del servicio más valorados, como precios competitivos o variedad de productos. También se registran las áreas que los usuarios consideran que podrían mejorarse, como la calidad de los productos o la reducción de residuos en el embalaje. Esto proporciona información valiosa para detectar oportunidades de mejora y entender la percepción del servicio.
+
+
+
+### Información temporal
+
+Finalmente, el dataset incluye un **timestamp** que indica el momento exacto en que se completó cada encuesta. Esto podría ser útil para analizar tendencias temporales de las respuestas o patrones de participación.
+
+
+
+
+
+
+# Objetivos
+
+
+Analizar el perfil de los clientes de Amazon (edad, género, hábitos de compra).
+
+Identificar categorías de productos más populares y patrones de compra.
+
+Evaluar importancia de reseñas y recomendaciones personalizadas.
+
+Detectar factores de abandono de carrito y sugerir mejoras.
+
+Segmentar clientes según comportamiento (clustering).
+
+
+
+
+
+# Limpieza de Datos
+
+```{r}
+# Librerias
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+```
+
+
+
+```{r}
+#| output: true
+
+
+# Datos
+datos <- read.csv("Amazon Customer Behavior Survey.csv")
+head(datos)
+```
+
+
+
+```{r}
+# Tipos de datos
+#str(datos)
+```
+
+Hacemos un resumen de distintos estadisticos de los datos
+
+```{r}
+#| output: true
+
+
+# Resumen de los datos
+summary(datos)
+
+```
+
+
+Chequeamos si hay datos nulos o duplicados, los cuales no estan presentenes en el set de datos.
+
+```{r}
+#| output: true
+
+
+#D atos Nulos
+sum(is.na(datos))
+
+
+#str(datos)
+
+# Datos duplicados
+sum(duplicated(datos))
+```
+
+
+
+
+
+# Analisis Exploratorio
+
+```{r}
+vars_num <- c("age",
+              "Customer_Reviews_Importance",
+              "Personalized_Recommendation_Frequency.1",
+              "Rating_Accuracy",
+              "Shopping_Satisfaction")
+```
+
+
+```{r}
+vars_cat <- c("Gender",
+              "Purchase_Frequency",
+              "Personalized_Recommendation_Frequency",
+              "Browsing_Frequency",
+              "Product_Search_Method",
+              "Search_Result_Exploration",
+              "Add_to_Cart_Browsing",
+              "Cart_Completion_Frequency",
+              "Saveforlater_Frequency",
+              "Review_Left",
+              "Review_Reliability",
+              "Review_Helpfulness",
+              "Recommendation_Helpfulness",
+              "Service_Appreciation",
+              "Improvement_Areas")
+
+```
+
+
+
+# Graficos Cuantitativos:
+
+
+Grafico de distribucion de la edad
+
+```{r}
+#| output: true
+
+
+datos %>% 
+  separate_rows(age, sep = ";") %>%
+  ggplot(aes(x = age)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Distribucion de la edad",
+       x = "Edad",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Al observar detenidamente la Distribución de la Edad, lo primero que salta a la vista es que no estamos ante una población uniforme, sino ante un grupo con una identidad generacional muy marcada. La estructura del gráfico revela una población predominantemente joven, donde el "corazón" de la muestra late con fuerza entre los 22 y 25 años. Este pico es tan pronunciado que eclipsa al resto de las edades, sugiriendo que el contexto del estudio podría estar ligado a entornos académicos o de primer empleo.
+
+A medida que avanzamos hacia la derecha en el eje de la edad, la frecuencia desciende de forma abrupta, pero no desaparece. Es fascinante notar que la distribución presenta un comportamiento multimodal; es decir, no hay un solo grupo, sino pequeñas "oleadas" de personas en etapas vitales posteriores. Por ejemplo, se percibe un repunte claro al llegar a los 35 años y otro, un poco más discreto, cerca de los 45. Estas irregularidades rompen la suavidad de la curva y podrían representar a diferentes niveles de experiencia o jerarquías dentro de una organización.
+
+Finalmente, el gráfico muestra una larga cola hacia la derecha, lo que en estadística conocemos como sesgo positivo. Esto nos indica que, aunque hay individuos que alcanzan e incluso superan los 60 años, su presencia es casi testimonial en comparación con la masa juvenil. Llama la atención un dato muy aislado cerca del cero, lo cual suele ser una señal de alerta sobre la limpieza de los datos, ya que podría tratarse de un error de registro o de un caso excepcional que se sale de la norma del resto del grupo.
+
+
+
+
+Grafico de distribucion de reseñas de importancia
+
+```{r}
+#| output: true
+
+
+datos %>% 
+  separate_rows(Customer_Reviews_Importance, sep = ";") %>%
+  ggplot(aes(x = Customer_Reviews_Importance)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Distribucion de la importancia de las opiniones de los clientes",
+       x = "Importancia de las opiniones de los clientes",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Al analizar este segundo gráfico, titulado "Distribución de la importancia de las opiniones de los clientes", nos encontramos con un panorama que revela una percepción bastante dividida y matizada por parte de los encuestados. A diferencia del histograma anterior, aquí observamos una variable cualitativa u ordinal representada en una escala del 1 al 5, donde el comportamiento de las respuestas dibuja una tendencia muy particular.
+
+La narrativa de estos datos se centra en la ambivalencia y la moderación. El punto más alto de la gráfica se sitúa justo en el centro, en el valor 3, con una frecuencia que supera los 200 registros. Esto nos indica que la postura predominante es la neutralidad o una valoración intermedia; una gran parte de la muestra no parece considerar que las opiniones de los clientes sean ni despreciables ni absolutamente críticas, ubicándose en un terreno gris de importancia moderada.
+
+Sin embargo, lo más llamativo aparece en los extremos. Existe una polarización asimétrica: por un lado, hay un grupo considerablemente numeroso que otorga la mínima importancia (valor 1), superando los 150 registros. Por otro lado, a medida que nos desplazamos hacia la máxima importancia (valores 4 y 5), el interés decae drásticamente, siendo el nivel 5 el que presenta la menor frecuencia de toda la muestra.
+
+En conjunto, el gráfico sugiere un escenario de cierto escepticismo o desapego. La suma de quienes dan poca importancia (niveles 1 y 2) junto con los neutrales (nivel 3) abarca a la inmensa mayoría de los participantes. Esto dibuja una realidad donde la voz del cliente no es percibida como un motor fundamental o prioritario para este grupo específico, contrastando fuertemente con la filosofía de "el cliente es lo primero" que se esperaría en otros contextos comerciales.
+
+
+
+
+
+
+Grafico de Frecuencia de Recomendacion Personalizada
+
+```{r}
+#| output: true
+
+library(dplyr)
+
+datos %>% 
+  separate_rows(Personalized_Recommendation_Frequency.1, sep = ";") %>%
+  ggplot(aes(x = Personalized_Recommendation_Frequency.1)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(
+    title = "Distribucion de la Frecuencia de Recomendación Personalizada",
+    x = "Recomendación Personalizada",
+    y = "Frecuencia"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.title = element_text(size = 12)  # ← achica el título
+  )
+```
+
+Al analizar la Distribución de la Frecuencia de Recomendación Personalizada, nos encontramos con un patrón que guarda una coherencia visual y estadística notable con los datos que veníamos observando anteriormente. Este gráfico, que utiliza nuevamente una escala del 1 al 5, nos cuenta una historia de moderación y una inclinación hacia los valores bajos de frecuencia.
+
+La narrativa de esta distribución se apoya en tres puntos clave:
+
+El predominio de la zona intermedia
+Al igual que en la importancia de las opiniones, el centro de gravedad de la muestra se sitúa en el valor 3. Con una frecuencia que roza los 250 registros, esta es la respuesta más común por un margen significativo. Esto sugiere que, para la mayoría de las personas consultadas, las recomendaciones personalizadas son algo que ocurre con una frecuencia "media" o "regular", sin llegar a ser una experiencia constante ni tampoco inexistente.
+
+Un sesgo hacia la baja frecuencia
+Si observamos los extremos, el gráfico nos revela una realidad interesante: es mucho más común encontrar personas que reciben recomendaciones con poca frecuencia (niveles 1 y 2) que personas que las reciben muy a menudo (niveles 4 y 5). De hecho, si sumamos las barras de los niveles 1 y 2, acumulamos un volumen de respuestas muy superior al de los niveles 4 y 5. Esto dibuja una tendencia donde la personalización extrema todavía parece ser la excepción y no la regla para este grupo.
+
+El desinterés en los niveles altos
+El punto más bajo de la gráfica es, con diferencia, el valor 5. Esto indica que casi nadie en la muestra siente que recibe recomendaciones personalizadas de manera permanente o muy frecuente. Existe una caída drástica después del valor central, lo que refuerza esa idea de que el sistema de recomendaciones, o la percepción que el usuario tiene de él, todavía tiene un alcance limitado.
+
+En conclusión, este gráfico nos muestra una población que convive con la personalización de forma tibia. No hay un rechazo total (el nivel 1 no es el más alto), pero tampoco hay un entusiasmo o una exposición masiva a estas herramientas. Parece que nos movemos en un escenario de "frecuencia ocasional", donde la tecnología de recomendación aún no ha logrado penetrar con fuerza en la cotidianidad de la mayoría.
+
+
+
+
+
+
+
+
+
+
+
+# Graficos Cualitativos:
+
+
+```{r}
+#| output: true
+
+
+datos %>% 
+  separate_rows(Gender, sep = ";") %>%
+  count(Gender) %>%
+  ggplot(aes(x = reorder(Gender, n), y = n)) +
+  geom_segment(aes(xend = Gender, yend = 0),
+               color = "gray") +
+  geom_point(size = 5, color = "forestgreen") +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "Distribución por Género",
+    x = "Género",
+    y = "Frecuencia"
+  )
+
+
+```
+
+
+
+```{r}
+#| output: true
+
+
+
+
+
+datos %>% 
+  separate_rows(Shopping_Satisfaction, sep = ";") %>%
+  ggplot(aes(x = Shopping_Satisfaction)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Distribucion de la satisfaccion de compra",
+       x = "Satisfaccion de Compra",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+
+library(treemapify)
+
+datos %>% 
+  separate_rows(Purchase_Frequency, sep = ";") %>%
+  count(Purchase_Frequency) %>%
+  ggplot(aes(area = n, fill = Purchase_Frequency, label = Purchase_Frequency)) +
+  geom_treemap() +
+  geom_treemap_text(color = "white", place = "centre") +
+  labs(title = "Distribución de la frecuencia de compra")
+```
+
+
+
+
+```{r}
+datos %>% 
+  separate_rows(Personalized_Recommendation_Frequency, sep = ";") %>%
+  count(Personalized_Recommendation_Frequency) %>%
+  ggplot(aes(x = "", y = n, fill = Personalized_Recommendation_Frequency)) +
+  geom_col(width = 1) +
+  coord_polar(theta = "y") +
+  theme_minimal() +
+  labs(title = "Distribución de la frecuencia de las recomendaciones personalizadas",
+       fill = "Categoría")
+```
+
+
+```{r}
+
+library(treemapify)
+
+datos %>%
+  separate_rows(Browsing_Frequency, sep = ";") %>%
+  count(Browsing_Frequency) %>%
+  ggplot(aes(area = n,
+             fill = Browsing_Frequency,
+             label = Browsing_Frequency)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre") +
+  labs(title = "Frecuencia de Navegación para comprar")
+```
+
+
+```{r}
+
+datos %>% 
+  separate_rows(Product_Search_Method, sep = ";") %>%
+  ggplot(aes(x = Product_Search_Method)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Métodos de busqueda de productos",
+       x = "Categoría",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+
+datos %>% 
+  separate_rows(Search_Result_Exploration, sep = ";") %>%
+  count(Search_Result_Exploration) %>%
+  ggplot(aes(x = n, y = Search_Result_Exploration)) +
+  geom_point(color = "forestgreen", size = 4) +
+  theme_minimal() +
+  labs(title = "Exploración de los resultados de busqueda",
+       x = "Frecuencia",
+       y = "Categoría")
+```
+
+
+```{r}
+
+
+datos %>% 
+  separate_rows(Add_to_Cart_Browsing, sep = ";") %>%
+  count(Add_to_Cart_Browsing) %>%
+  ggplot(aes(x = n, y = reorder(Add_to_Cart_Browsing, n))) +
+  geom_segment(aes(x = 0, xend = n, yend = Add_to_Cart_Browsing),
+               color = "gray70") +
+  geom_point(color = "forestgreen", size = 4) +
+  theme_minimal() +
+  labs(title = "Frecuencia de llenar al carrito",
+       x = "Frecuencia",
+       y = "Categoría")
+```
+
+
+
+```{r}
+datos %>% 
+  separate_rows(Cart_Completion_Frequency, sep = ";") %>%
+  ggplot(aes(x = Cart_Completion_Frequency)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Frecuencia de vaciar el carrito",
+       x = "Categoría",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+datos %>% 
+  separate_rows(Saveforlater_Frequency, sep = ";") %>%
+  ggplot(aes(x = Saveforlater_Frequency)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Frecuencia de guardar para más tarde",
+       x = "Categoría",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+
+datos %>% 
+  separate_rows(Review_Left, sep = ";") %>%
+  count(Review_Left) %>%
+  ggplot(aes(x = "", y = n, fill = Review_Left)) +
+  geom_col(width = 1) +
+  coord_polar(theta = "y") +
+  theme_minimal() +
+  labs(title = "Frecuencia de dejar una reseña",
+       fill = "Categoría")
+```
+
+```{r}
+
+
+
+datos %>%
+  separate_rows(Review_Reliability, sep = ";") %>%
+  count(Review_Reliability) %>%
+  ggplot(aes(area = n,
+             fill = Review_Reliability,
+             label = Review_Reliability)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre") +
+  labs(title = "Frecuencia de revisar la confiabilidad del producto")
+
+
+```
+
+```{r}
+datos %>% 
+  separate_rows(Recommendation_Helpfulness, sep = ";") %>%
+  ggplot(aes(x = Recommendation_Helpfulness)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Frecuencia de que la recomendación fue útil",
+       x = "Categoría",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+datos %>% 
+  separate_rows(Service_Appreciation, sep = ";") %>%
+  ggplot(aes(x = Service_Appreciation)) +
+  geom_bar(fill = "forestgreen") +
+  theme_minimal() +
+  labs(title = "Valoraciones del servicio",
+       x = "Categoría",
+       y = "Frecuencia") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+```{r}
+
+
+
+datos %>%
+  separate_rows(Improvement_Areas, sep = ";") %>%
+  count(Improvement_Areas) %>%
+  ggplot(aes(area = n,
+             fill = Improvement_Areas,
+             label = Improvement_Areas)) +
+  geom_treemap() +
+  geom_treemap_text(colour = "white", place = "centre") +
+  labs(title = "Criticas al servicio")
+
+
+```
+
+
+
+
+
+
+
+
+Bivariado:
+
+```{r}
+#| output: true
+
+
+library(ggplot2)
+
+ggplot(datos, aes(x = Purchase_Frequency, y = age)) +
+  geom_violin(fill = "lightblue") +
+  theme_minimal() +
+  labs(title = "Edad vs Frecuencia de compra",
+       x = "Frecuencia de compra",
+       y = "Edad") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+#| output: true
+
+
+ggplot(datos, aes(x = Gender, fill = Cart_Abandonment_Factors)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Factores de Abandono de Carrito por Género",
+       x = "Género",
+       y = "Porcentaje",
+       fill = "Razón de Abandono") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+Matrices de correlacion: 
+
+```{r}
+library(gplots)
+
+
+datos_num <- datos[, vars_num]
+matriz_correlacion <- cor(datos_num)
+print(matriz_correlacion)
+library(corrplot)
+
+# Visualiza la matriz de correlación con un gráfico de correlación
+corrplot(matriz_correlacion, method = "circle", type = "upper", 
+         tl.col = "black", tl.srt = 45, addCoef.col = "black", 
+         number.cex = 0.7)
+```
+
+
+
+
+
+
+
+```{r}
+ggplot(datos, aes(x = Gender, y = age, fill = Gender)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Satisfacción según género") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+```{r}
+ggplot(datos, aes(x = Purchase_Frequency, y = Customer_Reviews_Importance)) +
+  geom_boxplot(fill = "orange") +
+  theme_minimal() +
+  labs(title = "Importancia de reseñas según frecuencia de compra") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
+
+```{r}
+tabla <- table(datos$Gender, datos$Purchase_Frequency)
+prop.table(tabla, margin = 1)
+
+
+ggplot(datos, aes(x = Gender, fill = Purchase_Frequency)) +
+  geom_bar(position = "fill") +
+  theme_minimal() +
+  labs(title = "Frecuencia de compra por género",
+       y = "Proporción") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
+```{r}
+datos %>%
+  separate_rows(Purchase_Categories, sep = ";") %>%
+  ggplot(aes(x = Purchase_Categories, y = Shopping_Satisfaction)) +
+  geom_boxplot(fill = "lightgreen") +
+  theme_minimal() +
+  labs(title = "Satisfacción según categoría de compra") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+ggplot(datos, aes(x = Cart_Abandonment_Factors, fill = Cart_Completion_Frequency)) +
+  geom_bar(position = "fill") +
+  theme_minimal() +
+  labs(title = "Factores de abandono vs finalización",
+       y = "Proporción") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+
+
+```{r}
+ggplot(datos, aes(x = Personalized_Recommendation_Frequency, 
+               y = Shopping_Satisfaction)) +
+  geom_boxplot(fill = "violet") +
+  theme_minimal() +
+  labs(title = "Satisfacción vs recomendaciones personalizadas") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+
+
+
+```{r}
+ggplot(datos, aes(x = age, y = Shopping_Satisfaction, color = Gender)) +
+  geom_jitter(alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE) +
+  theme_minimal() +
+  labs(title = "Edad vs Satisfacción por género")
+```
+
+
+
+
+Son datos de Junio de 2023 desde el 04 hasta el 16
+
+
+```{r}
+#| output: true
+
+
+library(lubridate)
+
+
+datos$Timestamp_dt <- ymd_hms(
+  sub(" GMT.*", "", datos$Timestamp),
+  tz = "Asia/Kolkata"
+)
+
+
+datos %>%
+  mutate(hora = floor_date(Timestamp_dt, "hour")) %>%
+  group_by(hora) %>%
+  summarise(satisfaccion_media = mean(Shopping_Satisfaction, na.rm = TRUE)) %>%
+  ggplot(aes(x = hora, y = satisfaccion_media)) +
+  geom_line(color = "purple") +
+  geom_point() +
+  theme_minimal() +
+  labs(title = "Satisfacción promedio por hora",
+       x = "Hora",
+       y = "Satisfacción promedio")
+
+```
+
+
+
+```{r}
+#| output: true
+
+datos %>%
+  mutate(hora = floor_date(Timestamp_dt, "hour")) %>%
+  count(hora) %>%
+  ggplot(aes(x = hora, y = n)) +
+  geom_col(fill = "orange") +
+  theme_minimal() +
+  labs(title = "Número de respuestas por hora",
+       x = "Hora",
+       y = "Cantidad")
+
+```
+
+
+
+
+
+
+
+
+

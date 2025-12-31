@@ -1,0 +1,1123 @@
+---
+title: "Proyecto Inferencia II: Climbers"
+author: "Santiago Robatto, Diego Da Rosa, Sofía Terra, Nahuel Bizoso"
+format: pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false
+editor: visual
+---
+
+```{r}
+#Cargar paquetes
+library(loo)
+library(purrr)
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(rstanarm)
+library(bayesplot)
+library(broom.mixed)
+library(janitor)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+library(posterior)
+library(tidybayes)
+library(tibble)
+library (knitr)
+library(parallel)
+```
+
+### Introducción
+
+-   Se cargó la información del dataset climber_sub.
+-   El mismo contiene información de distintas expediciones al Himalaya y cuenta con 24 variables y 2076 observaciones.
+-   Algunas variables refieren a los individuos y otras al pico a escalar.
+-   La variable de interés es el éxito o no del individuo, es decir que queremos predecir una variable binaria.
+-   El éxito se da cuando el escalador llega a la cima de la montaña. Esto es, que la altura a la que llego el escalador sea igual a la altura de la montaña.\
+-   Esto nos hace pensar en un modelo logístico.
+
+Por un lado tenemos que queremos modelar un suceso de la realidad que es binario, que es el éxito o fracaso de escalar la montaña. Sabemos que la manera de modelar este tipo de sucesos es mediante una modelo Bernolli, con probablidad $\pi_i$. Por lo tanto, nuestra variable de respuesta $Y$ se distribye: $$Y_i \mid \pi_i \sim \text{Bern}(\pi_i)$$ con:
+
+$$E(Y_i \mid \pi_i) = \pi_i$$ A su vez, a la hora de armar el modelo, utilizaremos las odds. Recordemos que las odds son una manera distinta de mirar las probabilidades, donde comparamos la probabilidad de exito con opuesto: $\text{odds} = \frac{\pi}{1 - \pi}$
+
+Entones: $$Y_i \mid \boldsymbol{\beta_0},{\beta_1}...{\beta_n} \sim \mathrm{Bern}(\pi_i)  \text{ ,  con } \log\!\left(\frac{\pi_i}{1-\pi_i}\right) = \mathbf{x}_i^\top \boldsymbol{\beta}.$$ Con: $$\beta_{0} \sim N(m_{0}, s_{0}^{2}) \\
+\beta_{1} \sim N(m_{1}, s_{1}^{2}) \\
+\vdots \\
+\\
+\beta_{n} \sim N(m_{n}, s_{n}^{2})$$
+
+Podemos despejar las probabilidad $\pi_i$ en un modelo logistico de las siguientes maneras:
+
+$$\frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \quad\text{o, despejando}\quad \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}}$$
+
+En cambio, dado que queremos incorporar jerarquias, debemos hacer ciertos cambios sobre el modelo. Mas precisamente, queremos reflejar que los parametros $\beta_i$ dependen de cada grupo.
+
+$$Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij})$$ $$\text{con} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right) = \beta_{0j} + \sum_{k=1}^{p} \beta_k X_{ijk}$$ $$\beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \text{ representa la variabilidad entre grupos}$$ Las Priors globales son:
+
+$$\beta_0 \sim \mathrm{N}(m_0, s_0^2)$$ y $$\beta_k \sim \mathrm{N}(m_k, s_k^2)\quad \text{para } k=1\dots p$$ y el error es $$\sigma_0 \sim \text{Exp}(\lambda)$$ De la misma manera podemos expresar los interceptos como: $$\beta_{0j} = \beta_0 + b_{0j}$$
+
+$$\text{por lo que} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right)
+= (\beta_0 + b_{0j}) + \beta_1 X_{ij1} + \beta_2 X_{ij2} + \dots+ \beta_n X_{ijn}$$
+
+En resumen,
+
+Los interceptos específicos de cada grupo $\beta_{0j}$ representan la tasa base de éxito (en log-odds) para cada grupo j. Esto permite diferenciar cada grupo entre si, donde por ejemplo algunos grupos tienen niveles de éxito más altos que otros.
+
+Estos interceptos $\beta_{0j}$ se modelan como distribuidos Normalmente alrededor de un intercepto global $\beta_{0}$ con desviación estándar $\sigma_{0}$. El parámetro $\beta_{0}$ refleja la tasa de éxito promedio entre todos los grupos. La cantidad $\sigma_{0}$ mide la variabilidad entre grupos, es decir, cuánto difieren unos de otros.
+
+De igual manera que en el resto de modelos, los interceptos $\beta_1$, $\beta_2$ ... siguen describiendo las relaciones globales entre las variables.
+
+### Info de las variables:
+
+```{r}
+variables <- data.frame(
+  Variable = c(
+    "expedition_id", "member_id", "peak_id", "peak_name",
+    "year", "season", "sex", "age",
+    "citizenship", "expedition_role", "hired",
+    "highpoint_metres", "success", "solo", "oxygen_used",
+    "died", "death_cause", "death_height_metres",
+    "injured", "injury_type", "injury_height_metres",
+    "count", "height_metres", "first_ascent_year"
+  ),
+  
+  Tipo_dato = c(
+    "numeric", "numeric", "character", "character",
+    "numeric", "character", "character", "numeric",
+    "character", "character", "numeric",
+    "numeric", "numeric", "numeric", "numeric",
+    "numeric", "character", "numeric",
+    "numeric", "character", "numeric",
+    "numeric", "numeric", "numeric"
+  ),
+  
+  Descripción = c(
+    "Identificador de la expedición",
+    "Identificador del miembro",
+    "Identificador del pico",
+    "Nombre del pico",
+    "Año de la expedición",
+    "Estación del año en que se realizó la expedición",
+    "Sexo del escalador",
+    "Edad del escalador",
+    "Origen del escalador",
+    "Rol del escalador en la expedición",
+    "Indica si fue contratado como personal de apoyo",
+    "Altura máxima alcanzada (en metros)",
+    "Exito (Se da cuando la altura alcanzada es igual a la del pico)",
+    "Indica si realizó el ascenso en solitario",
+    "Indica si usó oxígeno suplementario",
+    "Indica si falleció",
+    "Causa de muerte (solo si fallecio)",
+    "Altura a la que se produjo la muerte (solo si fallecio)",
+    "Indica si resultó herido",
+    "Tipo de herida (solo si resulto herido)",
+    "Altura a la que se produjo la herida (solo si resulto herida)",
+    "Cantidad de explodores en el grupo",
+    "Altura del pico (en metros)",
+    "Año del primer ascenso registrado al pico"
+  )
+)
+
+kable(variables, caption = "Descripción de Variables del Dataset de Escaladores") %>%
+  kable_styling(font_size = 12)   
+```
+
+## 
+
+```{r}
+data(climbers_sub)
+climbers <- climbers_sub 
+library(dplyr)
+library(tidyr)
+library(kableExtra)
+# variables numéricas
+numeric_vars <- climbers %>% select(where(is.numeric))
+
+resumen_num <- numeric_vars %>%
+  summarise(across(
+    everything(),
+    list(
+      Min = ~min(.x, na.rm = TRUE),
+      Q1 = ~quantile(.x, 0.25, na.rm = TRUE),
+      Median = ~median(.x, na.rm = TRUE),
+      Mean = ~mean(.x, na.rm = TRUE),
+      Q3 = ~quantile(.x, 0.75, na.rm = TRUE),
+      Max = ~max(.x, na.rm = TRUE)
+    )
+  )) %>%
+  pivot_longer(
+    everything(),
+    names_to = c("Variable", "Estadístico"),
+    values_to = "Valor",
+    names_pattern = "(.*)_(Min|Q1|Median|Mean|Q3|Max)"
+  ) %>%
+  pivot_wider(names_from = Estadístico, values_from = Valor)
+
+logical_vars <- climbers %>% select(where(is.logical))
+
+resumen_logical <- logical_vars %>%
+  summarise(across(everything(), ~sum(.x, na.rm = TRUE))) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "TRUEs") %>%
+  mutate(
+    Total = nrow(climbers),
+    Porcentaje_TRUE = round(TRUEs / Total * 100, 2)
+  )
+
+```
+
+```{r}
+kable(resumen_num) %>% kable_styling(font_size = 12)
+kable(resumen_logical) %>% kable_styling(font_size = 12)
+
+```
+
+## Analisis descriptivo general
+
+El conjunto de datos incluye información de 2076 escaladores que participaron en distintas expediciones al Himalaya. Al mirar el resumen de las variables numéricas, lo primero que llama la atención es la gran variabilidad en las alturas de los picos (height_metres) y en la altura máxima que alcanzan los escaladores (highpoint_metres). Esto es totalmente coherente con el hecho de que el dataset combina intentos a montañas muy diferentes y con resultados muy variados.
+
+La edad de los participantes también muestra un rango amplio, pero la mayor parte de los escaladores se concentra en edades adultas. Esto sugiere que quienes realizan estas expediciones suelen tener una preparación rigurosa detrás de los intentos de subir a una montaña de esta magnitud y probablemente experiencia previa en retos de menor riesgo.
+
+Otra variable interesante es el año de la expedición, que abarca varios años. Esto abre la puerta a analizar cómo han cambiado las probabilidades de éxito a lo largo del tiempo, especialmente a medida que mejoró el equipamiento y se perfeccionaron las rutas de ascenso.
+
+En el caso de las variables lógicas, mirar la proporción de TRUE nos da una idea rápida de la frecuencia de ciertos eventos. Por ejemplo, la variable success nos dice cuántos escaladores realmente llegaron a la cima. Otras variables como oxygen_used, died e injured permiten ver decisiones importantes (uso de oxígeno) y eventos adversos, aunque tanto la muerte como las lesiones son relativamente raras dentro del total de observaciones.
+
+Finalmente, algunas variables prácticamente no aportan información útil. Un ejemplo claro es "solo", que indica si el escalador subió sin compañía, solo hay dos casos TRUE, por lo que no tiene sentido incluirla en el análisis. Lo mismo ocurre con variables que sólo existen cuando alguien muere o se lesiona (death_cause, injury_type, etc.), que generan muchos NA.
+
+En resumen, este primer análisis descriptivo ayuda a identificar variables redundantes (como peak_id, que duplica a peak_name) y variables con poca variación o demasiados faltantes. Al eliminarlas, logramos quedarnos con un conjunto de datos más limpio y adecuado para realizar los modelos bayesianos que vienen después.
+
+Tras este analisís se decidió
+
+Eliminar las siguientes variables
+
+Peak_id = Trabajaremos con el nombre de cada pico (Duplica información).
+
+Solo = Variable que indica si fue en expedición o solo. Seria interesante pero solo hay 2 observaciones con solo = TRUE.
+
+Se borraron las variables: death_cause, death_height_metres, injury_type y injury_height_metres dado que solo tienen info cuando death e injury son TRUE, sino son NA. Por lo tanto el nuevo dataframe cuenta con 18 variables.
+
+```{r}
+climbers <- climbers %>% 
+  select(
+    -peak_id,
+    -solo,
+    -death_cause,
+    -death_height_metres,
+    -injury_type,
+    -injury_height_metres
+  )
+```
+
+------------------------------------------------------------------------
+
+### Correlaciones entre variables numericas
+
+```{r, fig.align="center", out.width="60%", fig.retina=2}
+library(corrplot)
+climbers_num <- climbers[sapply(climbers, is.numeric)]
+M <- cor(climbers_num, use = "pairwise.complete.obs")
+corrplot(M, method = "color", addCoef.col = "black")
+```
+
+Esta es la matriz de correlación entre los predictores cuantitativos usados para explicar a la variable de interés "success", la matriz de correlación da el coeficiente de correlación de Pearson ($r$) entre pares de variables cuantitativas, el coeficiente varia entre -1 y 1, donde los colores azul oscuro están asociados a valores de $r$ cercanos a 1, lo que indica que hay una correlación positiva elevada, a medida que un predictor aumenta, el otro predictor también lo hace, luego los colores rojos son valores de r cercanos a $-1$, lo que indica correlación negativa elevada, a medida que un predictor aumenta, el otro predictor disminuye. Luego los colores blancos son valores de $r$ cercanos a ceros, lo que indica que no existe correlación lineal.
+
+Los ejemplos que tenemos en nuestro caso son
+
+height_metres (altura en metros de la montaña) y highpoint_metres (altura del punto más alto alcanzado por el escalador), las cuales tienen una correlación lineal de $r = 0.76$ que es una correlación alta. Es razonable que los escaladores tiendan a alcanzar puntos más altos (highpoint_metres) cuando escalan montañas más altas (height_metres).
+
+height_metres (altura en metros de la montaña) y count (número de escaladores por expedición), las cuales tienen una correlación lineal de $r = 0.45$, que es una correlación moderada, las montañas más altas pueden estar asociadas con expediciones mas grandes.
+
+highpoint_metres y count las cuales tienen una correlación lineal de $r = 0.36$, que es una correlación moderada, lo que indica que los escaladores que alcanzan puntos más altos en promedio también tienden a tener un mayor número de ascensos exitosos. Mirando la correlación entre la altura alcanzada y el primer año de ascenso del pico resulto de interés sumar una nueva variable, que calcula la diferencia de años entre el año de la expedición y el primer ascenso del pico, entendiendo que a mas años de diferencia más es la experiencia acumulada:
+
+Mirando la correlación entre la altura alcanzada y el primer año de ascenso del pico resulto de interés sumar una nueva variable, que calcula la diferencia de años entre el año de la expedición y el primer ascenso del pico, entendiendo que a mas años de diferencia más es la experiencia acumulada:
+
+```{r}
+climbers <- climbers %>% 
+  mutate(year_since_first_ascent = year - first_ascent_year)
+```
+
+Nuestra nueva variable muestra una clara tendencia: cuantos más años pasan desde que se escaló por primera vez, mayor es la tasa de exito.
+
+```{r,  fig.align="center", out.width="60%", fig.retina=2}
+climbers <- climbers %>%
+  mutate(
+    year_since_first_ascent = year - first_ascent_year,
+    bin = cut(year_since_first_ascent, breaks = seq(0, 150, by = 10), include.lowest = TRUE)
+  )
+rate_bin <- climbers %>% 
+  filter(!is.na(bin), !is.na(success)) %>% 
+  group_by(bin) %>% 
+  summarise(
+    success_rate = mean(success),
+    n = n()
+  )
+
+ggplot(climbers, aes(x = year_since_first_ascent, fill = factor(success))) +
+  geom_histogram(binwidth = 5, position = "fill") +
+  labs(
+    x = "Años desde el primer ascenso",
+    y = "Proporción",
+    fill = "Success",
+    title = "Proporción de éxito vs años desde el primer ascenso"
+  ) + scale_x_continuous(limits = c(0, 70), breaks = seq(0, 70, 10))
+  theme_minimal()
+```
+
+### Relación entre variables
+
+```{r,  fig.width=16, fig.height=16}
+
+library(patchwork)
+
+cat_vars <- c("peak_name", "year", "sex", "age", "season", "expedition_role", "success", "oxygen_used", "hired", "died", "injured")
+
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(rlang)
+
+cat_vars <- c(
+  "peak_name", "year", "sex", "age", "season",
+  "expedition_role", "success", "oxygen_used",
+  "hired", "died", "injured"
+)
+
+plot_list <- lapply(cat_vars, function(v) {
+  climbers %>%
+    count(!!sym(v)) %>%
+    ggplot(aes(x = !!sym(v), y = n, fill = !!sym(v))) +
+    geom_col() +
+    theme_minimal() +
+    ggtitle(paste("Distribución de", v)) +
+    theme(
+      axis.text.x = element_text(size = 6, angle = 45, hjust = 1),
+      legend.position = "none",
+      plot.title = element_text(hjust = 0.5)
+    )
+})
+
+grid_all <- wrap_plots(plot_list, ncol = 3)
+
+grid_all
+
+```
+
+Se observa que:
+
+# Analisis variables numéricas:
+
+
+```{r}
+library(bayesrules)
+library(tidyverse)
+library(patchwork)
+
+data(climbers_sub)
+
+# ---- A. Edad ----
+p_age <- climbers_sub %>% 
+  ggplot(aes(x = success, y = age, fill = success)) +
+  geom_boxplot(alpha = 0.7) + 
+  labs(title = "A. Distribución de Edad",
+       x = NULL, y = "Edad (años)") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# ---- B. Altura alcanzada ----
+p_height <- climbers_sub %>%
+  ggplot(aes(x = success, y = highpoint_metres, fill = success)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "B. Altura Alcanzada",
+       x = NULL, y = "Metros") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# ---- C. Altura del pico ----
+p_peak <- climbers_sub %>%
+  ggplot(aes(x = success, y = height_metres, fill = success)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "C. Altura del Pico",
+       x = NULL, y = "Metros del pico") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# ---- D. Año de la expedición ----
+p_year <- climbers_sub %>%
+  ggplot(aes(x = success, y = year, fill = success)) +
+  geom_boxplot(alpha = 0.7) +
+  labs(title = "D. Año de la Expedición",
+       x = NULL, y = "Año") +
+  theme_minimal() +
+  theme(legend.position = "none")
+
+# ---- Panel final ----
+panel_numerico <- 
+  (p_age + p_height) /
+  (p_peak + p_year) +
+  plot_annotation(
+    title = "Análisis de Variables Numéricas",
+    caption = "Las cajas representan el rango intercuartílico (IQR)"
+  )
+
+panel_numerico
+
+```
+
+Se observa que la edad no interfiere en el éxito o fracaso --\> no es predictor.
+
+A pesar de que es contra intuitivo, pasa lo mismo para la altura del pico. No hay relación entre la altura del pico y el éxito.
+
+No obstante, en el caso de los metros alcanzados, como la mediana esta muy arriba tenes muchos valores que se concentran cerca de 9000, que es la altura del Everest (Recordar que el Everest es el pico mas popular/repetido).De esta manera. la tendencia muestra que a mayor altura alcanzada mas es el éxito.
+
+# Analisis de las categoricas
+
+```{r}
+tema_barras <- theme_minimal() +
+  theme(legend.position = "bottom",
+        axis.text.x = element_text(angle = 30, hjust = 1)) # Inclinamos texto un poco
+
+p_oxy <- climbers_sub %>%
+  filter(!is.na(oxygen_used), !is.na(success)) %>%
+  ggplot(aes(x = as.factor(oxygen_used), fill = success)) +
+  geom_bar(position = "fill") + 
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Uso de Oxígeno", x = "¿Usó Oxígeno?", y = "Proporción") +
+  tema_barras
+p_sex <- climbers_sub %>%
+  filter(!is.na(sex), !is.na(success)) %>%
+  ggplot(aes(x = sex, fill = success)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Sexo", x = "Sexo", y = NULL) + # Quitamos Y para limpiar
+  tema_barras
+p_season <- climbers_sub %>%
+  filter(!is.na(season), !is.na(success)) %>%
+  ggplot(aes(x = season, fill = success)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Estación", x = "Temporada", y = "Proporción") +
+  tema_barras
+p_injured <- climbers_sub %>%
+  filter(!is.na(injured), !is.na(success)) %>%
+  ggplot(aes(x = as.factor(injured), fill = success)) +
+  geom_bar(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Lesiones", x = "¿Se lesionó?", y = NULL) +
+  tema_barras
+panel_categorico <- (p_oxy + p_sex) / (p_season + p_injured) + 
+  plot_layout(guides = "collect") + # Una sola leyenda compartida abajo
+  plot_annotation(
+    title = 'Análisis de Variables Categóricas',
+    subtitle = 'Probabilidad de éxito según diferentes factores (Proporciones)',
+    caption = 'Gráficos normalizados al 100%'
+  ) & theme(legend.position = "bottom")
+
+panel_categorico
+```
+
+gráfico barras apiladas por proporción. sexo y éxito. se observa que la proporción de éxito de hombre es apenas mayor, sin embargo, al tener tan pocas observaciones sobre mujeres escaladoras, se considera que no hay una relación fuerte como para definir sexo como predictora.
+
+# Definicion de los modelos
+
+USAMOS MODELO DE REGRESION LOGISTICA: nuestra variable de respuesta "Y" es binaria. En este caso es 1 si hubo succes (si la persona llego a la cima de la montana), y 0 si hubo fracaso. Este tipo de regresión es no lineal
+
+$$\begin{aligned}
+Y_i & \sim \text{Bern}(\pi_i) \\
+\log\left(\frac{\pi_i}{1-\pi_i}\right) & = \beta_0 + \beta_1 X_1 + \beta_2 X_2
+\end{aligned}$$
+
+$Y_i \sim \text{Bern}(\pi_i)$ (aleatoria): tener succes con probabilidad de éxito $\pi$.
+
+$\log(\frac{\pi}{1-\pi})$: es la transformación "log odds" que hacemos para poder expresar nuestras probabilidades. nuestro modelo de regresión lineal original nos da resultados en todo el mundo de los reales. sin embargo, cuando trabajamos con variables binarias, nuestro espacio de soluciones pasa a ser entre 0 y 1. tenemos que ajustar esto para poder trabajar nuevamente con los reales, por eso aplicamos la transformación. primero pasamos de "probabilidad" (pi) a "odds" o "chances", haciendo pi/(1-pi). lo que queremos calcular es cuantas veces mas probable es ganar que perder. por ejemplo, si pi=0.5 entonces odds va a ser 1, lo que quiere decir que con probabilidad 50%, la chance de ganar es una vez mas probable que perder. finalmente, le aplicamos logaritmo a las odds, para que nuestro dominio sea todos los reales. por ejemplo, en el caso de oods=1, al aplicar logaritmo obtenemos 0, pero si nuestras odds fueran muy altas, el logaritmo seria un numero positivo grande, y si las odds fueran muy bajas, el logaritmo devuelve un numero negativo.
+
+$\beta_0$ (intercepto): probabilidad de éxito cuando todas las variables $X$ valen 0. "probabilidad base".
+
+$\beta_1$ (pendiente): cuanto aumenta (o disminuye) la probabilidad de éxito si aumentamos $X_1$ en una unidad. Si $\beta > 0$: Aumenta la probabilidad de exito. Si $\beta < 0$: Disminuye la probabilidad.
+
+MODELO DE REGRESION LOGISTICA JERARQUICO
+
+POOLING: si los grupos comparten info entre si
+
+ahora los datos tienen "estructura". Los escaladores pertenecen a grupos (por ejemplo expedicion o monatana).
+
+complete pooling: Ignora la montana. Asume que todas son iguales. (se comparte toda la info)
+
+No Pooling: Trata cada montana de forma independiente. (no se comparte nada de la info)
+
+Jerárquico (Partial Pooling): cada montana es unica ($\beta_{0j}$), pero que todas pertenecen a una "familia de montanas". Las montanas con pocos datos "toman datos" del promedio global. (se comparte algo de info)
+
+$$\begin{aligned}
+\text{Nivel 1 (Datos):} \quad \log\left(\frac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0j} + \beta_1 X_{ij1} \\
+\text{Nivel 2 (Grupos):} \quad \beta_{0j} & \sim N(\beta_0, \sigma^2)
+\end{aligned}$$
+
+$\beta_{0j}$ (efecto aleatorio/intercepto variando): Cada grupo $j$ (ej. cada montana o expedicion) tiene su propio "punto de partida". $\beta_0$ (Efecto fijo/Hiperparametro de media): Es el promedio global de todas las montanas. $\sigma$ (desviacion del grupo): Mide que tan diferentes son las montanas entre si. Si $\sigma$ es bajo: Todas las montanas se parecen mucho (alto pooling). Si $\sigma$ es alto: Las montanas son muy distintas entre si (pooling bajo).
+
+OBS: DEFINIMOS PRIORIS POCO INFORMATIVAS por que? Normal (0,2.5): queremos evitar hacer overfitting cuando tenemos pocos datos (en nuestro caso "limpiamos" mucho nuestra base de datos original) en la escala logística, coeficientes mayores a 5 implican certeza prácticamente. nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan que paso. por otro lado, centramos en cero ya que queremos tener una postura neutral. asumimos a priori que las variables no tienen efecto sobre el éxito (por eso esta es 0). nuevamente dejamos que los datos nos muestren que pasa. exp(1): varianza no puede ser negativa, solo trabajamos con valores positivos.
+
+## Modelo 1:
+
+Definiremos el modelo 1 como el modelo con complete pooling con los siguientes predictores: oxigeno, season, y year_since_first_ascent. Es decir, asumimos que todos los escaladores distribuyen de igual manera.
+
+OBS: no incluimos peak ya que no nos importa en que montaña estamos, tratamos a todas por igual. Si incluimos peak estamos diferenciando a las montañas. ("ignoramos los grupos y metemos a todos en la misma bolsa").
+
+OBS: este modelo es nuestro punto de partida
+
+De esta manera:
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{i} | \beta_{0}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{i}) && \text{(verosimilitud)} \\
+\text{donde} \quad \log\left(\frac{\pi_{i}}{1-\pi_{i}}\right) & = \beta_{0} + \beta_1 X_{i1} + \beta_2 X_{i2} + \beta_3 X_{i3} \\
+\beta_{0} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+beta1, beta2 y beta 3 son nuestras predictoras (fijas)
+
+variables:
+
+$Y_i$: Éxito del escalador $i$. $X_{i1}$: Uso de oxígeno. $X_{i2}$: Estación del año. $X_{i3}$: Años desde el primer ascenso.
+
+## Modelo 2:
+
+Partial pooling por **expedicion**. Agregamos jerarquía en la expedición j, tal como el libro.
+
+$$
+\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{ij} | \beta_{0j}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ij}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0j} + \beta_1 X_{ij1} + \beta_2 X_{ij2} + \beta_3 X_{ij3}\\
+\beta_{0j} | \beta_{0c}, \sigma_{exp} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{exp}^2) && \text{(variabilidad entre expediciones)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{exp} & \sim \text{Exp}(1) && \text{(desvío est. entre expediciones)}
+\end{aligned}
+\hspace{0.5em}
+}
+$$
+
+beta0, beta1 ,beta2 y beta3 son nuestras predictoras (fijas)
+
+variables:
+
+$Y_i,j$: Éxito del escalador i en la expedición j. $X_{i,j,1}$: Uso de oxígeno. $X_{i,j,2}$: Estación del año. $X_{i,j,3}$: Años desde el primer ascenso.
+
+## Modelo 3
+
+Partial Pooling por **peak** (agregamos jerarquía pico en vez de escalación, para mostrar lo que a priori es un mal modelo o mal conceptualmente hablando agrupar por pico ). Hay individuos dentro del mismo grupo muy divergentes entre si.
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{ik} | \beta_{0k}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ik}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{ik}}{1-\pi_{ik}}\right) & = \beta_{0k} + \beta_1 X_{ik1} + \beta_2 X_{ik2} + \beta_3 X_{ik3} \\
+\beta_{0k} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+beta1, beta2 y beta3 son nuestras predictoras
+
+variables
+
+$Y_i,k$: Éxito del escalador i en peak k. $X_{i,k,1}$: Uso de oxígeno. $X_{i,k,2}$: Estación del año. $X_{i,k,3}$: Años desde el primer ascenso.
+
+### Modelo 4
+
+Jerarquía con Season.
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{is} | \beta_{0s}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{is}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{is}}{1-\pi_{is}}\right) & = \beta_{0s} + \beta_1 X_{is1} + \beta_2 X_{is2} + \beta_3 X_{is3} \\
+\beta_{0s} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+beta1, beta2 y beta3 son nuestras predictoras
+
+variables
+
+$Y_i,s$: Éxito del escalador i en season s. $X_{i,s,1}$: Uso de oxígeno. $X_{i,s,2}$: Estación del año. $X_{i,s,3}$: Años desde el primer ascenso.
+
+```{r}
+# Define success rate function para los pp check 
+success_rate <- function(x){mean(x == 1)}
+```
+
+# Corrida de los modelos
+
+#Modelo 1
+
+```{r, echo=TRUE, results='hide',eval=FALSE}
+options(mc.cores = parallel::detectCores())
+modsj <- stan_glm(
+  success ~ oxygen_used + season + year_since_first_ascent ,
+  ,data = climbers, family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_aux = exponential(1, autoscale = TRUE),
+  chains = 4, iter = 5000*2, seed = 84735
+)
+```
+
+```{r, results='hide', eval=FALSE}
+saveRDS(modsj, "modsj.rds")
+```
+
+```{r}
+modsj <- readRDS("modsj.rds")
+# Posterior predictive check
+ppcheck1 <- pp_check(modsj, nreps = 100, plotfun = "stat", stat = "success_rate") + 
+  xlab("success rate")
+ppcheck1
+```
+
+La barra vertical es el éxito promedio del dataframe. El resto en celeste es la tasa de éxito en nuestros 100 dataframes simulados.
+
+# Modelo 2
+
+```{r, echo=TRUE, results='hide',eval=FALSE}
+options(mc.cores = parallel::detectCores())
+modje <- stan_glmer(
+  success ~ season + year_since_first_ascent + oxygen_used + (1 | expedition_id), 
+  data = climbers, family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000*2, seed = 84735
+)
+```
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modje, "modje.rds")
+```
+
+```{r}
+modje <- readRDS("modje.rds")
+ppcheck2 <- pp_check(modje, nreps = 100, plotfun = "stat", stat = "success_rate") + 
+  xlab("success rate")
+ppcheck2
+```
+
+Notamos que este modelo tiene una mejoría respecto al anterior, pero de igual forma pensamos que todavía se puede mejorar más
+
+# Modelo 3
+
+```{r, echo=TRUE, results='hide',eval=FALSE}
+options(mc.cores = parallel::detectCores())
+modjp <- stan_glmer(
+  success ~ season + year_since_first_ascent+ + oxygen_used + (1 | peak_name), 
+  data = climbers, family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000*2, seed = 84735
+)
+```
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modjp, "modjp.rds")
+```
+
+```{r}
+modjp <- readRDS("modjp.rds")
+ppcheck3 <- pp_check(modjp, nreps = 100, plotfun = "stat", stat = "success_rate") + 
+  xlab("success rate")
+ppcheck3
+```
+
+# Modelo 4
+
+```{r, echo=TRUE, results='hide',eval=FALSE}
+options(mc.cores = parallel::detectCores())
+modjs <- stan_glmer(
+  success ~  year_since_first_ascent + oxygen_used + (1 | season), 
+  data = climbers, family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000*2, seed = 84735
+)
+```
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modjs, "modjs.rds")
+```
+
+```{r}
+modjs <- readRDS("modjs.rds")
+ppcheck4 <- pp_check(modjs, nreps = 100, plotfun = "stat", stat = "success_rate") + 
+  xlab("success rate")
+ppcheck4
+mcmc_trace(modjs)
+```
+
+# PP_Checks:
+
+```{r}
+
+p1 <- ppcheck1 + 
+  labs(title = "Modelo 1", subtitle = "Complete Pooling") +
+  theme(legend.position = "none") 
+
+p2 <- ppcheck2 + 
+  labs(title = "Modelo 2", subtitle = "Jerarquía por expedición") +
+  theme(legend.position = "none")
+
+p3 <- ppcheck3 + 
+  labs(title = "Modelo 3", subtitle = "Jerarquía por peak") +
+  theme(legend.position = "none")
+
+p4 <- ppcheck4 + 
+  labs(title = "Modelo 4", subtitle = "Jerarquía por season") +
+  theme(legend.position = "none")
+
+panel_ppcheck <- (p1 + p2) / (p3 + p4) +
+  plot_annotation(
+    title = "pp_check para los cuatro modelos",
+  )
+
+panel_ppcheck
+```
+
+Se observa de forma visual que no existen diferencias sustanciales entre los modelos. Se podría decir que en principio no aporta una mejoría realizar agrupamiento.
+
+# MCMC diagnostics
+
+
+```{r}
+prior_summary(modsj)
+
+mcmc_trace(modsj, size = 0.1)
+mcmc_dens_overlay(modsj)
+mcmc_acf(modsj)
+neff_ratio(modsj)
+summary(modsj)
+```
+
+```{r}
+prior_summary(modje)
+
+mcmc_trace(modje, size = 0.1)
+mcmc_dens_overlay(modje)
+mcmc_acf(modje)
+neff_ratio(modje)
+summary(modje)
+```
+
+```{r}
+prior_summary(modjp)
+
+mcmc_trace(modjp, size = 0.1)
+mcmc_dens_overlay(modjp)
+mcmc_acf(modjp)
+neff_ratio(modjp)
+summary(modjp)
+```
+
+```{r}
+prior_summary(modjs)
+
+mcmc_trace(modjs, size = 0.1)
+mcmc_dens_overlay(modjs)
+mcmc_acf(modjs)
+neff_ratio(modjs)
+summary(modjs)
+```
+
+# LOO
+
+COMPARACION DE LOS 4 MODELOS
+
+```{r, fig.align='center'}
+loo_modsj <- loo(modsj)
+loo_modje <- loo(modje)
+loo_modjp <- loo(modjp)
+loo_modjs <- loo(modjs)
+
+#comparacion
+loo_compare(loo_modsj, loo_modje, loo_modjp, loo_modjs)
+
+```
+
+Modelo de jerarquía por expedición es el mejor
+
+# Posterior analisis
+
+TIDY PARA MEJOR MODELO
+
+```{r}
+resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.95) #el libro pone 80 pero lo hacemos con 95 que es el estandar (de intervalos de confianza)
+
+resumen_post %>%
+  select(term, estimate, std.error, conf.low, conf.high) %>%
+  kable(digits = 3, caption = "Estimacion de efectos fijos ") %>%
+  kable_styling()
+
+#si conflow negativo y confhigh es positivo entonces 0 esta adentro, no es significativo
+#si ambos son positivos aumenta la probabilidad de exito
+#si ambos son negativos disminuye la probabilidad de exito
+```
+
+VER EFECTO QUE TUVO EL OXIGENO
+
+```{r}
+
+#hacemos un data frame donde cambiamos de 0 y 1 a true y false
+newdata_oxy <- data.frame(
+  oxygen_used = c(FALSE, TRUE),    
+  season = c("Spring", "Spring"),  #season base
+  year_since_first_ascent = 0,     #ano base
+  expedition_id = "NewExp"        #id nueva
+)
+
+#orediccion de probabilidades posterioris
+# allow.new.levels = TRUE permite usar "NewExp"
+post_preds <- posterior_epred(modje, newdata = newdata_oxy, allow.new.levels = TRUE)
+
+#organizacion de los datos en un data frame con sos columnas
+#false viene a ser sin oxigeno (no utilizo)
+#true viene a ser con oxigeno (si utilizo)
+df_plot <- data.frame(
+  NO = post_preds[,1],
+  SI = post_preds[,2]
+) %>% 
+  pivot_longer(cols = everything(), names_to = "Escenario", values_to = "Probabilidad")
+
+#grafica 
+ggplot(df_plot, aes(x = Probabilidad, fill = Escenario)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c("NO" = "#E74C3C", "SI" = "#2ECC71")) +
+  labs(
+    title = "Efecto del oxígeno en el éxito",
+    x = "Probabilidad de éxito",
+    y = "Densidad",
+    fill = "Uso de óxígeno"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+MOSTRAR QUE FUE UTIL HACER JERARQUIA POR EXPEDICION
+
+caterpillar plot. muestra los efectos aleatorios (beta0j) del modelo muestra cada expedición y como le fue comparando con el promedio general (intercepto, "punto de partida") existe heterogeneidad entre grupos
+
+```{r}
+#Extraemos los efectos aleatorios (los interceptos de cada expedicion)
+#ranef() nos da la desviación respecto al promedio global
+random_effects <- ranef(modje)$expedition_id 
+colnames(random_effects) <- "Intercepto_Desvio"
+
+#muestra de 30 expediciones al azar
+set.seed(123)
+sample_expeditions <- random_effects %>%
+  as.data.frame() %>%
+  rownames_to_column("Expedition") %>%
+  sample_n(30) %>%
+  arrange(Intercepto_Desvio) #ordenado de peor a mejor
+
+#caterpillar plot
+ggplot(sample_expeditions, aes(x = Intercepto_Desvio, y = reorder(Expedition, Intercepto_Desvio))) +
+  geom_point(size = 3, color = "#6584db") +
+  geom_vline(xintercept = 0, color = "red") +
+  labs(
+    title = "Variabilidad entre expediciones para una muestra aleatoria de 30",
+    x = "Diferencia respecto al promedio global (Log-Odds)",
+    y = "Expedition ID"
+  ) +
+  theme_minimal() +
+  theme(axis.text.y = element_text(size = 6)) # Texto pequeño para que quepan
+```
+
+COMO AFECTA EL OXIGENO A OTRA PREDICTORA: YEAR_SINCE_FIRST_ASCENT
+
+```{r}
+
+library(modelr)
+#se crea un grid sin datos NA (faltantes) ya que este tipo de grafica no funciona si existen los mismos
+#hacemos el grid data con lo que queremos comparar
+grid_oxigeno <- climbers %>%
+  data_grid(
+    #eje x: diferencia entre el primer ascenso y el ultimo
+    year_since_first_ascent = seq_range(year_since_first_ascent, n = 100),
+    
+    #vamos a comparar con uso o no de oxigeno
+    oxygen_used = c(TRUE, FALSE), 
+    
+    #season spring de base
+    season = "Spring",
+    
+    #fijar una expedicion promedio
+    expedition_id = "Expedicion_Promedio" 
+  )
+
+#lineas predictivas (draws)
+# re_formula = NA nos da el "promedio poblacional" (ignora la variabilidad de expediciones especificas)
+plot_lines <- grid_oxigeno %>%
+  add_fitted_draws(modje, n = 50, re_formula = NA) 
+
+#grafica
+ggplot(plot_lines, aes(x = year_since_first_ascent, y = .value, color = oxygen_used)) +
+  #lineas representan incertidumbre del modelo
+  geom_line(aes(group = paste(oxygen_used, .draw)), alpha = 0.2) +
+  
+  #linea de promedio
+  stat_summary(fun = mean, geom = "line", aes(group = oxygen_used), size = 1.2) +
+  
+  scale_color_manual(values = c("FALSE" = "#E74C3C", "TRUE" = "#2ECC71"),
+                     labels = c("No", "Sí")) +
+  
+  labs(
+    title = "Como influye oxygen_used junto a year_since_first_ascent",
+    x = "Años desde el primer ascenso",
+    y = "Probabilidad de éxito",
+    color = "Oxigeno"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+No parece que year_since_first_ascent tenga efecto. oxigeno es lo que tiene mas efecto
+
+vamos a comprobar la importancia de incluir el oxigeno ejecutando el modelo sin el mismo y comparando los loos
+
+```{r, results='hide',include=FALSE, eval=FALSE}
+options(mc.cores = parallel::detectCores())
+modje_sin_oxi <- stan_glmer(
+  success ~ season + year_since_first_ascent + (1 | expedition_id), 
+  data = climbers, 
+  family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000, seed = 84735
+)
+
+
+```
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modje_sin_oxi, "modje_sin_oxi.rds")
+```
+
+
+```{r}
+# 3. Comparamos la calidad predictiva (LOO) con el modelo completo
+modje_sin_oxi <- readRDS("modje_sin_oxi.rds")
+loo_con_oxi <- loo(modje)
+loo_sin_oxi <- loo(modje_sin_oxi)
+
+comparacion <- loo_compare(loo_con_oxi, loo_sin_oxi)
+comparacion
+```
+
+
+
+# Tydi para el modelo sin oxigeno
+
+```{r}
+#tidy 
+tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
+  kable(caption = "Estimación de efectos fijos para modelo sin oxígeno") %>%
+  kable_styling()
+```
+
+Concluimos que tenemos que incluir la variable oxigeno, tiene un gran impacto en el modelo.
+
+Con lo visualizado, tenemos en cuenta que la variable de años que nos definimos no tiene un gran efecto. vamos a comprobar esto también corriendo el modelo pero sin year_since_first_ascent y comparar los loos
+
+
+```{r}
+#tenemos que sacar los NAs (valores faltantes) para que funcione la comparación de loos
+climbers_common <- climbers %>%
+  drop_na(success, season, oxygen_used, expedition_id, year_since_first_ascent)
+
+#ajuste nuevo del modelo original completo con los datos limpios
+modje_original <- stan_glmer(
+  success ~ season + year_since_first_ascent + oxygen_used + (1 | expedition_id), 
+  data = climbers_common,  #aca tenemos que usar los datos que definimos antes
+  family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000, seed = 84735
+)
+```
+
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modje_original, "modje_original.rds")
+```
+
+```{r, results='hide',eval=FALSE}
+
+#modelo con los datos que limpiamos pero sin years_since_first_ascent
+modje_sin_anios <- stan_glmer(
+  success ~ season + oxygen_used + (1 | expedition_id), 
+  data = climbers_common,  #usar datos que limpiamos nuevamente
+  family = binomial,
+  prior_intercept = normal(0, 2.5, autoscale = TRUE),
+  prior = normal(0, 2.5, autoscale = TRUE), 
+  prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+  chains = 4, iter = 5000, seed = 84735
+)
+
+
+```
+
+
+```{r, results='hide',eval=FALSE}
+saveRDS(modje_sin_anios, "modje_sin_anios.rds")
+```
+
+
+```{r}
+modje_sin_anios <- readRDS("modje_sin_anios.rds")
+modje_original <- readRDS("modje_original.rds")
+
+loo_original <- loo(modje_original)
+loo_sin_anios <- loo(modje_sin_anios)
+
+comp <- loo_compare(loo_original, loo_sin_anios)
+comp
+```
+
+
+
+Efectivamente, no hay una diferencia significativa entre incluir year_since_first_ascent o no
+
+volvemos a confirmar que el oxigeno tiene un gran efecto.
+
+concluimos que year_since_first_ascent no aporta, la vamos a sacar del modelo
+
+lo sacamos del modelo para no tener cosas innecesarias. si bien no nos afecta negativamente, tampoco nos aporta
+
+hacemos un nuevo tidy para el modelo de jerarquía por expedición pero sin la variable predictora de years_since_first_ascent
+
+```{r}
+resumen_post <- tidy(modje_sin_anios, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+
+resumen_post %>%
+  select(term, estimate, std.error, conf.low, conf.high) %>%
+  kable(digits = 3, caption = "Estimacion de efectos fijos ") %>%
+  kable_styling()
+```
+
+COMO AFECTA EL OXIGENO A OTRA PREDICTORA:
+
+```{r}
+
+#dataframe para las cuatro estaciones
+#Oxygen = TRUE para ver el "mejor escenario" de cada estacion
+newdata_season <- data.frame(
+  season = c("Spring", "Summer", "Autumn", "Winter"),
+  oxygen_used = TRUE,              #asumimos uso de oxigeno
+  year_since_first_ascent = 0,     #ano base
+  expedition_id = "NewExp"         #expedicion nueva
+)
+
+#prediccion de las probabilidades posteriores (simulamos 4000 posibles)
+post_preds_season <- posterior_epred(modje, newdata = newdata_season, allow.new.levels = TRUE)
+
+#organizacion de datos para graficar
+#convertimos la matriz en un formato largo para ggplot
+df_season <- data.frame(post_preds_season)
+colnames(df_season) <- newdata_season$season
+
+df_plot_season <- df_season %>%
+  pivot_longer(cols = everything(), names_to = "Estacion", values_to = "Probabilidad")
+
+#grafica
+ggplot(df_plot_season, aes(x = reorder(Estacion, Probabilidad, FUN = median), y = Probabilidad, fill = Estacion)) +
+  geom_boxplot(width = 0.1, color = "black", alpha = 0.8) +
+  
+  labs(
+    title = "Efecto de oxígeno junto a season",
+    x = "Estación del año",
+    y = "Probabilidad de éxito",
+    fill = "Estación"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+El comportamiento de Summer se puede deber a que tenemos pocas observaciones de esta estación, por eso no se ve una tendencia clara sino mas que nada dispersión.
+
+Con Autumn pasa lo mismo, no hay tantos datos como en Spring o Winter entonces estas tendencias se pueden ver sesgadas debido a esto, de igual forma la mediana de ambos está muy cercana a 1, esto nos da a pensar que hay mas probabilidad de éxito en estas ocasiones. Teóricamente tiene sentido, ya que son estaciones más amigables para poder escalar y no tan extremas.
+
+### Predicción para una nueva exploración
+
+```{r}
+#definir datos para la nueva expedición
+#vamos a ver como afecta el oxígeno en el exito de esta nueva exploración
+new_expedition_sin_anios <- data.frame(
+  oxygen_used = c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE), #se usa oxígeno o no
+  season = c("Spring", "Spring", "Winter", "Winter", "Autumn", "Autumn", "Summer", "Summer"), #spring como base
+  expedition_id = c("Exp_Futura", "Exp_Futura", "Exp_Futura", "Exp_Futura", "Exp_Futura", "Exp_Futura", "Exp_Futura", "Exp_Futura") #id nuevo
+)
+
+#predicciones posterioris
+set.seed(84735)
+# allow.new.levels = TRUE es necesario para predecir una id nueva
+pred_binaria <- posterior_predict(modje_sin_anios, newdata = new_expedition_sin_anos, allow.new.levels = TRUE)
+
+#cálculo de probabilidad promedio de éxito
+#promediamos los 0s y 1s de las 4000 simulaciones
+prob_exito <- colMeans(pred_binaria)
+
+#tabla con resultados
+data.frame(
+  Oxigeno = c("SI", "NO"),
+  Estacion = c("Spring", "Spring", "Winter", "Winter", "Autumn", "Autumn", "Summer", "Summer"),
+  Probabilidad_Exito = prob_exito
+) %>%
+  kable(caption = "Predicción para una nueva expedición") %>%
+  kable_styling()
+```
+
+Si la nueva exploración utiliza oxigeno tiene mas chances de tener success
+
+classification summary con cutoff 0.5
+
+```{r}
+set.seed(84735)
+
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.5)
+```
+
+classification summary con cutoff 0.8
+
+```{r}
+set.seed(84735)
+
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.8)
+```
+
+cut off de 0.3
+
+```{r}
+set.seed(84735)
+
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.3)
+```

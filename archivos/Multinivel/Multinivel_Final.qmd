@@ -1,0 +1,955 @@
+---
+title: "Trabajo final - Introducción a los modelos de multinivel"
+author: "Diego Da Rosa, Lucas Giúdice, Juan Karawacki y Bruno Pintos"
+format:
+  pdf:
+    keep-tex: false
+execute:
+  echo: false       # Oculta el código
+  warning: false    # Oculta warnings
+  message: false    # Oculta mensajes
+  error: false      # Evita que errores se impriman
+---
+
+
+
+# Resumen
+
+El presente estudio analiza los niveles de satisfacción de los usuarios
+del transporte interurbano en relación con características personales de
+los pasajeros y condiciones operativas de las líneas de transporte. Los
+datos presentan una estructura jerárquica, dado que los pasajeros se
+encuentran agrupados en 17 líneas de transporte, lo cual motiva la
+utilización de modelos multinivel.\
+Se realiza un análisis descriptivo inicial, seguido por modelos lineales
+clásicos y diagnóstico de supuestos, evidenciándose problemas de
+heterocedasticidad. Dado lo anterior, se ajustan modelos de efectos
+mixtos con intercepto aleatorio por línea. Los resultados muestran
+diferencias significativas entre líneas y un coeficiente de correlación
+intraclase (ICC) cercano a 0.40, indicando que una proporción sustancial
+de la variabilidad en la satisfacción se explica por diferencias entre
+líneas. Las variables individuales género, edad, frecuencia de uso y
+puntualidad del servicio muestran efectos estadísticamente
+significativos sobre la satisfacción. Se discuten las implicancias de
+estos hallazgos y se sugieren líneas futuras de trabajo para una mejor
+comprensión de los determinantes de satisfacción en sistemas de
+transporte público.
+
+------------------------------------------------------------------------
+
+# Introducción
+
+La evaluación de la calidad del transporte público es un componente
+fundamental en la planificación y gestión de sistemas de movilidad. La
+satisfacción de los usuarios constituye un indicador clave para
+comprender el desempeño del servicio, así como para identificar factores
+que inciden en la percepción de calidad. En particular, el transporte
+interurbano presenta desafíos específicos vinculados a la puntualidad,
+la información disponible, el nivel de ocupación y la heterogeneidad
+entre líneas.
+
+El presente trabajo tiene como objetivo estudiar si la satisfacción de
+los usuarios varía según la línea de transporte a la que pertenecen y
+cómo influyen las características individuales de los pasajeros. Se
+busca responder las siguientes preguntas:
+
+-   ¿Existen diferencias sistemáticas de satisfacción entre las líneas
+    de transporte?\
+-   ¿Qué proporción de la variabilidad en la satisfacción se atribuye a
+    diferencias entre líneas?\
+-   ¿Cuáles variables individuales tienen mayor incidencia sobre la
+    satisfacción?
+
+Se plantean como hipótesis que:\
+1) existen diferencias significativas entre líneas, y\
+2) la variabilidad intralínea explica una parte relevante de la
+satisfacción.
+
+Los datos utilizados provienen de una encuesta aplicada a 780 pasajeros
+pertenecientes a 17 líneas interurbanas. La base incluye información
+sobre satisfacción (variable respuesta), edad, género, frecuencia de uso
+del servicio, ocupación laboral, puntualidad percibida y disponibilidad
+de información en tiempo real. Todas las variables categóricas fueron
+tratadas como factores, y no se observaron datos faltantes.
+
+
+
+
+
+------------------------------------------------------------------------
+
+# Metodología
+
+Dado que los pasajeros se encuentran agrupados dentro de líneas de
+transporte, la estructura del conjunto de datos es jerárquica. En
+consecuencia, se consideran distintos enfoques de modelado:
+
+1.  **Análisis descriptivo:** se presentan gráficos y estadísticas
+    descriptivas para explorar la distribución de la satisfacción según
+    línea y covariables individuales.
+
+2.  **Modelo lineal clásico (OLS):** se ajusta un modelo lineal completo
+    para evaluar supuestos básicos (homocedasticidad, independencia y
+    ausencia de multicolinealidad). Se utiliza el test de Breusch-Pagan
+    para evaluar heterocedasticidad.
+
+3.  **Modelos de efectos mixtos:** dado que los supuestos del modelo
+    clásico no se cumplen, se ajustan modelos multinivel con intercepto
+    aleatorio por línea. Este enfoque permite capturar la correlación
+    entre observaciones dentro de una misma línea y estimar el
+    coeficiente de correlación intraclase (ICC).
+
+Los modelos se estimaron con los paquetes `nlme` y `lme4`, y se presenta
+la interpretación de los parámetros relevantes. Para mejorar la
+claridad, los resultados se muestran en cuadros resumidos.
+
+------------------------------------------------------------------------
+
+# Resultados
+
+## 4.1 Descripción de los datos
+
+El conjunto de datos analizado corresponde a una encuesta realizada a
+usuarios del transporte interurbano. La base está compuesta por un total
+de 780 pasajeros, los cuales se encuentran agrupados en 17 líneas de
+transporte distintas.
+
+La variable respuesta del estudio es el nivel de satisfacción respecto
+de la experiencia de transporte. La medición de la misma se realizó en
+escala numérica. Además, se dispone de información relevante sobre cada
+pasajero, incluyendo edad, género y frecuencia de uso del servicio, así
+como sobre la línea: porcentaje de ocupación y puntualidad de la misma o
+si esta cuenta o no con información en tiempo real del trayecto.
+
+
+
+Tenemos una tabla descriptiva de las variables
+
+```{r}
+# Librerias usadas
+
+library(sjPlot)
+library(knitr)
+library(readxl)
+library(tidyverse)
+library(lme4)
+library(lmerTest)
+library(performance)
+library(broom.mixed)
+library(ggplot2)
+library(lmtest)
+library(car)
+library(here)
+library(corrplot)
+library(patchwork)
+library(gridExtra)
+library(see)
+library(lattice)
+
+```
+
+
+
+
+```{r}
+
+variables <- data.frame(
+  Variable = c("linea_id", "edad", "genero", "frecuencia_uso", "puntualidad", "p_ocupacion", "info_tiempo_real", "satisfaccion"),
+  
+  Tipo_dato = c("numeric", "numeric", "character", "character", "character", "numeric", "character", "numeric"),
+  
+  Descripción = c("Numero de Linea", 
+                  "Edad del usuario del transporte", 
+                  "Genero del usuario del transporte", 
+                  "Frecuencia de uso del usuario de esa linea", 
+                  "Puntualidad del transporte", 
+                  "Porcentaje de ocupacion del transporte", 
+           "Disponibilidad de Informacion en tiempo real del transporte",
+             "Satisfaccion del usuario con el transporte")
+)
+
+kable(variables)
+```
+
+
+
+
+
+Los datos son:
+```{r, echo= FALSE}
+
+
+## Cargamos los datos y convertimos a factor las variables categóricas
+transporte<-read_excel(here("Datos", "satisfaccion_transporte.xlsx")) %>%
+  mutate(
+    linea_id = as.factor(linea_id),
+    genero = as.factor(genero),
+    frecuencia_uso = as.factor(frecuencia_uso),
+    puntualidad = as.factor(puntualidad),
+    info_tiempo_real = as.factor(info_tiempo_real)
+  )
+
+transporte
+```
+
+
+## 4.2 Analisis Exploratorio
+
+
+Podemos hacer un calculo del nivel de correlacion de las variables explicativas con el nivel de satisfaccion y ademas la correlacion entre las variables explicativas entre si para detectar posibles problemas de multicolinealidad. 
+
+```{r}
+#| fig-width: 12
+#| fig-height: 10
+#| out-width: "100%"
+#| echo: false
+#| warning: false
+#| message: false
+
+
+transporte_num <- transporte  # copia de tus datos
+
+# codificar factores
+transporte_num$genero <- as.numeric(transporte$genero) - 1
+
+transporte_num$frecuencia_uso <- as.numeric(transporte$frecuencia_uso) - 1
+
+transporte_num$puntualidad <- as.numeric(transporte$puntualidad) - 1
+
+transporte_num$info_tiempo_real <- as.numeric(transporte$info_tiempo_real) - 1
+
+transporte_num$linea_id  <- as.numeric(transporte$linea_id) - 1
+
+
+# Matriz de correlacion
+M <- cor(transporte_num)
+
+
+
+
+
+corrplot(
+  M,
+  method = "color",    # Colorea según el valor de correlación
+  type = "upper",      # Solo la mitad superior
+  tl.cex = 0.8,        # Tamaño de etiquetas
+  addCoef.col = "black" # Números en negro dentro de las celdas
+)
+
+
+
+```
+
+Vemos que no parece haber problemas de multicolinealidad que se verian reflejados en una correlacion de 1 entre los regresores, y tampoco tenemos algun regresor que este muy correlacionado con el nivel de satisfaccion.
+
+
+
+
+\vspace{10px}
+
+
+A continuación, se complementa el análisis exploratorio incorporando gráficos que permiten examinar posibles relaciones entre las características individuales de los pasajeros y características del transporte con el nivel de satisfacción de los pasajeros.
+
+
+
+Hicimos un diagrama de cajas que permite visualizar la distribución de la satisfacción para cada línea de
+transporte. Las líneas fueron ordenadas según la mediana de satisfacción, lo cual facilita la comparación entre ellas. Se constata una diferencia la distribución de la satisfacción de los individuos al utilizar las distintas líneas. Esta heterogeneidad sugiere la presencia
+de un efecto grupal asociado a la línea de transporte. Esto constituye una primera evidencia de estructura jerárquica en los datos.
+
+
+```{r}
+#| fig-width: 15
+#| fig-height: 14
+#| out-width: "100%"
+#| echo: false
+#| warning: false
+#| message: false
+
+
+p0 <- ggplot(transporte, aes(
+  x = reorder(linea_id, satisfaccion, FUN = median),  # Ordena por mediana
+  y = satisfaccion,
+  fill = linea_id
+)) +
+  geom_boxplot() +
+  scale_fill_brewer(palette = "Set3") +
+  theme_minimal() +
+  labs(
+    title = "Satisfacción por línea de transporte",
+    x = "Línea",
+    y = "Satisfacción"
+  )
+
+
+
+p1 <- ggplot(transporte, aes(x = genero, y = satisfaccion, fill = genero)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Satisfacción según Género",
+       x = "Género", y = "Satisfacción")
+
+
+
+p2 <- ggplot(transporte, aes(x = frecuencia_uso, y = satisfaccion, fill = frecuencia_uso)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Satisfacción según Frecuencia de Uso",
+       x = "Frecuencia de uso", y = "Satisfacción")
+
+
+p3 <- ggplot(transporte, aes(x = edad, y = satisfaccion)) +
+  geom_point(size = 3, color = "purple") +
+  geom_smooth(method = "lm", se = FALSE, color = "black") +
+  theme_minimal() +
+  labs(title = "Relación entre Edad y Satisfacción",
+       x = "Edad", y = "Satisfacción")
+
+
+p4 <- ggplot(transporte, aes(x=puntualidad, y = satisfaccion, fill = puntualidad)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Satisfacción según Puntualidad",
+       x = "Puntualidad", y = "Satisfacción")
+
+
+
+p5 <- ggplot(transporte, aes(x = info_tiempo_real, y = satisfaccion, fill = info_tiempo_real)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Satisfacción según Información en Tiempo Real",
+       x = "Información en tiempo real", y = "Satisfacción")
+
+
+
+p6 <- ggplot(transporte, aes(x = factor(round(p_ocupacion*100)), y = satisfaccion)) +
+  geom_boxplot(fill = "steelblue") +
+  theme_minimal() +
+  labs(title = "Satisfacción según Porcentaje de Ocupación",
+       x = "Ocupación (%)",
+       y = "Satisfacción")
+
+
+# Graficos anidados
+(p0) /  (p1 | p2) / (p3 | p4) / (p5 | p6) 
+
+
+```
+
+\vspace{30px}
+
+
+En primer lugar, se analiza la relación entre edad y satisfacción. El gráfico muestra una tendencia positiva: a medida que aumenta la edad del pasajero, también tiende a incrementarse el nivel de satisfacción reportado. Esta asociación es consistente con el coeficiente de correlación calculado para ambas variables, el cual presenta un valor positivo ($\sim$ 0.48).
+
+En segundo lugar, se observa la relación entre género y satisfacción. Las mujeres presentan, en promedio, niveles levemente superiores de satisfacción respecto a los hombres. La diferencia no es drástica, pero es consistente y sugiere que el género podría influir en la percepción del servicio.
+
+
+Encontramos que el nivel de satisfacción se ve influido por la frecuencia de uso, a más frecuencia de uso más nivel de satisfacción en promedio, con respecto a menos frecuencia de uso, la diferencia es considerable. Esto tiene sentido porque si tendemos más a usar el transporte público, entonces tendremos una percepción más formada con respecto a que tan satisfechos estamos en comparación a si lo usamos menos. 
+
+Tenemos también diferencias notables en media con respecto a la puntualidad del transporte y la satisfacción, donde a más puntualidad del transporte, más satisfacción.
+
+El hecho de que este o no disponible información en tiempo real, no es un determinante muy fuerte del nivel de satisfacción, ya que observamos en media, tener o no información en tiempo real sobre el transporte esta asociado a niveles de satisfacción muy similares.
+
+Por último, un comportamiento notable que observamos es que el porcentaje de ocupación no parece tener una relación clara con el nivel de satisfacción, porque vemos que una ocupación del 52% esta asociado en media a niveles de satisfacción de alrededor de 60, pero niveles de ocupación de 93% están asociados en media a niveles de satisfacción de alrededor de más de 60 y a veces este comportamiento se invierte como con un porcentaje de ocupación de 57% contra uno de 88%. No hay una relación tan simple como que a más de uno, menos de otro
+
+
+
+
+
+Dichas relaciones se retomaran al establecer el modelo y evaluar si las mismas se corroboran en el o no.
+
+
+
+
+
+
+
+
+
+
+\vspace{50px}
+
+
+\newpage{}
+
+
+
+
+## 4.1 Modelo Lineal Simple: Diagnóstico
+
+Se procede a ajustar un modelo lineal simple para corroborar el cumplimiento o no de los supuestos necesarios para su funcionamiento. La falla en alguno de ellos nos dará el puntapie final para proceder con la
+aplicación de modelo multinivel.
+
+El modelo ajustado es:
+
+$satisfaccion_i = \beta_0 + \beta_1 Edad_i + \beta_2 Genero_i + \beta_3 \mathrm{Frecuencia\_Uso}_i +  \beta_4 \mathrm{Porcentaje\_Ocupacion}_i + \beta_5 Puntualidad_i + \beta_6 \mathrm{Informacion\_en\_Tiempo\_Real}_i + \beta_7 \mathrm{Linea\_id}_i + \epsilon_i$
+
+Es importante recordar que algunas variables categoricas (dummys) como Genero, Frecuencia de Uso, Puntualidad, Informacion en Tiempo Real y Linea id, son tratadas por el R usando una categoria de referencia basada en el primer termino que aparece en los levels de la variable dummy, esto sirve para comparar la de referencia con respecto a las demas categorias.
+
+
+\vspace{50px}
+
+
+Lo que hicimos fue plantear un modelo mas simple con solo dos regresores que serian edad y porcentaje de ocupacion para explicar la satisfaccion, esto lo hicimos para comparar si este modelo simple es muy diferente en rendimiento que el modelo donde todos los regresores intentan explicar la satisfaccion. 
+
+
+Entonces realizamos los distintos test que se pueden hacer en un modelo lineal como son como son el test de Shapiro–Wilk para evaluar si los residuos siguen una distribucion normal, el test de Breusch–Pagan para evaluar si hay heterocedasticidad, varianza de los errores no constante, y el calculo del VIF (Factor Inflacionario de la Varianza) para detectar si hay multicolinealidad entre los predictores del modelo. 
+
+
+```{r}
+
+
+# Modelo
+mod_lm <- lm(satisfaccion ~ ., data = transporte)
+
+# Residuales y predichos para gráficos
+transporte_alt <- transporte
+transporte_alt$t_i <- rstudent(mod_lm)
+
+mod_num <- lm(satisfaccion ~ edad + p_ocupacion, data = transporte)
+transporte_alt$predichos_num <- fitted(mod_num)
+transporte_alt$residuos_num  <- residuals(mod_num)
+
+# =========================
+# Tests numéricos
+# =========================
+shapiro_test <- shapiro.test(residuals(mod_lm))
+bp_test <- bptest(mod_lm)
+vif_vals <- vif(mod_num)
+
+# Convertir tests a tablas gráficas
+shapiro_grob <- tableGrob(data.frame(Test="Shapiro-Wilk", W=shapiro_test$statistic, p_value=shapiro_test$p.value))
+bp_grob      <- tableGrob(data.frame(Test="Breusch-Pagan", BP_stat=bp_test$statistic, df=bp_test$parameter, p_value=bp_test$p.value))
+vif_grob     <- tableGrob(data.frame(Predictor=names(vif_vals), VIF=vif_vals))
+
+# Agrupar tests
+grid.arrange(shapiro_grob, bp_grob, vif_grob, ncol=1, top="Resultados de Tests Numéricos")
+
+
+
+```
+
+
+
+
+
+```{r}
+#| fig-width: 15
+#| fig-height: 14
+#| out-width: "100%"
+#| echo: false
+#| warning: false
+#| message: false
+
+
+
+
+# =========================
+# Gráficos de diagnóstico
+# =========================
+# Residuos vs Ajustados
+p_residuos <- ggplot(transporte_alt, aes(x = predichos_num, y = residuos_num)) +
+  geom_point(alpha = 0.6) +
+  geom_hline(yintercept = 0, color = "red") +
+  labs(title = "Residuos vs Valores Predichos") +
+  theme_minimal()
+
+# Residuos vs Ajustados LOESS
+p_loess <- ggplot(transporte_alt, aes(x = predichos_num, y = residuos_num)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "red", linewidth = 0.8) +
+  geom_smooth(method = "loess", se = FALSE, color = "blue") +
+  labs(title = "Residuos vs Predichos (LOESS)") +
+  theme_minimal()
+
+# Q-Q Plot como grob
+qqPlot_grob <- function(x){
+  tmp_file <- tempfile(fileext = ".png")
+  png(tmp_file, width=480, height=480)
+  qqPlot(x, main="Q-Q Plot con bandas (95%)", envelope=0.95, col.lines="skyblue")
+  dev.off()
+  img <- png::readPNG(tmp_file)
+  grid::rasterGrob(img, interpolate=TRUE)
+}
+p_qq <- qqPlot_grob(transporte_alt$t_i)
+
+# Component + Residual Plots (crPlots) para edad y p_ocupacion
+crPlot_grob <- function(model, variable){
+  tmp_file <- tempfile(fileext = ".png")
+  png(tmp_file, width=480, height=480)
+  crPlot(model, variable=variable, pch=16)
+  dev.off()
+  img <- png::readPNG(tmp_file)
+  grid::rasterGrob(img, interpolate=TRUE)
+}
+p_cr_edad <- crPlot_grob(mod_num, "edad")
+p_cr_ocup <- crPlot_grob(mod_num, "p_ocupacion")
+
+# Agrupar gráficos
+grid.arrange(p_residuos, p_loess, p_qq, p_cr_edad, p_cr_ocup, ncol=3, top="Gráficos de Diagnóstico")
+
+```
+
+
+La evaluación de los supuestos clásicos del modelo lineal no mostró violaciones relevantes.
+
+Los residuos no evidencian patrones sistemáticos cuando se grafican contra los valores ajustados, sugiriendo homogeneidad de varianza. Esta conclusión se ve reforzada por el test de Breusch–Pagan (p valor de 0.17), que no permite rechazar la hipótesis de homocedasticidad.
+
+Por su parte, la normalidad de los residuos tampoco constituye un inconveniente, dado que el test de Shapiro–Wilk presenta un p valor superior a 0.05: De igual forma el gráfico Q–Q muestra un ajuste adecuado a la distribución teórica, con pocas observaciones fuera de la
+banda del 95% de confianza, que podemos considerar omitibles dada la cantidad global de observaciones del modelo.
+
+Asimismo, el análisis de multicolinealidad realizado mediante el VIF indica que las covariables numéricas no presentan relaciones lineales problemáticas entre sí.
+
+Por último, el modelo parece cumplir correctamente con el supuesto de linealidad a nivel global. Esto dado que en el gráfico de residuos contra predichos tanto a nivel general como a nivel de la variable *"edad"* los puntos se distribuyen sin patrones visibles. No obstante, analizando la variable "*p_ocupacion"*, se observa un comportamiento
+llamativamente segmentado, con bandas verticales bien definidas y una ligera curvatura en la tendencia suavizada. Este patrón no parece deberse a una violación de normalidad, sino más bien a la estructura categórica y agrupada que subyace en los datos.
+
+Se infiere que, dado que se presentan valores concentrados en niveles discretos dentro de cada línea de transporte, junto con diferencias sistemáticas de satisfacción entre líneas, podriamos estar ante la presencia de efectos grupales.
+
+En conjunto, estos resultados sugieren que, desde el punto de vista estrictamente técnico, el modelo lineal simple no presenta fallas importantes en sus supuestos básicos. Sin embargo, la naturaleza de los datos hace que el uso de un modelo lineal no sea el enfoque más apropiado. Las observaciones están agrupadas por línea de transporte,
+por lo que los individuos pertenecientes a una misma línea comparten condiciones de servicio, características operativas y experiencias similares. Esto genera correlación intra-grupo, lo cual viola el supuesto fundamental de independencia entre las observaciones, aun cuando los tests convencionales no lo detecten directamente.
+
+Además, representar las 17 líneas mediante variables ficticias en un modelo lineal implica una estructura excesivamente parametrizada, que introduce redundancias y dificulta la interpretación. En contraste, un modelo multinivel permite modelar esta variabilidad entre líneas mediante efectos aleatorios, capturando explícitamente la estructura jerárquica.
+
+
+\vspace{70px}
+
+### Planteamiento del modelo multinivel
+
+Planteamos un modelo multinivel de efectos mixtos,
+donde la variable dependiente es la satisfaccion de los usuarios con el transporte y las variables independientes (los efectos fijos) son el genero, la edad, la frecuencia de uso, el porcentaje de ocupacion, la puntualidad y la disponibilidad de informacion en tiempo real. 
+
+La estructura jerarquica esta en las lineas, el nivel 2 son las lineas de transporte y los usuarios del transporte son el nivel 1, los cuales se agrupan por linea de transporte, tenemos un intercepto aleatorio para cada valor de linea_id.
+
+De esta forma podemos modelar variación en la satisfacción entre diferentes líneas.
+
+
+La expresion matematica del modelo:
+
+$satisfaccion_ {ij} = \beta_{0j} + \beta_1 Edad_{ij} + \beta_2 Genero_{ij} + \beta_3 \mathrm{Frecuencia\_Uso}_{ij} +  \beta_4 \mathrm{Porcentaje\_Ocupacion}_{ij} + \beta_5 Puntualidad_{ij} + \beta_6 \mathrm{Informacion\_en\_Tiempo\_Real}_{ij} + \beta_7 \mathrm{Linea\_id}_{ij} + \epsilon_{ij}$
+
+La variacion de la satisfaccion entre lineas que habiamos observado en el grafico la modelamos con:
+
+$\beta_{0j} = \beta_0 + u_{0j}$
+
+Donde $u_{0j}$ es el componente multinivel que esta en el intercepto aleatorio, y asumimos que $u_{0j} \sim N(0, \sigma^2_{\mu})$. Con esto decimos que cada línea j tiene su propio intercepto y esos interceptos son realizaciones de una distribución normal
+
+
+Ademas tambien asumimos que el termino de error a nivel individual, el $\epsilon_{ij}$ distribuye $\epsilon_{ij} \sim N(0,\sigma^2)$ y que esta incorrelacionado con el termino aleatorio del intercepto $u_{0j}$
+
+
+```{r}
+# Probar con uno sin efectos mixtos? Igual ya vimos el grafico y no tendria mucho sentido.
+
+## 4.3 Modelo multinivel de efectos mixtos
+mod_mult <- lmer(
+  satisfaccion ~ genero + edad + frecuencia_uso + p_ocupacion +
+    puntualidad + info_tiempo_real + (1 | linea_id),
+  data = transporte
+)
+
+```
+
+
+Luego usamos calculamos el Intraclass Correlation Coefficient (ICC) del modelo multinivel, esta medida nos sirve para ver qué proporción de la variabilidad total de satisfacción se debe al nivel del grupo (línea), y con esto vemos si el modelo multinivel vale la pena. En nuestro caso el ICC no ajustado, lo que seria para un modelo "nulo" de la forma $satisfaccion_{ij} = \beta_0 + \mu_{0j} + \epsilon_{ij}$, lo que nos dice que el $15.7\%$ de la variabilidad total de la satisfacción se debe a diferencias entre líneas sin controlar nada, esto ya indica que las líneas muestran diferencias entre sí. En cambio, con el modelo ajustado, el que usamos con todos los predictores, tenemos que el ICC vale $40.3\%$, lo que indica que el $40.3\%$ de la variabilidad en satisfacción se debe a diferencias entre líneas de transporte, incluso después de controlar por edad, género, frecuencia de uso, puntualidad, etc.
+
+Todo esto significa que el efecto del nivel “línea” es fuerte, las diferencias entre líneas explican más variación que las diferencias individuales, y nos indica que fue una buena decision usar un modelo multinivel.
+
+
+
+```{r}
+
+icc_val <- performance::icc(mod_mult)
+icc_val
+tab <- broom.mixed::tidy(mod_mult, effects="fixed")
+
+knitr::kable(tab, digits = 3, caption = "Cuadro 1. Estimaciones de efectos fijos del modelo multinivel.")
+
+```
+
+Luego esta tabla son las estimaciones de los efectos fijos, 
+
+
+vemos que el intercepto tiene una estimacion de 64.122, esto es el promedio de satisfaccion para un individuo que tiene las categorias base de cada dummy (linea 10, genero femenino, frecuencia de uso alta, puntualidad alta, NO informacion en tiempo real) y valores cero en las variables cuantitativas.
+
+
+
+
+Para genero tenemos una estimacion de -3.834 con un valor p asociado menor a 0.001. Esto indica que los hombres reportan en promedio 3.83 puntos menos de satisfacción que las mujeres, controlando por todas las otras variables. Esta relacion es estadisticamente significativa.
+
+Para la edad tenemos una estimacion de 0.420 y un p valor asociado menor a 0.001. Esto indica que por cada año adicional de edad, la satisfacción en promedio aumenta en 0.42 puntos. Tenemos un efecto positivo y significativo.
+
+Para la frecuencia_uso tenemos un valor estimado de -10.683 con un p valor asociado menor a 0.001. Esto indica que quienes usan el transporte con menor frecuencia tienen 10.68 puntos menos de satisfacción que quienes lo usan frecuentemente, este efecto es negativo y significativo.
+
+
+El porcentane de ocupacion tiene un coeficiente estimado de -16.319 y un p valor asociado de 0.173. Este coeficiente no es significativo, no existe evidencia estadistica para hacer alguna afirmacion sobre la relación entre porcentaje de ocupación y satisfacción, no se puede concluir un efecto real.
+
+Para puntualidad, tenemos un coeficiente de -10.674 y un p valor asociado de 0.004. Si el servicio de transporte es inpuntual, la satisfacción baja en 10.67 puntos. Este efecto es estadísticamente significativo.
+
+En cuanto a la disponibilidad de informacion en tiempo real, la estimacion vale 8.436 y el p valor asociado vale 0.013, vemos que el acceso a información en tiempo real aumenta la satisfacción en 8.44 puntos en promedio. Este efecto es positivo y significativo.
+
+
+
+### Describir el modelo nulo y comparar con el modelo con predictores
+
+Definimos el modelo nulo que es el que estima un intercepto fijo (promedio global de satisfacción), un intercepto aleatorio por línea (cómo cada línea se desvía del promedio) y la varianza residual dentro de líneas.
+
+```{r}
+mod_null <- lmer(satisfaccion ~ 1 + (1 | linea_id), data = transporte)
+mod_null
+```
+
+El promedio global de satisfacción en toda la muestra es 63.67
+
+Tenemos la varianza entre líneas (nivel 2) que vale 32.06 y es cuánto difieren las líneas entre sí en satisfacción, ese valor indicia que hay diferencias reales entre líneas. Varianza dentro de líneas (nivel 1) vale 86.70 y es la variación entre individuos dentro de la misma línea. Entre el 15% y el 27% de la variabilidad en satisfacción se debe a diferencias entre líneas, las personas dentro de una misma línea tienden a tener puntuaciones de satisfacción más parecidas entre sí que respecto a personas de otras líneas. Esto justifica usar un modelo multinivel. 
+
+
+
+Ahora para comparar ambos modelos anidados, el modelo nulo que solo tiene intercepto fijo y intercepto aleatorio por línea. Contra el modelo completo, que tiene intercepto fijo, intercepto aleatorio por línea y todas las variables explicativas como efectos fijos género, edad, frecuencia_uso, p_ocupacion, puntualidad, info_tiempo_real.
+
+Basicamente con esto vemos si el modelo nulo es suficiente o si es necesario complejizar y usar el modelo multinivel.
+
+
+Un criterio es logLik (log-verosimilitud) el cual vale -2429.5 para el modelo completo y -2870.8 para el modelo nulo, con este criterio tenemos que mas alto el valor mejor y vemos que 2429.5 < 2870.8 -> -2429.5 > -2870.8, por lo que el modelo completo es mejor bajo este criterio.
+
+
+Viendo el Chisq vemos que la mejora en ajuste es enorme al usar el modelo completo, los regresores como conjunto son significativos, rechazamos la hipotesis nula de que el modelo nulo es suficiente.
+
+```{r}
+# Comparacion entre modelos
+anova(mod_null, mod_mult)
+```
+
+
+
+### Calcular $R^2$ marginal y condicional (Nakagawa & Schielzeth)
+
+```{r}
+performance::r2(mod_mult)
+```
+El $R^2$ marginal es la proporción de varianza explicada solo por los efectos fijos del modelo, las variables explicativas. Esto se interpreta como que los predictores de modelo completo explican el $61.1\%$ de la variabilidad en la satisfacción de los usuarios, independientemente de a qué línea pertenece cada persona.
+
+El $R^2$ condicional vale 0.768, este $R^2$ incluye efectos fijos y efectos aleatorios (intercepto por línea). El modelo completo incluyendo las diferencias entre líneas explica el $76.8\%$ de la variabilidad total en la satisfacción. La línea del transporte también aporta información relevante para explicar a la satisfaccion del usuario.
+
+
+Con la diferencia entre ambos 0.768−0.611=0.157, tenemos el ICC no ajustado (0.157). Esto indice que aproximadamente el $15\% a 16\%$ de la variabilidad en la satisfacción se debe a diferencias entre líneas de transporte (efecto del nivel 2), el resto corresponde a diferencias individuales entre pasajeros.
+
+
+
+
+
+
+
+### Examinar la variabilidad entre líneas
+
+
+```{r}
+
+ranef_mult <- ranef(mod_mult)$linea_id
+dotplot(ranef(mod_mult))
+```
+
+El gráfico es un dotplot de los efectos aleatorios (interceptos por línea_id) del modelo multinivel, estamos viendo los valores de $u_{0j}$, cada punto es la desviación del intercepto de esa línea respecto del intercepto general, las líneas horizontales son intervalos de confianza del efecto aleatorio para cada línea, cuanto mas corto sea el intervalo de confianza, el efecto fue estimado con mayor precisión,  cuanto mas largo sea el intervalo de confianza, tenemos mayor variabilidad y mas incertidumbre sobre esa estimacion. 
+
+El eje X está centrado en 0 y ese 0 es el promedio general. 
+
+
+Las líneas con puntos a la derecha de 0 tienen interceptos más altos que el promedio general, los pasajeros de estas líneas tienden a reportar mayor satisfacción. Las líneas con puntos a la izquierda de 0 tienen interceptos más bajos que el promedio general, los pasajeros de estas líneas tienden a reportar menor satisfacción.
+
+
+
+
+
+
+### Chequear los supuestos del modelo multinivel 
+
+```{r}
+
+# 1. Residuos
+res <- residuals(mod_mult)
+
+p1 <- ggplot(data.frame(res = res), aes(sample = res)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("Q-Q Plot de Residuos")
+
+p2 <- ggplot(data.frame(fit = fitted(mod_mult), res = res),
+             aes(x = fit, y = res)) +
+  geom_point(alpha = 0.5) +
+  geom_hline(yintercept = 0, color = "red") +
+  ggtitle("Residuos vs Ajustados")
+
+p3 <- ggplot(data.frame(fit = fitted(mod_mult), res = res),
+             aes(x = fit, y = res)) +
+  geom_point(alpha = 0.5) +
+  ggtitle("Residuos vs Ajustados (simple)")
+
+
+# 2. Efectos aleatorios
+re <- ranef(mod_mult)$linea_id[, 1]
+
+p4 <- ggplot(data.frame(re = re), aes(sample = re)) +
+  stat_qq() +
+  stat_qq_line() +
+  ggtitle("Q-Q Plot de Efectos Aleatorios")
+
+
+# 3. Combinar todos los gráficos en grilla
+(p1 | p2) /
+(p3 | p4)
+```
+
+- Normalidad de residuos (arriba izquierda)
+
+Vemos que en general los puntos se ajustan bastante bien a la linea, lo que podemos considerar como que se cumple el supuesto de normalidad.
+
+
+
+- Homocedasticidad (arriba derecha)
+
+No detectamos ningun patron con forma de embudo o de cualquier otro tipo, vemos una nube de puntos aleatoria sin ningun patron claro, lo que indica que se cumple el supuesto de Homocedasticidad
+
+
+- Linealidad (abajo izquierda)
+
+No vemos un patron claro, tenemos puntos aleatorios, lo que indica que se cumple la linealidad.
+
+
+- Normalidad de los efectos aleatorios (abajo derecha)
+
+Aqui detectamos posibles problemas con el cumplimiento de este supuesto, porque los puntos no estan del todo cercanos a la recta. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Explorar la varianza explicada por cada nivel
+
+```{r}
+#performance::
+insight::get_variance(mod_mult)
+```
+
+var.fixed = 73.26.   Esta es la varianza explicada por los efectos fijos del modelo. Cuánto de la variación en satisfacción la explican los regresores género, edad, frecuencia_uso, p_ocupación, puntualidad,, info_tiempo_real. Vemos que los pedictores explican bastante en nuestro caso.
+
+var.random = 18.80.  Esta es la varianza entre líneas (los interceptos aleatorios). Hay diferencias en el nivel de satisfacción promedio entre líneas de transporte, cada línea tiene su propia media, y estas medias varían alrededor del promedio global.
+ 
+var.residual = 27.83.  Esta es la varianza residual, la Variación de satisfacción entre individuos dentro de las líneas que no se explica ni por las variables del modelo ni por las diferencias entre líneas.
+
+
+
+
+
+
+### Modelos con pendiente aleatoria
+
+Probamos con un modelo de pendiente aleatoria donde no solo el nivel promedio (intercepto) cambia entre líneas, sino también la relación entre la edad y la satisfacción. El efecto de la edad sobre la satisfacción NO es el mismo en todas las líneas, o sea por ejemplo, en algunas lineas los pasajeros mas ancianos pueden estar más satisfechos y en otras lineas, no estar nada satisfechos.   Con esto permitimos que el efecto de la edad cambie entre líneas.
+
+La expresion del modelo multinivel con pendiente aleatoria seria:
+
+$\text{Satisfaccion}_{ij} = (\beta_{0} + u_{0j}) + (\beta_{1} + u_{1j}) \cdot \text{edad}_{ij} + \text{otros efectos fijos} + \varepsilon_{ij}$
+
+Donde $u_{0j}$ es la desviación del intercepto de la línea j y $u_{1j}$ es la desviación de la pendiente de edad en la línea j.
+
+
+
+```{r}
+mod_slope <- lmer(
+  satisfaccion ~ genero + edad + frecuencia_uso + p_ocupacion +
+    puntualidad + info_tiempo_real + (1 + edad | linea_id),
+  data = transporte
+)
+
+
+# Comparamos
+anova(mod_mult, mod_slope)
+```
+
+Con la salida que obtenemos vemos que la diferencia en log-likelihood es de 0.6, y luego para el Chisq que vale 1.0876, tenemos un p valor de 0.5805. Vemos que no hay evidencia estadística de que la pendiente de la edad varíe entre líneas, las líneas no difieren en cómo la edad afecta la satisfacción, agregar la pendiente aleatoria NO mejora el modelo y es mejor quedarnos con el modelo multinivel que ya teniamos.
+
+En resumen, la edad afecta la satisfacción de forma parecida en todas las líneas, no hay líneas donde la edad sea mucho más importante o menos importante y las diferencias entre líneas están en el nivel promedio de satisfacción, no en el efecto de la edad.
+
+
+
+### Explorar interacciones multinivel
+
+Dado que teniamos este comportamiento en el genero
+
+```{r}
+ggplot(transporte, 
+       aes(x = edad, y = satisfaccion, color = genero)) +
+  
+  # puntos
+  geom_point(alpha = 0.3, size = 2) +
+  
+  # rectas por género
+  geom_smooth(method = "lm", se = FALSE, size = 1.2) +
+  
+  # recta general 
+  geom_smooth(aes(color = NULL), 
+              method = "lm", 
+              se = FALSE, 
+              size = 1.3, 
+              linetype = "dashed") +
+  
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "right",
+    axis.title = element_text(size = 14, face = "bold"),
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5)
+  ) +
+  
+  labs(
+    x = "Edad",
+    y = "Nivel de satisfacción",
+    title = "Relación Edad-Satisfacción",
+    color = "Género"
+  )
+```
+
+Se considero hacer un modelo multinivel con interraciones por genero para ver si habia diferencias considerables por linea entre hombres y mujeres en el nivel de satisfaccion.
+
+El modelo multinivel con interaccion de genero con todos los regresores, considera tanto los regresores originales como los regresores interactuando con la variable genero, la expresion del modelo es:
+
+$\text{satisfacción}_i  = \beta_0  + \beta_1 (\text{género}_i) + \beta_2 (\text{edad}_i) + \beta_3 (\text{frecuencia}_i) + \beta_4 (\text{ocupación}_i) + \beta_5 (\text{puntualidad}_i) + \beta_6 (\text{infoTR}_i) + \beta_7 (\text{género}_i \cdot \text{edad}_i) + \beta_8 (\text{género}_i \cdot \text{frecuencia}_i) + \beta_9 (\text{género}_i \cdot \text{ocupación}_i) + \beta_{10} (\text{género}_i \cdot \text{puntualidad}_i) + \beta_{11} (\text{género}_i \cdot \text{infoTR}_i)$
+
+Con un intercepto aleatorio por línea $u_{0j} \sim N(0, \sigma^2_u)$
+
+```{r}
+mod_allint <- lmer(
+  satisfaccion ~ genero * (edad + frecuencia_uso + p_ocupacion + puntualidad + info_tiempo_real)
+  + (1 | linea_id),
+  data = transporte
+)
+
+mod_allint
+```
+
+En esta salida vemos que los efectos principales siguen siendo fuertes y significativos: edad, frecuencia baja, puntualidad baja, Informacion en tiempo real, porcentaje de ocupadcion. En cambio los coeficientes asociados a las variables de interaccion con genero no son significativos, no hay evidencia estadistica de que las relaciones entre las variables explicativas y la satisfacción dependan del género. Si comparamos con REML vemos que el modelo anterior vale 4846.94 y el modelo con todas las interacciones de género vale 4842.98, la mejora es muy chica, esta mejora tan pequeña no justifica la complejidad adicional que implica este modelo con interacciones.
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Bibliografia:
+
+Librerias Usadas:
+
+
+```{r}
+# citation("sjPlot")
+# citation("knitr")
+# citation("readxl")
+# citation("tidyverse")
+# citation("lme4")
+# citation("lmerTest")
+# citation("performance")
+# citation("broom.mixed")
+# citation("ggplot2")
+# citation("lmtest")
+# citation("car")
+# citation("here")
+# citation("corrplot")
+# citation("patchwork")
+# citation("gridExtra")
+# citation("see")
+# citation("lattice")
+```
+
+Xie Y (2025). _knitr: A General-Purpose Package for Dynamic Report
+  Generation in R_. R package version 1.50, <https://yihui.org/knitr/>.
+
+Yihui Xie (2015) Dynamic Documents with R and knitr. 2nd edition.
+  Chapman and Hall/CRC. ISBN 978-1498716963
+
+Yihui Xie (2014) knitr: A Comprehensive Tool for Reproducible
+  Research in R. In Victoria Stodden, Friedrich Leisch and Roger D.
+  Peng, editors, Implementing Reproducible Computational Research.
+  Chapman and Hall/CRC. ISBN 978-1466561595
+
+Lüdecke D (2025). _sjPlot: Data Visualization for
+  Statistics in Social Science_. R package version 2.9.0,
+  <https://CRAN.R-project.org/package=sjPlot>.
+
+Wickham H, Bryan J (2025). _readxl: Read Excel Files_. R
+  package version 1.4.5,
+  <https://CRAN.R-project.org/package=readxl>.
+
+Wickham H, Averick M, Bryan J, Chang W, McGowan LD,
+  François R, Grolemund G, Hayes A, Henry L, Hester J, Kuhn
+  M, Pedersen TL, Miller E, Bache SM, Müller K, Ooms J,
+  Robinson D, Seidel DP, Spinu V, Takahashi K, Vaughan D,
+  Wilke C, Woo K, Yutani H (2019). “Welcome to the
+  tidyverse.” _Journal of Open Source Software_, *4*(43),
+  1686. doi:10.21105/joss.01686
+  <https://doi.org/10.21105/joss.01686>
+  
+Douglas Bates, Martin Maechler, Ben Bolker, Steve Walker
+  (2015). Fitting Linear Mixed-Effects Models Using lme4.
+  Journal of Statistical Software, 67(1), 1-48.
+  doi:10.18637/jss.v067.i01.
+  
+Kuznetsova A, Brockhoff PB, Christensen RHB (2017).
+  “lmerTest Package: Tests in Linear Mixed Effects Models.”
+  _Journal of Statistical Software_, *82*(13), 1-26.
+  doi:10.18637/jss.v082.i13
+  <https://doi.org/10.18637/jss.v082.i13>.
+  
+Lüdecke et al., (2021). performance: An R Package for
+  Assessment, Comparison and Testing of Statistical Models.
+  Journal of Open Source Software, 6(60), 3139.
+  https://doi.org/10.21105/joss.03139
+
+Bolker B, Robinson D (2024). _broom.mixed: Tidying Methods
+  for Mixed Models_. R package version 0.2.9.6,
+  <https://CRAN.R-project.org/package=broom.mixed>.
+
+H. Wickham. ggplot2: Elegant Graphics for Data Analysis.
+  Springer-Verlag New York, 2016.
+
+Achim Zeileis, Torsten Hothorn (2002). Diagnostic Checking
+  in Regression Relationships. R News 2(3), 7-10. URL
+  https://CRAN.R-project.org/doc/Rnews/
+  
+Fox J, Weisberg S (2019). _An R Companion to Applied
+  Regression_, Third edition. Sage, Thousand Oaks CA.
+  <https://www.john-fox.ca/Companion/>.
+  
+Müller K (2020). _here: A Simpler Way to Find Your Files_.
+  R package version 1.0.1,
+  <https://CRAN.R-project.org/package=here>.
+  
+Taiyun Wei and Viliam Simko (2024). R package 'corrplot':
+  Visualization of a Correlation Matrix (Version 0.95).
+  Available from https://github.com/taiyun/corrplot
+
+Pedersen T (2025). _patchwork: The Composer of Plots_. R
+  package version 1.3.2,
+  <https://CRAN.R-project.org/package=patchwork>.
+  
+Auguie B (2017). _gridExtra: Miscellaneous Functions for
+  "Grid" Graphics_. R package version 2.3,
+  <https://CRAN.R-project.org/package=gridExtra>.
+
+Lüdecke et al., (2021). see: An R Package for Visualizing
+  Statistical Models. Journal of Open Source Software, 6(64),
+  3393. https://doi.org/10.21105/joss.03393
+  
+Sarkar D (2008). _Lattice: Multivariate Data Visualization
+  with R_. Springer, New York. ISBN 978-0-387-75968-5,
+  <http://lmdvr.r-forge.r-project.org>.
+  
