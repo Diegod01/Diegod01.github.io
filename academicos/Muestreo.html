@@ -44,10 +44,22 @@
           
         <section>
             <h2>Introducción</h2>
-            <p>
-aaaaa
-            </p>
+            <p>El Muestreo es la parte de la estadistica que selecciona muestras de la poblacion objetivo, observa las características de las unidades de muestreo seleccionadas y luego usar esas observaciones para hacer inferencias sobre toda la población objetivo.</p>
 
+           <p>En nuestro caso tenemos una poblacion objetivo que son todos los clientes actuales de un banco, nuestra poblacion objetivo tiene un tamaño de N = 45,211 observaciones. En nuestro dataset tenemos datos sobre clientes de un banco (edad, tipo de trabajo, saldo, si aceptaron un préstamo). </p> 
+
+           <p>Nuestro Marco Muestral (Sampling Frame) es la base de datos bank.csv</p>
+
+            <p>La Unidad de Muestreo es el cliente individual.</p>
+
+
+
+            <p>En muestreo lo que hacemos es obtener una muestra para realizar una estimacion del promedio de una variable de interes, en nuestro caso nuestra variable de interes es "balance" que representa el dinero que tiene un usuario del banco y nos interesa estimar el promedio de esta variable (que en realidad el promedio es estimar el total y dividir esa estimacion entre el tamaño de la poblacion si es conocido o entre el tamaño de la muestra) que es una variable continua con alta asimetría y valores atípicos, lo cual nos influira al querer obtener una estimacion del promedio de esta variable. </p>
+
+            <p>Luego contamos con variables auxiliares, que son todas las demas variables del set de datos, como job, education, marital, age, etc que puede o no tener una correlacion con nuestra variables de interes que es balance, cuanto mas correlacion haya entre alguna de estas variables auxiliares y balance, mejores seran las estimaciones. Estas variables tambien nos serviran para diversos metodos que veremos mas adelante como Estratificación, Raking, Post-estratificación.</p>
+
+
+            
         </section>
 
 
