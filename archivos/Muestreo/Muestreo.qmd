@@ -4,6 +4,7 @@ author: "Diego Da Rosa"
 format: pdf
 ---
 
+# Introduccion
 
 El Muestreo es la parte de la estadistica que selecciona muestras de la poblacion objetivo, observa las características de las unidades de muestreo seleccionadas y luego usar esas observaciones para hacer inferencias sobre toda la población objetivo.
 
