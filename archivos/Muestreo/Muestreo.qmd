@@ -1740,79 +1740,60 @@ Obtuvimos una estimacion de la media con un error estandar asociado igual que an
 
 ## No Respuesta:
 
+La No Respuesta ocurre cuando algunos de los clientes seleccionados en tu muestreo sistemático no proporcionan información (por ejemplo, datos de saldo faltantes o clientes que no pudieron ser contactados). En un muestreo sistemático, si la no respuesta no es aleatoria (por ejemplo, si los clientes con saldos muy altos se niegan a responder más que los de saldos bajos), la estimacion del promedio sera sesgada.
+
+En este caso los tipos de No Respuesta son: 
+
+No respuesta de ítem: El cliente existe en la base, pero el campo balance está vacío 
+
+No respuesta de unidad: El cliente seleccionado por el salto $k$ no está disponible o su registro es totalmente ilegible
+
+
+
+La técnica estándar es el Ajuste por Propensión de Respuesta. Consiste en calcular la probabilidad de que un cliente responda basándose en sus características (edad, trabajo, etc.) y luego inflar el peso de los que sí respondieron para compensar a los que "se perdieron"
+
 
 ```{r}
-# Simulamos una columna de 'Respuesta' (1 = respondió, 0 = no respondió)
-# Generalmente, los clientes con menos saldo responden menos (un sesgo común)
-set.seed(123)
-muestra_2etapas$responde <- rbinom(nrow(muestra_2etapas), 1, prob = 0.8)
+# 1. Identificar quién respondió (asumiendo que los NAs en balance son no respuesta)
+muestra_sistematica$responde <- ifelse(is.na(muestra_sistematica$balance), 0, 1)
 
-# 1. Calculamos la Tasa de Respuesta por estrato o cluster
-tasas_respuesta <- muestra_2etapas %>%
-  group_by(cluster_id) %>%
-  summarise(tasa_r = mean(responde))
-
-# 2. Ajustamos los pesos originales dividiéndolos por la tasa de respuesta
-muestra_respondientes <- muestra_2etapas %>%
-  filter(responde == 1) %>%
-  left_join(tasas_respuesta, by = "cluster_id") %>%
-  mutate(peso_ajustado_nr = peso_w / tasa_r)
-
-# Verificación: La suma de pesos ajustados debe acercarse a la población original
-cat("Suma pesos ajustados:", sum(muestra_respondientes$peso_ajustado_nr))
-```
-
-```{r}
-# Simulamos valores perdidos (NA) en el balance
-muestra_respondientes$balance_con_na <- muestra_respondientes$balance
-muestra_respondientes$balance_con_na[sample(1:nrow(muestra_respondientes), 5)] <- NA
-
-# Usamos imputación simple por mediana dentro de grupos parecidos (ej. por trabajo)
-muestra_imputada <- muestra_respondientes %>%
+# 2. Calcular la tasa de respuesta por cada categoría de trabajo
+tasas_ayuda <- muestra_sistematica %>%
   group_by(job) %>%
-  mutate(balance_final = ifelse(is.na(balance_con_na), 
-                                 median(balance_con_na, na.rm = TRUE), 
-                                 balance_con_na)) %>%
-  ungroup()
+  summarise(tasa_r = mean(responde)) %>%
+  # Si alguna tasa es 0 (nadie respondió), la ajustamos para evitar división por cero
+  mutate(tasa_r = ifelse(tasa_r == 0, 0.01, tasa_r))
+
+# 3. Unir las tasas a la muestra y calcular el nuevo peso
+muestra_sistematica <- muestra_sistematica %>%
+  left_join(tasas_ayuda, by = "job") %>%
+  mutate(peso_final_nr = (4521/500) / tasa_r)
+
+# 4. Filtrar la muestra para quedarnos solo con los que SÍ respondieron
+# (Solo ellos pueden entrar en el cálculo de la media)
+muestra_respondientes <- muestra_sistematica %>% filter(responde == 1)
+
+
+
+# Crear el diseño ajustado
+diseno_nr <- svydesign(
+  ids = ~1, 
+  weights = ~peso_final_nr, 
+  data = muestra_respondientes
+)
+
+# Estimar la nueva media
+res_nr <- svymean(~balance, diseno_nr)
+
+cat("Media original (Sistemático): 1467.7\n")
+cat("\n")
+cat("Media ajustada por No Respuesta:")
+cat("\n")
+print(res_nr)
 ```
+La estimacion de la media no cambio tras ajustar por no respuesta, lo que significa que no hay sesgo de no respuesta en las variables usadas  para ajustar por no respuesta, que en nuestro caso fue por ocupacion del usuario del banco. Los clientes que no respondieron en cada categoría de trabajo tienen, en promedio, el mismo saldo que los que sí respondieron, esto se llama MCAR (Missing Completely at Random) y es una buena caracteristica.
 
-```{r}
-# Media de los que respondieron (sin ajuste)
-media_cruda <- mean(muestra_respondientes$balance)
-# Media con pesos ajustados por no respuesta
-media_corregida <- sum(muestra_respondientes$balance * muestra_respondientes$peso_ajustado_nr) / 
-                   sum(muestra_respondientes$peso_ajustado_nr)
-
-cat("Efecto del sesgo de no respuesta:", media_corregida - media_cruda)
-```
-
-
-
-
-
-### "Mecanismos de Pérdida" (MCAR, MAR, MNAR)
-
-```{r}
-# Creamos un modelo logístico para predecir quién responde
-# Si las variables son significativas, estamos ante un caso MAR (corregible)
-modelo_no_respuesta <- glm(responde ~ age + job + education, 
-                           data = muestra_2etapas, 
-                           family = binomial)
-
-summary(modelo_no_respuesta)
-```
-
-```{r}
-ggplot(muestra_2etapas, aes(x = age, fill = as.factor(responde))) +
-  geom_density(alpha = 0.5) +
-  labs(title = "Análisis de No Respuesta por Edad",
-       subtitle = "Si las curvas son muy diferentes, hay un sesgo de selección",
-       fill = "¿Respondió?") +
-  theme_minimal()
-```
-
-
-
+Aunque el error estandar subio pasando de 115.56 a 122.58, debido a que al ajustar por no respuesta, los pesos dejan de ser todos iguales (8.98). Ahora algunos clientes pesan más para compensar a los que faltan, esto causam ayor variabilidad, al tener pesos desiguales siempre aumenta la varianza de la estimación.
 
 
 
@@ -1823,22 +1804,56 @@ ggplot(muestra_2etapas, aes(x = age, fill = as.factor(responde))) +
 
 ## Muestras no probabilisticas
 
+Las muestras no probabilísticas son aquellas en las que la selección de los elementos no depende del azar, sino de las decisiones de nosotros, de la conveniencia o de criterios específicos. A diferencia del muestreo sistemático, aquí no todos los individuos de la población bancaria tienen una probabilidad conocida (y distinta de cero) de ser elegidos.
+
+La selección suele basarse en la accesibilidad. Por ejemplo, si decides encuestar solo a los clientes que están físicamente en el banco en ese momento, estás excluyendo a todos los que operan por banca digital. Ademas no se puede medir el error de muestreo, en las muestras no probabilísticas, como no hay una base probabilística detrás, el calculo del error estandar no tiene validez. Aunque este tipo de muestras no probabilisticas son más baratas y rápidas y se usan cuando no existe un marco muestral
+
+
+La conveniencia que usamos en este caso fue seleccionar a usuariosd del banco que fueran de profesion tecnicos y tuvieran menos de 35 años.
+
 ```{r}
-# 1. Creamos la muestra no probabilística (Sesgada)
-# Los jóvenes (age < 30) tienen 5 veces más probabilidad de participar
-muestra_no_prob <- bank_data %>%
-  mutate(prob_participar = ifelse(age < 30, 0.5, 0.1)) %>%
-  slice_sample(n = 500, weight_by = prob_participar)
+set.seed(123)
+# ------------------------------------------------------------------------------
+# ESCENARIO: MUESTRA NO PROBABILÍSTICA (CONVENIENCIA)
+# ------------------------------------------------------------------------------
 
-# 2. Comparamos las medias
-media_real <- mean(bank_data$balance)
-media_no_prob <- mean(muestra_no_prob$balance)
+# 1. Simulamos una muestra no probabilística (ej. solo personas jóvenes y con trabajo técnico)
+muestra_convenience <- bank_data %>%
+  filter(age < 35 & job == "technician") %>%
+  sample_n(200, replace = TRUE)
 
-cat("Media Real Poblacional: ", media_real, "\n")
-cat("Media Muestra No Probabilística: ", media_no_prob, "\n")
-cat("Sesgo de Selección: ", media_no_prob - media_real, "\n")
+# 2. Estimación Simple (Sin pesos, porque no es probabilística)
+media_simple <- mean(muestra_convenience$balance)
+cat("Media No Probabilística (Sin Ajuste):", media_simple, "\n")
+
+# 3. Pseudo-Diseño: Para aplicar Raking a una muestra no probabilística,
+# asignamos inicialmente un peso de 1 a todos (o N/n como apuesta inicial).
+diseno_pseudo <- svydesign(
+  ids = ~1, 
+  weights = rep(1, nrow(muestra_convenience)), 
+  data = muestra_convenience
+)
+
+# 4. Calibración (Raking): Intentamos corregir el sesgo de la muestra 
+# forzándola a que coincida con los totales de la población (bank_data)
+pob_marital <- bank_data %>% group_by(marital) %>% summarise(Freq = n())
+
+diseno_calibrado <- rake(
+  design = diseno_pseudo,
+  sample.margins = list(~marital),
+  population.margins = list(pob_marital)
+)
+
+# 5. Resultado ajustado
+res_no_prob_ajustado <- svymean(~balance, diseno_calibrado)
+cat("Media No Probabilística (Con Ajuste):", res_no_prob_ajustado, "\n")
+
 ```
 
+En primera instancia, la Media Sin Ajuste (1244.48) tiene una desviación significativa respecto al valor poblacional del promedio del balance de los usuarios del banco (1422.66). Este valor subestimado es el resultado directo de un diseño por conveniencia, al haber seleccionado perfiles específicos, la muestra no captura la diversidad de saldos de la población total. En este escenario, la media no es un reflejo de la realidad financiera, sino un reflejo del segmento particular de tecnicos menores de 35 años que tuvo mayor facilidad de acceso o disposición para participar.
 
+Al aplicar técnicas de calibración, la Media Con Ajuste (1360.62) muestra una corrección importante hacia el alza. El algoritmo de Raking detectó que los grupos con saldos tradicionalmente más altos estaban subrepresentados y "reponderó" sus valores para intentar equilibrar la balanza demográfica. Pero aunque la media se acerca más al valor real, la corrección de una muestra genero una alta variabilidad (error estándar alto), lo que significa que, aunque el número parezca más exacto, la confianza estadística sigue siendo inferior a la de un muestreo probabilístico.
+
+Aunque el ajuste matemático puede bajar el sesgo, no puede sustituir la calidad de un buen diseño de muestreo. La diferencia persistente entre los 1360 obtenidos y los 1422 reales sugiere que existen características de los clientes que el ajuste no logra capturar cuando la base de datos no fue seleccionada al azar.
 
 
