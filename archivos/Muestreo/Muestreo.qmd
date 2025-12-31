@@ -862,7 +862,7 @@ nrow(muestra_conglomerados)
 
 # --- Conglomerados (Clusters) ---
 # El id especifica la variable que agrupa (sucursal o job)
-diseno_clusters <- svydesign(id = ~cluster_id, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
+diseno_clusters <- svydesign(id = ~job, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
 )
 
 
@@ -1012,6 +1012,19 @@ Obtenemos un valor bastante alejado de la media real, por lo que este diseño no
 
 El Deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una caracteristica deseable en un diseño.
 
+La formula exacta de esta metrica, siendo D un diseño cualquiera, es:
+
+$$Deff(D) = \frac{V(D)}{V(MAS)}$$
+Al ser un cociente tenemos que
+
+Deff(D) > 1 -> La varianza del diseño seleccionado es mayor a la varianza de un diseño basado en MAS, por lo que el diseño D es menos eficiente que un simple.
+
+Deff(D) = 1 -> La varianza del diseño seleccionado es igual a la varianza de un diseño basado en MAS, si bien son indiferentes en terminos de varianza, se preferira al diseño mas sencillo de implementar de forma practica que por lo general es el MAS
+
+Deff(D) < 1 -> La varianza del diseño seleccionado es menor a la varianza de un diseño basado en MAS, por lo que el diseño D es mas eficiente que un simple.
+
+
+
 ```{r}
 datos_muestra_estrat_completa <- datos_muestra_estrat %>%
   left_join(estratos_info %>% select(job, Nh), by = "job")
@@ -1069,7 +1082,7 @@ diseno_sist <- svydesign(id = ~1, data = muestra_sistematica, fpc = rep(nrow(ban
 # --- Conglomerados (Clusters) ---
 # El id especifica la variable que agrupa (sucursal o job)
 
-diseno_clusters <- svydesign(id = ~cluster_id, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
+diseno_clusters <- svydesign(id = ~job, data = muestra_conglomerados,  fpc = rep(20, nrow(muestra_conglomerados)) # 20 es el total de clusters en la población
 )
 
 
@@ -1135,6 +1148,9 @@ res_est_table <- svymean(~balance, diseno_estrat_manual, deff = TRUE)  # Estrati
 
 
 
+
+
+
 # --- 2. Función de extracción (La que ya definimos) ---
 extraer_metricas <- function(resultado_svy, nombre) {
   deff_val <- tryCatch(deff(resultado_svy), error = function(e) NA)
@@ -1173,66 +1189,93 @@ tabla_comparativa_final$Deff <- round(as.numeric(tabla_comparativa_final$Deff), 
 
 print(tabla_comparativa_final)
 
+rownames(tabla_comparativa_final) <- NULL
+tabla_comparativa_final
+
 ```
 
 
+Recordemos que el valor de la Media Poblcional era 1422.658
+
+En esta tabla tenemos 5 columnas, la primera "Diseño" es el diseño muestral utilizado para realizar la estimacion de la media. La segunda es el valor puntual estimado de la media. La tercera es el error estandar asociado a esa estimacion, mide la precision que tanto se aleja la estimacion del valor real, cuanto mas chico sea este valor, mejor sera la estimacion, y cuanto mas grande sea este valor, peor sera la estimacion. La cuarta columna es el deff, esta es una metrica que compara la varianza entre el diseño utilizado con respecto a un diseño aleatorio simple sin reemplazo, donde la comparacion se hace a traves de un cociente.  La quinta columna es el Error_Abs, que es la diferencia entre el valor real y el valor estimado
+
+
+
+El MAS con Reemplazo es el que más se acercó al valor real en la estimacion (Error: -20.06) pero tiene un SE alto mas los problemas mencionados al inicio de asimetria y outliers, mas el poco sentido conceptual que tiene repetir individuos ya extraidos en la muestra.
+
+
+Conglomerados tuvo un SE de 125.6156 y aunque su media (1498.56) tiene un error de +75.90, es el diseño más estable. Su Deff de 0.649 indica una ganancia de eficiencia alta, porque los grupos por ocupacion capturaron bien la variabilidad interna de los ingresos de los usuarios del banco, este valor del deff indica que el diseño de conglomerados es un 35% más eficiente que un Muestreo Aleatorio Simple (MAS). Recordemos que vimos el Coeficiente de Correlación Intraclase (rho) que valia casi cero (-0.0012), esto indica que las personas dentro de una misma profesión son muy diferentes entre sí en cuanto a sus saldos, lo que reduce el error de grupo y maximiza la precisión.
+
+
+El Diseño Sistemático tiene un SE de 115.56, se comporta casi como un MAS (Deff 1.00).
+
+
+
+Otros como el Diseño de Dos Etapas tienen un SE de 317.59, es el diseño con mayor incertidumbre. El error estándar es muy alto lo que causa que el intervalo de confianza asociado a la estimacion sea muy ancho, lo que resta utilidad a la estimación.
+
+
+Otros como piPS y PPS a pesar de usar probabilidades de seleccion proporcionales al saldo, tienen errores absolutos altos (+370 y +138 respectivamente) y SE elevados. Esto puede ocurrir si los saldos extremos (outliers) dominaron demasiado la selección.
 
 
 
 
-Media real 1422.658
+Decidi quedarme con el Diseño Estratificado por tener el SE mas bajo y el mejor Deff, aunque su estimacion no haya sido perfecta, de ahora en adelante se trabajara con este diseño para otros temas de estudio en este informe.
+
+
 
 
 
 
 ## Estimacion por dominios
 
-La Estimación por Dominiosconsiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.
+La Estimación por Dominios consiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.
 
 
 Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una estimación por dominios. Las categorias de job que entren en la muestra seran al azar. Si el dominio es muy pequeño la estimación será muy inestable (un SE muy alto).
 
 ```{r}
 library(survey)
+library(survey)
+library(dplyr)
 
-N_h <- bank_data %>%
-  group_by(job) %>%
-  summarise(N_h = n())
+# 1. Preparación: Definir los Pesos y FPC para Conglomerados
+# Asumimos que 'cluster_id' es tu variable de conglomeración (ej. job o sucursal)
+# N_clusters es el total de grupos en la población (ej. 12 tipos de trabajo)
+N_clusters <- length(unique(bank_data$job)) 
 
-m_est <- bank_clean %>% group_by(job) %>% sample_frac(n/N) %>% ungroup() %>% left_join(N_h, by="job")
-# 1. Definir el diseño global (usaremos el Estratificado como ejemplo, que fue el más eficiente)
-# Es vital que el diseño contenga TODA la muestra
-diseno_global <- svydesign(
-  id = ~1, 
-  strata = ~job, 
-  fpc = ~N_h, 
-  data = m_est
-)
+# Sistematico
+diseno_sist <- svydesign(id = ~1, data = muestra_sistematica, fpc = rep(nrow(bank_data), nrow(muestra_sistematica)))
+res_sist_table  <- svymean(~balance, diseno_sist, deff = TRUE)  # sistematico
 
-# 2. Estimación por Dominios (Media de balance por cada tipo de job)
-estimacion_dominios <- svyby(
+
+# 3. Estimación por Dominios (Media de balance por cada tipo de job)
+# Nota: En conglomerados por 'job', cada dominio es un cluster completo
+estimacion_dominios_cong <- svyby(
   formula = ~balance, 
   by = ~job, 
-  design = diseno_global, 
+  design = diseno_sist, 
   FUN = svymean,
-  deff = TRUE # También calculamos el Deff para cada dominio
+  deff = TRUE
 )
 
-# 3. Ver resultados
-print(estimacion_dominios)
+# 4. Ver resultados técnicos
+print(estimacion_dominios_cong)
 
-# 4. Visualización para tu reporte
-barplot(estimacion_dominios, main="Saldo Promedio por Ocupación (Estimación por Dominios)")
+# 5. Visualización Comparativa
+# Esto generará el gráfico de barras con los errores estándar calculados por el diseño
+dotchart(estimacion_dominios_cong$balance, 
+         labels = estimacion_dominios_cong$job,
+         main = "Media de Balance por Dominio (Diseño Conglomerados)",
+         xlab = "Saldo Promedio",
+         pch = 19, color = "darkblue")
+
+
+
+
 ```
+Este gráfico muestra cómo se distribuye el saldo promedio según el tipo de trabajo bajo el diseño estratificado. El grupo retired (jubilados) es el de mayor saldo promedio, acercándose o superando los 4000. Los clientes con ocupación desconocida y los desempleados tienen un saldo promedio bajo, al igual que los auto-empleados. Ocupaciones como blue-collar, services y admin. se mantienen en la parte baja de la escala (cerca de los 1000-1500), lo que confirma que son la base de clientes con saldos más modestos pero más numerosos.. 
 
-Los grupos entrepreneur (emprendedores) y retired (jubilados) tienen, con diferencia, los saldos promedio más altos. Superan los $4,000,. Los primeros manejan capital de trabajo y los segundos han acumulado ahorros de toda una vida.
-
-Profesiones como management, admin., services y technician muestran saldos moderados y muy similares entre sí (entre $1,000 y $2,000).
-
-El grupo "unknown" tiene el saldo más bajo. Es probable que los clientes con información incompleta sean también los menos activos o con cuentas básicas.
-
-
-
+Al tratar a cada "profesión" como un estrato, la variabilidad real del banco no está en los clientes individuales, sino en el segmento laboral al que pertenecen.
 
 
 
@@ -1248,82 +1291,35 @@ El grupo "unknown" tiene el saldo más bajo. Es probable que los clientes con in
 library(survey)
 library(tidyverse)
 
-# 1. Aseguramos que el diseño esté bien declarado
-# (Usando los pesos calculados en el paso anterior)
-diseno_dos_etapas <- svydesign(
-  id = ~cluster_id, 
-  weights = ~peso_w, 
-  data = muestra_2etapas
-)
 
-# 2. Calculamos la media y guardamos el objeto res_media
-res_media <- svymean(~balance, diseno_dos_etapas)
 
-# 3. Cálculo de Sesgo y Precisión
+# 2. Cálculo de Sesgo y Precisión
 valor_real <- mean(bank_data$balance) # Valor real de la población
-valor_est  <- coef(res_media)[[1]]     # Valor que estimamos con la muestra
-error_est  <- SE(res_media)[[1]]       # Error estándar
+valor_est  <- coef(res_sist_table)[[1]]     # Valor estimado
+error_est  <- SE(res_sist_table)[[1]]       # Error estándar
 
 sesgo_abs <- valor_est - valor_real
 sesgo_rel <- (sesgo_abs / valor_real) * 100
 
-# 4. Cálculo de Intervalos de Confianza (95%)
-ic <- confint(res_media)
+# 3. Cálculo manual de Intervalos de Confianza (95%)
+# Usamos 1.96 que es el valor crítico para una distribución normal al 95%
+limite_inferior <- valor_est - (1.96 * error_est)
+limite_superior <- valor_est + (1.96 * error_est)
 
-# --- REPORTE DE CALIDAD ---
+# --- REPORTE DE CALIDAD FINAL ---
 cat("--- RESULTADOS DEL ANÁLISIS ---\n")
 cat("Valor Real Poblacional: ", round(valor_real, 2), "\n")
 cat("Valor Estimado (Muestra):", round(valor_est, 2), "\n")
-cat("Sesgo Relativo:         ", round(sesgo_rel, 2), "%\n")
-cat("Intervalo de Confianza: [", round(ic[1], 2), ",", round(ic[2], 2), "]\n")
+cat("Sesgo Relativo:          ", round(sesgo_rel, 2), "%\n")
+
+# AQUÍ ESTÁ LA CORRECCIÓN: Llamamos a las variables manuales en lugar del objeto 'ic'
+cat("Intervalo de Confianza: [", round(limite_inferior, 2), ",", round(limite_superior, 2), "]\n")
+cat("-------------------------------\n")
+
+
+
 ```
-
-
-
-
-
-```{r}
-# Valor Real
-valor_real <- mean(bank_data$balance)
-
-# Valor Estimado (del diseño de dos etapas anterior)
-valor_est <- coef(res_media) # Extraemos la media del objeto de survey
-
-# Sesgo Absoluto y Relativo
-sesgo_abs <- valor_est - valor_real
-sesgo_rel <- (sesgo_abs / valor_real) * 100
-
-cat("Sesgo Absoluto:", sesgo_abs, "\n")
-cat("Sesgo Relativo:", sesgo_rel, "%\n")
-```
-
-
-
-
-
-```{r}
-# Intervalo de confianza al 95% para el diseño de dos etapas
-intervalo <- confint(res_media, level = 0.95)
-print(intervalo)
-
-# Visualización del IC
-res_plot <- data.frame(
-  Metodo = "Dos Etapas",
-  Media = as.numeric(valor_est),
-  Lower = intervalo[1],
-  Upper = intervalo[2]
-)
-
-ggplot(res_plot, aes(x = Metodo, y = Media)) +
-  geom_point(size = 4, color = "darkblue") +
-  geom_errorbar(aes(ymin = Lower, ymax = Upper), width = 0.2, lwd = 1) +
-  geom_hline(yintercept = valor_real, linetype = "dashed", color = "red") +
-  annotate("text", x = 1.2, y = valor_real, label = "Valor Real", color = "red") +
-  labs(title = "Intervalo de Confianza (95%)",
-       subtitle = "La línea roja es el valor real de la población",
-       y = "Balance Promedio") +
-  theme_minimal()
-```
+El Sesgo Relativo vale 3.17%, la estimaciones es basante buena porque el sesgo es bajo, por eso seleccionar grupos a traves de conglomerados en lugar de individuos fue una buena decision. La Media Estimada fue 1467.72  y la Media Real vale 1422.66, vemos que existe una ligera sobreestimación de aproximadamente 45 unidades, esto sugiere que los sectores laborales (conglomerados) que resultaron seleccionados tienen un nivel de ahorro ligeramente superior al promedio general. El Intervalo de Confianza es de [ 1241.21 , 1694.23 ], el Valor Real Poblacional (1422.66) se encuentra dentro de este intervalo, se puede afirmar con un 95% de confianza que la estimación es estadísticamente significativa. El rango de este intervalo es considerable y refleja la variabilidad de los saldos bancarios.
 
 
 
@@ -1331,31 +1327,8 @@ ggplot(res_plot, aes(x = Metodo, y = Media)) +
 
 
 
-## Linearizacion de Taylor
-
-```{r}
-library(survey)
-
-# 1. Definimos el diseño (esto activa internamente Taylor para las varianzas)
-diseno_complejo <- svydesign(
-  id = ~cluster_id, 
-  weights = ~peso_w, 
-  data = muestra_2etapas
-)
-
-# 2. Cuando calculamos la media, R usa Taylor para el Error Estándar (SE)
-res_media <- svymean(~balance, diseno_complejo)
-
-# 3. Podemos ver la varianza linealizada explícitamente
-vcov(res_media)
-```
 
 
-```{r}
-# Calculamos el CV para ver la estabilidad de la linealización
-cv_estimacion <- cv(res_media)
-print(paste("El CV es:", round(cv_estimacion * 100, 2), "%"))
-```
 
 
 
@@ -1363,36 +1336,74 @@ print(paste("El CV es:", round(cv_estimacion * 100, 2), "%"))
 
 ## Estimador de una Razon R
 
+La estimacion de ratios en vez de estimar el total o el promedio de una variable (como el saldo promedio), la estimación de una razón analiza la relación matemática entre dos variables distintas para cada individuo a traves de un cociente
+
+Su formula es:
+
+$$\hat{R}= \frac{\sum w_i y_i}{\sum w_i x_i}$$
+Donde "y" es la variable de interes original y "x" es la variable auxiliar.  Se usa cuando queremos entender cómo cambia una variable en función de otra. Los ratios suelen ser estimadores más precisos que las medias si ambas variables están correlacionadas.
+
+
+
+En este caso  calcularemos la relación Saldo / Edad. En el Numerador tendremos el saldo bancario (balance) y en el Denominador tendremos la edad del cliente (age). Este ratio nos dice cuánto dinero tiene un cliente en el banco por cada año de vida.
+
 
 ```{r}
 library(survey)
 
-# Supongamos que queremos la razón entre 'balance' (saldo) y 'age' (edad)
-# Es decir: ¿Cuánto saldo promedio hay por cada año de vida del cliente?
+diseno_sist <- svydesign(id = ~1, data = muestra_sistematica, fpc = rep(nrow(bank_data), nrow(muestra_sistematica)))
+res_sist_table  <- svymean(~balance, diseno_sist, deff = TRUE)  # sistematico
 
-# 1. Usamos el diseño de dos etapas que ya definimos
-razon_balance_edad <- svyratio(numerator = ~balance, 
-                               denominator = ~age, 
-                               design = diseno_dos_etapas)
 
-# 2. Ver el resultado y su error estándar
+
+
+# 1. Definir la estimación de la razón (Ratio: balance / age)
+# Esto calcula cuánto saldo hay, en promedio, por cada año de vida del cliente
+razon_balance_edad <- svyratio(
+  numerator = ~balance, 
+  denominator = ~age, 
+  design = diseno_sist
+)
+
+# 2. Ver el resultado de la razón y su error estándar
 print(razon_balance_edad)
 
-# 3. Obtener el intervalo de confianza de la razón
-confint(razon_balance_edad)
+# 3. Obtener el Intervalo de Confianza para la razón
+ic_razon <- confint(razon_balance_edad, level = 0.95)
+print(ic_razon)
 
+# 4. Estimación de la razón por Dominios (por ejemplo, por tipo de trabajo)
+razon_por_dominio <- svyby(
+  formula = ~balance, 
+  denominator = ~age, 
+  by = ~job, 
+  design = diseno_sist, 
+  FUN = svyratio
+)
 
-
+#print(razon_por_dominio)
+rownames(razon_por_dominio) <- NULL
+razon_por_dominio
 
 ```
-```{r}
-
-# Razón Saldo / Duración de la llamada
-razon_campana <- svyratio(~balance, ~duration, diseno_dos_etapas)
-print(razon_campana)
-```
 
 
+El resultado es de 35.72 con un Error Estándar (SE) de 2.79 lo que significa que, en promedio, un cliente acumula $35.72$ unidades monetarias por cada año de edad que tiene. En la comparacion de ratios por ocupacion, vemos que los estudiantes y el personal de gerencia (management) tienen los ratios más altos, lo que significa que tienen saldos muy elevados en comparación con su edad relativa. Dado que estamos segmentando el ratio según el trabajo (job), podemos ver quién es más "eficiente" ahorrando según su etapa de vida.
+
+Viendo el Intervalo de Confianza [30.26, 41.19] podemos decir con un 95% de confianza que la relación saldo/edad de toda la población del banco se encuentra en este rango. Es un intervalo relativamente estrecho, lo que indica que el Muestreo Sistemático ha sido muy efectivo para capturar esta relación.
+
+
+Si hacemos un análisis de la Razón por Ocupaciones, vemos que la acumulación de riqueza por año de vida no es uniforme entre profesiones:
+
+Los más Eficientes (Mayor Ratio) son Student con un valor de 57.04, es el ratio más alto. A pesar de ser jóvenes, tienen saldos proporcionalmente muy elevados para su edad, pero tiene un SE muy alto (30.03), lo que indica que esta estimación es poco precisa debido a la alta variabilidad entre estudiantes.
+
+Management con un valor de 54.05, tienen una alta acumulación por año de edad con un error estándar mucho más controlado (7.89).
+
+Retired con un valor de 49.49, los jubilados tienen una alta relación saldo/edad, aunque su SE (15.31) sugiere que hay jubilados con saldos muy dispares.
+
+Entrepreneur (15.23) y Self-employed (15.29) tienen ratios bajos, puede ser porque reinvierten su capital en sus negocios en lugar de mantenerlo en saldos bancarios líquidos.
+
+Admin. con un valor de  17.88 es el grupo con la estimación más "segura" o precisa (SE de solo 3.14), pero su capacidad de ahorro por año de vida es de las más bajas.
 
 
 
@@ -1403,34 +1414,32 @@ print(razon_campana)
 ## Jackknife y Bootstrap
 
 
+Jackknife es un método donde en la muestra sistemática con $n$ elementos, el Jackknife crea $n$ submuestras, eliminando un cliente diferente cada vez. Es útil para detectar "outliers" (clientes con saldos atípicos). Aunque en diseños sistemáticos, el Jackknife a veces puede subestimar la varianza si hay una tendencia muy marcada en el orden de la lista.
 
+Bootstrap es una tecnica de remuestreo con reemplazo. Crea miles de versiones de la muestra sistemática seleccionando clientes al azar de la misma (permitiendo que un cliente aparezca más de una vez en la misma simulación). Si después de 1000 repeticiones de Bootstrap el intervalo de confianza sigue siendo similar al que obtuviste [30.25, 41.19], la estimación obtenida es confiable.
 
 ```{r}
 # Convertir el diseño a réplicas Jackknife (JK1 o JKn)
-diseno_jk <- as.svrepdesign(diseno_dos_etapas, type = "JK1")
+diseno_jk <- as.svrepdesign(diseno_sist, type = "JK1")
 
 # Estimar la media usando Jackknife
 media_jk <- svymean(~balance, diseno_jk)
 print(media_jk)
 ```
+
 ```{r}
 # Convertir a diseño de réplicas Bootstrap
 # R = 500 significa que hará 500 simulaciones
-diseno_boot <- as.svrepdesign(diseno_dos_etapas, type = "bootstrap", replicates = 500)
+diseno_boot <- as.svrepdesign(diseno_sist, type = "bootstrap", replicates = 500)
 
 # Estimar la media usando Bootstrap
 media_boot <- svymean(~balance, diseno_boot)
 print(media_boot)
 ```
+En este caso vemos que las estimaciones de ambos metodos son bastantes similares y tienen una lejania similar y considerable del valor real de la media de balance que es 1422.658
 
-```{r}
-# Comparar Errores Estándar
-comparativa_se <- data.frame(
-  Metodo = c("Taylor", "Jackknife", "Bootstrap"),
-  SE = c(SE(res_media), SE(media_jk), SE(media_boot))
-)
-print(comparativa_se)
-```
+
+
 
 
 
@@ -1442,6 +1451,17 @@ print(comparativa_se)
 
 
 ## Problemas y sesgo de cobertura
+
+El sesgo de cobertura ocurre cuando algunos elementos de la población objetivo no tienen posibilidad de ser seleccionados en la muestra. En los datos del banco esto sucede si el marco muestral (la lista de clientes de la que extrajiste el sistema) no coincide perfectamente con la población real que queremos estudiar.
+
+Sub-cobertura: Es el problema más frecuente. Sucede si hay grupos de clientes que no aparecen en la base de datos (por ejemplo, clientes con cuentas nuevas que aún no se han procesado o personas que operan solo en efectivo fuera del sistema). Si estos clientes tienen saldos muy diferentes, la estimacion del promedio de balance estará sesgada.
+
+Sobre-cobertura: Ocurre cuando el marco muestral incluye elementos que no deberían estar (clientes que cerraron su cuenta pero siguen en la lista o registros duplicados). En el muestreo sistemático, los duplicados son peligrosos porque aumentan artificialmente la probabilidad de seleccionar a ciertos individuos.
+
+El muestreo sistemático es sensible a la ordenación del marco muestral, puede darse la Periodicidad que sucede cuando la lista tiene un patrón oculto que coincide con tu intervalo de selección $k$, y podríamos estar omitiendo sistemáticamente a un grupo específico (por ejemplo, si cada 10 clientes hay un "cliente VIP" y tu salto es de 10, o los seleccionas a todos o a ninguno). Si la lista está ordenada por saldo de menor a mayor, el sesgo de cobertura puede aparecer si el punto de inicio aleatorio deja fuera de balance a los extremos de la distribución.
+
+Si existe sesgo de cobertura, el impacto en la estimación de el promedio de balance puede causar sobreestimacion o subestimacion
+
 
 ```{r}
 # 1. Definimos la población real
@@ -1465,36 +1485,20 @@ cat("Media con Subcobertura:", round(media_estimada_sesgada, 2), "\n")
 cat("Sesgo de Cobertura Acumulado:", round(sesgo_cobertura, 2), "\n")
 ```
 
+Tenemos problemas de Subcobertura, hay error de exclusión. Al eliminar a los trabajadores de tipo blue-collar (operarios) y services (servicios) de la lista de forma sistematica, estamos ignorando a una parte masiva de la población bancaria. En general estos dos grupos tienen saldos promedio más bajos o moderados, al quitarlos sistematicamente por la logica del diseño de ir saltando, el marco muestral queda compuesto mayoritariamente por gerentes, jubilados y profesionales con saldos más altos.
 
 
-```{r}
-# Visualización del peligro: Precisión vs Exactitud
-ic_sesgado <- t.test(muestra_sesgada$balance)$conf.int
+El resultado es una sobreestimación sistemática, la media Real (1422.66) es el promedio verdadero de todos los clientes, mientras que la media con Subcobertura (1763.26) es lo que creemos que es el promedio basados en la lista incompleta. El sesgo es de 340.6, es un sesgo estructural, no importa cuántas veces repitamos la muestra o qué tan grande sea la media siempre rondará los 1760 porque el error está en quién puede ser elegido y quién no.
 
-df_cobertura <- data.frame(
-  Tipo = c("Muestra con Subcobertura"),
-  Media = media_estimada_sesgada,
-  LI = ic_sesgado[1],
-  LS = ic_sesgado[2]
-)
-
-ggplot(df_cobertura, aes(x = Tipo, y = Media)) +
-  geom_point(size = 4, color = "purple") +
-  geom_errorbar(aes(ymin = LI, ymax = LS), width = 0.2, color = "purple") +
-  geom_hline(yintercept = media_poblacion_total, linetype = "dashed", color = "red") +
-  annotate("text", x = 1, y = media_poblacion_total + 150, label = "Verdadera Población", color = "red") +
-  labs(title = "Efecto del Sesgo de Cobertura",
-       subtitle = "El IC no toca la realidad a pesar de parecer preciso",
-       y = "Balance") +
-  theme_minimal()
-```
+Los problemas asociados son que el banco creería que sus clientes tienen, en promedio, $340 más de lo que realmente tienen o se podrian diseñar productos de inversión con mínimos de entrada demasiado altos, dejando fuera a los sectores de servicios y operarios que ni siquiera fueron consultados.
 
 
 
-## Inferencia basada en el diseño
 
-## Estimador asististido por modelos 
 
+## Estimador asististido por modelos (GREG)
+
+En lugar de confiar solo en los datos de la muestra, este método utiliza una variable auxiliar (en tu caso, la edad) que está correlacionada con la variable de interés (balance). Este estimador GREG ajusta desbalances de las estimaciones originales, por eso se dice que asiste a la estimacion. La función calibrate modifica los pesos originales de la muestra para que, al sumarlos, coincidan exactamente con los totales conocidos de la población (número total de clientes y suma total de edades).
 
 ```{r}
 library(survey)
@@ -1508,8 +1512,8 @@ total_edad_poblacion <- sum(bank_data$age)
 totales_poblacion <- c(`(Intercept)` = total_poblacion, age = total_edad_poblacion)
 
 # 2. Calibración (Estimador GREG)
-# Esto ajusta los pesos peso_w para que la muestra sea "perfecta" respecto a la edad
-diseno_calibrado <- calibrate(design = diseno_dos_etapas, 
+                                                           # Esto ajusta los pesos peso_w para que la muestra sea "perfecta" respecto a la edad
+diseno_calibrado <- calibrate(design = diseno_sist, 
                               formula = ~age, 
                               population = totales_poblacion)
 
@@ -1517,119 +1521,100 @@ diseno_calibrado <- calibrate(design = diseno_dos_etapas,
 res_greg <- svymean(~balance, diseno_calibrado)
 print(res_greg)
 
+cat("\n")
+
 # Comparar pesos: antes vs después
-summary(weights(diseno_dos_etapas))
+summary(weights(diseno_sist))
 summary(weights(diseno_calibrado))
 ```
 
+La media estimada con GREG es de 1470.4 con un error estándar (SE) de 114.8. Al comparar con el valor poblacional de 1422.66, este estimador sigue estando cerca, pero ahora tiene el respaldo de estar "calibrado" por la estructura de edad de todo el banco.
 
-```{r}
-# Comparar Intervalos de Confianza
-comparativa_greg <- data.frame(
-  Metodo = c("HT (Dos Etapas)", "GREG (Calibrado)"),
-  Media = c(coef(res_media), coef(res_greg)),
-  SE = c(SE(res_media), SE(res_greg))
-)
+En las tablas de resumen vemos como cambiaron los pesos, viendo valores como su minimo, media, mediana, cuartiles y su maximo.
 
-ggplot(comparativa_greg, aes(x = Metodo, y = Media)) +
-  geom_point(size = 4) +
-  geom_errorbar(aes(ymin = Media - 1.96*SE, ymax = Media + 1.96*SE), width = 0.2) +
-  geom_hline(yintercept = mean(bank_data$balance), color = "red", linetype = "dashed") +
-  labs(title = "Eficiencia del Estimador Asistido por Modelo (GREG)",
-       subtitle = "La calibración reduce el error estándar usando la variable 'Edad'") +
-  theme_minimal()
-```
+Los pesos Originales en el Diseño Sistemático se distribuian de tal forma que todos los clientes tenían exactamente el mismo peso (8.988). Esto significa que cada persona en la muestra representaba a casi 9 personas de la población de forma rígida.
+
+Ahora los pesos calibrados por GREG varían entre 8.852 y 9.265. Le damos más de peso a los clientes cuyas edades estaban subrepresentadas y un poco menos a los que estaban sobrerepresentados y dado que la media de los pesos sigue siendo 8.988, no perdimos ni ganamos clientes totales, solo redistribuiste su importancia para que la muestra represente mejor la edad poblacional.
+
+El uso de GREG reduce la varianza, si la edad y el saldo están relacionados, el SE es más confiable que el de un estimador sistematico sin usar GREG. Ademas como ya mencionamos corrige sesgos potenciales, si por azar el muestreo sistemático hubiera seleccionado a demasiada gente joven (que suele tener menos saldo), la calibración habría corregido automáticamente ese sesgo dándole más peso a los pocos mayores que entraron en la muestra.
 
 
 
 
 
-## Calibracion de ponderadores
+## Estimador Basado en Modelos
 
+Este es un enfoque donde ya no dependemos de los pesos del diseño muestral ($w_i$), sino que confiamos plenamente en que un modelo matemático planteado describe la estructura de toda la población. En este enfoque, el "estimador" es la suma de los valores observados en la muestra más los valores predichos para los individuos que no fueron seleccionados. Ademas la variabiliad o incertidumbre ya no vienen de "qué pasaría si elijo otra muestra", sino de "qué tan bien ajusta mi modelo matematico a los datos".
+
+El modelo matematico puede ser cualquiera de los algoritmos utilizados comunmente en Machine Learning, como regresion lineal, arboles de decision, redes neuronales. Cuanto mas complejo el algoritmo, mejor sera la estimacion, pero menos interpretable sera. 
+ 
 ```{r}
 library(survey)
+# 1. Ajustamos un modelo de regresión lineal simple (sin usar el diseño muestral)
+# Usamos lm() directamente sobre la muestra
+modelo_puro <- lm(balance ~ age, data = muestra_sistematica)
 
-# 1. Definir los Totales de Control (Data del banco/censo)
-# Supongamos que conocemos el conteo real por nivel educativo
-totales_educacion <- table(bank_data$education)
-print(totales_educacion)
+# 2. Identificamos quiénes NO están en la muestra (la población no observada)
+# Esto es fundamental en el enfoque basado en modelos
+indices_muestra <- as.numeric(rownames(muestra_sistematica))
+poblacion_no_observada <- bank_data[-indices_muestra, ]
 
-# 2. Crear el objeto de totales para la función calibrate
-# Debe incluir el total de la población (Intercept) y los niveles de la variable
-pop_totals <- c(`(Intercept)` = nrow(bank_data), totales_educacion[-1]) 
-# Nota: se quita el primer nivel porque está implícito en el Intercept
+# 3. Predecimos el balance para todos los que NO fueron encuestados
+predicciones_resto <- predict(modelo_puro, newdata = poblacion_no_observada)
 
-# 3. Aplicar Calibración (Raking / Lineal)
-diseno_calibrado <- calibrate(design = diseno_dos_etapas, 
-                              formula = ~education, 
-                              population = pop_totals,
-                              calfun = "raking") # o "linear" para GREG
+# 4. El estimador basado en modelos es la media de (observados + predichos)
+suma_total_estimada <- sum(muestra_sistematica$balance) + sum(predicciones_resto)
+media_basada_modelo <- suma_total_estimada / nrow(bank_data)
 
-# 4. Verificación: ¿La muestra ahora suma el total real?
-svytotal(~education, diseno_calibrado)
+cat("Media Basada en Modelos:", round(media_basada_modelo, 2), "\n")
 ```
 
+En este caso usamos un modelo de regresión lineal simple sin basarnos en un diseño muestral. Cuando el modelo es "correcto" (la relación entre edad y saldo es la misma para todos), la estimacion es muy buena. En este caso vemos que la estimacion de la media utilizando modelos, en especifico un modelo de regresion lineal simple, fue de  1470.43, que se aleja del valor real considerablemente, esto puede deberse a que tenemos sesgo de selección o que el modelo simple de edad no logra capturar, o la relación edad-saldo porque es muy simplificador o porque esa relacion no es lineal para toda la población.
 
+
+
+Visualmente: 
 
 ```{r}
-# Comparar el peso promedio antes y después
-muestra_2etapas$peso_original <- weights(diseno_dos_etapas)
-muestra_2etapas$peso_calibrado <- weights(diseno_calibrado)
+# 1. Crear un dataset de predicción para la línea de tendencia
+edades_eje <- data.frame(age = seq(min(bank_data$age), max(bank_data$age), length.out = 100))
+predicciones_linea <- predict(modelo_puro, newdata = edades_eje)
 
-# Visualizar la dispersión de los nuevos pesos
-ggplot(muestra_2etapas, aes(x = peso_original, y = peso_calibrado, color = education)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  labs(title = "Ajuste de Pesos por Calibración",
-       subtitle = "Los puntos sobre la línea no cambiaron; los alejados se ajustaron para corregir la muestra",
-       x = "Peso Original (Diseño)", y = "Peso Calibrado") +
+# 2. Graficar los datos observados y la "asistencia" del modelo
+library(ggplot2)
+
+ggplot() +
+  # Puntos de la muestra sistemática
+  geom_point(data = muestra_sistematica, aes(x = age, y = balance), alpha = 0.5, color = "steelblue") +
+  # La línea del modelo (en la que se basa nuestra inferencia)
+  geom_line(data = edades_eje, aes(x = age, y = predicciones_linea), color = "darkred", size = 1) +
+  # Etiquetas y estilo
+  labs(title = "Estimación Basada en Modelos: Balance vs Edad",
+       subtitle = "La línea roja representa la estructura poblacional asumida",
+       x = "Edad", y = "Balance") +
   theme_minimal()
 ```
 
+Vemos que el ajuste de la recta a los puntos no es muy bueno y que la relacion no parece ser muy lineal, esto es una de las causas de que la estimacion no sea muy precisa.
 
 
 
 
 
-## Regression Thinking
 
-```{r}
-library(survey)
 
-# 1. Definir el modelo de regresión dentro del diseño
-# Queremos predecir 'balance' en función de 'age'
-modelo_greg <- svyglm(balance ~ age, design = diseno_dos_etapas)
 
-# 2. El 'Regression Thinking' nos dice que el total estimado es:
-# Total = (Predicción para toda la población) + (Suma de los errores en la muestra)
-total_poblacion_age <- sum(bank_data$age)
-N_pob <- nrow(bank_data)
 
-# Usamos predict con el total poblacional para obtener la estimación GREG
-estimacion_greg <- predict(modelo_greg, 
-                           newdata = data.frame(age = mean(bank_data$age)))
 
-print(estimacion_greg)
-```
-
-```{r}
-muestra_2etapas$prediccion <- predict(modelo_greg, type = "response")
-muestra_2etapas$residuos <- muestra_2etapas$balance - muestra_2etapas$prediccion
-
-ggplot(muestra_2etapas, aes(x = age, y = balance)) +
-  geom_point(alpha = 0.3) +
-  geom_smooth(method = "lm", color = "blue") +
-  geom_segment(aes(xend = age, yend = prediccion), color = "red", alpha = 0.2) +
-  labs(title = "Pensamiento de Regresión: Balance vs Edad",
-       subtitle = "Las líneas rojas son los residuos que el estimador debe capturar",
-       x = "Edad", y = "Saldo") +
-  theme_minimal()
-```
 
 
 
 ## Post-estratificacion 
 
+
+La Post-estratificación es una técnica de ajuste que se usa  después de haber recolectado los datos para corregir posibles desbalances entre la muestra y la población real. En la post-estratificación ajustas los pesos de los individuos para que la distribución de una variable (en este caso, el estado civil o marital) coincida exactamente con lo que el banco sabe que tiene en su base de datos total.
+
+Comparamos el diseño sistemático original (res_antes) frente al diseño ajustado por estado civil (res_despues) para la estimacion del balance
 
 ```{r}
 library(survey)
@@ -1642,65 +1627,79 @@ pob_marital <- bank_data %>%
 
 # 2. Aplicar la Post-estratificación al diseño de dos etapas
 diseno_post <- postStratify(
-  design = diseno_dos_etapas, 
+  design = diseno_sist, 
   strata = ~marital, 
   population = pob_marital
 )
 
 # 3. Comparar estimaciones
-res_antes <- svymean(~balance, diseno_dos_etapas)
+res_antes <- svymean(~balance, diseno_sist)
 res_despues <- svymean(~balance, diseno_post)
 
 print(res_antes)
 print(res_despues)
 ```
+La media subió ligeramente unas 3.4 unidades de 1467.7 a 1471.1. Esto indica que en la muestra sistemática original, los grupos de estado civil que suelen tener un balance más alto (posiblemente los "casados" o "divorciados") estaban levemente sub-representados. El proceso de post-estratificación les dio más "peso" a esos individuos para reflejar mejor el balance real de los usuarios del banco, lo que subio el promedio estimado.
 
-```{r}
-# Si el Deff es mucho mayor a 1, la post-estratificación está "inflando" mucho los pesos
-deff_post <- svymean(~balance, diseno_post, deff = TRUE)
-print(deff_post)
-```
+El error estándar aumentó 0.39, de 115.56 a 115.95, la post-estratificación reduce el error si la variable (estado civil) explica bien el comportamiento del saldo. Vemos que el aumento casi imperceptible sugiere que el estado civil no es un predictor muy  fuerte del saldo, o que la muestra sistemática ya era bastante buena y representativa en términos de esta variable.
+
+De todas formas la Post-estratificación brinda corrección de sesgo de cobertura, si por azar el muestreo sistemático hubiera saltado a muchos "solteros" (que tienen menos ahorros), la post-estratificación corrige ese error.
+
 
 
 
 ## Raking
 
+Anteriormente usamos solo el estado civil y no fue muy significativo, pero podemos cruzarlo con la educacion para ver si hay significatividad. Para esto usaremos una tecnica llamada Raking.
+
+El Raking (también conocido como Iterative Proportional Fitting o Ajuste Proporcional Iterativo) es una técnica de calibración que se usa cuando se necesita que la muestra sea representativa en varias dimensiones al mismo tiempo, pero no conoces el cruce total de la población. Raking solo requiere conocer los totales marginales (ej. cuántos casados hay por un lado, y cuánta gente con educación secundaria hay por otro). El algoritmo ajusta los pesos de forma iterativa hasta que la muestra coincide con todos los totales poblacionales que usamos.
+
+El algoritmo de Raking está realizando un proceso iterativo:
+
+Paso 1: Ajusta los pesos para que la distribución de marital en la muestra coincida con la del banco. Al hacer esto, la distribución de education se desajusta un poco.
+
+Paso 2: Toma esos nuevos pesos y los ajusta para que la distribución de education coincida con la del banco. Esto desajusta un poco lo de marital.
+
+Repetición: Repite estos pasos una y otra vez hasta que, por fin, ambas dimensiones coinciden perfectamente con los totales poblacionales.
+
 ```{r}
 library(survey)
 
-library(survey)
 
-# 1. Aseguramos que los nombres de las columnas en los totales coincidan exactamente
-# La columna de frecuencia DEBE llamarse 'Freq'
-pop_educacion <- data.frame(
-  education = c("primary", "secondary", "tertiary", "unknown"),
-  Freq = c(6851, 23202, 13301, 1857)
-)
 
-pop_civil <- data.frame(
-  marital = c("divorced", "married", "single"),
-  Freq = c(5207, 27214, 12790)
-)
+# 1. Asegúrate de que las tablas tengan la columna 'Freq'
+pob_marital <- bank_data %>% 
+  group_by(marital) %>% 
+  summarise(Freq = n())
 
-# 2. Aplicar el Raking (Nota el PUNTO en los nombres de los argumentos)
+pob_education <- bank_data %>% 
+  group_by(education) %>% 
+  summarise(Freq = n())
+
+# 2. Aplicar el Raking con los nombres de argumentos correctos
 diseno_raking <- rake(
-  design = diseno_dos_etapas,
-  sample.margins = list(~education, ~marital), 
-  population.margins = list(pop_educacion, pop_civil)
+  design = diseno_sist,
+  sample.margins = list(~marital, ~education),    # Usa punto (.)
+  population.margins = list(pob_marital, pob_education) # Usa punto (.)
 )
 
-# 3. Verificación de convergencia y resultados
+# 3. Estimar la media para ver el resultado
 res_raking <- svymean(~balance, diseno_raking)
 print(res_raking)
-
-# 4. Comprobar que los marginales ahora son perfectos
-svytotal(~education, diseno_raking)
-svytotal(~marital, diseno_raking)
 ```
+La estimación ha subido respecto a los modelos anteriores. Al forzar a la muestra a representar correctamente tanto el estado civil como el nivel educativo simultáneamente, el modelo detectó que los grupos con saldos más altos (por ejemplo, personas casadas con educación universitaria) estaban ligeramente sub-representados en tu muestra sistemática inicial. El ajuste por Raking infló el peso de esos perfiles específicos para que coincidan con la realidad del banco, lo que elevó el promedio global a 1478, aunque la estimacion se alejo mas de la media poblacional, esto puede ser porque no estamos considerando otra variable que seria relevante para el Raking
+
+
+El Error Estándar (SE) bajó un poco en comparación con la post-estratificación simple. Al usar dos variables auxiliares (marital + education), el modelo tiene más información para explicar la variabilidad del saldo, ganamos mas precision (menos varianza).
+
 
 
 
 ## Trimming
+
+Cuando aplicamos Raking, el algoritmo estiró los pesos para que la muestra encajara con la población. Esto a veces crea pesos inflados (individuos que representan a demasiada gente). El problema de los pesos altos es que un cliente tiene un peso muy alto y un saldo inusual, afectando a la media y sube el error estándar.
+
+El Trimming recorta los pesos poniendo un limite superior (upper) y un limite inferior (lower) a los pesos. En nuestro caso, ningún peso puede ser mayor a 5 ni menor a 15
 
 
 ```{r}
@@ -1711,8 +1710,8 @@ library(survey)
 # strict = TRUE: obliga a que los pesos sumen exactamente el N poblacional tras el recorte
 diseno_trimmed <- trimWeights(
   diseno_raking, 
-  lower = 0.3, 
-  upper = 3.0, 
+  lower = 8, 
+  upper = 10.5, 
   strict = TRUE
 )
 
@@ -1728,17 +1727,7 @@ print(res_antes)
 print(res_despues)
 ```
 
-```{r}
-# Comparar el Error Estándar
-cat("SE antes del trimming:", SE(res_antes), "\n")
-cat("SE después del trimming:", SE(res_despues), "\n")
-```
-
-
-
-
-
-
+Obtuvimos una estimacion de la media con un error estandar asociado igual que antes, esto indica que los pesos asociados al diseño sistematica estaban bien calibrados y no fue necesario recortarlos. El diseño no requiere un recorte de pesos (Trimming) porque el factor de expansión se mantiene en un rango estrecho de 8.05 a 10.03. Esto indica que el Muestreo Sistemático inicial logró una cobertura equilibrada de las categorías de estado civil y educación. Ahora que la estimación (1478) este lejos de la real (1422), no es por los pesos, sino que la edad, la educación y el estado civil no explican el 100% del saldo. Hay clientes con saldos muy bajos por razones que no están en esas variables.
 
 
 
@@ -1823,8 +1812,6 @@ ggplot(muestra_2etapas, aes(x = age, fill = as.factor(responde))) +
 ```
 
 
-## Estimador BLUP
-
 
 
 
@@ -1854,41 +1841,4 @@ cat("Sesgo de Selección: ", media_no_prob - media_real, "\n")
 
 
 
-
-
-
-## Estimacion en dominios:
-
-```{r}
-# Supongamos que nuestro "Dominio" de interés son los clientes con educación 'tertiary'
-
-# 1. Creamos el subconjunto del diseño (mantiene la estructura de pesos y clusters)
-diseno_terciario <- subset(diseno_dos_etapas, education == "tertiary")
-
-# 2. Estimamos la media para ese dominio
-res_dominio <- svymean(~balance, diseno_terciario)
-
-# 3. Comparamos con la media global
-print(res_dominio)
-print(svymean(~balance, diseno_dos_etapas))
-```
-
-```{r}
-# Saldo promedio por tipo de trabajo (Dominios)
-reporte_trabajos <- svyby(~balance, by = ~job, 
-                          design = diseno_dos_etapas, 
-                          FUN = svymean)
-
-print(reporte_trabajos)
-
-# Visualización de Dominios con sus Intervalos de Confianza
-ggplot(reporte_trabajos, aes(x = reorder(job, balance), y = balance)) +
-  geom_point(size = 3, color = "darkgreen") +
-  geom_errorbar(aes(ymin = balance - 1.96*se, ymax = balance + 1.96*se), width = 0.2) +
-  coord_flip() +
-  labs(title = "Estimación por Dominios: Saldo por Profesión",
-       subtitle = "Los intervalos reflejan la incertidumbre de cada subgrupo",
-       x = "Profesión", y = "Saldo Promedio") +
-  theme_minimal()
-```
 
