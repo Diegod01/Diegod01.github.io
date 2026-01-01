@@ -80,6 +80,33 @@
             <p>Para obtener la media real (de nuestra poblacion) usamos el siguiente codigo y obtenemos el valor de  1422.658</p>
             <p>Media Real = 1422.658</p>
 
+
+            <h2>Muestreo Aleatorio Simple Sin Reemplazo</h2>
+
+            <p>Todos los clientes de tu base de datos tienen exactamente la misma probabilidad de ser seleccionados, la cual es $\pi_i = \frac{n}{N}$, es decir, la probabilidad de seleccionar al individuo i es el tamaño de la muestra dividido el tamaño de la poblacion, por ejemplo si nuestra poblacion tuviera 1000 datos y sacamos una muestra de 100 personas, la probabilidad de que cualquier persona de la muestra sea seleccionado es 100/1000 = 0.1.</p>
+
+            <p>Este diseño cumple el supuesto de Independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Este diseño considera que el tamaño de la muestra es fijo, que no varia y nosotros podemos obtener una muestra de un tamaño que nos interese.  En este MAS asumimos que no hay reemplazo, cuando sale un elemento de la muestra, entonces no puede volver a salir de vuelta.</p>
+
+            <p>Realizamos una estimacion de la media poblacional usando una muestra de tamaño 500, obteniendo el valor de 1458.8</p>
+            
+            <p>Salida Código</p>
+
+            <p>Ahora el problema que tenemos con este diseño es que como vimos en el histograma de saldos, el MAS sera ineficiente porque hay mucha variabilidad y una asimetría extrema, esto causa que la muestra aleatoria simple  no incluya suficientes individuos de la "cola derecha", los usuarios de saldos altos, lo que resultaría en una estimación sesgada y erronea del promedio de la riqueza de los usuarios del banco. En nuestro caso vemos que la estimacion del promedio hecha con la muestra esta considerablemente alejada de la media real.</p>
+
+
+
+            <h2>Muestreo Bernoulli</h2>
+
+            <p>Este Diseño asume que cada unidad de la población del banco tiene una probabilidad de inclusión independiente e idéntica ($\pi$). A diferencia del Muestreo Aleatorio Simple (MAS), donde el tamaño de la muestra ($n$) es fijo, en el diseño Bernoulli el tamaño de la muestra es aleatorio, varia segun la extraccion que hagamos, no siempre es el mismo. Se puede probar matematicamente que el número final de clientes seleccionados sigue una distribución Binomial $B(N, \pi)$ y en promedio tendremos $N \times \pi$ clientes, pero el número exacto variará cada vez que ejecutemos el proceso.</p>
+
+           <p>Este Diseño sigue cumpliendo la Independencia, donde la selección de un cliente no afecta en absoluto la probabilidad de seleccionar a otro.</p>
+
+
+
+
+
+
+            
             
 <img src="../images/Imagen135.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen136.png" alt="Título" class="img-proyecto" width="450">
