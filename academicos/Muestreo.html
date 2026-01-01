@@ -285,13 +285,68 @@
 <p>Invarianza: Que el valor de la variable de interés ($y_i$, el balance) de un individuo no cambia independientemente de si otros individuos son seleccionados o de qué otros elementos conformen la muestra</p>
             
 
-<p>Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.
-</p>            
+<p>Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.</p>            
         
+
+<h2>Efecto Diseño (deff)</h2>
+
+<p>El Deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una caracteristica deseable en un diseño.</p>
+
+<p>La formula exacta de esta metrica, siendo D un diseño cualquiera, es:</p>
+
+<p> \( Deff(D) = \frac{V(D)}{V(MAS)} \) </p>
+    
+<p>Al ser un cociente tenemos que</p>
+
+<p>Deff(D) > 1 -> La varianza del diseño seleccionado es mayor a la varianza de un diseño basado en MAS, por lo que el diseño D es menos eficiente que un simple.</p>
+
+<p>Deff(D) = 1 -> La varianza del diseño seleccionado es igual a la varianza de un diseño basado en MAS, si bien son indiferentes en terminos de varianza, se preferira al diseño mas sencillo de implementar de forma practica que por lo general es el MAS</p>
+
+<p>Deff(D) < 1 -> La varianza del diseño seleccionado es menor a la varianza de un diseño basado en MAS, por lo que el diseño D es mas eficiente que un simple.</p>
+
             
 <img src="../images/Imagen138.png" alt="Título" class="img-proyecto" width="450">
+            
+
+<p>Recordemos que el valor de la Media Poblcional era 1422.658</p>
+
+<p>En esta tabla tenemos 5 columnas, la primera "Diseño" es el diseño muestral utilizado para realizar la estimacion de la media. La segunda es el valor puntual estimado de la media. La tercera es el error estandar asociado a esa estimacion, mide la precision que tanto se aleja la estimacion del valor real, cuanto mas chico sea este valor, mejor sera la estimacion, y cuanto mas grande sea este valor, peor sera la estimacion. La cuarta columna es el deff, esta es una metrica que compara la varianza entre el diseño utilizado con respecto a un diseño aleatorio simple sin reemplazo, donde la comparacion se hace a traves de un cociente.  La quinta columna es el Error_Abs, que es la diferencia entre el valor real y el valor estimado</p>
+
+<p>El MAS con Reemplazo es el que más se acercó al valor real en la estimacion (Error: -20.06) pero tiene un SE alto mas los problemas mencionados al inicio de asimetria y outliers, mas el poco sentido conceptual que tiene repetir individuos ya extraidos en la muestra.</p>
+
+
+<p>Conglomerados tuvo un SE de 125.6156 y aunque su media (1498.56) tiene un error de +75.90, es el diseño más estable. Su Deff de 0.649 indica una ganancia de eficiencia alta, porque los grupos por ocupacion capturaron bien la variabilidad interna de los ingresos de los usuarios del banco, este valor del deff indica que el diseño de conglomerados es un 35% más eficiente que un Muestreo Aleatorio Simple (MAS). Recordemos que vimos el Coeficiente de Correlación Intraclase (rho) que valia casi cero (-0.0012), esto indica que las personas dentro de una misma profesión son muy diferentes entre sí en cuanto a sus saldos, lo que reduce el error de grupo y maximiza la precisión.</p>
+
+
+<p>El Diseño Sistemático tiene un SE de 115.56, se comporta casi como un MAS (Deff 1.00).</p>
+
+<p>Otros como el Diseño de Dos Etapas tienen un SE de 317.59, es el diseño con mayor incertidumbre. El error estándar es muy alto lo que causa que el intervalo de confianza asociado a la estimacion sea muy ancho, lo que resta utilidad a la estimación.</p>
+
+<p>Otros como piPS y PPS a pesar de usar probabilidades de seleccion proporcionales al saldo, tienen errores absolutos altos (+370 y +138 respectivamente) y SE elevados. Esto puede ocurrir si los saldos extremos (outliers) dominaron demasiado la selección.</p>
+
+<p>Decidi quedarme con el Diseño Estratificado por tener el SE mas bajo y el mejor Deff, aunque su estimacion no haya sido perfecta, de ahora en adelante se trabajara con este diseño para otros temas de estudio en este informe.</p>
+            
+
+    <h2>Edtimacion por dominios</h2>
+
+<p>La Estimación por Dominios consiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.</p>
+
+<p>Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una estimación por dominios. Las categorias de job que entren en la muestra seran al azar. Si el dominio es muy pequeño la estimación será muy inestable (un SE muy alto).</p>
+            
 <img src="../images/Imagen139.png" alt="Título" class="img-proyecto" width="450">
-<img src="../images/Imagen140.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Este gráfico muestra cómo se distribuye el saldo promedio según el tipo de trabajo bajo el diseño estratificado. El grupo retired (jubilados) es el de mayor saldo promedio, acercándose o superando los 4000. Los clientes con ocupación desconocida y los desempleados tienen un saldo promedio bajo, al igual que los auto-empleados. Ocupaciones como blue-collar, services y admin. se mantienen en la parte baja de la escala (cerca de los 1000-1500), lo que confirma que son la base de clientes con saldos más modestos pero más numerosos.</p>
+
+<p>Al tratar a cada "profesión" como un estrato, la variabilidad real del banco no está en los clientes individuales, sino en el segmento laboral al que pertenecen.</p>
+
+
+
+
+            
+            
+            
+            
+            <img src="../images/Imagen140.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen141.png" alt="Título" class="img-proyecto" width="450">
 
             
