@@ -255,13 +255,38 @@
 
 <p>Primero dividimos la población en $N$ conglomerados. Luego seleccionas una muestra aleatoria de $n$ conglomerados, por ultimo censamos (muestreamos a todos) dentro de los conglomerados elegidos.</p>
 
-<p>Obtenemos un valor de 1406.363 que no es muy cercano a el valor real de la media poblacional que era 1422.658, esto puede deberse a los atipicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.
-</p>            
+<p>Obtenemos un valor de 1406.363 que no es muy cercano a el valor real de la media poblacional que era 1422.658, esto puede deberse a los atipicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.</p>            
 
 
+<h3>Coeficiente de heterogeneidad intra-cluster </h3>
 
             
+<p>El valor de rho mide qué tan parecidos son los individuos dentro de un mismo grupo (conglomerado).</p>
 
+<p>Si rho fuera 1: Todos los usuarios a traves de sus trabajos tendrían exactamente el mismo saldo. El muestreo por conglomerados sería ineficiente porque un solo cliente te diría todo lo que necesitas saber del grupo.</p>
+
+<p>Si rho es 0: No hay ninguna relación entre el grupo y la variable. El saldo de un cliente no tiene nada que ver con la ocupacion que tiene.</p>
+
+<p>En nuestro caso, el valor de $-0.0008$ indica que los clientes dentro de los conglomerados por ocupacion son tan diferentes entre sí como si los hubieras elegido al azar de toda la población. Tenemos más diversidad dentro de los grupos de la que esperarías por puro azar. Es decir, tus grupos son muy heterogéneos internamente, que es algo deseado, porque queremos tener clientes variados dentro de los clusters que vienen dados.</p>
+            
+            
+
+<h2>Muestreo en dos etapas:</h2>
+
+<p>Primera Etapa (Unidades Primarias de Muestreo - UPM): Seleccionas una muestra aleatoria de empleos (conglomerados).</p>
+
+<p>Segunda Etapa (Unidades Secundarias de Muestreo - USM): Dentro de cada empleo seleccionado, seleccionamos una muestra aleatoria de clientes.</p>
+
+
+<p>Para que este diseño sea eficiente deben cumplirse dos supestos:</p>
+
+<p>Independencia: Que la inclusión de una unidad en la muestra no afecta la probabilidad de inclusión de otra.</p>
+
+<p>Invarianza: Que el valor de la variable de interés ($y_i$, el balance) de un individuo no cambia independientemente de si otros individuos son seleccionados o de qué otros elementos conformen la muestra</p>
+            
+
+<p>Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.
+</p>            
         
             
 <img src="../images/Imagen138.png" alt="Título" class="img-proyecto" width="450">
