@@ -340,18 +340,53 @@
 <p>Al tratar a cada "profesión" como un estrato, la variabilidad real del banco no está en los clientes individuales, sino en el segmento laboral al que pertenecen.</p>
 
 
+    
+      <h2>Efecto de Sesgo y Intervalos de Confianza</h2>
+
+<p>El Sesgo Relativo vale 3.17%, la estimaciones es basante buena porque el sesgo es bajo, por eso seleccionar grupos a traves de conglomerados en lugar de individuos fue una buena decision. La Media Estimada fue 1467.72  y la Media Real vale 1422.66, vemos que existe una ligera sobreestimación de aproximadamente 45 unidades, esto sugiere que los sectores laborales (conglomerados) que resultaron seleccionados tienen un nivel de ahorro ligeramente superior al promedio general. El Intervalo de Confianza es de [ 1241.21 , 1694.23 ], el Valor Real Poblacional (1422.66) se encuentra dentro de este intervalo, se puede afirmar con un 95% de confianza que la estimación es estadísticamente significativa. El rango de este intervalo es considerable y refleja la variabilidad de los saldos bancarios.</p>
+            
+            
+<h2>Estimador de una Razon R</h2>
+
+<p>La estimacion de ratios en vez de estimar el total o el promedio de una variable (como el saldo promedio), la estimación de una razón analiza la relación matemática entre dos variables distintas para cada individuo a traves de un cociente</p>
+
+<p>Su formula es:</p>
+
+<p> \( \hat{R}= \frac{\sum w_i y_i}{\sum w_i x_i} \) </p>
+<p>Donde "y" es la variable de interes original y "x" es la variable auxiliar.  Se usa cuando queremos entender cómo cambia una variable en función de otra. Los ratios suelen ser estimadores más precisos que las medias si ambas variables están correlacionadas.</p>
 
 
+
+<p>En este caso  calcularemos la relación Saldo / Edad. En el Numerador tendremos el saldo bancario (balance) y en el Denominador tendremos la edad del cliente (age). Este ratio nos dice cuánto dinero tiene un cliente en el banco por cada año de vida.</p>
             
+<img src="../images/Imagen140.png" alt="Título" class="img-proyecto" width="450">
+
+<p>El resultado es de 35.72 con un Error Estándar (SE) de 2.79 lo que significa que, en promedio, un cliente acumula $35.72$ unidades monetarias por cada año de edad que tiene. En la comparacion de ratios por ocupacion, vemos que los estudiantes y el personal de gerencia (management) tienen los ratios más altos, lo que significa que tienen saldos muy elevados en comparación con su edad relativa. Dado que estamos segmentando el ratio según el trabajo (job), podemos ver quién es más "eficiente" ahorrando según su etapa de vida.</p>
+
+<p>Viendo el Intervalo de Confianza [30.26, 41.19] podemos decir con un 95% de confianza que la relación saldo/edad de toda la población del banco se encuentra en este rango. Es un intervalo relativamente estrecho, lo que indica que el Muestreo Sistemático ha sido muy efectivo para capturar esta relación.</p>
+
+
+<p>Si hacemos un análisis de la Razón por Ocupaciones, vemos que la acumulación de riqueza por año de vida no es uniforme entre profesiones:</p>
+
+<p>Los más Eficientes (Mayor Ratio) son Student con un valor de 57.04, es el ratio más alto. A pesar de ser jóvenes, tienen saldos proporcionalmente muy elevados para su edad, pero tiene un SE muy alto (30.03), lo que indica que esta estimación es poco precisa debido a la alta variabilidad entre estudiantes.</p>
+
+<p>Management con un valor de 54.05, tienen una alta acumulación por año de edad con un error estándar mucho más controlado (7.89).</p>
+
+<p>Retired con un valor de 49.49, los jubilados tienen una alta relación saldo/edad, aunque su SE (15.31) sugiere que hay jubilados con saldos muy dispares.</p>
+
+<p>Entrepreneur (15.23) y Self-employed (15.29) tienen ratios bajos, puede ser porque reinvierten su capital en sus negocios en lugar de mantenerlo en saldos bancarios líquidos.</p>
+
+<p>Admin. con un valor de  17.88 es el grupo con la estimación más "segura" o precisa (SE de solo 3.14), pero su capacidad de ahorro por año de vida es de las más bajas.</p>
+
             
+
+
+
             
-            
-            <img src="../images/Imagen140.png" alt="Título" class="img-proyecto" width="450">
+
+
 <img src="../images/Imagen141.png" alt="Título" class="img-proyecto" width="450">
-
             
-
-
             
         </section>
 
