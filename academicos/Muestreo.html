@@ -113,9 +113,34 @@
             
             <p>Vemos en el gráfico de Densidad de los Estimadores, que si bien ambos diseños son insesgados, es decir, en promedio tienden a estimar bien el valor promedio real, y esto se observa en que las curvas de los estimadores se centran correctamente en la media real de 1422.658, la curva azul del MAS es notablemente más estrecha y alta. Esto demuestra que el MAS es un diseño más preciso para este banco. La mayor dispersión de la curva roja de Bernoulli se debe a que, en ese diseño, el tamaño de la muestra es aleatorio; esa incertidumbre sobre cuántos clientes terminan siendo encuestados añade variabilidad que sube el error. Aunque seguimos teniendo los problemas mencionados de asimetria, alta variabilidad, y no consideracion de usuarios bancarios con alto ingreso.</p>
 
+            Al tener los estimadores distribucino de probabilidad, podemos calcular distintos estadisticos como 
+
+<p>El sesgo es la comparacion entre la media obtenida con los estimadores usando las multiples muestra extraidas y la media poblacional, el sesgo mide la exactitud de nuestras estimaciones. Un sesgo cercano a cero indica que tu diseño no tiene preferencias ni errores sistemáticos, no está inflado ni subestimado.</p>
+
+<p>La Varianza mide la precisión o estabilidad, vimos que el saldo bancario es muy volátil (con clientes de $0 y otros de $60,000), una varianza alta hace que con cada muestra extraida el resultado pueda cambiar mucho.</p>
+
+<p>El MSE (Error Cuadrático Medio) indica el error total, es la suma del sesgo elevado al cuadrado y de la varianza. Esta métrica sirve para decidir qué diseño es mejor, a menor MSE, más eficiente es el muestreo.</p>
+
+<p>El RMSE da el error promedio en las mismas unidades que el saldo (que esta en dolares), si el RMSE es de \$200, significa que, en promedio, las estimaciones se desvían \$200 del valor real.</p>
+
+<p>El CV (Coeficiente de Variación) da la incertidumbre como un porcentaje. Un CV menor al 5% o 10% indica que el  error es pequeño en relación con la magnitud de los saldos que estamos midiendo.</p>
+
+
+<p>Si hacemos la tabla comparativa del MAS y el Bernoulli</p>
+            
+<p>Resultado R</p>
+
+
+<p>Podemos decir en general que el MAS es mejor que el Bernoulli aunque a gran escala tenemos el problema de asimetria y seleccion sesgada dada la poca precencia de clientes con mucho dinero en el banco.</p>
 
 
 
+      <h2>Muestreo Aleatorio Simple con Reemplazo</h2>
+            
+      <p>El Muestreo Aleatorio Simple con Reemplazo (SIR) es una variante del MAS donde cada vez que seleccionas a un cliente de la poblacion para ponerlo en la muestra, este puede aparecer dos o más veces en la muestra final. La varianza del estimador bajo posibilidad de reemplazo suele ser mayor que si no hubiera posibilidad de reemplazo, porque al permitir repeticiones, la muestra es menos informativa, tenemos menos individuos únicos para representar a la población.</p>
+
+
+            
             
 <img src="../images/Imagen136.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen137.png" alt="Título" class="img-proyecto" width="450">
