@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -381,6 +381,16 @@
             
 
 
+<h2>Jackknife y Bootstrap</h2>
+
+
+<p>Jackknife es un método donde en la muestra sistemática con $n$ elementos, el Jackknife crea $n$ submuestras, eliminando un cliente diferente cada vez. Es útil para detectar "outliers" (clientes con saldos atípicos). Aunque en diseños sistemáticos, el Jackknife a veces puede subestimar la varianza si hay una tendencia muy marcada en el orden de la lista.</p>
+
+<p>Bootstrap es una tecnica de remuestreo con reemplazo. Crea miles de versiones de la muestra sistemática seleccionando clientes al azar de la misma (permitiendo que un cliente aparezca más de una vez en la misma simulación). Si después de 1000 repeticiones de Bootstrap el intervalo de confianza sigue siendo similar al que obtuviste [30.25, 41.19], la estimación obtenida es confiable.</p>
+    
+<p>En este caso vemos que las estimaciones de ambos metodos son bastantes similares y tienen una lejania similar y considerable del valor real de la media de balance que es 1422.658</p>
+
+    
 
             
 
