@@ -140,6 +140,24 @@
       <p>El Muestreo Aleatorio Simple con Reemplazo (SIR) es una variante del MAS donde cada vez que seleccionas a un cliente de la poblacion para ponerlo en la muestra, este puede aparecer dos o más veces en la muestra final. La varianza del estimador bajo posibilidad de reemplazo suele ser mayor que si no hubiera posibilidad de reemplazo, porque al permitir repeticiones, la muestra es menos informativa, tenemos menos individuos únicos para representar a la población.</p>
 
 
+     <p>En media, tanto reemplazo como no reemplazo son insesgados (muy cerca del valor real). En Varianza y RMSE, con reemplazo es mayor debido a la reduccion de la diversidad de la muestra.</p>
+
+     <p>En CV (Coeficiente de Variación), con reemplazo tendra una precisió menor.</p>
+
+
+<p>Hasta ahora la lógica detrás de todas las estimaciones se basaba en expandir la muestra y estabamos usando el estimador Horvitz-Thompson (HT). Con la formula</p>
+
+<p>\( \hat{Y}_{HT} = \sum_{i \in s} \frac{y_i}{\pi_i} = \sum_{i \in s} y_i \cdot w_i \)</p>
+
+<p>Lo que hace es para todos los individuos de la muestra, dividirlos entre su probabilidad de seleccion. Este estimador siempre insesgado, pero se usa solo para diseños sin reemplazo. Para el caso de diseños con reemplazo, usamos el estimador Hansen-Hurwitz (pwr).</p>
+
+<p> \( \hat{Y}_{pwr} = \frac{1}{n} \sum \frac{y_i}{p_i} \) </p>
+
+
+
+
+<p>Etimador pwr</p>
+
             
             
 <img src="../images/Imagen136.png" alt="Título" class="img-proyecto" width="450">
