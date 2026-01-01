@@ -161,9 +161,48 @@
 
 <p>Etimador pwr</p>
 
+
+<p>Si comparamos ambos usando un diseño simple (sin reemplazo para el HT y con reemplazo para el pwr) vemos que las estimaciones de pwr se aleja mas de la media real que es 1422.658, mientras que HT se acerca bastante</p>
+
+<p>Esto se debe a que el diseño PWR (Hansen-Hurwitz) usa el saldo como medida de probabilidad. Este estimador es muy sensible a la relación entre el saldo y su peso. Si la mayoría de los clientes tienen saldos bajos (como se ve en el histograma), el PWR tiende a estabilizarse en esos valores. Al asignar probabilidades altas a los saldos grandes, el diseño selecciona repetidamente a los mismos clientes extremos (recuerda que es con reemplazo), la varianza del estimador se dispara</p>
+
+<p>Para el HT, la media vale 1735.6, es más alta porque, en un muestreo aleatorio simple, si atrapamaos por azar a uno de los pocos clientes con $60,000, ese valor empuja el promedio hacia arriba sin ninguna ponderación que lo suavice. Aunque conceptualmente tiene mas sentido usar un diseño sin reemplazo porque repetir los ingresos de los usuarios del banco tiende a ser informacion redundante.</p>
+            
+<p>Codigo</p>
+
+<p>Por los factores que mencionamos relacionados a que la varianza de diseños con reemplazo es mas alta que diseños sin reemplazo, vemos que en este caso se cumple, siendo la varianza del pwr casi 6 veces mas grande que la varianza del HT.</p>
+            
+
+            <h2>Diseño Estratificado</h2>
+
+            <p>El Muestreo Estratificado es una técnica de diseño donde la población se divide en grupos mutuamente excluyentes llamados estratos, y luego se selecciona una muestra independiente dentro de cada uno de ellos. Nosotros decidimos la estructura de la muestra para asegurar que todos los sectores importantes del banco estén representados.</p>
+
+<p>Como vimos en el boxplot, los estratos los podemos hacer con las categorias de empleo del banco, esto debido a:</p>
+
+<p> - Homogeneidad Interna: En el boxplot, los saldos de los "estudiantes" se parecen mucho entre sí, pero son muy diferentes a los de los "jubilados". Al estratificar, el error estándar solo depende de la variación dentro de cada grupo, eliminando la gran diferencia que hay entre grupos.</p>
+
+<p> - Protección contra "Malas Muestras": En el MAS, existe el riesgo de que tu muestra no incluya a nadie de una categoría pequeña pero importante (como los desempleados). En el estratificado, garantizas una cuota mínima para cada profesión.</p>
+
+<p> - Mayor Precisión (Menor Varianza): Matemáticamente, si los estratos están bien elegidos (es decir, si la profesión realmente influye en el saldo), la varianza del estimador estratificado siempre será menor o igual a la del muestreo aleatorio simple.</p>
+
+<p> En cada estrato podemos aplicar el diseño que querramos, simple, bernoulli, etc.</p>
+
             
             
+<p>Resultados Código </p>
+
+<p>Obtenemos una estimacion bastante buena.</p>
+
 <img src="../images/Imagen136.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Este gráfico compara el peso de cada profesión en la población total (barras grises) contra su presencia en la muestra (puntos rojos). Los puntos rojos caen aproximadamente al final de cada barra gris, se logro una Afijación Proporcional perfecta.</p>
+
+<p>En un muestreo aleatorio simple, por puro azar, podrías haberte quedado sin "estudiantes" o con demasiados "jubilados". Aquí forzamos que la muestra sea representativa de la poblacion del banco. Al asegurar que cada grupo (estrato) esté representado en su justa medida, quitamos el error derivado de una muestra sesgada hacia profesiones con saldos muy altos o muy bajos.</p>
+
+
+            
+            
+            
 <img src="../images/Imagen137.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen138.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen139.png" alt="Título" class="img-proyecto" width="450">
