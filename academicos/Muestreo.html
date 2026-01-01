@@ -392,6 +392,27 @@
 
     
 
+
+    <h2>Problemas y sesgo de cobertura</h2>
+
+<p>El sesgo de cobertura ocurre cuando algunos elementos de la población objetivo no tienen posibilidad de ser seleccionados en la muestra. En los datos del banco esto sucede si el marco muestral (la lista de clientes de la que extrajiste el sistema) no coincide perfectamente con la población real que queremos estudiar.</p>
+
+<p> Sub-cobertura: Es el problema más frecuente. Sucede si hay grupos de clientes que no aparecen en la base de datos (por ejemplo, clientes con cuentas nuevas que aún no se han procesado o personas que operan solo en efectivo fuera del sistema). Si estos clientes tienen saldos muy diferentes, la estimacion del promedio de balance estará sesgada.</p>
+
+<p> Sobre-cobertura: Ocurre cuando el marco muestral incluye elementos que no deberían estar (clientes que cerraron su cuenta pero siguen en la lista o registros duplicados). En el muestreo sistemático, los duplicados son peligrosos porque aumentan artificialmente la probabilidad de seleccionar a ciertos individuos.</p>
+
+<p> El muestreo sistemático es sensible a la ordenación del marco muestral, puede darse la Periodicidad que sucede cuando la lista tiene un patrón oculto que coincide con tu intervalo de selección $k$, y podríamos estar omitiendo sistemáticamente a un grupo específico (por ejemplo, si cada 10 clientes hay un "cliente VIP" y tu salto es de 10, o los seleccionas a todos o a ninguno). Si la lista está ordenada por saldo de menor a mayor, el sesgo de cobertura puede aparecer si el punto de inicio aleatorio deja fuera de balance a los extremos de la distribución.</p>
+
+<p>Si existe sesgo de cobertura, el impacto en la estimación de el promedio de balance puede causar sobreestimacion o subestimacion</p>
+
+
+<p>Tenemos problemas de Subcobertura, hay error de exclusión. Al eliminar a los trabajadores de tipo blue-collar (operarios) y services (servicios) de la lista de forma sistematica, estamos ignorando a una parte masiva de la población bancaria. En general estos dos grupos tienen saldos promedio más bajos o moderados, al quitarlos sistematicamente por la logica del diseño de ir saltando, el marco muestral queda compuesto mayoritariamente por gerentes, jubilados y profesionales con saldos más altos.</p>
+
+
+<p>El resultado es una sobreestimación sistemática, la media Real (1422.66) es el promedio verdadero de todos los clientes, mientras que la media con Subcobertura (1763.26) es lo que creemos que es el promedio basados en la lista incompleta. El sesgo es de 340.6, es un sesgo estructural, no importa cuántas veces repitamos la muestra o qué tan grande sea la media siempre rondará los 1760 porque el error está en quién puede ser elegido y quién no.</p>
+
+<p>Los problemas asociados son que el banco creería que sus clientes tienen, en promedio, $340 más de lo que realmente tienen o se podrian diseñar productos de inversión con mínimos de entrada demasiado altos, dejando fuera a los sectores de servicios y operarios que ni siquiera fueron consultados.</p>
+         
             
 
 
