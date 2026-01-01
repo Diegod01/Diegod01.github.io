@@ -413,12 +413,130 @@
 
 <p>Los problemas asociados son que el banco creería que sus clientes tienen, en promedio, $340 más de lo que realmente tienen o se podrian diseñar productos de inversión con mínimos de entrada demasiado altos, dejando fuera a los sectores de servicios y operarios que ni siquiera fueron consultados.</p>
          
-            
 
+<h2>Estimador asististido por modelos (GREG)</h2>
+
+<p>En lugar de confiar solo en los datos de la muestra, este método utiliza una variable auxiliar (en tu caso, la edad) que está correlacionada con la variable de interés (balance). Este estimador GREG ajusta desbalances de las estimaciones originales, por eso se dice que asiste a la estimacion. La función calibrate modifica los pesos originales de la muestra para que, al sumarlos, coincidan exactamente con los totales conocidos de la población (número total de clientes y suma total de edades).</p>
+
+<p>La media estimada con GREG es de 1470.4 con un error estándar (SE) de 114.8. Al comparar con el valor poblacional de 1422.66, este estimador sigue estando cerca, pero ahora tiene el respaldo de estar "calibrado" por la estructura de edad de todo el banco.</p>
+
+<p>En las tablas de resumen vemos como cambiaron los pesos, viendo valores como su minimo, media, mediana, cuartiles y su maximo.</p>
+
+<p>Los pesos Originales en el Diseño Sistemático se distribuian de tal forma que todos los clientes tenían exactamente el mismo peso (8.988). Esto significa que cada persona en la muestra representaba a casi 9 personas de la población de forma rígida.</p>
+
+<p>Ahora los pesos calibrados por GREG varían entre 8.852 y 9.265. Le damos más de peso a los clientes cuyas edades estaban subrepresentadas y un poco menos a los que estaban sobrerepresentados y dado que la media de los pesos sigue siendo 8.988, no perdimos ni ganamos clientes totales, solo redistribuiste su importancia para que la muestra represente mejor la edad poblacional.</p>
+
+<p>El uso de GREG reduce la varianza, si la edad y el saldo están relacionados, el SE es más confiable que el de un estimador sistematico sin usar GREG. Ademas como ya mencionamos corrige sesgos potenciales, si por azar el muestreo sistemático hubiera seleccionado a demasiada gente joven (que suele tener menos saldo), la calibración habría corregido automáticamente ese sesgo dándole más peso a los pocos mayores que entraron en la muestra.</p>
+
+
+
+
+<h2>Estimador Basado en Modelos</h2>
+
+<p>Este es un enfoque donde ya no dependemos de los pesos del diseño muestral ($w_i$), sino que confiamos plenamente en que un modelo matemático planteado describe la estructura de toda la población. En este enfoque, el "estimador" es la suma de los valores observados en la muestra más los valores predichos para los individuos que no fueron seleccionados. Ademas la variabiliad o incertidumbre ya no vienen de "qué pasaría si elijo otra muestra", sino de "qué tan bien ajusta mi modelo matematico a los datos".</p>
+
+<p>El modelo matematico puede ser cualquiera de los algoritmos utilizados comunmente en Machine Learning, como regresion lineal, arboles de decision, redes neuronales. Cuanto mas complejo el algoritmo, mejor sera la estimacion, pero menos interpretable sera.</p>
+ 
+
+
+<p>En este caso usamos un modelo de regresión lineal simple sin basarnos en un diseño muestral. Cuando el modelo es "correcto" (la relación entre edad y saldo es la misma para todos), la estimacion es muy buena. En este caso vemos que la estimacion de la media utilizando modelos, en especifico un modelo de regresion lineal simple, fue de  1470.43, que se aleja del valor real considerablemente, esto puede deberse a que tenemos sesgo de selección o que el modelo simple de edad no logra capturar, o la relación edad-saldo porque es muy simplificador o porque esa relacion no es lineal para toda la población.</p>
+
+
+         
+<p>Visualmente:</p>
 
 <img src="../images/Imagen141.png" alt="Título" class="img-proyecto" width="450">
             
-            
+
+<p>Vemos que el ajuste de la recta a los puntos no es muy bueno y que la relacion no parece ser muy lineal, esto es una de las causas de que la estimacion no sea muy precisa.</p>
+
+
+
+
+<h2>Post-estratificacion</h2>
+
+
+<p>La Post-estratificación es una técnica de ajuste que se usa  después de haber recolectado los datos para corregir posibles desbalances entre la muestra y la población real. En la post-estratificación ajustas los pesos de los individuos para que la distribución de una variable (en este caso, el estado civil o marital) coincida exactamente con lo que el banco sabe que tiene en su base de datos total.</p>
+
+<p>Comparamos el diseño sistemático original (res_antes) frente al diseño ajustado por estado civil (res_despues) para la estimacion del balance</p>
+
+
+<p>La media subió ligeramente unas 3.4 unidades de 1467.7 a 1471.1. Esto indica que en la muestra sistemática original, los grupos de estado civil que suelen tener un balance más alto (posiblemente los "casados" o "divorciados") estaban levemente sub-representados. El proceso de post-estratificación les dio más "peso" a esos individuos para reflejar mejor el balance real de los usuarios del banco, lo que subio el promedio estimado.</p>
+
+<p>El error estándar aumentó 0.39, de 115.56 a 115.95, la post-estratificación reduce el error si la variable (estado civil) explica bien el comportamiento del saldo. Vemos que el aumento casi imperceptible sugiere que el estado civil no es un predictor muy  fuerte del saldo, o que la muestra sistemática ya era bastante buena y representativa en términos de esta variable.</p>
+
+<p>De todas formas la Post-estratificación brinda corrección de sesgo de cobertura, si por azar el muestreo sistemático hubiera saltado a muchos "solteros" (que tienen menos ahorros), la post-estratificación corrige ese error.</p>
+
+
+
+<h2>Raking</h2>
+
+<p>Anteriormente usamos solo el estado civil y no fue muy significativo, pero podemos cruzarlo con la educacion para ver si hay significatividad. Para esto usaremos una tecnica llamada Raking.</p>
+
+<p>El Raking (también conocido como Iterative Proportional Fitting o Ajuste Proporcional Iterativo) es una técnica de calibración que se usa cuando se necesita que la muestra sea representativa en varias dimensiones al mismo tiempo, pero no conoces el cruce total de la población. Raking solo requiere conocer los totales marginales (ej. cuántos casados hay por un lado, y cuánta gente con educación secundaria hay por otro). El algoritmo ajusta los pesos de forma iterativa hasta que la muestra coincide con todos los totales poblacionales que usamos.</p>
+
+<p>El algoritmo de Raking está realizando un proceso iterativo:</p>
+
+<p>Paso 1: Ajusta los pesos para que la distribución de marital en la muestra coincida con la del banco. Al hacer esto, la distribución de education se desajusta un poco.</p>
+
+<p>Paso 2: Toma esos nuevos pesos y los ajusta para que la distribución de education coincida con la del banco. Esto desajusta un poco lo de marital.</p>
+
+<p>Repetición: Repite estos pasos una y otra vez hasta que, por fin, ambas dimensiones coinciden perfectamente con los totales poblacionales.</p>
+
+<p>La estimación ha subido respecto a los modelos anteriores. Al forzar a la muestra a representar correctamente tanto el estado civil como el nivel educativo simultáneamente, el modelo detectó que los grupos con saldos más altos (por ejemplo, personas casadas con educación universitaria) estaban ligeramente sub-representados en tu muestra sistemática inicial. El ajuste por Raking infló el peso de esos perfiles específicos para que coincidan con la realidad del banco, lo que elevó el promedio global a 1478, aunque la estimacion se alejo mas de la media poblacional, esto puede ser porque no estamos considerando otra variable que seria relevante para el Raking.</p>
+
+<p>El Error Estándar (SE) bajó un poco en comparación con la post-estratificación simple. Al usar dos variables auxiliares (marital + education), el modelo tiene más información para explicar la variabilidad del saldo, ganamos mas precision (menos varianza).</p>
+         
+
+         
+<h2>Trimming</h2>
+
+<p>Cuando aplicamos Raking, el algoritmo estiró los pesos para que la muestra encajara con la población. Esto a veces crea pesos inflados (individuos que representan a demasiada gente). El problema de los pesos altos es que un cliente tiene un peso muy alto y un saldo inusual, afectando a la media y sube el error estándar.</p>
+
+<p>El Trimming recorta los pesos poniendo un limite superior (upper) y un limite inferior (lower) a los pesos. En nuestro caso, ningún peso puede ser mayor a 5 ni menor a 15</p>
+
+<p>Obtuvimos una estimacion de la media con un error estandar asociado igual que antes, esto indica que los pesos asociados al diseño sistematica estaban bien calibrados y no fue necesario recortarlos. El diseño no requiere un recorte de pesos (Trimming) porque el factor de expansión se mantiene en un rango estrecho de 8.05 a 10.03. Esto indica que el Muestreo Sistemático inicial logró una cobertura equilibrada de las categorías de estado civil y educación. Ahora que la estimación (1478) este lejos de la real (1422), no es por los pesos, sino que la edad, la educación y el estado civil no explican el 100% del saldo. Hay clientes con saldos muy bajos por razones que no están en esas variables.</p>
+
+
+
+<h2>No Respuesta:</h2>
+
+<p>La No Respuesta ocurre cuando algunos de los clientes seleccionados en tu muestreo sistemático no proporcionan información (por ejemplo, datos de saldo faltantes o clientes que no pudieron ser contactados). En un muestreo sistemático, si la no respuesta no es aleatoria (por ejemplo, si los clientes con saldos muy altos se niegan a responder más que los de saldos bajos), la estimacion del promedio sera sesgada.</p>
+
+<p>En este caso los tipos de No Respuesta son:</p> 
+
+<p>No respuesta de ítem: El cliente existe en la base, pero el campo balance está vacío.</p>
+
+<p>No respuesta de unidad: El cliente seleccionado por el salto $k$ no está disponible o su registro es totalmente ilegible</p>
+
+
+<p>La técnica estándar es el Ajuste por Propensión de Respuesta. Consiste en calcular la probabilidad de que un cliente responda basándose en sus características (edad, trabajo, etc.) y luego inflar el peso de los que sí respondieron para compensar a los que "se perdieron".</p>
+
+
+<p>La estimacion de la media no cambio tras ajustar por no respuesta, lo que significa que no hay sesgo de no respuesta en las variables usadas  para ajustar por no respuesta, que en nuestro caso fue por ocupacion del usuario del banco. Los clientes que no respondieron en cada categoría de trabajo tienen, en promedio, el mismo saldo que los que sí respondieron, esto se llama MCAR (Missing Completely at Random) y es una buena caracteristica.</p>
+
+<p>Aunque el error estandar subio pasando de 115.56 a 122.58, debido a que al ajustar por no respuesta, los pesos dejan de ser todos iguales (8.98). Ahora algunos clientes pesan más para compensar a los que faltan, esto causam ayor variabilidad, al tener pesos desiguales siempre aumenta la varianza de la estimación.</p>
+
+         
+
+
+         
+<h2>Muestras no probabilisticas</h2>
+
+<p>Las muestras no probabilísticas son aquellas en las que la selección de los elementos no depende del azar, sino de las decisiones de nosotros, de la conveniencia o de criterios específicos. A diferencia del muestreo sistemático, aquí no todos los individuos de la población bancaria tienen una probabilidad conocida (y distinta de cero) de ser elegidos.</p>
+
+<p>La selección suele basarse en la accesibilidad. Por ejemplo, si decides encuestar solo a los clientes que están físicamente en el banco en ese momento, estás excluyendo a todos los que operan por banca digital. Ademas no se puede medir el error de muestreo, en las muestras no probabilísticas, como no hay una base probabilística detrás, el calculo del error estandar no tiene validez. Aunque este tipo de muestras no probabilisticas son más baratas y rápidas y se usan cuando no existe un marco muestral.</p>
+
+<p>La conveniencia que usamos en este caso fue seleccionar a usuariosd del banco que fueran de profesion tecnicos y tuvieran menos de 35 años.</p>
+
+
+<p>En primera instancia, la Media Sin Ajuste (1244.48) tiene una desviación significativa respecto al valor poblacional del promedio del balance de los usuarios del banco (1422.66). Este valor subestimado es el resultado directo de un diseño por conveniencia, al haber seleccionado perfiles específicos, la muestra no captura la diversidad de saldos de la población total. En este escenario, la media no es un reflejo de la realidad financiera, sino un reflejo del segmento particular de tecnicos menores de 35 años que tuvo mayor facilidad de acceso o disposición para participar.<p>
+
+<p>Al aplicar técnicas de calibración, la Media Con Ajuste (1360.62) muestra una corrección importante hacia el alza. El algoritmo de Raking detectó que los grupos con saldos tradicionalmente más altos estaban subrepresentados y "reponderó" sus valores para intentar equilibrar la balanza demográfica. Pero aunque la media se acerca más al valor real, la corrección de una muestra genero una alta variabilidad (error estándar alto), lo que significa que, aunque el número parezca más exacto, la confianza estadística sigue siendo inferior a la de un muestreo probabilístico.</p>
+
+<p>Aunque el ajuste matemático puede bajar el sesgo, no puede sustituir la calidad de un buen diseño de muestreo. La diferencia persistente entre los 1360 obtenidos y los 1422 reales sugiere que existen características de los clientes que el ajuste no logra capturar cuando la base de datos no fue seleccionada al azar.</p>
+         
+         
         </section>
 
 
