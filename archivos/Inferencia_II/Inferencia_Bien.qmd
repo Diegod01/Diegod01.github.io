@@ -1,0 +1,268 @@
+---
+title: "Proyecto Inferencia II: Climbers"
+author: "Santiago Robatto, Diego Da Rosa, Sofía Terra, Nahuel Bizoso"
+format: pdf
+execute:
+  echo: false
+  warning: false
+  message: false
+  error: false
+editor: visual
+---
+
+
+```{r}
+#Cargar paquetes
+library(loo)
+library(purrr)
+library(bayesrules)
+library(tidyverse)
+library(rstan)
+library(rstanarm)
+library(bayesplot)
+library(broom.mixed)
+library(janitor)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(gridExtra)
+library(patchwork)
+library(posterior)
+library(tidybayes)
+library(tibble)
+library(knitr)
+library(parallel)
+```
+
+```{r}
+data(climbers_sub)
+climbers <- climbers_sub 
+climbers
+```
+
+
+
+### Introducción
+
+- El dataset contiene información de interacciones comerciales cliente–propiedad en el mercado inmobiliario y cuenta con 24 variables y 2076 observaciones.
+
+- Algunas variables refieren a las características sociodemográficas del lead/cliente, mientras que otras describen los atributos del inmueble visitado.
+
+- La variable de interés es la decisión de compra (compra: 1 = compró el inmueble, 0 = no compró), la cual es binaria.
+
+- La compra representa un evento de conversión comercial real, análogo a un cierre de venta.
+
+- En el contexto original, el éxito se daba al alcanzar la cima del pico; en esta reconversión, el éxito se interpreta como que el cliente decidió adquirir la propiedad que visitó, lo cual nos lleva naturalmente a plantear un modelo de clasificación con enlace logístico para estimar probabilidades de conversión.
+
+- Esto nos hace pensar en un modelo logístico (regresión logística) para explicar y/o predecir la compra.
+
+
+Dado que queremos modelar un suceso de la realidad que es binario (compra o no compra de un inmueble), asumimos que la forma adecuada de representar la incertidumbre de cada lead es mediante una distribución Bernoulli, con probabilidad de compra individual $\pi_i$ (probabilidad de conversión del lead i frente a la propiedad que visitó). Por lo tanto, nuestra variable de respuesta $Y$ se distribye: $$Y_i \mid \pi_i \sim \text{Bern}(\pi_i)$$ con:
+
+$$E(Y_i \mid \pi_i) = \pi_i$$ A su vez, a la hora de armar el modelo, utilizaremos las odds. Recordemos que las odds son una manera distinta de mirar las probabilidades, donde comparamos la probabilidad de exito con opuesto: $\text{odds} = \frac{\pi}{1 - \pi}$
+
+Entones: $$Y_i \mid \boldsymbol{\beta_0},{\beta_1}...{\beta_n} \sim \mathrm{Bern}(\pi_i)  \text{ ,  con } \log\!\left(\frac{\pi_i}{1-\pi_i}\right) = \mathbf{x}_i^\top \boldsymbol{\beta}.$$ Con: $$\beta_{0} \sim N(m_{0}, s_{0}^{2}) \\
+\beta_{1} \sim N(m_{1}, s_{1}^{2}) \\
+\vdots \\
+\\
+\beta_{n} \sim N(m_{n}, s_{n}^{2})$$
+
+Podemos despejar las probabilidad $\pi_i$ en un modelo logistico de las siguientes maneras:
+
+$$\frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \quad\text{o, despejando}\quad \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}}$$
+
+
+
+
+
+En cambio, dado que queremos incorporar jerarquias, debemos hacer ciertos cambios sobre el modelo. Mas precisamente, queremos reflejar que los parametros $\beta_i$ dependen de cada grupo.
+
+$$Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij})$$ $$\text{con} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right) = \beta_{0j} + \sum_{k=1}^{p} \beta_k X_{ijk}$$ $$\beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \text{ representa la variabilidad entre grupos}$$ Las Priors globales son:
+
+$$\beta_0 \sim \mathrm{N}(m_0, s_0^2)$$ y $$\beta_k \sim \mathrm{N}(m_k, s_k^2)\quad \text{para } k=1\dots p$$ y el error es $$\sigma_0 \sim \text{Exp}(\lambda)$$ De la misma manera podemos expresar los interceptos como: $$\beta_{0j} = \beta_0 + b_{0j}$$
+
+
+
+
+$$\text{por lo que} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right)
+= (\beta_0 + b_{0j}) + \beta_1 X_{ij1} + \beta_2 X_{ij2} + \dots+ \beta_n X_{ijn}$$
+
+En resumen,
+
+Los interceptos específicos de cada grupo $\beta_{0j}$ representan la tasa base de éxito (en log-odds) para cada grupo j. Esto permite diferenciar cada grupo entre si, donde por ejemplo algunos grupos tienen niveles de éxito más altos que otros.
+
+Estos interceptos $\beta_{0j}$ se modelan como distribuidos Normalmente alrededor de un intercepto global $\beta_{0}$ con desviación estándar $\sigma_{0}$. El parámetro $\beta_{0}$ refleja la tasa de éxito promedio entre todos los grupos. La cantidad $\sigma_{0}$ mide la variabilidad entre grupos, es decir, cuánto difieren unos de otros.
+
+De igual manera que en el resto de modelos, los interceptos $\beta_1$, $\beta_2$ ... siguen describiendo las relaciones globales entre las variables.
+
+### Info de las variables:
+
+
+
+
+```{r}
+climbers <- climbers %>%
+  rename(
+    campaña = expedition_id,
+    cliente_id = member_id,
+    propiedad_id = peak_id,
+    propiedad = peak_name,
+    año_interaccion = year,
+    ciclo_mercado = season,
+    sexo = sex,
+    edad = age,
+    origen = citizenship,
+    rol_decision = expedition_role,
+    partner_externo = hired,
+    interes_max = highpoint_metres,
+    compra = success,
+    decision_individual = solo,
+    premium = oxygen_used,
+    lead_fallo = died,
+    motivo_fallo = death_cause,
+    tam_fallo = death_height_metres,
+    friccion = injured,
+    tipo_incidente = injury_type,
+    tam_incidente = injury_height_metres,
+    asesores = count,
+    tam_propiedad = height_metres,
+    año_primer_listing = first_ascent_year
+  )
+
+
+```
+
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#24
+variables <- data.frame(
+  Variable = c(
+    "campaña", "cliente_id", "propiedad_id", "propiedad",
+    "año_interaccion", "ciclo_mercado", "sexo", "edad",
+    "origen", "rol_decision", "partner_externo",
+    "interes_max", "compra", "decision_individual", "premium",
+    "lead_fallo", "motivo_fallo", "tam_fallo",
+    "friccion", "tipo_incidente", "tam_incidente",
+    "asesores", "tam_propiedad", "año_primer_listing"
+  ),
+
+  Tipo_dato = c(
+    "character", "factor", "factor", "factor",
+    "numeric", "factor", "character", "numeric",
+    "factor", "factor", "logical",
+    "numeric", "logical", "logical", "logical",
+    "logical", "factor", "numeric",
+    "logical", "factor", "numeric",
+    "numeric", "numeric", "numeric"
+  ),
+
+  Descripción = c(
+    "Identificador de la campaña o fuente de captación del lead",
+    "Identificador único del cliente potencial (lead)",
+    "Identificador único de la propiedad consultada o visitada",
+    "Nombre o tipo de propiedad (casa, apartamento, etc.)",
+    "Año en que ocurrió la interacción cliente–propiedad",
+    "Ciclo de demanda del mercado inmobiliario (temporada del mercado)",
+    "Sexo del cliente",
+    "Edad del cliente",
+    "País u origen del lead",
+    "Rol del lead en la decisión de compra (titular, inversor, cónyuge, etc.)",
+    "Indica si el lead provino de un partner externo (TRUE = sí, FALSE = no)",
+    "Nivel máximo de interés mostrado en la visita (proxy comercial en metros observados/recorridos)",
+    "Conversión de compra (TRUE = compra concretada, FALSE = no concretada)",
+    "Indica si la decisión de compra fue individual (TRUE) o compartida/grupal (FALSE)",
+    "Indica si la propiedad es premium o tiene amenities diferenciales (TRUE = sí, FALSE = no)",
+    "Indica si el lead falló críticamente en el proceso de conversión (TRUE = sí, FALSE = no)",
+    "Motivo del fallo crítico de conversión (solo si lead_fallo = TRUE)",
+    "Tamaño de la propiedad al momento del fallo crítico (si aplica)",
+    "Indica si hubo fricción o incidente en el proceso de compra (TRUE = sí, FALSE = no)",
+    "Tipo de incidente en la conversión (crédito rechazado, documentación, tasación baja, etc.)",
+    "Tamaño de la propiedad al momento del incidente (si aplica)",
+    "Cantidad de asesores/vendedores que atendieron al lead",
+    "Metros cuadrados totales de la propiedad",
+    "Año en que la propiedad salió al mercado por primera vez (proxy a antigüedad del listing)"
+  )
+)
+
+kable(
+  variables,
+  caption = "Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)",
+  booktabs = TRUE,
+  longtable = TRUE
+) %>%
+  kable_styling(
+    font_size = 8,
+    latex_options = c("scale_down")
+  )
+``` 
+
+
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+library(dplyr)
+library(tidyr)
+library(kableExtra)
+climbers_sub
+
+# variables numéricas
+numeric_vars <- climbers %>% select(where(is.numeric))
+
+resumen_num <- numeric_vars %>%
+  summarise(across(
+    everything(),
+    list(
+      Min = ~min(.x, na.rm = TRUE),
+      Q1 = ~quantile(.x, 0.25, na.rm = TRUE),
+      Median = ~median(.x, na.rm = TRUE),
+      Mean = ~mean(.x, na.rm = TRUE),
+      Q3 = ~quantile(.x, 0.75, na.rm = TRUE),
+      Max = ~max(.x, na.rm = TRUE)
+    )
+  )) %>%
+  pivot_longer(
+    everything(),
+    names_to = c("Variable", "Estadístico"),
+    values_to = "Valor",
+    names_pattern = "(.*)_(Min|Q1|Median|Mean|Q3|Max)"
+  ) %>%
+  pivot_wider(names_from = Estadístico, values_from = Valor)
+
+# variables lógicas
+logical_vars <- climbers %>% select(where(is.logical))
+
+resumen_logical <- logical_vars %>%
+  summarise(across(everything(), ~sum(.x, na.rm = TRUE))) %>%
+  pivot_longer(everything(), names_to = "Variable", values_to = "TRUEs") %>%
+  mutate(
+    Total = nrow(climbers),
+    Porcentaje_TRUE = round(TRUEs / Total * 100, 2)
+  )
+
+  
+```
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+kable(resumen_num) %>% kable_styling(font_size = 12)
+kable(resumen_logical) %>% kable_styling(font_size = 12)
+```  
+

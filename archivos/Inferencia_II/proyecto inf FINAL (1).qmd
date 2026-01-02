@@ -30,20 +30,26 @@ library(patchwork)
 library(posterior)
 library(tidybayes)
 library(tibble)
-library (knitr)
+library(knitr)
 library(parallel)
 ```
 
 ### Introducción
 
--   Se cargó la información del dataset real_state
--   El mismo contiene información de distintas expediciones al Himalaya y cuenta con 24 variables y 2076 observaciones.
--   Algunas variables refieren a los individuos y otras al pico a escalar.
--   La variable de interés es el éxito o no del individuo, es decir que queremos predecir una variable binaria.
--   El éxito se da cuando el escalador llega a la cima de la montaña. Esto es, que la altura a la que llego el escalador sea igual a la altura de la montaña.\
--   Esto nos hace pensar en un modelo logístico.
+- El dataset contiene información de interacciones comerciales cliente–propiedad en el mercado inmobiliario y cuenta con 24 variables y 2076 observaciones.
 
-Por un lado tenemos que queremos modelar un suceso de la realidad que es binario, que es el éxito o fracaso de escalar la montaña. Sabemos que la manera de modelar este tipo de sucesos es mediante una modelo Bernolli, con probablidad $\pi_i$. Por lo tanto, nuestra variable de respuesta $Y$ se distribye: $$Y_i \mid \pi_i \sim \text{Bern}(\pi_i)$$ con:
+- Algunas variables refieren a las características sociodemográficas del lead/cliente, mientras que otras describen los atributos del inmueble visitado.
+
+- La variable de interés es la decisión de compra (compra: 1 = compró el inmueble, 0 = no compró), la cual es binaria.
+
+- La compra representa un evento de conversión comercial real, análogo a un cierre de venta.
+
+- En el contexto original, el éxito se daba al alcanzar la cima del pico; en esta reconversión, el éxito se interpreta como que el cliente decidió adquirir la propiedad que visitó, lo cual nos lleva naturalmente a plantear un modelo de clasificación con enlace logístico para estimar probabilidades de conversión.
+
+- Esto nos hace pensar en un modelo logístico (regresión logística) para explicar y/o predecir la compra.
+
+
+Dado que queremos modelar un suceso de la realidad que es binario (compra o no compra de un inmueble), asumimos que la forma adecuada de representar la incertidumbre de cada lead es mediante una distribución Bernoulli, con probabilidad de compra individual $\pi_i$ (probabilidad de conversión del lead i frente a la propiedad que visitó). Por lo tanto, nuestra variable de respuesta $Y$ se distribye: $$Y_i \mid \pi_i \sim \text{Bern}(\pi_i)$$ con:
 
 $$E(Y_i \mid \pi_i) = \pi_i$$ A su vez, a la hora de armar el modelo, utilizaremos las odds. Recordemos que las odds son una manera distinta de mirar las probabilidades, donde comparamos la probabilidad de exito con opuesto: $\text{odds} = \frac{\pi}{1 - \pi}$
 
@@ -75,6 +81,45 @@ Estos interceptos $\beta_{0j}$ se modelan como distribuidos Normalmente alrededo
 De igual manera que en el resto de modelos, los interceptos $\beta_1$, $\beta_2$ ... siguen describiendo las relaciones globales entre las variables.
 
 ### Info de las variables:
+
+
+
+```{r}
+climbers <- climbers %>%
+  rename(
+    campaña = expedition_id,
+    cliente_id = member_id,
+    propiedad_id = peak_id,
+    propiedad = peak_name,
+    año_interaccion = year,
+    ciclo_mercado = season,
+    sexo = sex,
+    edad = age,
+    origen = citizenship,
+    rol_decision = expedition_role,
+    partner_externo = hired,
+    interes_max = highpoint_metres,
+    compra = success,
+    decision_individual = solo,
+    premium = oxygen_used,
+    lead_fallo = died,
+    motivo_fallo = death_cause,
+    tam_fallo = death_height_metres,
+    friccion = injured,
+    tipo_incidente = injury_type,
+    tam_incidente = injury_height_metres,
+    asesores = count,
+    tam_propiedad = height_metres,
+    año_primer_listing = first_ascent_year
+  )
+
+```
+
+
+
+
+
+
 
 ```{r}
 variables <- data.frame(
@@ -208,24 +253,34 @@ kable(variables, caption = "Descripción de Variables del Dataset Inmobiliario (
 
 
 
-
-
-
-
-
-
-
-
-
-
-## 
-
 ```{r}
 data(climbers_sub)
 climbers <- climbers_sub 
+climbers
+
+str(climbers)
+```
+
+```{r}
+data(climbers_sub)
+real_estate <- climbers_sub
+real_estate <- real_estate %>% rename(compra = success)
+
+real_estate$compra <- ifelse(real_estate$compra == TRUE, 1, 0)
+
+real_estate
+```
+
+
+
+
+
+```{r}
+
 library(dplyr)
 library(tidyr)
 library(kableExtra)
+
 # variables numéricas
 numeric_vars <- climbers %>% select(where(is.numeric))
 
@@ -249,6 +304,7 @@ resumen_num <- numeric_vars %>%
   ) %>%
   pivot_wider(names_from = Estadístico, values_from = Valor)
 
+# variables lógicas
 logical_vars <- climbers %>% select(where(is.logical))
 
 resumen_logical <- logical_vars %>%
@@ -259,6 +315,7 @@ resumen_logical <- logical_vars %>%
     Porcentaje_TRUE = round(TRUEs / Total * 100, 2)
   )
 
+  
 ```
 
 ```{r}
@@ -294,13 +351,13 @@ Se borraron las variables: death_cause, death_height_metres, injury_type y injur
 ```{r}
 climbers <- climbers %>% 
   select(
-    -peak_id,
-    -solo,
-    -death_cause,
-    -death_height_metres,
-    -injury_type,
-    -injury_height_metres
+    -propiedad_id,      # ID original del dataset, no aporta a negocio
+    -motivo_fallo,      # detalle de fallo crítico (si no lo vas a usar)
+    -tam_fallo,         # tamaño en el momento del fallo (si no lo usas)
+    -tipo_incidente,    # tipo de incidente (si no lo vas a modelar)
+    -tam_incidente      # tamaño en el momento del incidente (si no lo usas)
   )
+
 ```
 
 ------------------------------------------------------------------------
