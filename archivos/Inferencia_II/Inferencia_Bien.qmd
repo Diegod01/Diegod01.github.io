@@ -776,8 +776,8 @@ climbers <- climbers %>%
 
 #Modelo 1
 ```{r}
-# options(mc.cores = parallel::detectCores())
-# 
+options(mc.cores = parallel::detectCores())
+
 # modsj <- stan_glm(
 #   compra ~ premium + ciclo_mercado + años_desde_listing,
 #   data = climbers,
@@ -789,12 +789,12 @@ climbers <- climbers %>%
 # )
 # 
 # saveRDS(modsj, "modsj.rds")
-# 
-# modsj <- readRDS("modsj.rds")
-# 
-# ppcheck1 <- pp_check(modsj, nreps = 100, plotfun = "stat", stat = "success_rate") +
-#   xlab("Tasa de compra")
-# ppcheck1
+
+modsj <- readRDS("modsj.rds")
+
+ppcheck1 <- pp_check(modsj, nreps = 100, plotfun = "stat", stat = "success_rate") +
+  xlab("Tasa de compra")
+ppcheck1
 
 ```
 
@@ -806,25 +806,26 @@ La barra vertical es el éxito promedio del dataframe. El resto en celeste es la
 Modelo 2
 
 ```{r}
-# options(mc.cores = parallel::detectCores())
-# 
+options(mc.cores = parallel::detectCores())
+
 # modje <- stan_glmer(
 #   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | campaña),
 #   data = climbers,
 #   family = binomial,
 #   prior_intercept = normal(0, 2.5, autoscale = TRUE),
 #   prior = normal(0, 2.5, autoscale = TRUE),
-#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1, scale_cov = 1),
+#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
 #   chains = 4, iter = 10000, seed = 84735
 # )
 # 
 # saveRDS(modje, "modje.rds")
-# 
-# modje <- readRDS("modje.rds")
-# 
-# ppcheck2 <- pp_check(modje, nreps = 100, plotfun = "stat", stat = "success_rate") +
-#   xlab("Tasa de compra")
-# ppcheck2
+
+modje <- readRDS("modje.rds")
+
+ppcheck2 <- pp_check(modje, nreps = 100, plotfun = "stat", stat = "mean") +
+  xlab("Tasa de compra")
+ppcheck2
+
 
 ```
 
@@ -835,11 +836,12 @@ Modelo 2
 Notamos que este modelo tiene una mejoría respecto al anterior, pero de igual forma pensamos que todavía se puede mejorar más
 
 
+
 Modelo 3
 
 ```{r}
-# options(mc.cores = parallel::detectCores())
-# 
+options(mc.cores = parallel::detectCores())
+
 # modjp <- stan_glmer(
 #   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | propiedad),
 #   data = climbers,
@@ -851,12 +853,12 @@ Modelo 3
 # )
 # 
 # saveRDS(modjp, "modjp.rds")
-# 
-# modjp <- readRDS("modjp.rds")
-# 
-# ppcheck3 <- pp_check(modjp, nreps = 100, plotfun = "stat", stat = "success_rate") +
-#   xlab("Tasa de compra")
-# ppcheck3
+
+modjp <- readRDS("modjp.rds")
+
+ppcheck3 <- pp_check(modjp, nreps = 100, plotfun = "stat", stat = "success_rate") +
+  xlab("Tasa de compra")
+ppcheck3
 
 ```
 
@@ -876,41 +878,41 @@ Modelo 3
 
 # Modelo 4
 
-```{r, echo=TRUE, results='hide',eval=FALSE}
-# options(mc.cores = parallel::detectCores())
-# modjs <- stan_glmer(
-#   success ~  year_since_first_ascent + oxygen_used + (1 | season), 
-#   data = climbers, family = binomial,
-#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
-#   prior = normal(0, 2.5, autoscale = TRUE), 
-#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
-#   chains = 4, iter = 5000*2, seed = 84735
-# )
-
-```
-
-```{r, results='hide',eval=FALSE}
-
-
-# Guardar modelo
-#saveRDS(modjs, "modjs.rds")
-
-
-```
-
 ```{r}
-# Cargar modelo
-# modjs <- readRDS("modjs.rds")
-# 
-# # Posterior predictive check adaptado
-# ppcheck4 <- pp_check(modjs, nreps = 100, plotfun = "stat", stat = "success_rate") +
-#   xlab("Tasa de compra")
-# ppcheck4
-# 
-# # Diagnóstico MCMC
-# mcmc_trace(modjs)
-```
+library(dplyr)
+library(ggplot2)
+library(rstanarm)
+library(bayesplot)
 
+options(mc.cores = parallel::detectCores())
+
+
+# ---- Modelo multinivel (efecto aleatorio por ciclo de mercado) ----
+# modjs <- stan_glmer(
+#   compra ~ premium + ciclo_mercado + años_desde_listing + (1 | ciclo_mercado),
+#   data = climbers,
+#   family = binomial,
+#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
+#   prior = normal(0, 2.5, autoscale = TRUE),
+#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+#   chains = 4, iter = 10000, seed = 84735
+# )
+# 
+# # Guardar modelo
+# saveRDS(modjs, "modjs.rds")
+
+
+#Cargar modelo
+modjs <- readRDS("modjs.rds")
+
+# Posterior predictive check adaptado
+ppcheck4 <- pp_check(modjs, nreps = 100, plotfun = "stat", stat = "success_rate") +
+  xlab("Tasa de compra")
+ppcheck4
+
+# Diagnóstico MCMC
+mcmc_trace(modjs)
+```
 
 
 
@@ -924,30 +926,29 @@ Modelo 3
 # PP_Checks:
 
 ```{r}
+p1 <- ppcheck1 +
+  labs(title = "Modelo 1", subtitle = "Sin jerarquía (Complete Pooling)") +
+  theme(legend.position = "none")
 
-# p1 <- ppcheck1 + 
-#   labs(title = "Modelo 1", subtitle = "Sin jerarquía (Complete Pooling)") +
-#   theme(legend.position = "none") 
-# 
-# p2 <- ppcheck2 + 
-#   labs(title = "Modelo 2", subtitle = "Jerarquía por campaña") +
-#   theme(legend.position = "none")
-# 
-# p3 <- ppcheck3 + 
-#   labs(title = "Modelo 3", subtitle = "Jerarquía por propiedad") +
-#   theme(legend.position = "none")
-# 
-# p4 <- ppcheck4 + 
-#   labs(title = "Modelo 4", subtitle = "Jerarquía por ciclo de mercado") +
-#   theme(legend.position = "none")
-# 
-# panel_ppcheck <- (p1 + p2) / (p3 + p4) +
-#   plot_annotation(
-#     title = "pp_check para los cuatro modelos (Inmobiliario)"
-#   )
-# 
-# panel_ppcheck
+p2 <- ppcheck2 +
+  labs(title = "Modelo 2", subtitle = "Jerarquía por campaña") +
+  theme(legend.position = "none")
 
+p3 <- ppcheck3 +
+  labs(title = "Modelo 3", subtitle = "Jerarquía por propiedad") +
+  theme(legend.position = "none")
+
+p4 <- ppcheck4 +
+  labs(title = "Modelo 4", subtitle = "Jerarquía por ciclo de mercado") +
+  theme(legend.position = "none")
+
+panel_ppcheck <- (p1 + p2) / (p3 + p4) +
+  plot_annotation(
+    title = "pp_check para los cuatro modelos (Inmobiliario)"
+  )
+
+
+panel_ppcheck
 ```
 
 
