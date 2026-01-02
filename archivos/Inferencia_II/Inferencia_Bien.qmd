@@ -955,3 +955,48 @@ panel_ppcheck
 
 
 
+Se observa de forma visual que no existen diferencias sustanciales entre los modelos. Se podría decir que en principio no aporta una mejoría realizar agrupamiento.
+
+# MCMC diagnostics
+
+```{r}
+prior_summary(modsj)
+
+mcmc_trace(modsj, size = 0.1)
+mcmc_dens_overlay(modsj)
+mcmc_acf(modsj)
+neff_ratio(modsj)
+summary(modsj)
+```
+
+
+
+
+
+
+
+
+```{r}
+prior_summary(modjp)
+
+mcmc_trace(modjp, size = 0.1)
+mcmc_dens_overlay(modjp)
+mcmc_acf(modjp)
+neff_ratio(modjp)
+summary(modjp)
+```
+
+
+
+
+```{r}
+prior_summary(modjs)
+
+mcmc_trace(modjs, size = 0.1)
+mcmc_dens_overlay(modjs)
+mcmc_acf(modjs)
+neff_ratio(modjs)
+summary(modjs)
+```
+
+
