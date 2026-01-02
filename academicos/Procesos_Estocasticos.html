@@ -3,7 +3,7 @@
  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modelos Lineales</title>
+    <title>Modelo de Schelling para la segregación de consumidores de inversión</title>
     <link rel="stylesheet" href="../style.css">
     
     <script type="text/javascript" async
@@ -12,12 +12,32 @@
  </head>
   <body>
     <section>
-        <p>Proyecto para el curso de Modelos Lineales de la Licenciatura en Estadistica</p>
-        <h2>Introducción</h2>
+        <p>Proyecto para el curso de Procesos Estocasticos de la Licenciatura en Estadistica</p>
+        <h2>Modelo y Objetivos</h2>
     
      
-        <p>En el presente trabajo se analizará un conjunto de datos de economicos, correspondientes a 159 empresas. Para cada ejemplar se registraron medidas como ventas en distintos trimestres, costes, margen, ingresos, tipo de empresa. Estas mediciones conforman un total de siete variables.</p>
+        
 
+<p>El modelo de Schelling fue originalmente propuesto para estudiar cómo decisiones locales basadas en preferencias individuales pueden generar patrones de segregación a gran escala dentro de un sistema social. Esta lógica de interacción espacial y ajuste iterativo presenta una conexión natural con las cadenas de Markov, ya que la evolución del sistema puede formalizarse como un proceso estocástico con transiciones entre estados y posibles configuraciones absorbentes.</p>
+
+<p>En este trabajo, reinterpretamos el modelo desde una perspectiva de negocio en mercados financieros y ecosistemas fintech. Consideramos una grilla de 20×20 (400 celdas), donde cada celda representa un producto financiero, plataforma de inversión o nicho de mercado, y puede estar ocupada por un cliente del segmento Tradicional (rojo), Fintech/Neobank (azul), o encontrarse vacante —lo que representa espacios de mercado disponibles para adopción o migración de clientes.</p>
+
+<p> Cada agente representa un cliente o inversor que toma decisiones de localización influenciado por efectos de red y afinidad de segmento. Los “vecinos” de una celda se interpretan como clientes con perfiles similares dentro del mismo ecosistema de producto, que generan referencias, confianza, engagement y externalidades positivas propias de los mercados con efectos de red.</p>
+
+<p>Cada cliente posee un parámetro de tolerancia τ, que representa el mínimo de masa crítica de clientes similares requerida para permanecer en un producto sin abandonarlo (churn threshold). Un agente está “satisfecho” si en su celda actual se cumple que el número de vecinos del mismo segmento es mayor o igual a τ. En caso contrario, el cliente se considera “insatisfecho” y se convierte en candidato a migrar hacia otro producto donde su perfil esté mejor representado, dejando vacante su celda anterior.</p>
+
+<p>La dinámica del modelo consiste en identificar agentes insatisfechos y permitirles migrar hacia celdas vacantes donde puedan maximizar su afinidad de segmento, siempre que el nuevo espacio supere el umbral τ. Este proceso se repite hasta alcanzar un equilibrio donde ya no se observan migraciones adicionales y el sistema converge a una configuración estable de mercado.</p>
+
+<p>Los objetivos del trabajo son: (1) estudiar cómo surgen patrones de segmentación y concentración de clientes en productos financieros a partir de decisiones locales, (2) analizar la relación entre τ y el grado de especialización de nicho de mercado, y (3) formalizar la evolución del ecosistema como una cadena de Markov, caracterizando estados absorbentes como configuraciones de mercado estables donde no existe switching adicional de clientes.</p>
+
+<p>Las preguntas centrales que buscamos responder son cómo influye el umbral de tolerancia τ en la concentración de segmentos por producto, en qué medida determina la existencia y probabilidad de alcanzar un equilibrio absorbente de mercado, y cuántos pasos requiere el sistema —en promedio— para converger a un estado de retención estable. Asimismo, analizamos el proceso de migración para construir y estudiar la matriz de switching entre segmentos, un indicador clave en modelos de adopción competitiva de productos financieros.</p>
+
+
+     
+
+
+
+     
       
     </section>
   </body>
