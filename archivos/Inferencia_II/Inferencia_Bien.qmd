@@ -593,3 +593,364 @@ panel_categorico
 ```
 
 
+
+
+
+gráfico barras apiladas por proporción. sexo y éxito. se observa que la proporción de éxito de hombre es apenas mayor, sin embargo, al tener tan pocas observaciones sobre mujeres escaladoras, se considera que no hay una relación fuerte como para definir sexo como predictora.
+
+# Definicion de los modelos
+
+USAMOS MODELO DE REGRESION LOGISTICA: nuestra variable de respuesta "Y" es binaria. En este caso es 1 si hubo succes (si la persona llego a la cima de la montana), y 0 si hubo fracaso. Este tipo de regresión es no lineal
+
+$$\begin{aligned}
+Y_i & \sim \text{Bern}(\pi_i) \\
+\log\left(\frac{\pi_i}{1-\pi_i}\right) & = \beta_0 + \beta_1 X_1 + \beta_2 X_2
+\end{aligned}$$
+
+$Y_i \sim \text{Bern}(\pi_i)$ (aleatoria): tener succes con probabilidad de éxito $\pi$.
+
+$\log(\frac{\pi}{1-\pi})$: es la transformación "log odds" que hacemos para poder expresar nuestras probabilidades. nuestro modelo de regresión lineal original nos da resultados en todo el mundo de los reales. sin embargo, cuando trabajamos con variables binarias, nuestro espacio de soluciones pasa a ser entre 0 y 1. tenemos que ajustar esto para poder trabajar nuevamente con los reales, por eso aplicamos la transformación. primero pasamos de "probabilidad" (pi) a "odds" o "chances", haciendo pi/(1-pi). lo que queremos calcular es cuantas veces mas probable es ganar que perder. por ejemplo, si pi=0.5 entonces odds va a ser 1, lo que quiere decir que con probabilidad 50%, la chance de ganar es una vez mas probable que perder. finalmente, le aplicamos logaritmo a las odds, para que nuestro dominio sea todos los reales. por ejemplo, en el caso de oods=1, al aplicar logaritmo obtenemos 0, pero si nuestras odds fueran muy altas, el logaritmo seria un numero positivo grande, y si las odds fueran muy bajas, el logaritmo devuelve un numero negativo.
+
+$\beta_0$ (intercepto): probabilidad de éxito cuando todas las variables $X$ valen 0. "probabilidad base".
+
+$\beta_1$ (pendiente): cuanto aumenta (o disminuye) la probabilidad de éxito si aumentamos $X_1$ en una unidad. Si $\beta > 0$: Aumenta la probabilidad de exito. Si $\beta < 0$: Disminuye la probabilidad.
+
+MODELO DE REGRESION LOGISTICA JERARQUICO
+
+POOLING: si los grupos comparten info entre si
+
+ahora los datos tienen "estructura". Los escaladores pertenecen a grupos (por ejemplo expedicion o monatana).
+
+complete pooling: Ignora la montana. Asume que todas son iguales. (se comparte toda la info)
+
+No Pooling: Trata cada montana de forma independiente. (no se comparte nada de la info)
+
+Jerárquico (Partial Pooling): cada montana es unica ($\beta_{0j}$), pero que todas pertenecen a una "familia de montanas". Las montanas con pocos datos "toman datos" del promedio global. (se comparte algo de info)
+
+$$\begin{aligned}
+\text{Nivel 1 (Datos):} \quad \log\left(\frac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0j} + \beta_1 X_{ij1} \\
+\text{Nivel 2 (Grupos):} \quad \beta_{0j} & \sim N(\beta_0, \sigma^2)
+\end{aligned}$$
+
+$\beta_{0j}$ (efecto aleatorio/intercepto variando): Cada grupo $j$ (ej. cada montana o expedicion) tiene su propio "punto de partida". $\beta_0$ (Efecto fijo/Hiperparametro de media): Es el promedio global de todas las montanas. $\sigma$ (desviacion del grupo): Mide que tan diferentes son las montanas entre si. Si $\sigma$ es bajo: Todas las montanas se parecen mucho (alto pooling). Si $\sigma$ es alto: Las montanas son muy distintas entre si (pooling bajo).
+
+OBS: DEFINIMOS PRIORIS POCO INFORMATIVAS por que? Normal (0,2.5): queremos evitar hacer overfitting cuando tenemos pocos datos (en nuestro caso "limpiamos" mucho nuestra base de datos original) en la escala logística, coeficientes mayores a 5 implican certeza prácticamente. nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan que paso. por otro lado, centramos en cero ya que queremos tener una postura neutral. asumimos a priori que las variables no tienen efecto sobre el éxito (por eso esta es 0). nuevamente dejamos que los datos nos muestren que pasa. exp(1): varianza no puede ser negativa, solo trabajamos con valores positivos.
+
+## Modelo 1:
+
+Definiremos el modelo 1 como el modelo con complete pooling con los siguientes predictores: oxigeno, season, y year_since_first_ascent. Es decir, asumimos que todos los escaladores distribuyen de igual manera.
+
+OBS: no incluimos peak ya que no nos importa en que montaña estamos, tratamos a todas por igual. Si incluimos peak estamos diferenciando a las montañas. ("ignoramos los grupos y metemos a todos en la misma bolsa").
+
+OBS: este modelo es nuestro punto de partida
+
+De esta manera:
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{i} | \beta_{0}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{i}) && \text{(verosimilitud)} \\
+\text{donde} \quad \log\left(\frac{\pi_{i}}{1-\pi_{i}}\right) & = \beta_{0} + \beta_1 X_{i1} + \beta_2 X_{i2} + \beta_3 X_{i3} \\
+\beta_{0} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+beta1, beta2 y beta 3 son nuestras predictoras (fijas)
+
+variables:
+
+$Y_i$: Éxito del escalador $i$. $X_{i1}$: Uso de oxígeno. $X_{i2}$: Estación del año. $X_{i3}$: Años desde el primer ascenso.
+
+## Modelo 2:
+
+Partial pooling por **expedicion**. Agregamos jerarquía en la expedición j, tal como el libro.
+
+$$
+\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{ij} | \beta_{0j}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ij}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0j} + \beta_1 X_{ij1} + \beta_2 X_{ij2} + \beta_3 X_{ij3}\\
+\beta_{0j} | \beta_{0c}, \sigma_{exp} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{exp}^2) && \text{(variabilidad entre expediciones)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{exp} & \sim \text{Exp}(1) && \text{(desvío est. entre expediciones)}
+\end{aligned}
+\hspace{0.5em}
+}
+$$
+
+
+
+
+
+beta0, beta1 ,beta2 y beta3 son nuestras predictoras (fijas)
+
+variables:
+
+$Y_i,j$: Éxito del escalador i en la expedición j. $X_{i,j,1}$: Uso de oxígeno. $X_{i,j,2}$: Estación del año. $X_{i,j,3}$: Años desde el primer ascenso.
+
+## Modelo 3
+
+Partial Pooling por **peak** (agregamos jerarquía pico en vez de escalación, para mostrar lo que a priori es un mal modelo o mal conceptualmente hablando agrupar por pico ). Hay individuos dentro del mismo grupo muy divergentes entre si.
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{ik} | \beta_{0k}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ik}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{ik}}{1-\pi_{ik}}\right) & = \beta_{0k} + \beta_1 X_{ik1} + \beta_2 X_{ik2} + \beta_3 X_{ik3} \\
+\beta_{0k} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+
+
+
+
+
+
+
+
+
+
+
+
+beta1, beta2 y beta3 son nuestras predictoras
+
+variables
+
+$Y_i,k$: Éxito del escalador i en peak k. $X_{i,k,1}$: Uso de oxígeno. $X_{i,k,2}$: Estación del año. $X_{i,k,3}$: Años desde el primer ascenso.
+
+### Modelo 4
+
+Jerarquía con Season.
+
+$$\boxed{
+\hspace{0.5em}
+\begin{aligned}
+Y_{is} | \beta_{0s}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{is}) && \text{(verosimilitud)} \\
+\text{with} \quad \log\left(\frac{\pi_{is}}{1-\pi_{is}}\right) & = \beta_{0s} + \beta_1 X_{is1} + \beta_2 X_{is2} + \beta_3 X_{is3} \\
+\beta_{0s} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
+\beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\end{aligned}
+\hspace{0.5em}
+}$$
+
+
+
+
+
+
+beta1, beta2 y beta3 son nuestras predictoras
+
+variables
+
+$Y_i,s$: Éxito del escalador i en season s. $X_{i,s,1}$: Uso de oxígeno. $X_{i,s,2}$: Estación del año. $X_{i,s,3}$: Años desde el primer ascenso.
+
+```{r}
+# Define success rate function para los pp check 
+success_rate <- function(x){mean(x == 1)}
+```
+
+# Corrida de los modelos
+
+```{r}
+climbers <- climbers %>% 
+  mutate(
+    años_desde_listing = año_interaccion - año_primer_listing
+  )
+
+```
+
+
+
+
+
+#Modelo 1
+```{r}
+# options(mc.cores = parallel::detectCores())
+# 
+# modsj <- stan_glm(
+#   compra ~ premium + ciclo_mercado + años_desde_listing,
+#   data = climbers,
+#   family = binomial,
+#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
+#   prior = normal(0, 2.5, autoscale = TRUE),
+#   prior_aux = exponential(1, autoscale = TRUE),
+#   chains = 4, iter = 10000, seed = 84735
+# )
+# 
+# saveRDS(modsj, "modsj.rds")
+# 
+# modsj <- readRDS("modsj.rds")
+# 
+# ppcheck1 <- pp_check(modsj, nreps = 100, plotfun = "stat", stat = "success_rate") +
+#   xlab("Tasa de compra")
+# ppcheck1
+
+```
+
+
+
+La barra vertical es el éxito promedio del dataframe. El resto en celeste es la tasa de éxito en nuestros 100 dataframes simulados.
+
+
+Modelo 2
+
+```{r}
+# options(mc.cores = parallel::detectCores())
+# 
+# modje <- stan_glmer(
+#   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | campaña),
+#   data = climbers,
+#   family = binomial,
+#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
+#   prior = normal(0, 2.5, autoscale = TRUE),
+#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1, scale_cov = 1),
+#   chains = 4, iter = 10000, seed = 84735
+# )
+# 
+# saveRDS(modje, "modje.rds")
+# 
+# modje <- readRDS("modje.rds")
+# 
+# ppcheck2 <- pp_check(modje, nreps = 100, plotfun = "stat", stat = "success_rate") +
+#   xlab("Tasa de compra")
+# ppcheck2
+
+```
+
+
+
+
+
+Notamos que este modelo tiene una mejoría respecto al anterior, pero de igual forma pensamos que todavía se puede mejorar más
+
+
+Modelo 3
+
+```{r}
+# options(mc.cores = parallel::detectCores())
+# 
+# modjp <- stan_glmer(
+#   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | propiedad),
+#   data = climbers,
+#   family = binomial,
+#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
+#   prior = normal(0, 2.5, autoscale = TRUE),
+#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1, scale_cov = 1),
+#   chains = 4, iter = 10000, seed = 84735
+# )
+# 
+# saveRDS(modjp, "modjp.rds")
+# 
+# modjp <- readRDS("modjp.rds")
+# 
+# ppcheck3 <- pp_check(modjp, nreps = 100, plotfun = "stat", stat = "success_rate") +
+#   xlab("Tasa de compra")
+# ppcheck3
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Modelo 4
+
+```{r, echo=TRUE, results='hide',eval=FALSE}
+# options(mc.cores = parallel::detectCores())
+# modjs <- stan_glmer(
+#   success ~  year_since_first_ascent + oxygen_used + (1 | season), 
+#   data = climbers, family = binomial,
+#   prior_intercept = normal(0, 2.5, autoscale = TRUE),
+#   prior = normal(0, 2.5, autoscale = TRUE), 
+#   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
+#   chains = 4, iter = 5000*2, seed = 84735
+# )
+
+```
+
+```{r, results='hide',eval=FALSE}
+
+
+# Guardar modelo
+#saveRDS(modjs, "modjs.rds")
+
+
+```
+
+```{r}
+# Cargar modelo
+# modjs <- readRDS("modjs.rds")
+# 
+# # Posterior predictive check adaptado
+# ppcheck4 <- pp_check(modjs, nreps = 100, plotfun = "stat", stat = "success_rate") +
+#   xlab("Tasa de compra")
+# ppcheck4
+# 
+# # Diagnóstico MCMC
+# mcmc_trace(modjs)
+```
+
+
+
+
+
+
+
+
+
+
+
+# PP_Checks:
+
+```{r}
+
+# p1 <- ppcheck1 + 
+#   labs(title = "Modelo 1", subtitle = "Sin jerarquía (Complete Pooling)") +
+#   theme(legend.position = "none") 
+# 
+# p2 <- ppcheck2 + 
+#   labs(title = "Modelo 2", subtitle = "Jerarquía por campaña") +
+#   theme(legend.position = "none")
+# 
+# p3 <- ppcheck3 + 
+#   labs(title = "Modelo 3", subtitle = "Jerarquía por propiedad") +
+#   theme(legend.position = "none")
+# 
+# p4 <- ppcheck4 + 
+#   labs(title = "Modelo 4", subtitle = "Jerarquía por ciclo de mercado") +
+#   theme(legend.position = "none")
+# 
+# panel_ppcheck <- (p1 + p2) / (p3 + p4) +
+#   plot_annotation(
+#     title = "pp_check para los cuatro modelos (Inmobiliario)"
+#   )
+# 
+# panel_ppcheck
+
+```
+
+
+
+
+
