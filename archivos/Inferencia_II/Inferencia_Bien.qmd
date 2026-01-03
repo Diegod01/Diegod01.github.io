@@ -129,6 +129,8 @@ climbers <- climbers %>%
     tam_propiedad = height_metres,
     año_primer_listing = first_ascent_year
   )
+
+head(climbers)
 ```
 
 
@@ -252,6 +254,10 @@ resumen_logical <- logical_vars %>%
   )
 
   
+
+
+head(climbers)
+
 ```
 
 
@@ -288,6 +294,10 @@ library(corrplot)
 climbers_num <- climbers[sapply(climbers, is.numeric)]
 M <- cor(climbers_num, use = "pairwise.complete.obs")
 corrplot(M, method = "color", addCoef.col = "black")
+
+
+head(climbers)
+
 ```
 
 
@@ -322,6 +332,9 @@ climbers <- climbers %>%
       include.lowest = TRUE
     )
   )
+#head(climbers)
+
+
 
 rate_tramo <- climbers %>% 
   filter(!is.na(tramo_antiguedad), !is.na(compra)) %>% 
@@ -757,6 +770,10 @@ $Y_i,s$: Éxito del escalador i en season s. $X_{i,s,1}$: Uso de oxígeno. $X_{i
 ```{r}
 # Define success rate function para los pp check 
 success_rate <- function(x){mean(x == 1)}
+
+
+head(climbers)
+
 ```
 
 # Corrida de los modelos
@@ -1069,6 +1086,94 @@ ggplot(df_plot_alquiler, aes(x = Probabilidad, fill = Servicio)) +
     x = "Probabilidad de éxito (Compra)",
     y = "Densidad",
     fill = "Tipo de Servicio"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
+
+
+
+
+```{r}
+# 1. Extraemos los efectos aleatorios (los interceptos de cada campaña)
+# Nota: Seguimos usando 'expedition_id' porque así está guardado en el modelo modje
+random_effects <- ranef(modje)$expedition_id 
+colnames(random_effects) <- "Intercepto_Desvio"
+
+# 2. Seleccionamos una muestra de 30 campañas al azar para visualizar la variabilidad
+set.seed(123)
+sample_campañas <- random_effects %>%
+  as.data.frame() %>%
+  rownames_to_column("Campaña_ID") %>%
+  sample_n(30) %>%
+  arrange(Intercepto_Desvio) # Ordenado de menor a mayor éxito relativo
+
+# 3. Caterpillar Plot (Gráfico de oruga) adaptado al enfoque inmobiliario
+ggplot(sample_campañas, aes(x = Intercepto_Desvio, y = reorder(Campaña_ID, Intercepto_Desvio))) +
+  geom_point(size = 3, color = "#6584db") +
+  # Línea roja representa el promedio global del mercado
+  geom_vline(xintercept = 0, linetype = "dashed", color = "red") + 
+  labs(
+    title = "Variabilidad del éxito entre Campañas (Muestra aleatoria de 30)",
+    subtitle = "Puntos a la derecha de la línea roja indican campañas con éxito superior al promedio",
+    x = "Diferencia respecto al promedio global (Log-Odds)",
+    y = "Identificador de Campaña"
+  ) +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 7),
+    plot.title = element_text(face = "bold")
+  )
+
+```
+
+
+
+
+```{r}
+library(modelr)
+library(tidybayes)
+
+# 1. Crear el grid de datos
+# Usamos los nombres que el modelo espera para que 'add_fitted_draws' funcione
+grid_inmobiliario <- climbers %>%
+  data_grid(
+    # Eje x: Usamos el nombre original 'year_since_first_ascent' (que es tu 'antiguedad_años')
+    year_since_first_ascent = seq_range(antiguedad_años, n = 100),
+    
+    # Comparación de servicio Premium (originalmente 'oxygen_used')
+    oxygen_used = c(TRUE, FALSE), 
+    
+    # Ciclo de mercado base (originalmente 'season')
+    season = "Spring",
+    
+    # Referencia de campaña (originalmente 'expedition_id')
+    expedition_id = "Campaña_Promedio" 
+  )
+
+# 2. Generar las líneas predictivas (draws)
+# re_formula = NA ignora la variabilidad de campañas específicas para ver la tendencia general
+plot_lines <- grid_inmobiliario %>%
+  add_fitted_draws(modje, n = 50, re_formula = NA) 
+
+# 3. Gráfica adaptada
+ggplot(plot_lines, aes(x = year_since_first_ascent, y = .value, color = oxygen_used)) +
+  # Líneas de incertidumbre
+  geom_line(aes(group = paste(oxygen_used, .draw)), alpha = 0.15) +
+  
+  # Línea de tendencia promedio
+  stat_summary(fun = mean, geom = "line", aes(group = oxygen_used), size = 1.2) +
+  
+  # Colores y etiquetas de negocio
+  scale_color_manual(values = c("FALSE" = "#E74C3C", "TRUE" = "#2ECC71"),
+                     labels = c("Estándar", "Premium")) +
+  
+  labs(
+    title = "Probabilidad de éxito según Antigüedad y Tipo de Servicio",
+    subtitle = "La tendencia muestra cómo decae la probabilidad al aumentar los años",
+    x = "Antigüedad (Años desde el primer registro)",
+    y = "Probabilidad de Compra/Alquiler",
+    color = "Tipo de Servicio"
   ) +
   theme_minimal() +
   theme(legend.position = "top")
