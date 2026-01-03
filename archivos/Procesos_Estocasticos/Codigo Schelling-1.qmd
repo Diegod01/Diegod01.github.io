@@ -1,0 +1,1142 @@
+---
+title: "Proyecto Oral Procesos Estocasticos"
+author: "Diego Da Rosa, Nahuel Bizoso, Bruno Pintos"
+format:
+  pdf:
+    toc: true
+header-includes:
+  - \usepackage{algorithm}
+  - \usepackage{algpseudocode}
+---
+
+![Ejemplo](Sche1.png)
+
+
+\newpage
+
+# Modelo y Objetivos:
+
+El modelo de Schelling está diseñado para modelar la dinámica social como las 
+preferencias individuales que causan segregaciones a gran escala. El mismo, tiene
+una fuerte relación con las cadenas de Markov.
+
+En nuestro caso, consideramos una grilla de 20x20 (400 celdas en total) donde 
+cada celda puede tener un agente tipo A (color rojo), un agente tipo B 
+(color azul) o estar vacía o vacante, esto significa que alguien puede moverse 
+a ella y colorearla.
+
+La lógica es que cada agente observe a sus vecinos, es decir, si nos ubicamos 
+en una celda, observamos el color de las celdas adyacentes. Cada agente tiene 
+una tolerancia por tener una determinada cantidad de vecinos de su mismo tipo. 
+Decimos que ese agente esta satisfecho si al menos un $x\%$ de sus vecinos son 
+de su mismo tipo, en caso contrario, decimos que el agente está insatisfecho.
+
+La dinámica del modelo se da identificando los agentes insatisfechos, estos se
+mueven de la celda en la que se encuentran, dejándola vacante, y buscando otra 
+celda vacante donde puede estar más satisfecho (más vecinos de su mismo tipo) 
+según el nivel de tolerancia fijado, en caso de encontrarla, el agente se muda 
+a esa celda. Este proceso se repite hasta que todos los agentes están satisfechos 
+y ya no hay movimientos posibles.
+
+
+Los objetivos del trabajo son analizar cómo surge la segregación a partir de 
+decisiones locales, y estudiar la relación entre el parámetro de tolerancia y 
+el grado de segregación alcanzado en el estado final.
+
+Un objetivo central es formalizar la dinámica de la grilla como una Cadena de 
+Markov, identificando y caracterizando estados absorbentes o cuasi-absorbentes 
+y su relevancia para la dinámica del modelo.
+
+Las preguntas principales que buscamos responder son cómo influye el nivel de 
+tolerancia en el estado final de la grilla, en qué medida dicho parámetro 
+modifica la existencia o la probabilidad de alcanzar un estado absorbente y, 
+finalmente, cuántos pasos requiere el sistema, en promedio, para llegar a la 
+absorción.
+
+
+# Resultados teoricos:
+
+Grilla NxN = 20x20. 400 celdas en total. Podemos definir el siguiente conjunto finito de todas las celdas posibles a través del producto cartesiano
+$\Lambda = \{1,...,20\} \times \{1,...,20\}$
+
+
+Luego podemos considerar el conjunto finito de colores posibles, donde cada celda puede ser $X =\{R, A, V\}$ (Rojo, Azul, Vacante)
+
+
+
+Podemos ver el Espacio de Estados como una función que asigna a cada celda posible un color:
+$S = X^{\Lambda} = \{s: \Lambda \rightarrow X \}$. Donde $s(i,j) \in X \ \ \   \forall \ \ (i,j) \in \Lambda$
+
+Podemos definir también: 
+
+$S = \{ s \in X^{\Lambda} : \#R = 180 , \ \#A = 180, \ \#V = 40 \}$
+
+
+En cuanto a la cardinalidad del este Espacio de Estados, tenemos que $3^{(20x20)}$ combinaciones posibles de grillas de 20x20 que tienen 3 colores. Es decir $\#S  = 3^{(20x20)} = 3^{400}$
+
+El espacio de estados tiene estados posibles que son configuraciones de toda la grilla. Cada configuración que puede tomar la grilla es un estado del espacio de estados. 
+
+Luego tenemos 100\% = 400 es el total de celdas en la grilla, por lo que usando regla de tres, el 10\% = 40 son celdas vacantes. Luego tenemos 400-40=360 celdas disponibles para celdas rojas y azules, sabemos que  la proporción debe ser 50/50 por lo que tenemos 180 celdas rojas y 180 celdas azules. El espacio de estados se reduce a las grillas que cumplan esta condición, pero de todas formas sigue siendo un espacio de estados muy grande.
+
+
+Para contar el número de vecinos de igual color que la celda central (i,j) definimos la siguiente función que va del conjunto de celdas a los reales entre [0, 1], $S: SXN^2 \rightarrow [0,1]$. Esta función será nuestra regla de decisión para decidir si un agente esta o no insatisfecho. 
+
+
+\vspace{10pt}
+
+
+
+
+$S(H_t, i, j) = \frac{\#((k,l) \in H(i,j) \  : \ X_{k,l} = x_{i,j})}{\# ((k,l) \in H_{(i,j)} \ : \  x_{k,l} \in \{A,B \} }$
+
+
+\vspace{10pt}
+
+Entonces:
+$\tau = x\%$ indica que tenemos que tener al menos x\% (100*x\%) agentes similares de vecinos para estar satisfechos como agente principal. 
+
+$S(H_t, i, j) < \tau$ tenemos que el agente esta insatisfecho. 
+
+$0 \leq S(H_t, i, j) \leq 1$ \ \ \ y \ \ \  $0 \leq \tau \leq 1$
+
+\vspace{10pt}
+
+Entonces notemos que los vecinos se pueden definir de la siguiente forma:
+
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+(i-1, j-1) & (i-1,j) & (i-1,j+1) \\ \hline
+(i, j-1) & (i,j) & (i,j+1) \\ \hline
+(i+1,j-1) & (i+1,j) & (i+1,j+1) \\ \hline
+\end{tabular}
+\end{table}
+
+
+\vspace{20pt}
+
+
+
+Definimos las siguienes funciones indicadores que serviran para contar el numero de vecinos del mismo color y la proporcion de estos
+
+
+
+
+$$
+\begin{aligned}
+R_k &=
+\begin{cases}
+1, & \text{si } H_k = H_{(i,j)} = \text{Rojo} \\
+0, & \text{otra cosa}
+\end{cases} \\[8pt]
+A_k &=
+\begin{cases}
+1, & \text{si } H_k = H_{(i,j)} = \text{Azul} \\
+0, & \text{otra cosa}
+\end{cases} \\[8pt]
+V_k &=
+\begin{cases}
+1, & \text{si } H_k = H_{(i,j)} = \text{Vacante} \\
+0, & \text{otra cosa}
+\end{cases}
+\end{aligned}
+$$
+
+
+
+
+Ahora definimos los siguientes conjuntos de índices:
+
+$F = \{i-1, i, i+1\}$ 
+
+$C = \{j-1, j, j+1\}$ 
+
+
+
+Definimos la siguiente expresión para contar el número de vecinos de igual color
+
+$\left(\sum_{c \in C} \sum_{f \in F} R_k\right) - 1$ 
+
+Ponemos él -1 porque en la doble sumatoria estamos contando también a la celda central, la (i,j). 
+
+\vspace{20pt}
+
+Definimos la siguiente expresión para contar la proporción de vecinos de igual color
+
+$S_k = \frac{\left(\sum_{c \in C} \sum_{f \in F} R_k\right) - 1}{\left(\sum_{c \in C} \sum_{f \in F} R_k\right) - 1 
++\left(\sum_{c \in C} \sum_{f \in F} A_k\right) - 1
++\left(\sum_{c \in C} \sum_{f \in F} V_k\right) - 1} = 
+\\ \\ \\
+\frac{\left(\sum_{c \in C} \sum_{f \in F} R_k\right) - 1}{\left(\sum_{c \in C} \sum_{f \in F} R_k\right) 
++\left(\sum_{c \in C} \sum_{f \in F} A_k\right) 
++\left(\sum_{c \in C} \sum_{f \in F} V_k\right) - 3}$
+
+Ponemos él -3 (o 3 veces el -1) para no considerar la celda centra (i,j)
+
+
+
+\vspace{20pt}
+
+Entonces la regla de decisión es que si $S<\tau$, entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.
+
+
+En cuanto a las transiciones de la cadena $H_t \rightarrow H_{t+1}$, pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual sera seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.
+
+
+Recordando que las notaciones que estamos usando para la celda donde se encuentra al agente: $k=(i,j)$ y las celdas que no son donde se encuentra el agente $k' \neq k => (i',j') \neq (i,j)$
+
+Podemos definir el conjunto $U_t = \{ k' \in U_t / k \rightarrow k' \}$ como el conjunto de celdas vacantes a las que se puede mover un agente insatisfecho que se encuentra en la celda k en el momento t de la grilla. Luego el conjunto $V_t = \{ k' \in V_t / S_{k'} \geq S_k  \}$ es el conjunto de celdas que maximizan el numero de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a  $max(S_{k'})$, la celda $k'$ que maximiza el número de vecinos del mismo color, y por lo tanto se cumple que $max(S_{k'}) > S_k$.  Notar que bajo esta definición se cumple que $V_t \subset U_t$
+
+
+Pero debemos tener en cuenta que puede ocurrir tres casos para el agente en la posición k.
+
+- Que de $U_t$ exista al menos un elemento en $V_t$, del cual buscaremos el máximo de $V_t$ y el agente se moverá para maximizar su numero de vecinos de igual color
+
+- Que de $U_t$ exista al menos un elemento en $V_t$, pero se cumple que estos elementos dan una numero de agentes de igual color que es igual o menor con respecto a la posicion actual en la que se encuentra el agente, en este caso el agente tambien se mueve a cualquiera de las celdas que dan un numero de agentes del mismo color equivalente a la cantidad que tiene con respecto a la celda en la que esta y ignora las que dan un numero menor de agentes de igual color.
+
+- Que de $U_t$ no exista al menos un elemento en $V_t$, es decir todas las celdas a las que se pueden mover el agente dan un numero de vecinos de igual color menor con respecto a la que se encuentra actualmente, en este caso el agente no se mueve y se queda en la posicion en la que esta.
+
+
+Este ultimo caso es importante porque dado que la celda actual es la que maximiza el numero de agentes de igual color (aunque esto no implica necesariamente que el agente este satisfecho), y no hay otra celda que lo haga, si esto ocurre para todos los agentes insatisfechos de la grilla entonces decimos que la cadena entro en un estado absorbente y la grilla se quedara con esa configuración por un tiempo infinito.
+
+Si $V_t = \emptyset \ \ \forall \ k => pii=1$
+
+Si todos los agentes maximizan el número de vecinos del mismo color en la celda en la que están, entonces ya no hay más movimientos y la grilla queda segregada, quedando en este estado por siempre, por lo que tenemos un estado absorbente. Notar que no necesariamente los agentes que están maximizando el número de vecinos de igual color, están satisfechos, eso dependerá del nivel de tolerancia $\tau$ definido.
+
+Si lo queremos formalizar decimos que una configuracion de la grilla $i$ es absorbente si solo si, no existe ningún movimiento que suba la satisfacción de cualquier agente.
+
+$p_{ii} = 1 \iff \forall k' \in H_t, S_k' \leq S_k, \ \ k \neq k'$
+
+siendo k la celda actual en la que se encuentra el agente en el momento t de la grilla.
+
+
+
+Del curso sabemos que la existencia dé al menos un estado absorbente implica que la cadena cuando el tiempo tiende a infinito, tendera con probabilidad 1 a ser absorbida por un estado absorbente, podemos ver esto como que al existir el estado de segregación final donde todos los agentes se ubican donde se maximiza su número de agentes similares, entonces se cumple que:
+
+$lim_{t \rightarrow \infty}P(H_t \in R) = 1$
+
+Donde R es el conjunto de configuraciones absorbentes. 
+
+
+Notar que los estados absorbentes a los que puede entrar la grilla son varios, definidos según el número de agentes que maximizan su número  de vecinos del mismo color, pero se diferencian en que algunos pueden estar satisfechos y otros no, puede ocurrir que todos los agentes en el momento t de la grilla estén satisfechos al maximizar su número de vecinos adyacentes $[argmax(S(i,j)) = (i',j')\ \ y \ \ S(i', j') \geq \tau$], que algunos estén satisfechos y otros no, o que todos estén insatisfechos $[argmax(S(i,j)) = (i',j')  \ \ y \ \ S(i', j')<\tau$], todo esto dependerá del nivel de tolerancia tau.
+
+
+# Diseño de simulación
+
+Seudocodigo usando el paquete algorithm
+
+\begin{algorithm}
+\caption{Funciones auxiliares del modelo de Schelling híbrido}
+\begin{algorithmic}[1]
+
+\Procedure{InicializarGrilla}{N, $p_{vac}$}
+    \State Crear vector con $N_A$ entradas de 1, $N_B$ de -1 y $N_{vac}$ de 0
+    \State Barajar aleatoriamente el vector
+    \State Reorganizarlo en una matriz de tamaño $20 \times 20$
+    \State \Return matriz
+\EndProcedure
+
+\Procedure{VecindadTresPorTres}{s, r, c}
+    \State Determinar rangos de filas y columnas adyacentes a $(r, c)$
+    \State Extraer submatriz correspondiente
+    \State Calcular coordenadas internas del centro
+    \State \Return submatriz, fila\_centro, col\_centro
+\EndProcedure
+
+\Procedure{ProporcionSimilar}{s, r, c}
+    \If{celda $(r,c)$ es vacante}
+        \State \Return NA
+    \EndIf
+    \State Obtener submatriz vecina usando \Call{VecindadTresPorTres}{s, r, c}
+    \State Calcular total de vecinos no vacantes menos el propio
+    \If{total = 0}
+        \State \Return 1
+    \EndIf
+    \State Calcular número de vecinos del mismo tipo menos el propio
+    \State \Return similares / total
+\EndProcedure
+
+\Procedure{ProporcionSiMuevoA}{s, r, c, tipo}
+    \State Obtener vecindad usando \Call{VecindadTresPorTres}{s, r, c}
+    \State Insertar temporalmente el agente de tipo \textit{tipo} en la celda central
+    \State Calcular vecinos no vacantes menos el propio
+    \If{total = 0}
+        \State \Return 1
+    \EndIf
+    \State Calcular vecinos del mismo tipo menos el propio
+    \State \Return similares / total
+\EndProcedure
+
+\Procedure{AgentesInsatisfechos}{s, $\tau$}
+    \State Encontrar todas las celdas no vacantes de $s$
+    \ForAll{celdas $(r,c)$ no vacantes}
+        \State $p \gets$ \Call{ProporcionSimilar}{s, r, c}
+        \If{$p < \tau$}
+            \State Agregar $(r,c)$ a la lista de insatisfechos
+        \EndIf
+    \EndFor
+    \State \Return lista de coordenadas
+\EndProcedure
+
+\Procedure{VacantesOptimas}{s, r, c}
+    \State tipo $\gets s[r,c]$
+    \State Obtener lista de vacantes en $s$
+    \ForAll{vacantes $(r',c')$}
+        \State $p \gets$ \Call{ProporcionSiMuevoA}{s, r', c', tipo}
+        \State Guardar $p$ en un vector de satisfacciones
+    \EndFor
+    \State Determinar valor máximo del vector
+    \State \Return lista de vacantes que alcanzan dicho máximo
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\begin{algorithm}
+\caption{Simular la dinámica de Schelling híbrido}
+\begin{algorithmic}[1]
+
+\Procedure{SimularSchellingHibrido}{\tau, $T_{max}$, R}
+    \State $s \gets$ \Call{InicializarGrilla}{N, $p_{vac}$}
+
+    \For{$t = 1$ to $T_{max}$}
+        \State $\mathcal{U} \gets$ \Call{AgentesInsatisfechos}{s, \tau}
+        \If{$\mathcal{U}$ está vacía}
+            \State \Return (estado cuasi-absorbente, $s$)
+        \EndIf
+
+        \State Elegir al azar $(r,c)$ desde $\mathcal{U}$
+        \State $\mathcal{V} \gets$ \Call{VacantesOptimas}{s, r, c}
+        \State Elegir al azar $(r', c')$ desde $\mathcal{V}$
+
+        \State tipo $\gets s[r,c]$
+        \State $s[r,c] \gets 0$
+        \State $s[r',c'] \gets$ tipo
+
+        \If{$t \in R$}
+            \State Registrar estado $s$ en el data frame de salida
+        \EndIf
+    \EndFor
+
+    \State \Return (límite de iteraciones alcanzado, historial)
+\EndProcedure
+
+\end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+El criterio de parada es que todos los agentes estén maximizando el numero de vecinos de igual color en la posición en la que están. Si $U_t = \emptyset$, en la simulación es que la lista donde almacenamos los estados movibles sea vacía.  El criterio de parada depende de cierta manera del parámetro de tolerancia porque para valores mas bajos de tolerancia, para estar satisfechos aceptamos pocos vecinos del mismo color y esto repercute en que el numero de transiciones a estados maximizadores sea menor, porque habrá muchos agente satisfechos, lo que causa que la cadena llegue mas rápido al criterio de parada. En el otro caso, si el parámetro de tolerancia es mas alto, exigimos muchos vecinos del mismo color para estar satisfechos, entonces el numero de transiciones a estados maximizadores sera mayor, porque habrá mas agente insatisfechos que se moverán, lo que causa que la cadena llegue mas lento al criterio de parada.
+
+
+
+```{r include = FALSE}
+# Librerias
+library(ggplot2)
+library(spdep)
+library(Matrix)
+library(dplyr)
+library(tidyverse)
+library(igraph)
+
+```
+
+El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero 
+crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino 
+rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el 
+mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de
+su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), 
+el vecino se considera insatisfecho. Los insatisfechos miran todas las casas 
+vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos 
+de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede 
+dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso,
+moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias
+de cómo queda el mapa. Después corre la simulación para distintos valores de 
+tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para
+distintos pasos de tiempo, cómo los barrios se van re ordenando y qué tan 
+mezclados o segregados quedan los rojos y los azules.
+
+```{r crear_grilla, echo = FALSE}
+# Parametros
+GRANDEZA_GRILLA   <- 20
+VACANTES_PORCENTAJE <- 0.10
+
+M          <- GRANDEZA_GRILLA * GRANDEZA_GRILLA
+N_VACANTES <- round(M * VACANTES_PORCENTAJE)
+N_AGENTES  <- M - N_VACANTES
+N_A <- N_AGENTES / 2
+N_B <- N_AGENTES / 2
+
+# Creamos la grilla de tamaño GRANDEZA_GRILLA x GRANDEZA_GRILL, y la llenamos 
+# con agentes identificados por color (que tambien tienen un valor numerico)
+# tenemos agentes rojos (1), agentes azules (-1) y dejamos casillas vacías (0).
+# Las cantidades las determinan los parametros los variables que definimos antes.
+inicializar_grilla <- function(seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)  # si viene semilla, la fijamos
+  poblacion <- c(rep(1, N_A), rep(-1, N_B), rep(0, N_VACANTES))
+  grilla_vector <- sample(poblacion) # mezclamos la población
+  matrix(grilla_vector, nrow = GRANDEZA_GRILLA, ncol = GRANDEZA_GRILLA)
+}
+
+# Devolvemos la vecindad 3x3 alrededor de la celda (r,c), si estamos en una 
+# esquina solamente vamos a devolver 3 vecinos. 
+vecindad_3x3 <- function(grilla, r, c) {
+  min_r <- max(1, r - 1) 
+  max_r <- min(GRANDEZA_GRILLA, r + 1)
+  
+  min_c <- max(1, c - 1)
+  max_c <- min(GRANDEZA_GRILLA, c + 1)
+  
+  sub <- grilla[min_r:max_r, min_c:max_c, drop = FALSE]
+  
+  list(sub = sub, cr = r - min_r + 1, cc = c - min_c + 1)
+}
+
+# Calculamos la proporcion de similitud de los vecinos con (r,c), si (r,c) es
+# vacante devuelve NA, si no es NA, vemos su vecindad, si no tiene vecinos cerca
+# devuelve 1 (o sea completamente satisfecho), si tiene vecinos hace la division
+# vecinos similares / total de vecinos
+obtener_proporcion_similar <- function(grilla, r, c) {
+  tipo <- grilla[r, c]
+  if (tipo == 0) return(NA_real_)  # no hay agente, no se define proporción
+  nb <- vecindad_3x3(grilla, r, c)
+  sub <- nb$sub
+  # quitamos del conteo la celda central
+  total <- sum(sub != 0) - 1
+  if (total <= 0) return(1) # sin vecinos no vacantes, definimos satisfacción 1
+  similares <- sum(sub == tipo) - 1
+  similares / total
+}
+
+# Simulamos qué pasaría si pusieramos un agente de cierto tipo en una celda vacía 
+# y calculamos qué proporción de sus vecinos serían del mismo tipo. Para eso 
+# tomamos la vecindad 3×3, colocamos temporalmente al agente en el centro, 
+# contamos cuántos vecinos hay, cuántos son iguales a él y la función devuelve
+# vecinos similares / total de vecinos. Si no tiene vecinos, devuelve 1.
+proporcion_si_muevo_a <- function(grilla, r, c, tipo) {
+  nb <- vecindad_3x3(grilla, r, c)
+  sub <- nb$sub
+  # colocamos temporalmente al agente en el centro
+  sub[nb$cr, nb$cc] <- tipo
+  total <- sum(sub != 0) - 1
+  if (total <= 0) return(1)
+  similares <- sum(sub == tipo) - 1
+  similares / total
+}
+
+# Buscamos los indices de los agentes que estan insatisfechos (su proporcion de
+# vecinos similares a ellos es menor a tau)
+encontrar_agentes_movibles_hibrido <- function(grilla, tau) {
+  no_vac <- which(grilla != 0, arr.ind = TRUE)
+  if (nrow(no_vac) == 0) return(list())
+  # calcular proporciones solo en esas coordenadas
+  props <- apply(no_vac, 1, function(rc) obtener_proporcion_similar(grilla, rc[1], rc[2]))
+  idx_insat <- which(props < tau)
+  if (length(idx_insat) == 0) return(list())
+  # devolvemos lista de coordenadas (igual estructura que tu versión original)
+  lapply(idx_insat, function(i) c(no_vac[i,1], no_vac[i,2]))
+}
+
+# Buscamos las opciones optimas (las que le presentan mayor satisfaccion) donde 
+# un agente seleccionado puede mudarse a una casilla vacante.
+encontrar_vacantes_optimas_hibrido <- function(grilla, r_vieja, c_vieja, vacantes_coords = NULL) {
+  tipo <- grilla[r_vieja, c_vieja]
+  if (is.null(vacantes_coords))
+    vacantes_coords <- which(grilla == 0, arr.ind = TRUE)
+  if (nrow(vacantes_coords) == 0) return(list())
+
+  # evaluamos la satisfacción posible en cada vacante
+  sats <- apply(vacantes_coords, 1, function(rc) proporcion_si_muevo_a(grilla, rc[1], rc[2], tipo))
+  max_sat <- max(sats)
+  if (!is.finite(max_sat)) return(list())
+
+  idx <- which(sats == max_sat)
+  lapply(idx, function(i) c(vacantes_coords[i, 1], vacantes_coords[i, 2]))
+}
+
+# Buscamos que agentes estan insatisfechos (su proporción de vecinos similares < tau),
+# cuando no hay ninguno, el sistema llegó a un estado estable y termina.
+# Cuando hay insatisfechos, elegimos uno al azar, de ahí le buscamos las vacantes
+# optimas (las que le presentan mayor satisfaccion posible), y si aumenta o le 
+# mantiene la satisfaccion con respecto a la que está se mueve a la casilla vacante.
+simular_schelling_hibrido <- function(tau, max_iter = 1000, pasos_registro = c(1, 10, 50, 100, 200), seed = 42) {
+  set.seed(seed)
+  grilla <- inicializar_grilla(seed)
+  estados_visuales <- list()
+
+  # matriz_a_df(matriz, paso_actual)
+  matriz_a_df <- function(matriz, paso_actual) {
+    df <- as.data.frame.table(matriz)
+    names(df) <- c("Row", "Col", "Tipo")
+    df$Paso <- paso_actual
+    df$Tipo <- factor(df$Tipo, levels = c(1, -1, 0), labels = c("Rojo", "Azul", "Vacante"))
+    df$Row <- GRANDEZA_GRILLA - as.numeric(df$Row) + 1
+    df$Col <- as.numeric(df$Col)
+    df
+  }
+
+  # estado inicial (antes de mover)
+  estados_visuales[["0"]] <- matriz_a_df(grilla, 0)
+  t <- 0
+
+  for (t in 1:max_iter) {
+    # buscamos las vacantes del estado actual (se calcula una vez por iteración)
+    vacantes_coords <- which(grilla == 0, arr.ind = TRUE)
+
+    # agentes que no alcanzan tau
+    agentes_movibles <- encontrar_agentes_movibles_hibrido(grilla, tau)
+    if (length(agentes_movibles) == 0) {
+      # si no hay insatisfechos, guardamos estado final y cortamos
+      estados_visuales[[as.character(t)]] <- matriz_a_df(grilla, t)
+      message(sprintf("Cuasi-absorción (Híbrido, tau=%.3f) alcanzada en el paso %d", tau, t))
+      break
+    }
+
+    # elegimos un agente insatisfecho al azar
+    idx_mover <- sample.int(length(agentes_movibles), 1)
+    pos_vieja <- agentes_movibles[[idx_mover]]
+    r_vieja <- pos_vieja[1]; c_vieja <- pos_vieja[2]
+    tipo <- grilla[r_vieja, c_vieja]
+
+    # buscamos vacantes donde maximice la proporción de vecinos similares
+    vac_opt <- encontrar_vacantes_optimas_hibrido(grilla, r_vieja, c_vieja, vacantes_coords)
+
+    if (length(vac_opt) > 0) {
+    
+      # satisfaccion actual
+      sat_actual <- obtener_proporcion_similar(grilla, r_vieja, c_vieja)
+    
+      # elegimos una vacante óptima al azar
+      pos_nueva <- vac_opt[[ sample.int(length(vac_opt), 1) ]]
+      r_nueva <- pos_nueva[1]; c_nueva <- pos_nueva[2]
+    
+      # satisfaccion en la vacante
+      sat_nueva <- proporcion_si_muevo_a(grilla, r_nueva, c_nueva, tipo)
+    
+      # solo movemos si sat_nueva >= sat_actual
+      if (sat_nueva >= sat_actual) {
+        grilla[r_nueva, c_nueva] <- tipo
+        grilla[r_vieja, c_vieja] <- 0
+      }
+    }
+
+    # si el paso actual está en pasos_registro, guardamos el estado
+    if (t %in% pasos_registro) {
+      estados_visuales[[as.character(t)]] <- matriz_a_df(grilla, t)
+    }
+  }
+
+  # si llegamos a max_iter sin cuasi-absorción, registramos último estado y avisamos
+  if (t == max_iter) {
+    if (!(as.character(max_iter) %in% names(estados_visuales))) {
+      estados_visuales[[as.character(t)]] <- matriz_a_df(grilla, t)
+    }
+    message(sprintf("NO se alcanzó la cuasi-absorción (Híbrido, tau=%.3f) tras %d pasos (max_iter).",
+                    tau, max_iter))
+  }
+
+  df_final <- dplyr::bind_rows(estados_visuales)
+  list(df_estados = df_final, pasos_totales = t)
+}
+
+
+# Corremos varias veces el schelling para diferentes tau
+correr_varias_tau <- function(taus, max_iter = 500, pasos_registro = c(5,25,50,100,200,400), seed = 42) {
+  resultados <- lapply(taus, function(tau) {
+    res <- simular_schelling_hibrido(tau, max_iter, pasos_registro, seed)
+    df <- res$df_estados
+    df$Tau <- factor(tau)
+    df$PasosTotales <- res$pasos_totales
+    df
+  })
+  dplyr::bind_rows(resultados)
+}
+```
+
+
+
+\newpage
+
+Utilizamos las funciones ya definidas para empezar a hacer los plots...
+
+Ejecuciones para distintos valores de tau (nivel de tolerancia) que se deben 
+ir cambiando manualmente:
+
+```{r EJECUCION Y PLOT PARA EL 0.3, echo = FALSE, fig.height=6, fig.width=6}
+# Grafico para el 0.3
+tau <- c(0.3) 
+
+df_plot_hibrido <- correr_varias_tau(
+  taus = tau,
+  max_iter = 500,
+  pasos_registro = c(5, 25, 50, 100, 200, 400),
+  seed = 42
+)
+
+df_plot_hibrido$Paso <- factor(df_plot_hibrido$Paso)
+
+ggplot(df_plot_hibrido, aes(x = Col, y = Row, fill = Tipo)) +
+  geom_tile(color = "white", linewidth = 0.2) +
+  scale_fill_manual(values = c("Rojo" = "firebrick", "Azul" = "steelblue", "Vacante" = "white")) +
+  facet_wrap(~ Tau + Paso, ncol = 3) +
+  theme_void() +
+  labs(
+    title = "Evolución del Modelo de Schelling (Híbrido: Satisface/Maximiza)",
+    subtitle = "tau y pasos indicados por facetas"
+  ) +
+  coord_fixed()
+```
+
+\newpage
+
+```{r EJECUCION Y PLOT PARA EL 0.5, echo = FALSE, fig.height=6, fig.width=6}
+# Grafico para el 0.5
+tau <- c(0.5)
+
+df_plot_hibrido <- correr_varias_tau(
+  taus = tau,
+  max_iter = 500,
+  pasos_registro = c(5, 25, 50, 100, 200, 400),
+  seed = 42
+)
+
+df_plot_hibrido$Paso <- factor(df_plot_hibrido$Paso)
+
+ggplot(df_plot_hibrido, aes(x = Col, y = Row, fill = Tipo)) +
+  geom_tile(color = "white", linewidth = 0.2) +
+  scale_fill_manual(values = c("Rojo" = "firebrick", "Azul" = "steelblue", "Vacante" = "white")) +
+  facet_wrap(~ Tau + Paso, ncol = 3) +
+  theme_void() +
+  labs(
+    title = "Evolución del Modelo de Schelling (Híbrido: Satisface/Maximiza)",
+    subtitle = "tau y pasos indicados por facetas"
+  ) +
+  coord_fixed()
+```
+
+\newpage
+
+```{r EJECUCION Y PLOT PARA EL 0.7, echo = FALSE, fig.height=6, fig.width=6}
+# Grafico para el 0.7
+tau <- c(0.7)
+
+df_plot_hibrido <- correr_varias_tau(
+  taus = tau,
+  max_iter = 500,
+  pasos_registro = c(5, 25, 50, 100, 200, 400),
+  seed = 42
+)
+
+df_plot_hibrido$Paso <- factor(df_plot_hibrido$Paso)
+
+ggplot(df_plot_hibrido, aes(x = Col, y = Row, fill = Tipo)) +
+  geom_tile(color = "white", linewidth = 0.2) +
+  scale_fill_manual(values = c("Rojo" = "firebrick", "Azul" = "steelblue", "Vacante" = "white")) +
+  facet_wrap(~ Tau + Paso, ncol = 3) +
+  theme_void() +
+  labs(
+    title = "Evolución del Modelo de Schelling (Híbrido: Satisface/Maximiza)",
+    subtitle = "tau y pasos indicados por facetas"
+  ) +
+  coord_fixed()
+```
+\newpage
+
+```{r EJECUCION Y PLOT PARA EL 0.9, echo = FALSE, fig.height=6, fig.width=6}
+# Grafico para el 0.9
+tau <- c(0.90)
+
+df_plot_hibrido <- correr_varias_tau(
+  taus = tau,
+  max_iter = 500,
+  pasos_registro = c(5, 25, 50, 100, 200, 400),
+  seed = 42
+)
+
+df_plot_hibrido$Paso <- factor(df_plot_hibrido$Paso)
+
+ggplot(df_plot_hibrido, aes(x = Col, y = Row, fill = Tipo)) +
+  geom_tile(color = "white", linewidth = 0.2) +
+  scale_fill_manual(values = c("Rojo" = "firebrick", "Azul" = "steelblue", "Vacante" = "white")) +
+  facet_wrap(~ Tau + Paso, ncol = 3) +
+  theme_void() +
+  labs(
+    title = "Evolución del Modelo de Schelling (Híbrido: Satisface/Maximiza)",
+    subtitle = "tau y pasos indicados por facetas"
+  ) +
+  coord_fixed()
+```
+
+\newpage
+
+
+
+```{r echo = FALSE}
+# Medimos qué tan grandes son, en promedio, los grupos de personas del mismo 
+# color que quedaron al final del modelo. 
+# Para hacerlo primero miramos todos los grupos de rojos pegados entre sí 
+# (tocándose por costado o esquina) donde cada grupo cuenta como un “bloque” y 
+# anotamos cuántos rojos hay en ese bloque. Después hacemos lo mismo con los azules.
+# Por ultimo juntamos todos los tamaños de bloques (rojos y azules) y calculamos
+# el promedio. Mientras mas grande sea ese número, mas segregada quedó la ciudad.
+obtener_clusters <- function(grilla_final) {
+  tamaños_tipo <- function(mask) {
+    nr <- nrow(mask); nc <- ncol(mask)
+    visited <- matrix(FALSE, nr, nc)
+    dr <- c(-1,-1,-1, 0, 0, 1, 1, 1)
+    dc <- c(-1, 0, 1,-1, 1,-1, 0, 1)
+    sizes <- integer(0)
+
+    for (r in 1:nr) {
+      for (c in 1:nc) {
+        if (mask[r,c] && !visited[r,c]) {
+          # empezamos nuevo cluster con DFS iterativa
+          stack_r <- integer(nr*nc); stack_c <- integer(nr*nc); top <- 1
+          stack_r[top] <- r; stack_c[top] <- c; visited[r,c] <- TRUE
+          count <- 0
+          while (top > 0) {
+            rr <- stack_r[top]; cc <- stack_c[top]; top <- top - 1
+            count <- count + 1
+            for (k in 1:8) {
+              r2 <- rr + dr[k]; c2 <- cc + dc[k]
+              if (r2>=1 && r2<=nr && c2>=1 && c2<=nc &&
+                  mask[r2,c2] && !visited[r2,c2]) {
+                top <- top + 1
+                stack_r[top] <- r2; stack_c[top] <- c2
+                visited[r2,c2] <- TRUE
+              }
+            }
+          }
+          sizes <- c(sizes, count)
+        }
+      }
+    }
+    sizes
+  }
+
+  sizes_A <- tamaños_tipo(grilla_final == 1)
+  sizes_B <- tamaños_tipo(grilla_final == -1)
+  all_sizes <- c(sizes_A, sizes_B)
+  if (length(all_sizes) == 0) return(0)
+  mean(all_sizes)
+}
+
+# Calculamos el indice de Moran, si es valor es positivo, representa que 
+# hay barrios grandes del mismo tipo, si estamos cerca del 0 los agentes estan
+# mezclados y si es negativo los agentes esquivan a los de su mismo tipo.
+calcular_moran <- function(grilla_final) {
+  occ <- (grilla_final != 0)
+  if (!any(occ)) return(NA_real_)
+
+  # mapear cada agente a un id entero
+  idx_mat <- matrix(0, nrow(grilla_final), ncol(grilla_final))
+  coords <- which(occ, arr.ind = TRUE)
+  n <- nrow(coords)
+  idx_mat[occ] <- seq_len(n)
+
+  x <- ifelse(grilla_final[occ] == 1, 1.0, -1.0)
+  mx <- mean(x)
+  xc <- x - mx
+  denom <- sum(xc * xc)
+  if (denom == 0) return(NA_real_)
+
+  dr <- c(-1,-1,-1, 0, 0, 1, 1, 1)
+  dc <- c(-1, 0, 1,-1, 1,-1, 0, 1)
+
+  S0 <- 0.0
+  num <- 0.0
+
+  for (i in 1:n) {
+    r <- coords[i,1]; c <- coords[i,2]
+    for (k in 1:8) {
+      r2 <- r + dr[k]; c2 <- c + dc[k]
+      if (r2>=1 && r2<=GRANDEZA_GRILLA && c2>=1 && c2<=GRANDEZA_GRILLA) {
+        j <- idx_mat[r2, c2]
+        if (j > 0) {
+          # cada par i-j cuenta como una contribución w_ij=1
+          S0  <- S0  + 1.0
+          num <- num + (xc[i] * xc[j])
+        }
+      }
+    }
+  }
+  (n / S0) * (num / denom)
+}
+
+# Corremos una simulacion de Schelling, esta vez sin guardar estados intermedios
+# para devolver los pasos totales, proporcion de insatisfechos, el indice de 
+# Moran y tamaño de clusters
+simular_corrida_metricas <- function(tau, max_iter = 1000, seed = 42) {
+  set.seed(seed)
+  grilla <- inicializar_grilla(seed)
+
+  t <- 0
+  for (t in 1:max_iter) {
+    vacantes_coords <- which(grilla == 0, arr.ind = TRUE)
+    agentes_movibles <- encontrar_agentes_movibles_hibrido(grilla, tau)
+    if (length(agentes_movibles) == 0) break
+
+    # elegimos y movemos un agente insatisfecho al azar
+    pos_vieja <- agentes_movibles[[ sample.int(length(agentes_movibles), 1) ]]
+    r_vieja <- pos_vieja[1]; c_vieja <- pos_vieja[2]
+    tipo <- grilla[r_vieja, c_vieja]
+
+    vac_opt <- encontrar_vacantes_optimas_hibrido(grilla, r_vieja, c_vieja, vacantes_coords)
+    if (length(vac_opt) > 0) {
+      pos_nueva <- vac_opt[[ sample.int(length(vac_opt), 1) ]]
+      grilla[pos_nueva[1], pos_nueva[2]] <- tipo
+      grilla[r_vieja, c_vieja] <- 0
+    }
+  }
+
+  # proporción de insatisfechos final
+  no_vac <- which(grilla != 0, arr.ind = TRUE)
+  insat <- 0
+  if (nrow(no_vac) > 0) {
+    insat <- sum(apply(no_vac, 1, function(rc)
+      obtener_proporcion_similar(grilla, rc[1], rc[2]) < tau))
+  }
+  prop_insatisfechos_final <- as.numeric(insat) / N_AGENTES
+
+  list(
+    pasos_totales      = t,
+    prop_insatisfechos = prop_insatisfechos_final,
+    moran_I            = calcular_moran(grilla),
+    avg_cluster_size   = obtener_clusters(grilla)
+  )
+}
+```
+
+
+
+# Experimentos
+
+
+```{r, echo=FALSE}
+# Para cada tamaño ajustamos los parametros, corremos la simulacion y registramos
+# en cuantos pasos converge.
+comparar_tiempos_convergencia <- function(tamanios,
+                                          tau,
+                                          max_iter = 1000,
+                                          seed = 42,
+                                          vacantes_porcentaje = 0.10) {
+  
+  resultados <- data.frame(
+    tamaño = tamanios,
+    pasos   = NA_integer_
+  )
+  
+  for (i in seq_along(tamaños)) {
+    g <- tamaños[i]
+    
+    # Actualizamos parámetros globales para este tamaño
+    GRANDEZA_GRILLA <<- g
+    M             <<- GRANDEZA_GRILLA * GRANDEZA_GRILLA
+    N_VACANTES    <<- round(M * vacantes_porcentaje)
+    N_AGENTES     <<- M - N_VACANTES
+    N_A           <<- N_AGENTES / 2
+    N_B           <<- N_AGENTES / 2
+    
+    # Corremos la simulación
+    res <- simular_corrida_metricas(
+      tau      = tau,
+      max_iter = max_iter,
+      seed     = seed
+    )
+    
+    resultados$pasos[i] <- res$pasos_totales
+  }
+
+  invisible(resultados)
+}
+```
+
+
+```{r, eval=FALSE, echo=FALSE}
+options(mc.cores = parallel::detectCores())
+tamanios <- c(10, 15, 20, 25, 30, 50, 100)
+res_comp1 <- comparar_tiempos_convergencia(tamaño = tamanios, tau = 0.3)
+
+```
+```{r, results='hide', eval=FALSE, echo=FALSE}
+saveRDS(res_comp1, "res_comp1.rds")
+```
+
+```{r,echo=FALSE}
+res_comp1 <- readRDS("res_comp1.rds")
+  plot(res_comp1$tamaño, res_comp1$pasos,
+       type = "b", pch = 19,
+       xlab = "Tamaño del lado de la grilla",
+       ylab = "Pasos hasta convergencia",
+       main = paste0("Tiempos de convergencia (tau = ", 0.3, ")"))
+
+knitr::kable(
+  res_comp1,
+  col.names = c("tamaño", "pasos"),
+  caption = "Tiempos de convergencia en pasos, (tau = 0.3)"
+)
+ 
+```
+En estos experimentos lo que buscábamos era ver como se comportaba el tiempo de convergencia en pasos a medida que cambiábamos el tamaño de la grilla para diferentes $\tau$ (intolerancia social), vemos que para $\tau = 0.3$ la convergencia en pasos parece crecer de manera lineal a medida que aumentamos el tamaño de grilla, esto quiere decir que con un nivel de tolerancia bajo, el aumento del tamaño de la grilla pareciera producir un aumento lineal en la cantidad de pasos de convergencia, cabe aclarar que para estos experimentos usamos una cantidad de pasos máxima de 3000. Para este $\tau$ no logra alcanzar el máximo de pasos, la grilla de 100x100 logra la convergencia en el paso numero 1999.
+
+
+```{r, warning=FALSE, eval=FALSE, echo=FALSE}
+options(mc.cores = parallel::detectCores())
+tamanios <- c(10, 15, 20, 25, 30, 50, 100)
+res_comp2 <- comparar_tiempos_convergencia(tamaño= tamanios, tau = 0.5)
+
+```
+
+```{r, results='hide', eval=FALSE, echo=FALSE}
+saveRDS(res_comp2, "res_comp2.rds")
+```
+
+```{r, echo=FALSE}
+res_comp2 <- readRDS("res_comp2.rds")
+plot(res_comp2$tamaño, res_comp2$pasos,
+       type = "b", pch = 19,
+       xlab = "Tamaño del lado de la grilla",
+       ylab = "Pasos hasta convergencia",
+       main = paste0("Tiempos de convergencia (tau = ", 0.5, ")"))
+
+knitr::kable(
+  res_comp2,
+  col.names = c("tamaño", "pasos"),
+  caption = "Tiempos de convergencia en pasos, (tau = 0.5)"
+)
+
+```
+Para $\tau=0.5$ vemos que se sigue comportando de una manera bastante lineal a medida que aumentamos el tamaño de la grilla, pero en este caso con una grilla de 100x100 no logra converger y alcanza el numero máximo de iteraciones, esto nos hace pensar que a medida que el nivel de intolerancia es mayor los agentes tienden a no maximizar su satisfacción de una manera tan rápida como vimos para el $\tau= 0.3$ en el que para un tamaño de grilla de 100x100 logró la convergencia.
+
+```{r, eval=FALSE, echo=FALSE}
+options(mc.cores = parallel::detectCores())
+tamanios <- c(10, 15, 20, 25, 30, 50, 100)
+res_comp3 <- comparar_tiempos_convergencia(tamaño=tamanios, tau = 0.7, seed = 32)
+
+
+```
+
+```{r, results='hide', eval=FALSE, echo=FALSE}
+saveRDS(res_comp3, "res_comp3.rds")
+```
+
+```{r, echo=FALSE}
+res_comp3 <- readRDS("res_comp3.rds")
+plot(res_comp3$tamaño, res_comp3$pasos,
+       type = "b", pch = 19,
+       xlab = "Tamaño del lado de la grilla",
+       ylab = "Pasos hasta convergencia",
+       main = paste0("Tiempos de convergencia (tau = ", 0.7, ")"))
+
+knitr::kable(
+  res_comp3,
+  col.names = c("tamaño", "pasos"),
+  caption = "Tiempos de convergencia en pasos, (tau = 0.7)"
+)
+
+```
+En $\tau=0.7$ vemos que no se comporta de una forma tan lineal sino que más exponencial, para un tamaño de grilla de 50x50 ya logra alcanzar el numero máximo de iteraciones, esto quiere decir que la tolerancia tiene un papel clave a la hora poder maximizar su satisfacción.
+
+
+
+\newpage
+
+Ahora vamos a generar un resumen usando algunos valores representativos de tau (0.2, 0.4, 0.6 y 0.8) para ver cómo cambian las principales métricas del modelo. Para cada tau corremos varias simulaciones con distintas semillas y nos quedamos con los valores importantes: cuántos pasos tarda en estabilizarse el sistema, qué proporción de agentes queda insatisfecha, qué tan segregado queda el mapa (Moran) y qué tan grandes son los grupos de un mismo color. Después promediamos todo, calculamos la variabilidad y guardamos los resultados para no repetir cálculos.Para ilustrar, armamos gráficos que muestran cómo cada métrica cambia según la tolerancia, para ver de un vistazo cómo afecta al comportamiento del modelo.
+
+
+```{r echo = FALSE}
+# Parametros
+tau_valores     <- c(0.2, 0.4, 0.6, 0.8)   
+N_REPETICIONES  <- 5                       
+MAX_ITER_SIM    <- 400                     
+SEEDS           <- seq_len(N_REPETICIONES) 
+
+message(sprintf(
+  "Análisis paramétrico RÁPIDO: %d corridas por tau, %d iter máx., %d valores de tau",
+  N_REPETICIONES, MAX_ITER_SIM, length(tau_valores))
+)
+
+# Si existe un archivo RDS con resultados previos, lo cargamos.
+if (file.exists("resultados_param_cached.rds")) {
+  resultados_param <- readRDS("resultados_param_cached.rds")
+  
+} else {
+  # Corremos una simulación y devolvemos sus 4 métricas finales.
+  .run_once <- function(tau, seed) {
+    res <- simular_corrida_metricas(tau = tau, max_iter = MAX_ITER_SIM, seed = seed)
+    c(
+      Pasos              = as.numeric(res$pasos_totales),
+      Prop_Insatisfechos = as.numeric(res$prop_insatisfechos),
+      Moran_I            = as.numeric(res$moran_I),
+      Avg_Cluster_Size   = as.numeric(res$avg_cluster_size)
+    )
+  }
+
+  # Corremos varias veces el modelo con diferentes semillas, le calculamos los
+  # promedios y desvios estandar de las metricas y devolvemos un dataframe como
+  # resumen para cada tau
+  resultados_param_list <- lapply(tau_valores, function(tau_val) {
+    message(sprintf("  tau = %.1f …", tau_val))
+
+    mat <- sapply(SEEDS, function(s) .run_once(tau_val, seed = s))
+
+    medias <- rowMeans(mat, na.rm = TRUE)        # media de cada métrica
+    sds    <- apply(mat, 1, sd, na.rm = TRUE)   # desvío estándar de cada métrica
+
+    data.frame(
+      Tau           = tau_val,
+      Media_Pasos   = medias["Pasos"],
+      SD_Pasos      = sds["Pasos"],
+      Media_Moran   = medias["Moran_I"],
+      SD_Moran      = sds["Moran_I"],
+      Media_Cluster = medias["Avg_Cluster_Size"],
+      SD_Cluster    = sds["Avg_Cluster_Size"],
+      row.names = NULL
+    )
+  })
+
+  # Unimos todos los data.frames (uno por tau) en un solo objeto.
+  resultados_param <- do.call(rbind, resultados_param_list)
+
+  # Guardamos en disco para futuras compilaciones
+  saveRDS(resultados_param, "resultados_param_cached.rds")
+}
+```
+
+
+```{r echo = FALSE}
+message("Resultados del análisis paramétrico (Promedio por tau):")
+
+resultados_param_pretty <- resultados_param |>
+  dplyr::mutate(
+    dplyr::across(where(is.numeric), ~round(.x, 3))
+  )
+
+knitr::kable(
+  resultados_param_pretty,
+  caption = "Resumen del análisis paramétrico por nivel de tolerancia (tau)"
+)
+```
+
+```{r echo = FALSE, fig.height=3}
+# Mostramos cómo cambia el tiempo de convergencia según la tolerancia tau.
+ggplot(resultados_param, aes(x = Tau, y = Media_Pasos)) +
+  geom_line(color = "darkred", linewidth = 1) +
+  geom_point(color = "darkred", size = 3) +
+  geom_errorbar(aes(ymin = Media_Pasos - SD_Pasos, ymax = Media_Pasos + SD_Pasos),
+                width = 0.03, color = "darkred") +
+  labs(title = "Tiempo a Cuasi-Absorción vs. Tolerancia (tau)",
+       y = "Media de Pasos", x = "Umbral de Tolerancia Social (tau)") +
+  theme_minimal()
+
+# Vemos cuanta segregacion genera cada nivel de intolerancia
+ggplot(resultados_param, aes(x = Tau, y = Media_Moran)) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(color = "steelblue", size = 3) +
+  geom_errorbar(aes(ymin = Media_Moran - SD_Moran, ymax = Media_Moran + SD_Moran),
+                width = 0.03, color = "steelblue") +
+  labs(title = "Índice de Moran (Segregación) vs. Tolerancia (tau)",
+       y = "Media del Índice de Moran (I)", x = "Umbral de Tolerancia Social (tau)") +
+  theme_minimal()
+
+# Mostramos si para cada tau se forman grupos chicos o barrios grandes.
+ggplot(resultados_param, aes(x = Tau, y = Media_Cluster)) +
+  geom_line(color = "darkgreen", linewidth = 1) +
+  geom_point(color = "darkgreen", size = 3) +
+  geom_errorbar(aes(ymin = Media_Cluster - SD_Cluster, ymax = Media_Cluster + SD_Cluster),
+                width = 0.03, color = "darkgreen") +
+  labs(title = "Tamaño Medio de Clústeres vs. Tolerancia (tau)",
+       y = "Media del Tamaño de Clústeres", x = "Umbral de Tolerancia Social (tau)") +
+  theme_minimal()
+```
+
+
+Al observar cómo cambia el comportamiento del modelo de Schelling a medida que aumentamos la intolerancia social ($\tau$), aparece un patrón muy claro: cuanto mayor es $\tau$ , más tiempo tarda el sistema en estabilizarse y más segregado termina quedando el mapa. Con $\tau = 0.2$, los agentes son bastante tolerantes, así que el sistema llega rápido al equilibrio ($\sim$ 29 pasos) y apenas se forman agrupamientos fuertes; esto se ve en el índice de Moran bajo ($\sim$0.23) y en un tamaño de clúster moderado. A medida que subimos a $\tau = 0.4$, ya se nota un salto: los agentes se vuelven más exigentes, tardan más en acomodarse ($\sim$106 pasos) y la segregación espacial aumenta de forma notable.
+
+El comportamiento más extremo se ve en $\tau = 0.6$ y $\tau = 0.8$. Con $\tau = 0.6$, la segregación crece mucho (Moran $\sim$ 0.93), los clústeres se vuelven mucho más grandes y el sistema necesita muchos más pasos para acercarse al equilibrio. Finalmente, en $\tau = 0.8$, la tolerancia es tan baja que prácticamente todos los agentes se sienten insatisfechos; como consecuencia, el sistema no llega a absorberse dentro del límite de iteraciones (400 pasos), pero aun así produce una segregación muy marcada (Moran $\sim$ 0.79).
+
+- Tolerancia baja (0.2): todos conviven más o menos mezclados.
+
+- Tolerancia media (0.4): se empiezan a separar.
+
+- Tolerancia un poco alta (0.6): se forman barrios enormes y bien definidos.
+
+
+
+- Tolerancia extrema (0.8): quieren tanto orden que terminan generando más desorden:
+
+
+
+# Resultados y análisis.
+
+Luego de observar los gráficos y ver como afecta el nivel de tolerancia ($\tau$) a distintas métricas como el tamaño medio de clusters, el índice de Moran,  y el tiempo a cuasi-absorción, concluimos que:
+
+
+- El Tamaño Medio de Clústeres es una métrica que indica el tamaño promedio de los clusters formados, un cluster es un grupo de agentes del mismo color. Para calcularlos identificamos cada grupo de vecinos similares calculamos el promedio de sus tamaños. Lo aplicamos a la grilla final de la simulación. 
+En la gráfica que obtuvimos vimos que al subir el umbral de tolerancia ($\tau$) el tamaño medio de los clusters va aumentando, aunque este valor fluctúa para valores de tolerancia mayores que 0.7. Esto tiene sentido porque para valores bajos de tolerancia, vimos que el gráfico tendía a segregar menos, por eso el tamaño promedio de clusters es menor, en cambio para valores altos de tolerancia, el cluster tendría a hacer una segregación casi perfecta, por eso el tamaño medio de clusters es mayor.  
+
+
+
+- El Índice de Moran mide la autocorrelación espacial, la tendencia de los valores de atributos a estar correlacionados con valores vecinos. Es una medida formal de segregación, cuantifica el grado de agrupamiento de los agentes del mismo tipo. Es un valor entre -1 y 1 que se aplica a la grilla final. En el gráfico que hicimos vimos que para niveles bajos de tolerancia, este indica tiene valores bajos, esto tiene sentido ya que la segregación es menor y tenemos menos agrupamiento de vecinos similares. En cambio para niveles altos de tolerancia, tenemos clusters con la mayoría todos sus vecinos iguales, por lo que este indice es mayor.
+
+
+
+
+- El tiempo de Cuasi-Absorción mide el tiempo que se demora en llegar a un estado absorbente. Vemos que cuando aumentamos el valor de tolerancia el tiempo de cuasi-absorción aumenta, esto se debe a que para niveles bajos de tolerancia la mayoría de agentes estarán satisfechos y habrá pocos desplazamientos, por lo que llegaremos rápido al estado absorbente. En cambio para niveles altos de tolerancia, la mayoría de agentes estarán insatisfechos y habrá mas desplazamientos, por lo que llegaremos mas lento al estado absorbente.
+
+
+
+
+
+
+
+# Conclusiones
+
+
+Concluimos que logramos exitosamente formalizar el modelo de Schelling como una Cadena de Markov, definimos el espacio de estados, la regla de transición y la probabilidad de esas transiciones. 
+
+Realizamos una simulación con código en la cual obtuvimos el comportamiento de la grilla para distintos valores de tolerancia $\tau$, ademas de distintas métricas donde vimos la relación de este nivel de tolerancia con distintos elementos como el tamaño medio de clusters, el índice de Moran, y el tiempo a cuasi-absorción.
+
+
+
+
+# Referencias
+
+Enlaces:
+
+\vspace{10pt}
+
+Nicolas Privault, Notes on Markov Chains
+
+https://eva.fcea.udelar.edu.uy/pluginfile.php/677156/mod_resource/content/2/privault.pdf
+
+\vspace{10pt}
+
+Medium, Luca Mingarelli
+
+https://medium.com/data-science/schellings-model-of-racial-segregation-4852fad06c13
+
+\vspace{10pt}
+
+
+
+
+
+
