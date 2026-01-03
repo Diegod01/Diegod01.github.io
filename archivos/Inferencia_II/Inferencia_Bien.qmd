@@ -1170,12 +1170,40 @@ ggplot(plot_lines, aes(x = year_since_first_ascent, y = .value, color = oxygen_u
   
   labs(
     title = "Probabilidad de éxito según Antigüedad y Tipo de Servicio",
-    subtitle = "La tendencia muestra cómo decae la probabilidad al aumentar los años",
     x = "Antigüedad (Años desde el primer registro)",
-    y = "Probabilidad de Compra/Alquiler",
+    y = "Probabilidad de Compra",
     color = "Tipo de Servicio"
   ) +
   theme_minimal() +
   theme(legend.position = "top")
 ```
+
+
+Modelo sin oxigeno 
+
+```{r}
+# Modelo sin oxigeno 
+modje_sin_oxi <- readRDS("modje_sin_oxi.rds")
+```
+
+
+```{r}
+#tidy 
+tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
+  kable(caption = "Estimación de efectos fijos para modelo sin oxígeno") %>%
+  kable_styling()
+```
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
 
