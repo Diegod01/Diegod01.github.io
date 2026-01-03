@@ -960,13 +960,13 @@ Se observa de forma visual que no existen diferencias sustanciales entre los mod
 # MCMC diagnostics
 
 ```{r}
-prior_summary(modsj)
-
-mcmc_trace(modsj, size = 0.1)
-mcmc_dens_overlay(modsj)
-mcmc_acf(modsj)
-neff_ratio(modsj)
-summary(modsj)
+# prior_summary(modsj)
+# 
+# mcmc_trace(modsj, size = 0.1)
+# mcmc_dens_overlay(modsj)
+# mcmc_acf(modsj)
+# neff_ratio(modsj)
+# summary(modsj)
 ```
 
 
@@ -977,26 +977,81 @@ summary(modsj)
 
 
 ```{r}
-prior_summary(modjp)
-
-mcmc_trace(modjp, size = 0.1)
-mcmc_dens_overlay(modjp)
-mcmc_acf(modjp)
-neff_ratio(modjp)
-summary(modjp)
+# prior_summary(modjp)
+# 
+# mcmc_trace(modjp, size = 0.1)
+# mcmc_dens_overlay(modjp)
+# mcmc_acf(modjp)
+# neff_ratio(modjp)
+# summary(modjp)
 ```
 
 
 
 
 ```{r}
-prior_summary(modjs)
-
-mcmc_trace(modjs, size = 0.1)
-mcmc_dens_overlay(modjs)
-mcmc_acf(modjs)
-neff_ratio(modjs)
-summary(modjs)
+# prior_summary(modjs)
+# 
+# mcmc_trace(modjs, size = 0.1)
+# mcmc_dens_overlay(modjs)
+# mcmc_acf(modjs)
+# neff_ratio(modjs)
+# summary(modjs)
 ```
+
+
+
+
+```{r}
+# loo_modsj <- loo(modsj)
+# loo_modje <- loo(modje)
+# loo_modjp <- loo(modjp)
+# loo_modjs <- loo(modjs)
+
+#comparacion
+#loo_compare(loo_modsj, loo_modje, loo_modjp, loo_modjs)
+```
+
+
+
+
+
+
+
+```{r}
+# library(dplyr)
+# 
+# resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+# resumen_post
+# 
+# library(dplyr)
+# 
+# resumen_post <- resumen_post %>%
+#   mutate(
+#     term = recode(term,
+#       "(Intercept)" = "Intercepto",
+#       "seasonAutumn" = "ciclo_mercadoAutumn",
+#       "seasonWinter" = "ciclo_mercadoWinter",
+#       "seasonSummer" = "ciclo_mercadoSummer",
+#       "year_since_first_ascent" = "antiguedad_años",
+#       "oxygen_usedTRUE" = "premium"
+#     )
+#   )
+# 
+# 
+# 
+# 
+# 
+# 
+# resumen_post %>%
+#   kable(digits = 3, caption = "Estimación de efectos fijos con interpretación de impacto en retención de clientes") %>%
+#   kable_styling()
+# 
+# 
+
+
+#table(climbers$ciclo_mercado)
+```
+
 
 
