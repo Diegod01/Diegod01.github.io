@@ -129,8 +129,6 @@ climbers <- climbers %>%
     tam_propiedad = height_metres,
     año_primer_listing = first_ascent_year
   )
-
-
 ```
 
 
@@ -309,6 +307,7 @@ También puede asociarse a estrategias de negocio como descuentos por tiempo de 
 climbers <- climbers %>% 
   mutate(antiguedad_años = año_interaccion - año_primer_listing)
 
+head(climbers)
 ```
 
 
@@ -763,23 +762,25 @@ success_rate <- function(x){mean(x == 1)}
 # Corrida de los modelos
 
 ```{r}
-climbers <- climbers %>% 
-  mutate(
-    años_desde_listing = año_interaccion - año_primer_listing
-  )
-
+# climbers <- climbers %>% 
+#   mutate(
+#     antiguedad_años = año_interaccion - año_primer_listing
+#   )
+# 
+# 
+# head(climbers)
 ```
 
 
 
+## Modelos
 
-
-#Modelo 1
+# Modelo 1
 ```{r}
 options(mc.cores = parallel::detectCores())
 
 # modsj <- stan_glm(
-#   compra ~ premium + ciclo_mercado + años_desde_listing,
+#   compra ~ premium + ciclo_mercado + antiguedad_años,
 #   data = climbers,
 #   family = binomial,
 #   prior_intercept = normal(0, 2.5, autoscale = TRUE),
@@ -809,7 +810,7 @@ Modelo 2
 options(mc.cores = parallel::detectCores())
 
 # modje <- stan_glmer(
-#   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | campaña),
+#   compra ~ ciclo_mercado + antiguedad_años + premium + (1 | campaña),
 #   data = climbers,
 #   family = binomial,
 #   prior_intercept = normal(0, 2.5, autoscale = TRUE),
@@ -843,7 +844,7 @@ Modelo 3
 options(mc.cores = parallel::detectCores())
 
 # modjp <- stan_glmer(
-#   compra ~ ciclo_mercado + años_desde_listing + premium + (1 | propiedad),
+#   compra ~ ciclo_mercado + antiguedad_años + premium + (1 | propiedad),
 #   data = climbers,
 #   family = binomial,
 #   prior_intercept = normal(0, 2.5, autoscale = TRUE),
@@ -887,9 +888,9 @@ library(bayesplot)
 options(mc.cores = parallel::detectCores())
 
 
-# ---- Modelo multinivel (efecto aleatorio por ciclo de mercado) ----
+# # ---- Modelo multinivel (efecto aleatorio por ciclo de mercado) ----
 # modjs <- stan_glmer(
-#   compra ~ premium + ciclo_mercado + años_desde_listing + (1 | ciclo_mercado),
+#   compra ~ ciclo_mercado + antiguedad_años + premium + (1 | ciclo_mercado),
 #   data = climbers,
 #   family = binomial,
 #   prior_intercept = normal(0, 2.5, autoscale = TRUE),
@@ -897,8 +898,8 @@ options(mc.cores = parallel::detectCores())
 #   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
 #   chains = 4, iter = 10000, seed = 84735
 # )
+# # Ejecutado el 03/12/2026
 # 
-# # Guardar modelo
 # saveRDS(modjs, "modjs.rds")
 
 
@@ -959,44 +960,17 @@ Se observa de forma visual que no existen diferencias sustanciales entre los mod
 
 # MCMC diagnostics
 
-```{r}
-# prior_summary(modsj)
-# 
-# mcmc_trace(modsj, size = 0.1)
-# mcmc_dens_overlay(modsj)
-# mcmc_acf(modsj)
-# neff_ratio(modsj)
-# summary(modsj)
-```
-
-
-
-
-
-
-
 
 ```{r}
-# prior_summary(modjp)
-# 
-# mcmc_trace(modjp, size = 0.1)
-# mcmc_dens_overlay(modjp)
-# mcmc_acf(modjp)
-# neff_ratio(modjp)
-# summary(modjp)
-```
+# Demora un poco
 
+prior_summary(modjs)
 
-
-
-```{r}
-# prior_summary(modjs)
-# 
-# mcmc_trace(modjs, size = 0.1)
-# mcmc_dens_overlay(modjs)
-# mcmc_acf(modjs)
-# neff_ratio(modjs)
-# summary(modjs)
+mcmc_trace(modjs, size = 0.1)
+mcmc_dens_overlay(modjs)
+mcmc_acf(modjs)
+neff_ratio(modjs)
+summary(modjs)
 ```
 
 
@@ -1019,39 +993,84 @@ Se observa de forma visual que no existen diferencias sustanciales entre los mod
 
 
 ```{r}
-# library(dplyr)
-# 
-# resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
-# resumen_post
-# 
-# library(dplyr)
-# 
-# resumen_post <- resumen_post %>%
-#   mutate(
-#     term = recode(term,
-#       "(Intercept)" = "Intercepto",
-#       "seasonAutumn" = "ciclo_mercadoAutumn",
-#       "seasonWinter" = "ciclo_mercadoWinter",
-#       "seasonSummer" = "ciclo_mercadoSummer",
-#       "year_since_first_ascent" = "antiguedad_años",
-#       "oxygen_usedTRUE" = "premium"
-#     )
-#   )
-# 
-# 
-# 
-# 
-# 
-# 
-# resumen_post %>%
-#   kable(digits = 3, caption = "Estimación de efectos fijos con interpretación de impacto en retención de clientes") %>%
-#   kable_styling()
-# 
-# 
+library(dplyr)
+#
+resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+resumen_post
+#
+library(dplyr)
+
+resumen_post <- resumen_post %>%
+  mutate(
+    term = recode(term,
+      "(Intercept)" = "Intercepto",
+      "seasonAutumn" = "ciclo_mercadoAutumn",
+      "seasonWinter" = "ciclo_mercadoWinter",
+      "seasonSummer" = "ciclo_mercadoSummer",
+      "year_since_first_ascent" = "antiguedad_años",
+      "oxygen_usedTRUE" = "premium"
+    )
+  )
+
+#
+#
+#
+#
+#
+resumen_post %>%
+  kable(digits = 3, caption = "Estimación de efectos fijos con interpretación de impacto en retención de clientes") %>%
+  kable_styling()
+#
+#
 
 
 #table(climbers$ciclo_mercado)
 ```
 
 
+
+
+
+
+```{r}
+# 1. Creamos el data frame con los nombres exactos que pide el modelo
+newdata_alquiler <- data.frame(
+  oxygen_used = c(FALSE, TRUE),     # Lo que tú llamas 'premium'
+  season = "Spring",               # Lo que tú llamas 'ciclo_mercado'
+  year_since_first_ascent = 0,     # Lo que tú llamas 'antiguedad_años'
+  expedition_id = "NuevaCampaña"   # Lo que tú llamas 'campaña'
+)
+
+# 2. Predicción de probabilidades (esto ya no debería dar error)
+post_preds_alquiler <- posterior_epred(
+  modje, 
+  newdata = newdata_alquiler, 
+  allow.new.levels = TRUE
+)
+
+# 3. Organizamos los resultados con tus etiquetas de negocio para el gráfico
+df_plot_alquiler <- data.frame(
+  Estandar = post_preds_alquiler[,1],
+  Premium  = post_preds_alquiler[,2]
+) %>% 
+  pivot_longer(
+    cols = everything(), 
+    names_to = "Servicio", 
+    values_to = "Probabilidad"
+  )
+
+# 4. Gráfica adaptada al enfoque inmobiliario
+ggplot(df_plot_alquiler, aes(x = Probabilidad, fill = Servicio)) +
+  geom_density(alpha = 0.7) +
+  scale_fill_manual(values = c("Estandar" = "#E74C3C", "Premium" = "#2ECC71")) +
+  labs(
+    title = "Efecto del Servicio Premium en la Probabilidad de Compra",
+    subtitle = "Simulación basada en el modelo jerárquico (modje)",
+    x = "Probabilidad de éxito (Compra)",
+    y = "Densidad",
+    fill = "Tipo de Servicio"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "top")
+```
 
