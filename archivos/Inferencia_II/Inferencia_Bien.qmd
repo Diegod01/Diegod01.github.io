@@ -1,7 +1,16 @@
 ---
 title: "Proyecto Inferencia II: Climbers"
-author: "Santiago Robatto, Diego Da Rosa, Sofía Terra, Nahuel Bizoso"
-format: pdf
+author: "Diego Da Rosa"
+format:
+  pdf:
+    documentclass: article
+    include-in-header:
+      text: |
+        \usepackage{booktabs}
+        \usepackage{longtable}
+        \usepackage{array}
+        \usepackage{threeparttable}
+        \usepackage{threeparttablex}
 execute:
   echo: false
   warning: false
@@ -192,15 +201,14 @@ variables <- data.frame(
   )
 )
 
-kable(
+knitr::kable(
   variables,
   caption = "Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)",
   booktabs = TRUE,
   longtable = TRUE
-) %>%
-  kable_styling(
-    font_size = 8,
-    latex_options = c("scale_down")
+) |>
+  kableExtra::kable_styling(
+    font_size = 8
   )
 ``` 
 
@@ -1196,7 +1204,15 @@ tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
 
 
 ```{r}
-
+# Limpieza de datos usando los nombres de las variables tras el rename
+climbers_common <- climbers %>%
+  drop_na(
+    compra,               # Antes: success
+    ciclo_mercado,        # Antes: season
+    premium,              # Antes: oxygen_used
+    campaña,              # Antes: expedition_id
+    antiguedad_años       # Antes: year_since_first_ascent
+  )
 ```
 
 
@@ -1204,6 +1220,106 @@ tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
 
 
 
+```{r}
+modje_sin_anios <- readRDS("modje_sin_anios.rds")
+modje_original <- readRDS("modje_original.rds")
+```
 
 
+
+```{r}
+resumen_post <- tidy(modje_sin_anios, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+
+resumen_post %>%
+  select(term, estimate, std.error, conf.low, conf.high) %>%
+  kable(digits = 3, caption = "Estimacion de efectos fijos ") %>%
+  kable_styling()
+```
+
+
+
+
+
+```{r}
+# 1. Creamos el data frame con los 4 ciclos de mercado
+# Usamos 'oxygen_used = TRUE' para simular el escenario "Premium" en cada ciclo
+newdata_ciclos <- data.frame(
+  season = c("Spring", "Summer", "Autumn", "Winter"), # Ciclo de mercado
+  oxygen_used = TRUE,                                # Servicio Premium
+  year_since_first_ascent = 0,                       # Antigüedad base
+  expedition_id = "NuevaCampaña"                     # ID para efecto aleatorio
+)
+
+# 2. Predicción de las probabilidades posteriores
+post_preds_ciclos <- posterior_epred(modje, newdata = newdata_ciclos, allow.new.levels = TRUE)
+
+# 3. Organización de datos para graficar
+df_ciclos <- data.frame(post_preds_ciclos)
+# Asignamos los nombres de los ciclos a las columnas
+colnames(df_ciclos) <- newdata_ciclos$season
+
+df_plot_ciclos <- df_ciclos %>%
+  pivot_longer(
+    cols = everything(), 
+    names_to = "Ciclo_Mercado", 
+    values_to = "Probabilidad"
+  )
+
+# 4. Gráfica adaptada (Boxplot)
+ggplot(df_plot_ciclos, aes(x = reorder(Ciclo_Mercado, Probabilidad, FUN = median), y = Probabilidad, fill = Ciclo_Mercado)) +
+  # El boxplot muestra la mediana y la incertidumbre de la predicción
+  geom_boxplot(width = 0.4, color = "black", alpha = 0.7) +
+  # Usamos una paleta de colores profesional
+  scale_fill_brewer(palette = "Set3") +
+  labs(
+    title = "Probabilidad de Éxito según el Ciclo de Mercado",
+    subtitle = "Simulación para propiedades con Servicio Premium",
+    x = "Ciclo de Mercado (Temporada)",
+    y = "Probabilidad de Compra / Alquiler"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold")
+  )
+```
+
+
+```{r}
+# 1. Definir datos para la nueva campaña (sin considerar antigüedad)
+new_campaña_data <- data.frame(
+  oxygen_used = c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE), 
+  season = c("Spring", "Spring", "Winter", "Winter", "Autumn", "Autumn", "Summer", "Summer"),
+  expedition_id = "Campaña_Futura" 
+)
+
+# 2. Predicciones posteriores
+set.seed(84735)
+# Usamos posterior_predict para obtener los resultados binarios (0 o 1) simulados
+pred_binaria <- posterior_predict(
+  modje_sin_anios, 
+  newdata = new_campaña_data, 
+  allow.new.levels = TRUE
+)
+
+# 3. Cálculo de probabilidad promedio de éxito
+# colMeans sobre una predicción binaria nos da la proporción de éxitos (probabilidad)
+prob_exito <- colMeans(pred_binaria)
+
+# 4. Tabla con resultados adaptados al negocio
+data.frame(
+  Servicio = ifelse(new_campaña_data$oxygen_used, "Premium", "Estándar"),
+  Ciclo_Mercado = new_campaña_data$season,
+  Probabilidad_Compra = round(prob_exito, 3)
+) %>%
+  arrange(desc(Probabilidad_Compra)) %>% # Ordenamos para ver lo más exitoso arriba
+  kable(caption = "Predicción de éxito para una nueva Campaña Inmobiliaria") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
+
+
+
+```{r}
+head(climbers)
+```
 

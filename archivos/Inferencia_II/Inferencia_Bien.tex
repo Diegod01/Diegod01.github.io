@@ -5,9 +5,7 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-  letterpaper,
-  DIV=11,
-  numbers=noendperiod]{scrartcl}
+]{article}
 \usepackage{xcolor}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
@@ -120,7 +118,11 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\KOMAoption{captions}{tableheading}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
@@ -167,7 +169,7 @@
 \urlstyle{same}
 \hypersetup{
   pdftitle={Proyecto Inferencia II: Climbers},
-  pdfauthor={Santiago Robatto, Diego Da Rosa, Sofía Terra, Nahuel Bizoso},
+  pdfauthor={Diego Da Rosa},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -177,7 +179,7 @@
 
 
 \title{Proyecto Inferencia II: Climbers}
-\author{Santiago Robatto, Diego Da Rosa, Sofía Terra, Nahuel Bizoso}
+\author{Diego Da Rosa}
 \date{}
 \begin{document}
 \maketitle
@@ -894,6 +896,54 @@ seasonSummer & 33.6362966 & 27.6343194 & 8.4793551 & 79.5369982\\
 year\_since\_first\_ascent & 0.0491697 & 0.0166085 & 0.0286509 & 0.0716704\\
 \bottomrule
 \end{longtable}
+
+\begin{longtable}[t]{lrrrr}
+\caption{\label{tab:unnamed-chunk-31}Estimacion de efectos fijos}\\
+\toprule
+term & estimate & std.error & conf.low & conf.high\\
+\midrule
+(Intercept) & -3.991 & 0.491 & -5.010 & -3.077\\
+seasonAutumn & 1.696 & 0.602 & 0.570 & 2.941\\
+seasonWinter & -0.126 & 1.695 & -3.600 & 3.133\\
+seasonSummer & 36.012 & 26.336 & 5.746 & 107.405\\
+oxygen\_usedTRUE & 6.122 & 0.515 & 5.199 & 7.203\\
+\bottomrule
+\end{longtable}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-32-1.pdf}}
+
+\begin{longtable}[t]{lllr}
+\caption{\label{tab:unnamed-chunk-33}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
+\toprule
+ & Servicio & Ciclo\_Mercado & Probabilidad\_Compra\\
+\midrule
+8 & Premium & Summer & 0.998\\
+7 & Estándar & Summer & 0.978\\
+6 & Premium & Autumn & 0.845\\
+2 & Premium & Spring & 0.705\\
+4 & Premium & Winter & 0.681\\
+\addlinespace
+5 & Estándar & Autumn & 0.269\\
+3 & Estándar & Winter & 0.154\\
+1 & Estándar & Spring & 0.151\\
+\bottomrule
+\end{longtable}
+
+\begin{verbatim}
+# A tibble: 6 x 21
+  campaña  cliente_id propiedad año_interaccion ciclo_mercado sexo   edad origen
+  <chr>    <fct>      <fct>               <dbl> <fct>         <fct> <dbl> <fct> 
+1 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        28 Spain 
+2 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        27 Spain 
+3 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        35 Spain 
+4 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        37 Spain 
+5 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        43 France
+6 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        38 Spain 
+# i 13 more variables: rol_decision <fct>, partner_externo <lgl>,
+#   interes_max <dbl>, compra <lgl>, decision_individual <lgl>, premium <lgl>,
+#   lead_fallo <lgl>, friccion <lgl>, asesores <int>, tam_propiedad <dbl>,
+#   año_primer_listing <dbl>, antiguedad_años <dbl>, tramo_antiguedad <fct>
+\end{verbatim}
 
 
 
