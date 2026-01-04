@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2026.1.3)  3 JAN 2026 18:59
+This is LuaHBTeX, Version 1.17.1 (MiKTeX 24.1) (format=lualatex 2026.1.3)  3 JAN 2026 23:51
  restricted system commands enabled.
 **Inferencia_Bien.tex
 (./Inferencia_Bien.tex
@@ -39,23 +39,139 @@ Inserting `luaotfload.aux.fixup_fontdata' in `luaotfload.patch_font_unsafe'.
 Inserting `luaotfload.aux.set_capheight' in `luaotfload.patch_font'.
 Inserting `luaotfload.aux.set_xheight' in `luaotfload.patch_font'.
 Inserting `luaotfload.rewrite_fontname' in `luaotfload.patch_font'.
-Inserting `tracingstacklevels' in `input_level_string'. (C:/Users/diego/AppData
-/Local/Programs/MiKTeX/tex/latex/base/article.cls
-Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
-(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/base/size10.clo
-File: size10.clo 2023/05/17 v1.4n Standard LaTeX file (size option)
+Inserting `tracingstacklevels' in `input_level_string'.
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrartcl.cl
+s
+Document Class: scrartcl 2025/12/01 v3.49 KOMA-Script document class (article)
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrkbase.st
+y
+Package: scrkbase 2025/12/01 v3.49 KOMA-Script package (KOMA-Script-dependent b
+asics and keyval usage)
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrbase.sty
+Package: scrbase 2025/12/01 v3.49 KOMA-Script package (KOMA-Script-independent 
+basics and keyval usage)
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrlfile.st
+y
+Package: scrlfile 2025/12/01 v3.49 KOMA-Script package (file load hooks)
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrlfile-ho
+ok.sty
+Package: scrlfile-hook 2025/12/01 v3.49 KOMA-Script package (using LaTeX hooks)
+
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrlogo.sty
+Package: scrlogo 2025/12/01 v3.49 KOMA-Script package (logo)
+))) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+Applying: [2021/05/01] Usage of raw or classic option list on input line 254.
+Already applied: [0000/00/00] Usage of raw or classic option list on input line
+ 370.
+))
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/tocbasic.st
+y
+Package: tocbasic 2025/12/01 v3.49 KOMA-Script package (handling toc-files)
+\scr@dte@tocline@numberwidth=\skip48
+\scr@dte@tocline@numbox=\box51
+)
+Package tocbasic Info: omitting babel extension for `toc'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `toc' on input line 141.
+Class scrartcl Info: File `scrsize11pt.clo' used instead of
+(scrartcl)           file `scrsize11.clo' to setup font sizes on input line 248
+7.
+
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/scrsize11pt
+.clo
+File: scrsize11pt.clo 2025/12/01 v3.49 KOMA-Script font size class option (11pt
+)
 luaotfload | db : Font names database loaded from C:/Users/diego/AppData/Local/M
 iKTeX/luatex-cache/generic/names/luaotfload-names.luc.gz)
-\c@part=\count185
-\c@section=\count186
-\c@subsection=\count187
-\c@subsubsection=\count188
-\c@paragraph=\count189
-\c@subparagraph=\count190
-\c@figure=\count191
-\c@table=\count192
-\abovecaptionskip=\skip48
-\belowcaptionskip=\skip49
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/koma-script/typearea.st
+y
+Package: typearea 2025/12/01 v3.49 KOMA-Script package (type area)
+\ta@bcor=\skip49
+\ta@div=\count185
+Package typearea Info: You've used standard option `letterpaper'.
+(typearea)             This is correct!
+(typearea)             Internally I'm using `paper=letter'.
+(typearea)             If you'd like to set the option with \KOMAoptions,
+(typearea)             you'd have to use `paper=letter' there
+(typearea)             instead of `letterpaper', too.
+\ta@hblk=\skip50
+\ta@vblk=\skip51
+\ta@temp=\skip52
+\footheight=\skip53
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 11
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 614.295pt
+(typearea)              \textwidth      = 446.76004pt
+(typearea)              DIV departure   = -14%
+(typearea)              \evensidemargin = 11.49748pt
+(typearea)              \oddsidemargin  = 11.49748pt
+(typearea)             \paperheight     = 794.96999pt
+(typearea)              \textheight     = 582.20026pt
+(typearea)              \topmargin      = -37.40001pt
+(typearea)              \headheight     = 17.0pt
+(typearea)              \headsep        = 20.40001pt
+(typearea)              \topskip        = 11.0pt
+(typearea)              \footskip       = 47.6pt
+(typearea)              \baselineskip   = 13.6pt
+(typearea)              on input line 1808.
+)
+\c@part=\count186
+\c@section=\count187
+\c@subsection=\count188
+\c@subsubsection=\count189
+\c@paragraph=\count190
+\c@subparagraph=\count191
+\scr@dte@section@maxnumwidth=\skip54
+Class scrartcl Info: using compatibility default `runin=bysign'
+(scrartcl)           for `\section on input line 5007.
+Class scrartcl Info: using compatibility default `afterindent=bysign'
+(scrartcl)           for `\section on input line 5007.
+\scr@dte@part@maxnumwidth=\skip55
+Class scrartcl Info: using compatibility default `afterindent=false'
+(scrartcl)           for `\part on input line 5015.
+\scr@dte@subsection@maxnumwidth=\skip56
+Class scrartcl Info: using compatibility default `runin=bysign'
+(scrartcl)           for `\subsection on input line 5025.
+Class scrartcl Info: using compatibility default `afterindent=bysign'
+(scrartcl)           for `\subsection on input line 5025.
+\scr@dte@subsubsection@maxnumwidth=\skip57
+Class scrartcl Info: using compatibility default `runin=bysign'
+(scrartcl)           for `\subsubsection on input line 5035.
+Class scrartcl Info: using compatibility default `afterindent=bysign'
+(scrartcl)           for `\subsubsection on input line 5035.
+\scr@dte@paragraph@maxnumwidth=\skip58
+Class scrartcl Info: using compatibility default `runin=bysign'
+(scrartcl)           for `\paragraph on input line 5046.
+Class scrartcl Info: using compatibility default `afterindent=bysign'
+(scrartcl)           for `\paragraph on input line 5046.
+\scr@dte@subparagraph@maxnumwidth=\skip59
+Class scrartcl Info: using compatibility default `runin=bysign'
+(scrartcl)           for `\subparagraph on input line 5056.
+Class scrartcl Info: using compatibility default `afterindent=bysign'
+(scrartcl)           for `\subparagraph on input line 5056.
+\abovecaptionskip=\skip60
+\belowcaptionskip=\skip61
+\c@pti@nb@sid@b@x=\box52
+Package tocbasic Info: omitting babel extension for `lof'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lof' on input line 6279.
+\scr@dte@figure@maxnumwidth=\skip62
+\c@figure=\count192
+Package tocbasic Info: omitting babel extension for `lot'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lot' on input line 6291.
+\scr@dte@table@maxnumwidth=\skip63
+\c@table=\count193
+Class scrartcl Info: Redefining `\numberline' on input line 6461.
 \bibindent=\dimen139
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/xcolor/xcolor.sty
 Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
@@ -85,13 +201,13 @@ File: svgnam.def 2023/11/15 v3.01 Predefined colors according to SVG 1.1 (UK)
 File: x11nam.def 2023/11/15 v3.01 Predefined colors according to Unix/X11 (UK)
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsmath/amsmath.sty
 Package: amsmath 2023/05/13 v2.17o AMS math features
-\@mathmargin=\skip50
+\@mathmargin=\skip64
 For additional information on amsmath, use the `?' option.
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsmath/amstext.sty
 Package: amstext 2021/08/26 v2.01 AMS text
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsmath/amsgen.sty
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks17
+\@emptytoks=\toks18
 \ex@=\dimen140
 )) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsmath/amsbsy.sty
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
@@ -99,19 +215,19 @@ Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsmath/amsopn.sty
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count193
+\inf@bad=\count194
 LaTeX Info: Redefining \frac on input line 236.
-\uproot@=\count194
-\leftroot@=\count195
+\uproot@=\count195
+\leftroot@=\count196
 LaTeX Info: Redefining \overline on input line 399.
 LaTeX Info: Redefining \colon on input line 410.
-\classnum@=\count196
-\DOTSCASE@=\count197
+\classnum@=\count197
+\DOTSCASE@=\count198
 LaTeX Info: Redefining \ldots on input line 496.
 LaTeX Info: Redefining \dots on input line 499.
 LaTeX Info: Redefining \cdots on input line 620.
-\Mathstrutbox@=\box51
-\strutbox@=\box52
+\Mathstrutbox@=\box53
+\strutbox@=\box54
 LaTeX Info: Redefining \big on input line 722.
 LaTeX Info: Redefining \Big on input line 723.
 LaTeX Info: Redefining \bigg on input line 724.
@@ -119,31 +235,31 @@ LaTeX Info: Redefining \Bigg on input line 725.
 \big@size=\dimen142
 LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
-\macc@depth=\count198
+\macc@depth=\count199
 LaTeX Info: Redefining \bmod on input line 905.
 LaTeX Info: Redefining \pmod on input line 910.
 LaTeX Info: Redefining \smash on input line 940.
 LaTeX Info: Redefining \relbar on input line 970.
 LaTeX Info: Redefining \Relbar on input line 971.
-\c@MaxMatrixCols=\count199
+\c@MaxMatrixCols=\count266
 \dotsspace@=\muskip16
-\c@parentequation=\count266
-\dspbrk@lvl=\count267
-\tag@help=\toks18
-\row@=\count268
-\column@=\count269
-\maxfields@=\count270
-\andhelp@=\toks19
+\c@parentequation=\count267
+\dspbrk@lvl=\count268
+\tag@help=\toks19
+\row@=\count269
+\column@=\count270
+\maxfields@=\count271
+\andhelp@=\toks20
 \eqnshift@=\dimen143
 \alignsep@=\dimen144
 \tagshift@=\dimen145
 \tagwidth@=\dimen146
 \totwidth@=\dimen147
 \lineht@=\dimen148
-\@envbody=\toks20
-\multlinegap=\skip51
-\multlinetaggap=\skip52
-\mathdisplay@stack=\toks21
+\@envbody=\toks21
+\multlinegap=\skip65
+\multlinetaggap=\skip66
+\mathdisplay@stack=\toks22
 LaTeX Info: Redefining \[ on input line 2953.
 LaTeX Info: Redefining \] on input line 2954.
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/amsfonts/amssymb.sty
@@ -166,9 +282,9 @@ Package: expl3 2024-01-04 L3 programming layer (loader)
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/l3backend/l3backend-lua
 tex.def
 File: l3backend-luatex.def 2024-01-04 L3 backend support: PDF output (LuaTeX)
-\l__color_backend_stack_int=\count271
+\l__color_backend_stack_int=\count272
 Inserting `l3color' in `luaotfload.parse_color'.
-\l__pdf_internal_box=\box53
+\l__pdf_internal_box=\box55
 ))
 Package: unicode-math 2023/08/13 v0.8r Unicode maths in XeLaTeX and LuaLaTeX
 
@@ -191,17 +307,17 @@ Lua module: fontspec 2022/01/15 2.8a Font selection for XeLaTeX and LuaLaTeX
 x.sty
 Package: fontspec-luatex 2022/01/15 v2.8a Font selection for XeLaTeX and LuaLaT
 eX
-\l__fontspec_script_int=\count272
-\l__fontspec_language_int=\count273
-\l__fontspec_strnum_int=\count274
-\l__fontspec_tmp_int=\count275
-\l__fontspec_tmpa_int=\count276
-\l__fontspec_tmpb_int=\count277
-\l__fontspec_tmpc_int=\count278
-\l__fontspec_em_int=\count279
-\l__fontspec_emdef_int=\count280
-\l__fontspec_strong_int=\count281
-\l__fontspec_strongdef_int=\count282
+\l__fontspec_script_int=\count273
+\l__fontspec_language_int=\count274
+\l__fontspec_strnum_int=\count275
+\l__fontspec_tmp_int=\count276
+\l__fontspec_tmpa_int=\count277
+\l__fontspec_tmpb_int=\count278
+\l__fontspec_tmpc_int=\count279
+\l__fontspec_em_int=\count280
+\l__fontspec_emdef_int=\count281
+\l__fontspec_strong_int=\count282
+\l__fontspec_strongdef_int=\count283
 \l__fontspec_tmpa_dim=\dimen149
 \l__fontspec_tmpb_dim=\dimen150
 \l__fontspec_tmpc_dim=\dimen151
@@ -220,13 +336,13 @@ Package: lualatex-math 2022/01/01 v1.12 Patches for mathematics typesetting wit
 h LuaLaTeX
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count283
+\etb@tempcnta=\count284
 )
 Lua module: lualatex-math 2013/08/03 1.3 Patches for mathematics typesetting wit
 h LuaLaTeX)
-\g__um_fam_int=\count284
-\g__um_fonts_used_int=\count285
-\l__um_primecount_int=\count286
+\g__um_fam_int=\count285
+\g__um_fonts_used_int=\count286
+\l__um_primecount_int=\count287
 \g__um_primekern_muskip=\muskip17
 
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/unicode-math/unicode-ma
@@ -273,13 +389,9 @@ Package: textcomp 2020/02/02 v2.0n Standard LaTeX package
 ))
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/microtype/microtype.sty
 Package: microtype 2025/07/09 v3.2b Micro-typographical refinements (RS)
-(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/graphics/keyval.sty
-Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
-\KV@toks@=\toks22
-)
 \MT@toks=\toks23
-\MT@tempbox=\box54
-\MT@count=\count287
+\MT@tempbox=\box56
+\MT@count=\count288
 LaTeX Info: Redefining \noprotrusionifhmode on input line 1087.
 LaTeX Info: Redefining \leftprotrusion on input line 1088.
 \MT@prot@toks=\toks24
@@ -288,7 +400,7 @@ LaTeX Info: Redefining \textls on input line 1449.
 \MT@outer@kern=\dimen152
 LaTeX Info: Redefining \microtypecontext on input line 2053.
 LaTeX Info: Redefining \textmicrotypecontext on input line 2070.
-\MT@listname@count=\count288
+\MT@listname@count=\count289
 
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/microtype/microtype-lua
 tex.def
@@ -298,7 +410,7 @@ Lua module: microtype 2025/07/09 3.2b microtype module.
 Module microtype Info: overwriting function `keepligature' on input line 63
 LaTeX Info: Redefining \lsstyle on input line 779.
 LaTeX Info: Redefining \lslig on input line 779.
-\MT@outer@space=\skip53
+\MT@outer@space=\skip67
 )
 Package microtype Info: Loading configuration file microtype.cfg.
 
@@ -306,35 +418,27 @@ Package microtype Info: Loading configuration file microtype.cfg.
 File: microtype.cfg 2025/07/09 v3.2b microtype main configuration file (RS)
 )
 LaTeX Info: Redefining \microtypesetup on input line 3065.
-) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/parskip/parskip.sty
-Package: parskip 2021-03-14 v2.0h non-zero parskip adjustments
-
-(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/kvoptions/kvoptions.sty
-Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
-(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/generic/ltxcmds/ltxcmds.sty
-Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
-)
-(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/kvsetkeys/kvsetkeys.sty
-Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
-))) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/tools/longtable.sty
+) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/tools/longtable.sty
 Package: longtable 2023-11-01 v4.19 Multi-page Table package (DPC)
-\LTleft=\skip54
-\LTright=\skip55
-\LTpre=\skip56
-\LTpost=\skip57
-\LTchunksize=\count289
+\LTleft=\skip68
+\LTright=\skip69
+\LTpre=\skip70
+\LTpost=\skip71
+\LTchunksize=\count290
 \LTcapwidth=\dimen153
-\LT@head=\box55
-\LT@firsthead=\box56
-\LT@foot=\box57
-\LT@lastfoot=\box58
-\LT@gbox=\box59
-\LT@cols=\count290
-\LT@rows=\count291
-\c@LT@tables=\count292
-\c@LT@chunks=\count293
+\LT@head=\box57
+\LT@firsthead=\box58
+\LT@foot=\box59
+\LT@lastfoot=\box60
+\LT@gbox=\box61
+\LT@cols=\count291
+\LT@rows=\count292
+\c@LT@tables=\count293
+\c@LT@chunks=\count294
 \LT@p@ftn=\toks25
-) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/booktabs/booktabs.sty
+)
+Class scrartcl Info: longtable captions redefined on input line 70.
+(C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/booktabs/booktabs.sty
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \heavyrulewidth=\dimen154
 \lightrulewidth=\dimen155
@@ -346,39 +450,39 @@ Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
 \cmidrulesep=\dimen161
 \cmidrulekern=\dimen162
 \defaultaddspace=\dimen163
-\@cmidla=\count294
-\@cmidlb=\count295
+\@cmidla=\count295
+\@cmidlb=\count296
 \@aboverulesep=\dimen164
 \@belowrulesep=\dimen165
-\@thisruleclass=\count296
-\@lastruleclass=\count297
+\@thisruleclass=\count297
+\@lastruleclass=\count298
 \@thisrulewidth=\dimen166
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/tools/array.sty
 Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
 \col@sep=\dimen167
-\ar@mcellbox=\box60
+\ar@mcellbox=\box62
 \extrarowheight=\dimen168
 \NC@list=\toks26
-\extratabsurround=\skip58
-\backup@length=\skip59
-\ar@cellbox=\box61
+\extratabsurround=\skip72
+\backup@length=\skip73
+\ar@cellbox=\box63
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/tools/calc.sty
 Package: calc 2023/07/08 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count298
-\calc@Bcount=\count299
+\calc@Acount=\count299
+\calc@Bcount=\count300
 \calc@Adimen=\dimen169
 \calc@Bdimen=\dimen170
-\calc@Askip=\skip60
-\calc@Bskip=\skip61
+\calc@Askip=\skip74
+\calc@Bskip=\skip75
 LaTeX Info: Redefining \setlength on input line 80.
 LaTeX Info: Redefining \addtolength on input line 81.
-\calc@Ccount=\count300
-\calc@Cskip=\skip62
+\calc@Ccount=\count301
+\calc@Cskip=\skip76
 )
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/footnotehyper/footnoteh
 yper.sty
 Package: footnotehyper 2025/11/15 v1.1f hyperref aware footnote.sty (JFB)
-\FNH@notes=\box62
+\FNH@notes=\box64
 \FNH@width=\dimen171
 \FNH@toks=\toks27
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/graphics/graphicx.sty
@@ -397,32 +501,32 @@ Package graphics Info: Driver file: luatex.def on input line 107.
 \Gin@req@height=\dimen172
 \Gin@req@width=\dimen173
 )
-\pandoc@box=\box63
+\pandoc@box=\box65
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/multirow/multirow.sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
-\multirow@colwidth=\skip63
-\multirow@cntb=\count301
-\multirow@dima=\skip64
+\multirow@colwidth=\skip77
+\multirow@cntb=\count302
+\multirow@dima=\skip78
 \bigstrutjot=\dimen174
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/wrapfig/wrapfig.sty
 \wrapoverhang=\dimen175
 \WF@size=\dimen176
-\c@WF@wrappedlines=\count302
-\WF@box=\box64
+\c@WF@wrappedlines=\count303
+\WF@box=\box66
 \WF@everypar=\toks28
 Package: wrapfig 2003/01/31  v 3.6
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count303
+\c@float@type=\count304
 \float@exts=\toks29
-\float@box=\box65
+\float@box=\box67
 \@float@everytoks=\toks30
-\@floatcapt=\box66
+\@floatcapt=\box68
 ) (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/colortbl/colortbl.sty
 Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
 \everycr=\toks31
-\minrowclearance=\skip65
-\rownum=\count304
+\minrowclearance=\skip79
+\rownum=\count305
 )
 (C:/Users/diego/AppData/Local/Programs/MiKTeX/tex/latex/pdflscape/pdflscape.sty
 Package: pdflscape 2022-10-27 v0.13 Display of landscape pages in PDF
@@ -446,17 +550,17 @@ Enter file name:
 ! Emergency stop.
 <read *> 
    
-l.116 \usepackage
+l.118 \usepackage
                {threeparttable}
 
 Here is how much of LuaTeX's memory you used:
- 12354 strings out of 476497
- 125086,1977958 words of node,token memory allocated
- 456 words of node memory still in use:
-   3 hlist, 1 rule, 1 dir, 3 kern, 1 glyph, 5 attribute, 60 glue_spec, 5 attribu
+ 15124 strings out of 476497
+ 100000,1977958 words of node,token memory allocated
+ 476 words of node memory still in use:
+   3 hlist, 1 rule, 1 dir, 3 kern, 1 glyph, 5 attribute, 64 glue_spec, 5 attribu
 te_list, 1 write, 1 pdf_colorstack nodes
-   avail lists: 2:14,3:2,7:3,9:2
- 34222 multiletter control sequences out of 65536+600000
+   avail lists: 1:1,2:19,3:2,7:29,9:2,11:3
+ 36977 multiletter control sequences out of 65536+600000
  16 fonts using 855119 bytes
- 90i,0n,91p,519b,148s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,1n,101p,11236b,343s stack positions out of 10000i,1000n,20000p,200000b,200000s
 !  ==> Fatal error occurred, no output PDF file produced!

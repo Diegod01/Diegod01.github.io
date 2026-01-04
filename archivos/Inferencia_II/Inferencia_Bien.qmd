@@ -3,14 +3,7 @@ title: "Proyecto Inferencia II: Climbers"
 author: "Diego Da Rosa"
 format:
   pdf:
-    documentclass: article
-    include-in-header:
-      text: |
-        \usepackage{booktabs}
-        \usepackage{longtable}
-        \usepackage{array}
-        \usepackage{threeparttable}
-        \usepackage{threeparttablex}
+    pdf-engine: lualatex
 execute:
   echo: false
   warning: false
@@ -1321,5 +1314,20 @@ data.frame(
 
 ```{r}
 head(climbers)
+```
+
+
+
+
+
+
+
+
+
+
+```{r}
+unlink("_freeze", recursive = TRUE, force = TRUE)
+unlink("_cache", recursive = TRUE, force = TRUE)
+unlink(".quarto", recursive = TRUE, force = TRUE)
 ```
 

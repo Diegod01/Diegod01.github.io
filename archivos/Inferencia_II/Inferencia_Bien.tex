@@ -5,7 +5,9 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-]{article}
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
 \usepackage{xcolor}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
@@ -118,11 +120,7 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{array}
-\usepackage{threeparttable}
-\usepackage{threeparttablex}
+\KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
