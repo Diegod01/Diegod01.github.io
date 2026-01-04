@@ -18,13 +18,16 @@
     <main>
         <section>
 
+
+      <h2>Introduccion</h2>
+         
  <p>El set de daatos contiene información de clientes provenientes de distintas campañas o procesos de consulta inmobiliaria.</p>
 
  <p>Cuenta con 24 variables y 2,076 observaciones, antes usadas para expediciones, ahora reinterpretadas como registros de clientes.</p>
 
  <p>Algunas variables refieren a características del cliente (edad, género, nacionalidad, perfil), otras al proceso de consulta o decisión de compra (campaña, referidos, trimestre de búsqueda), y algunas a atributos del inmueble consultado, que deberán filtrarse o transformarse para el análisis.</p>
 
- <p>La variable de interés es la compra o no del inmueble (success, renombrada a compra), es decir, queremos predecir un evento binario (1 = compra, 0 = no compra).</p>
+ <p>La variable de interés es la compra o no del inmueble (renombrada a compra), es decir, queremos predecir un evento binario (1 = compra, 0 = no compra).</p>
 
  <p>Por ello utilizaremos un modelo logístico, apropiado para modelar la probabilidad de ocurrencia de un suceso dicotómico.</p>
 
@@ -88,11 +91,34 @@
 <img src="../images/Imagen144.png" alt="Título" class="img-proyecto" width="650">
 
 
-<p>a</p>
+<h2>Correlaciones entre variables numéricas:</h2>
+
+<p>Matriz de correlación entre los predictores cuantitativos usados para explicar a la variable de interés "compra"</p>         
+
+<p>El Coeficiente de correlación entre pares de variables cuantitativas. Varia entre 1 y -1, y toma distintos colores donde:</p>
+
+         <p>- Azul oscuro: correlación positiva elevada. A medida que un predictor aumenta, también lo hace el otro.</p>
+
+        <p>- Rojo: correlación negativa. A medida que un predictor aumenta, el otro disminuye.</p>
+
+         <p>- Blanco: no existe correlación.</p>
 
 
+ <p>Al analizar las relaciones entre las variables cuantitativas de nuestro portafolio inmobiliario, se observan los siguientes hallazgos estratégicos:</p>
 
+ <p>tam_propiedad y interes_max (Correlación: 0.76): Existe una fuerte relación lineal positiva entre el tamaño o valor del activo y el nivel de interés alcanzado por el lead. Es razonable concluir que las propiedades de mayor envergadura o prestigio tienden a traccionar negociaciones que llegan a etapas más avanzadas o "altas" del embudo de ventas.</p>
 
+ <p>tam_propiedad y asesores (Correlación: 0.45): El número de asesores involucrados en la interacción comercial muestra una correlación moderada con el tamaño de la propiedad. Los activos más grandes o complejos suelen demandar equipos de asesoramiento más robustos o expediciones comerciales de mayor escala.</p>
+
+ <p>interes_max y asesores (Correlación: 0.36): Se observa que cuando el proceso de venta alcanza sus puntos más altos de interés, suele haber una mayor presencia de asesores. Esto sugiere que las negociaciones exitosas en propiedades de lujo requieren un acompañamiento técnico más intensivo.</p>
+
+         
+ <p>Se detectó que el año del primer listado (año_primer_listing) guarda una estrecha relación con el tamaño de la propiedad y el interés alcanzado. Resulta lógico pensar que, con el paso de las décadas, el mercado ha evolucionado para gestionar propiedades más complejas y alcanzar niveles de negociación más ambiciosos, para verificar esto creamos una nueva variable definida como:</p>
+ <p>antiguedad_años = año_interaccion - año_primer_listing</p>
+ <p>Esta variable calcula cuántos años han pasado desde que la propiedad entró por primera vez al mercado hasta la interacción actual. Esto nos permitirá evaluar si los activos con mayor trayectoria en el mercado inmobiliario presentan un comportamiento de cierre de ventas distinto a los listados más recientes. </p>
+
+        
+ <p>Realizamos un grafico de esta nueva variable en relacion a la variable de interes "compra"</p>       
          
 <img src="../images/Imagen145.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen146.png" alt="Título" class="img-proyecto" width="650">
