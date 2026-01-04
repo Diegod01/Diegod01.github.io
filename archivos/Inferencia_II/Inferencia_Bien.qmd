@@ -51,13 +51,6 @@ climbers <- climbers_sub
 climbers
 ```
 
-```{r}
-# install.packages("tinytex")
-# tinytex::install_tinytex()
-
-#options(kableExtra.latex.load_packages = FALSE)
-
-```
 
 
 
@@ -148,6 +141,7 @@ climbers <- climbers %>%
     tam_propiedad = height_metres,
     año_primer_listing = first_ascent_year
   )
+
 
 head(climbers)
 ```
@@ -314,7 +308,6 @@ corrplot(M, method = "color", addCoef.col = "black")
 
 
 head(climbers)
-
 ```
 
 
@@ -333,8 +326,6 @@ También puede asociarse a estrategias de negocio como descuentos por tiempo de 
 ```{r}
 climbers <- climbers %>% 
   mutate(antiguedad_años = año_interaccion - año_primer_listing)
-
-head(climbers)
 ```
 
 
@@ -1067,10 +1058,10 @@ resumen_post %>%
 # 1. Creamos el data frame con los nombres exactos que pide el modelo
 newdata_alquiler <- data.frame(
   oxygen_used = c(FALSE, TRUE),     # Lo que tú llamas 'premium'
-  season = "Spring",               # Lo que tú llamas 'ciclo_mercado'
+  season = "Spring",        # Lo que tú llamas 'ciclo_mercado'
   year_since_first_ascent = 0,     # Lo que tú llamas 'antiguedad_años'
   expedition_id = "NuevaCampaña"   # Lo que tú llamas 'campaña'
-)
+) 
 
 # 2. Predicción de probabilidades (esto ya no debería dar error)
 post_preds_alquiler <- posterior_epred(
@@ -1103,6 +1094,8 @@ ggplot(df_plot_alquiler, aes(x = Probabilidad, fill = Servicio)) +
   ) +
   theme_minimal() +
   theme(legend.position = "top")
+
+
 ```
 
 
@@ -1164,6 +1157,7 @@ grid_inmobiliario <- climbers %>%
     # Referencia de campaña (originalmente 'expedition_id')
     expedition_id = "Campaña_Promedio" 
   )
+
 
 # 2. Generar las líneas predictivas (draws)
 # re_formula = NA ignora la variabilidad de campañas específicas para ver la tendencia general
@@ -1301,6 +1295,7 @@ newdata_ciclos <- data.frame(
   expedition_id = "NuevaCampaña"                     # ID para efecto aleatorio
 )
 
+
 # 2. Predicción de las probabilidades posteriores
 post_preds_ciclos <- posterior_epred(modje, newdata = newdata_ciclos, allow.new.levels = TRUE)
 
@@ -1309,15 +1304,17 @@ df_ciclos <- data.frame(post_preds_ciclos)
 # Asignamos los nombres de los ciclos a las columnas
 colnames(df_ciclos) <- newdata_ciclos$season
 
+
+
 df_plot_ciclos <- df_ciclos %>%
   pivot_longer(
     cols = everything(), 
-    names_to = "Ciclo_Mercado", 
+    names_to = "season", 
     values_to = "Probabilidad"
   )
 
 # 4. Gráfica adaptada (Boxplot)
-ggplot(df_plot_ciclos, aes(x = reorder(Ciclo_Mercado, Probabilidad, FUN = median), y = Probabilidad, fill = Ciclo_Mercado)) +
+ggplot(df_plot_ciclos, aes(x = reorder(season, Probabilidad, FUN = median), y = Probabilidad, fill = season)) +
   # El boxplot muestra la mediana y la incertidumbre de la predicción
   geom_boxplot(width = 0.4, color = "black", alpha = 0.7) +
   # Usamos una paleta de colores profesional
@@ -1360,6 +1357,8 @@ pred_binaria <- posterior_predict(
 prob_exito <- colMeans(pred_binaria)
 
 #4. Tabla con resultados adaptados al negocio
+(new_campaña_data)
+
 data.frame(
   Servicio = ifelse(new_campaña_data$oxygen_used, "Premium", "Estándar"),
   Ciclo_Mercado = new_campaña_data$season,
@@ -1368,6 +1367,8 @@ data.frame(
   arrange(desc(Probabilidad_Compra)) %>% # Ordenamos para ver lo más exitoso arriba
   kable(caption = "Predicción de éxito para una nueva Campaña Inmobiliaria") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+
+
 ```
 
 
@@ -1381,8 +1382,14 @@ Si la nueva exploración utiliza oxigeno tiene mas chances de tener success
 classification summary con cutoff 0.5
 
 ```{r}
-set.seed(84735)
+data(climbers_sub)
+climbers <- climbers_sub 
+climbers
+```
 
+
+```{r}
+set.seed(84735)
 classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.5)
 ```
 

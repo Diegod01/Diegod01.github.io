@@ -320,7 +320,7 @@ las variables.
 \begingroup\fontsize{8}{10}\selectfont
 
 \begin{longtable}[t]{lll}
-\caption{\label{tab:unnamed-chunk-5}Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)}\\
+\caption{\label{tab:unnamed-chunk-4}Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)}\\
 \toprule
 Variable & Tipo\_dato & Descripción\\
 \midrule
@@ -434,7 +434,7 @@ friccion & 24 & 2076 & 1.16\\
 
 Matriz de Correlacion:
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-8-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-7-1.pdf}}
 
 \begin{verbatim}
 # A tibble: 6 x 19
@@ -468,21 +468,7 @@ conversiones rápidas.
 También puede asociarse a estrategias de negocio como descuentos por
 tiempo de publicación, rotación de inventario y urgencia comercial.
 
-\begin{verbatim}
-# A tibble: 6 x 20
-  campaña  cliente_id propiedad año_interaccion ciclo_mercado sexo   edad origen
-  <chr>    <fct>      <fct>               <dbl> <fct>         <fct> <dbl> <fct> 
-1 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        28 Spain 
-2 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        27 Spain 
-3 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        35 Spain 
-4 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        37 Spain 
-5 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        43 France
-6 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        38 Spain 
-# i 12 more variables: rol_decision <fct>, partner_externo <lgl>,
-#   interes_max <dbl>, compra <lgl>, decision_individual <lgl>, premium <lgl>,
-#   lead_fallo <lgl>, friccion <lgl>, asesores <int>, tam_propiedad <dbl>,
-#   año_primer_listing <dbl>, antiguedad_años <dbl>
-\end{verbatim}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-9-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-10-1.pdf}}
 
@@ -491,8 +477,6 @@ tiempo de publicación, rotación de inventario y urgencia comercial.
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-12-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-13-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-14-1.pdf}}
 
 gráfico barras apiladas por proporción. sexo y éxito. se observa que la
 proporción de éxito de hombre es apenas mayor, sin embargo, al tener tan
@@ -717,31 +701,31 @@ primer ascenso.
 
 \section{Modelo 1}\label{modelo-1-1}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-17-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-16-1.pdf}}
 
 La barra vertical es el éxito promedio del dataframe. El resto en
 celeste es la tasa de éxito en nuestros 100 dataframes simulados.
 
 Modelo 2
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-18-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-17-1.pdf}}
 
 Notamos que este modelo tiene una mejoría respecto al anterior, pero de
 igual forma pensamos que todavía se puede mejorar más
 
 Modelo 3
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-18-1.pdf}}
 
 \section{Modelo 4}\label{modelo-4-1}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-2.pdf}}
 
 \section{PP\_Checks:}\label{pp_checks}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-1.pdf}}
 
 Se observa de forma visual que no existen diferencias sustanciales entre
 los modelos. Se podría decir que en principio no aporta una mejoría
@@ -749,13 +733,13 @@ realizar agrupamiento.
 
 \section{MCMC diagnostics}\label{mcmc-diagnostics}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-22-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-22-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-2.pdf}}
 
 \begin{table}[!h]
 \centering
-\caption{\label{tab:unnamed-chunk-24}Estimación de efectos fijos}
+\caption{\label{tab:unnamed-chunk-23}Estimación de efectos fijos}
 \centering
 \begin{tabular}[t]{lrrrr}
 \toprule
@@ -772,16 +756,16 @@ Premium & 6.146 & 0.522 & 5.204 & 7.246\\
 \end{tabular}
 \end{table}
 
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-24-1.pdf}}
+
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-25-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-26-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-27-1.pdf}}
-
 Modelo sin oxigeno
 
 \begin{longtable}[t]{lrrrr}
-\caption{\label{tab:unnamed-chunk-28}Estimación de efectos fijos para modelo sin oxígeno}\\
+\caption{\label{tab:unnamed-chunk-27}Estimación de efectos fijos para modelo sin oxígeno}\\
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
@@ -818,7 +802,7 @@ year\_since\_first\_ascent & 0.0491697 & 0.0166085 & 0.0286509 & 0.0716704\\
 \end{verbatim}
 
 \begin{longtable}[t]{lrrrr}
-\caption{\label{tab:unnamed-chunk-30}Estimación de efectos fijos (Modelo sin años)}\\
+\caption{\label{tab:unnamed-chunk-29}Estimación de efectos fijos (Modelo sin años)}\\
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
@@ -830,12 +814,24 @@ oxygen\_usedTRUE & 6.122 & 0.515 & 5.199 & 7.203\\
 \bottomrule
 \end{longtable}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-34-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-33-1.pdf}}
 
 Prediccion
 
+\begin{verbatim}
+  oxygen_used season  expedition_id
+1       FALSE Spring Campaña_Futura
+2        TRUE Spring Campaña_Futura
+3       FALSE Winter Campaña_Futura
+4        TRUE Winter Campaña_Futura
+5       FALSE Autumn Campaña_Futura
+6        TRUE Autumn Campaña_Futura
+7       FALSE Summer Campaña_Futura
+8        TRUE Summer Campaña_Futura
+\end{verbatim}
+
 \begin{longtable}[t]{lllr}
-\caption{\label{tab:unnamed-chunk-35}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
+\caption{\label{tab:unnamed-chunk-34}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
 \toprule
  & Servicio & Ciclo\_Mercado & Probabilidad\_Compra\\
 \midrule
@@ -857,19 +853,68 @@ success
 classification summary con cutoff 0.5
 
 \begin{verbatim}
-Error in eval(predvars, data, env): objeto 'season' no encontrado
+# A tibble: 2,076 x 24
+   expedition_id member_id    peak_id peak_name   year season sex     age
+   <chr>         <fct>        <fct>   <fct>      <dbl> <fct>  <fct> <dbl>
+ 1 AMAD81101     AMAD81101-03 AMAD    Ama Dablam  1981 Spring M        28
+ 2 AMAD81101     AMAD81101-04 AMAD    Ama Dablam  1981 Spring M        27
+ 3 AMAD81101     AMAD81101-02 AMAD    Ama Dablam  1981 Spring M        35
+ 4 AMAD81101     AMAD81101-05 AMAD    Ama Dablam  1981 Spring M        37
+ 5 AMAD81101     AMAD81101-06 AMAD    Ama Dablam  1981 Spring M        43
+ 6 AMAD81101     AMAD81101-07 AMAD    Ama Dablam  1981 Spring M        38
+ 7 AMAD81101     AMAD81101-08 AMAD    Ama Dablam  1981 Spring M        23
+ 8 AMAD81101     AMAD81101-01 AMAD    Ama Dablam  1981 Spring M        36
+ 9 AMAD81101     AMAD81101-09 AMAD    Ama Dablam  1981 Spring M        48
+10 AMAD81101     AMAD81101-11 AMAD    Ama Dablam  1981 Spring M        25
+# i 2,066 more rows
+# i 16 more variables: citizenship <fct>, expedition_role <fct>, hired <lgl>,
+#   highpoint_metres <dbl>, success <lgl>, solo <lgl>, oxygen_used <lgl>,
+#   died <lgl>, death_cause <fct>, death_height_metres <dbl>, injured <lgl>,
+#   injury_type <fct>, injury_height_metres <dbl>, count <int>,
+#   height_metres <dbl>, first_ascent_year <dbl>
+\end{verbatim}
+
+\begin{verbatim}
+$confusion_matrix
+     y    0   1
+ FALSE 1158 111
+  TRUE   74 733
+
+$accuracy_rates
+                          
+sensitivity      0.9083024
+specificity      0.9125296
+overall_accuracy 0.9108863
 \end{verbatim}
 
 classification summary con cutoff 0.8
 
 \begin{verbatim}
-Error in eval(predvars, data, env): objeto 'season' no encontrado
+$confusion_matrix
+     y    0   1
+ FALSE 1246  23
+  TRUE  267 540
+
+$accuracy_rates
+                          
+sensitivity      0.6691450
+specificity      0.9818755
+overall_accuracy 0.8603083
 \end{verbatim}
 
 cut off de 0.3
 
 \begin{verbatim}
-Error in eval(predvars, data, env): objeto 'season' no encontrado
+$confusion_matrix
+     y    0   1
+ FALSE 1109 160
+  TRUE   38 769
+
+$accuracy_rates
+                          
+sensitivity      0.9529120
+specificity      0.8739165
+overall_accuracy 0.9046243
 \end{verbatim}
 
 
