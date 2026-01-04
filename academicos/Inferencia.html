@@ -51,12 +51,49 @@
 
 
 
-<p>aaaaaa</p>
-
 
          
 <img src="../images/Imagen143.png" alt="Título" class="img-proyecto" width="650">
+
+<h2>Análisis Descriptivo: Cartera de Activos Inmobiliarios y Perfil de Leads</h2>
+         
+         <p>Tenemos con un portafolio de activos inmobiliarios diferenciados (propiedad). Estas propiedades tienen una gran variabilidad en su tamaño o valor base (tam_propiedad), lo cual influye directamente en el interés máximo mostrado por el cliente (interes_max) durante el proceso de negociación.</p>
+
+         <p>La edad de los clientes potenciales muestra un rango amplio; sin embargo, el grueso de los interesados se concentra en un segmento de madurez financiera, con edades comprendidas principalmente entre los 29 y 43 años.</p>
+
+         <p>El análisis abarca un historial de interacciones comerciales (año_interaccion) desde 1978 hasta 2019, con un punto medio de actividad en el año 2002. Además, el modelo considera la trayectoria del activo en el mercado, usando el año de su primer listado o salida a la venta (año_primer_listing) como referencia de antigüedad.</p>
+
+
+<p>Los datos muestran que 807 leads concretaron la operación de compra de un total de 2,076 interesados. Esto representa una tasa de conversión del 39%, lo que sirve para medir la eficacia del equipo de ventas.</p>
+
+<p>Se observa que 507 de los 2,076 clientes optaron por servicios o características de alta gama. Veremos mas adelante si existe una correlación positiva entre la contratación de servicios premium y la probabilidad de cierre de la venta.</p>
+
+<p>Las métricas relacionadas con la pérdida definitiva del cliente o incidentes graves durante la negociación presentan una frecuencia extremadamente baja (pocos valores TRUE). Debido a esta escasez de datos, las variables dependientes (como el motivo exacto de la pérdida o el punto del embudo donde ocurrió el incidente) presentan demasiados valores nulos (NA). Por lo tanto, se ha decidido excluir estas variables específicas del modelo predictivo para evitar ruidos estadísticos.</p>
+
+<p>La variable que identifica si el cliente tomó la decisión de compra de forma totalmente independiente, sin asesores externos, solo cuenta con dos registros positivos. Dada su nula representatividad estadística, esta variable también ha sido descartada del análisis.</p>
+
+
+<p>Para tener un dataframe más limpio y eficiente para el modelado predictivo, se eliminaron variables que no aportan valor estadístico o que presentan redundancia informativa. Las variables descartadas son:</p>
+
+<p>- propiedad_id: Se eliminó para evitar la duplicidad de información, ya que el análisis se centrará en el nombre descriptivo del activo (propiedad), el cual ya funciona como identificador único para nuestros fines.</p>
+
+<p>- decision_individual: Descartada debido a su nula variabilidad (solo dos registros positivos), lo que impide que el modelo aprenda patrones significativos sobre las compras sin asesores.</p>
+
+<p>- Variables de Fricción Detallada (motivo_fallo, tam_fallo, tipo_incidente, tam_incidente): Estos campos, que describían la naturaleza exacta de una pérdida de cliente o un problema en la negociación, fueron descartados por la alta frecuencia de valores nulos (NA), derivada de la baja tasa de incidentes críticos en la muestra.</p>
+
+<p>Tras este proceso de limpieza, el nuevo conjunto de datos queda conformado por 18 variables clave, optimizadas para identificar los factores que realmente impulsan la conversión inmobiliaria.</p>
+         
+         
+         
 <img src="../images/Imagen144.png" alt="Título" class="img-proyecto" width="650">
+
+
+<p>a</p>
+
+
+
+
+         
 <img src="../images/Imagen145.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen146.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen147.png" alt="Título" class="img-proyecto" width="650">
