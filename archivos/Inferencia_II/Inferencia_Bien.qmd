@@ -813,6 +813,9 @@ options(mc.cores = parallel::detectCores())
 #   prior_aux = exponential(1, autoscale = TRUE),
 #   chains = 4, iter = 10000, seed = 84735
 # )
+
+
+
 # 
 # saveRDS(modsj, "modsj.rds")
 
@@ -843,7 +846,11 @@ options(mc.cores = parallel::detectCores())
 #   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
 #   chains = 4, iter = 10000, seed = 84735
 # )
-# 
+
+
+
+
+ 
 # saveRDS(modje, "modje.rds")
 
 modje <- readRDS("modje.rds")
@@ -877,7 +884,7 @@ options(mc.cores = parallel::detectCores())
 #   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1, scale_cov = 1),
 #   chains = 4, iter = 10000, seed = 84735
 # )
-# 
+
 # saveRDS(modjp, "modjp.rds")
 
 modjp <- readRDS("modjp.rds")
@@ -913,7 +920,8 @@ library(bayesplot)
 options(mc.cores = parallel::detectCores())
 
 
-# # ---- Modelo multinivel (efecto aleatorio por ciclo de mercado) ----
+# ---- Modelo multinivel (efecto aleatorio por ciclo de mercado) ----
+
 # modjs <- stan_glmer(
 #   compra ~ ciclo_mercado + antiguedad_años + premium + (1 | ciclo_mercado),
 #   data = climbers,
@@ -923,8 +931,9 @@ options(mc.cores = parallel::detectCores())
 #   prior_covariance = decov(reg = 1, conc = 1, shape = 1, scale = 1),
 #   chains = 4, iter = 10000, seed = 84735
 # )
-# # Ejecutado el 03/12/2026
-# 
+
+
+
 # saveRDS(modjs, "modjs.rds")
 
 
@@ -993,16 +1002,23 @@ Se observa de forma visual que no existen diferencias sustanciales entre los mod
 # Deja los gráficos
 mcmc_trace(modjs, size = 0.1)
 mcmc_dens_overlay(modjs)
+mcmc_acf(modjs)
+
 
 # CORRECCIÓN AQUÍ:
 resumen_stats <- as.data.frame(summary(modjs))
 # Quitamos paréntesis de los nombres de las filas para que LaTeX no explote
 rownames(resumen_stats) <- gsub("[()]", "", rownames(resumen_stats))
 
+
+
+
 resumen_stats %>% 
   head(10) %>% 
   kable(caption = "Resumen estadístico del modelo") %>%
   kable_styling(latex_options = "hold_position")
+
+
 ```
 
 
@@ -1035,18 +1051,19 @@ resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.9
 resumen_post %>%
   mutate(term = case_when(
     term == "(Intercept)" ~ "Intercepto",
-    term == "seasonAutumn" ~ "Ciclo_Autumn",
-    term == "seasonWinter" ~ "Ciclo_Winter",
-    term == "seasonSummer" ~ "Ciclo_Summer",
-    term == "year_since_first_ascent" ~ "Antiguedad",
-    term == "oxygen_usedTRUE" ~ "Premium",
+    term == "seasonAutumn" ~ "Ciclo_Mercado_Autumn",
+    term == "seasonWinter" ~ "Ciclo_Mercado_Winter",
+    term == "seasonSummer" ~ "Ciclo_Mercado_Summer",
+    term == "year_since_first_ascent" ~ "Antiguedad_Años",
+    term == "oxygen_usedTRUE" ~ "Premium_TRUE",
     TRUE ~ term
   )) %>%
   kable(digits = 3, format = "latex", booktabs = TRUE, 
         caption = "Estimación de efectos fijos") %>%
   kable_styling(latex_options = c("striped", "hold_position"))
 
-#table(climbers$ciclo_mercado)
+
+
 ```
 
 
@@ -1194,11 +1211,12 @@ Modelo sin oxigeno
 modje_sin_oxi <- readRDS("modje_sin_oxi.rds")
 
 # CORRECCIÓN AQUÍ:
-tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
+tidy(modje_sin_oxi , effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
   mutate(term = gsub("[()]", "", term)) %>% # Limpieza de seguridad
   kable(caption = "Estimación de efectos fijos para modelo sin oxígeno") %>%
   kable_styling(latex_options = "hold_position")
 ```
+
 
 
 
@@ -1215,22 +1233,72 @@ climbers_common <- climbers %>%
 ```
 
 
+```{r}
+# Modelo sin premium
+
+modje_sin_premium <- stan_glmer(
+  compra ~ ciclo_mercado + antiguedad_años + (1 | campaña),
+)
+  
+
+# Modelo sin años
+
+modje_sin_anios <- stan_glmer(
+  compra ~ season + oxygen_used + (1 | expedition_id), 
+)
+
+  
+  
+
+
+
+
+# Tabla  Modelo sin premium
+library(knitr)
+
+tabla <- matrix(
+  c(0.0, 0.0,
+    -167.3, 19.1),
+  nrow = 2,
+  byrow = TRUE
+)
+
+colnames(tabla) <- c("elpd_diff", "se_diff")
+rownames(tabla) <- c("modje", "modje_sin_premium")
+
+kable(tabla)
+
+
+
+
+# Tabla Modelo sin años
+
+library(knitr)
+
+tabla2 <- matrix(
+  c(0.0, 0.0,
+    -0.8, 0.4),
+  nrow = 2,
+  byrow = TRUE
+)
+
+colnames(tabla2) <- c("elpd_diff", "se_diff")
+rownames(tabla2) <- c("modje", "modje_sin_años")
+
+kable(tabla2)
+```
+
+
+
+
+
+
 
 
 
 
 
 ```{r}
-
-getwd()
-list.files()
-file.exists("modje_sin_anios.rds")
-file.exists("modje_original.rds")
-
-
-
-
-
 # Cargamos y procesamos en el mismo lugar para evitar que se pierda el objeto
 modje_sin_anios <- readRDS("modje_sin_anios.rds")
 modje_original <- readRDS("modje_original.rds")
@@ -1384,8 +1452,29 @@ classification summary con cutoff 0.5
 ```{r}
 data(climbers_sub)
 climbers <- climbers_sub 
-climbers
+#climbers
 ```
+
+```{r}
+library(knitr)
+
+
+tabla3 <- data.frame(
+  y = c("FALSE", "TRUE"),
+  `0` = c(1158, 74),
+  `1` = c(111, 733),
+  check.names = FALSE
+)
+
+kable(tabla3, align = "c")
+
+```
+
+
+
+
+
+
 
 
 ```{r}

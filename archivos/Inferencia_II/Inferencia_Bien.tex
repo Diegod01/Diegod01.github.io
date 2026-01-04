@@ -737,6 +737,8 @@ realizar agrupamiento.
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-2.pdf}}
 
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-3.pdf}}
+
 \begin{table}[!h]
 \centering
 \caption{\label{tab:unnamed-chunk-23}Estimación de efectos fijos}
@@ -746,12 +748,12 @@ realizar agrupamiento.
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
 \cellcolor{gray!10}{Intercepto} & \cellcolor{gray!10}{-3.987} & \cellcolor{gray!10}{0.918} & \cellcolor{gray!10}{-5.858} & \cellcolor{gray!10}{-2.253}\\
-Ciclo\_Autumn & 1.726 & 0.619 & 0.533 & 2.940\\
-\cellcolor{gray!10}{Ciclo\_Winter} & \cellcolor{gray!10}{-0.106} & \cellcolor{gray!10}{1.739} & \cellcolor{gray!10}{-3.706} & \cellcolor{gray!10}{3.246}\\
-Ciclo\_Summer & 35.814 & 26.553 & 5.827 & 110.084\\
-\cellcolor{gray!10}{Antiguedad} & \cellcolor{gray!10}{-0.001} & \cellcolor{gray!10}{0.018} & \cellcolor{gray!10}{-0.035} & \cellcolor{gray!10}{0.035}\\
+Ciclo\_Mercado\_Autumn & 1.726 & 0.619 & 0.533 & 2.940\\
+\cellcolor{gray!10}{Ciclo\_Mercado\_Winter} & \cellcolor{gray!10}{-0.106} & \cellcolor{gray!10}{1.739} & \cellcolor{gray!10}{-3.706} & \cellcolor{gray!10}{3.246}\\
+Ciclo\_Mercado\_Summer & 35.814 & 26.553 & 5.827 & 110.084\\
+\cellcolor{gray!10}{Antiguedad\_Años} & \cellcolor{gray!10}{-0.001} & \cellcolor{gray!10}{0.018} & \cellcolor{gray!10}{-0.035} & \cellcolor{gray!10}{0.035}\\
 \addlinespace
-Premium & 6.146 & 0.522 & 5.204 & 7.246\\
+Premium\_TRUE & 6.146 & 0.522 & 5.204 & 7.246\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -778,31 +780,37 @@ year\_since\_first\_ascent & 0.0491697 & 0.0166085 & 0.0286509 & 0.0716704\\
 \end{longtable}
 
 \begin{verbatim}
-[1] "C:/Users/diego/OneDrive/Escritorio/Trabajo/Portafolio_Web/Diegod01.github.io/archivos/Inferencia_II"
+Error in eval(predvars, data, env): objeto 'compra' no encontrado
 \end{verbatim}
 
 \begin{verbatim}
- [1] "climbers.xlsx"                    "Inferencia_Bien.pdf"             
- [3] "Inferencia_Bien.qmd"              "Inferencia_Bien.rmarkdown"       
- [5] "Inferencia_Bien.tex"              "Inferencia_Bien_files"           
- [7] "modje.rds"                        "modje_original.rds"              
- [9] "modje_sin_anios.rds"              "modje_sin_oxi.rds"               
-[11] "modjp.rds"                        "modjs.rds"                       
-[13] "modsj.rds"                        "proyecto-inf-FINAL--1-.rmarkdown"
-[15] "proyecto-inf-FINAL--1-_files"     "proyecto inf FINAL (1).qmd"      
-[17] "proyecto inf FINAL (1).rmarkdown" "Proyecto_final_inf2.pdf"         
+Error in eval(predvars, data, env): objeto 'compra' no encontrado
 \end{verbatim}
 
-\begin{verbatim}
-[1] TRUE
-\end{verbatim}
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+& elpd\_diff & se\_diff \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+modje & 0.0 & 0.0 \\
+modje\_sin\_premium & -167.3 & 19.1 \\
+\end{longtable}
 
-\begin{verbatim}
-[1] TRUE
-\end{verbatim}
+\begin{longtable}[]{@{}lrr@{}}
+\toprule\noalign{}
+& elpd\_diff & se\_diff \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+modje & 0.0 & 0.0 \\
+modje\_sin\_años & -0.8 & 0.4 \\
+\end{longtable}
 
 \begin{longtable}[t]{lrrrr}
-\caption{\label{tab:unnamed-chunk-29}Estimación de efectos fijos (Modelo sin años)}\\
+\caption{\label{tab:unnamed-chunk-30}Estimación de efectos fijos (Modelo sin años)}\\
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
@@ -814,7 +822,7 @@ oxygen\_usedTRUE & 6.122 & 0.515 & 5.199 & 7.203\\
 \bottomrule
 \end{longtable}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-33-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-34-1.pdf}}
 
 Prediccion
 
@@ -831,7 +839,7 @@ Prediccion
 \end{verbatim}
 
 \begin{longtable}[t]{lllr}
-\caption{\label{tab:unnamed-chunk-34}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
+\caption{\label{tab:unnamed-chunk-35}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
 \toprule
  & Servicio & Ciclo\_Mercado & Probabilidad\_Compra\\
 \midrule
@@ -852,27 +860,16 @@ success
 
 classification summary con cutoff 0.5
 
-\begin{verbatim}
-# A tibble: 2,076 x 24
-   expedition_id member_id    peak_id peak_name   year season sex     age
-   <chr>         <fct>        <fct>   <fct>      <dbl> <fct>  <fct> <dbl>
- 1 AMAD81101     AMAD81101-03 AMAD    Ama Dablam  1981 Spring M        28
- 2 AMAD81101     AMAD81101-04 AMAD    Ama Dablam  1981 Spring M        27
- 3 AMAD81101     AMAD81101-02 AMAD    Ama Dablam  1981 Spring M        35
- 4 AMAD81101     AMAD81101-05 AMAD    Ama Dablam  1981 Spring M        37
- 5 AMAD81101     AMAD81101-06 AMAD    Ama Dablam  1981 Spring M        43
- 6 AMAD81101     AMAD81101-07 AMAD    Ama Dablam  1981 Spring M        38
- 7 AMAD81101     AMAD81101-08 AMAD    Ama Dablam  1981 Spring M        23
- 8 AMAD81101     AMAD81101-01 AMAD    Ama Dablam  1981 Spring M        36
- 9 AMAD81101     AMAD81101-09 AMAD    Ama Dablam  1981 Spring M        48
-10 AMAD81101     AMAD81101-11 AMAD    Ama Dablam  1981 Spring M        25
-# i 2,066 more rows
-# i 16 more variables: citizenship <fct>, expedition_role <fct>, hired <lgl>,
-#   highpoint_metres <dbl>, success <lgl>, solo <lgl>, oxygen_used <lgl>,
-#   died <lgl>, death_cause <fct>, death_height_metres <dbl>, injured <lgl>,
-#   injury_type <fct>, injury_height_metres <dbl>, count <int>,
-#   height_metres <dbl>, first_ascent_year <dbl>
-\end{verbatim}
+\begin{longtable}[]{@{}ccc@{}}
+\toprule\noalign{}
+y & 0 & 1 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+FALSE & 1158 & 111 \\
+TRUE & 74 & 733 \\
+\end{longtable}
 
 \begin{verbatim}
 $confusion_matrix
