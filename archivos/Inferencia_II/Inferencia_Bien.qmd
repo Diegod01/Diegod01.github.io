@@ -1336,6 +1336,8 @@ ggplot(df_plot_ciclos, aes(x = reorder(Ciclo_Mercado, Probabilidad, FUN = median
 ```
 
 
+Prediccion
+
 ```{r}
 # 1. Definir datos para la nueva campaña (sin considerar antigüedad)
 new_campaña_data <- data.frame(
@@ -1374,8 +1376,28 @@ data.frame(
 
 
 
+Si la nueva exploración utiliza oxigeno tiene mas chances de tener success
 
+classification summary con cutoff 0.5
 
+```{r}
+set.seed(84735)
 
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.5)
+```
 
+classification summary con cutoff 0.8
 
+```{r}
+set.seed(84735)
+
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.8)
+```
+
+cut off de 0.3
+
+```{r}
+set.seed(84735)
+
+classification_summary(model = modje_sin_anios, data = climbers, cutoff = 0.3)
+```
