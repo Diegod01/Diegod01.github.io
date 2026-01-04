@@ -120,6 +120,9 @@
 \usepackage[normalem]{ulem}
 \usepackage{makecell}
 \usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{threeparttable}
 \KOMAoption{captions}{tableheading}
 \makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
@@ -317,7 +320,7 @@ las variables.
 \begingroup\fontsize{8}{10}\selectfont
 
 \begin{longtable}[t]{lll}
-\caption{\label{tab:unnamed-chunk-4}Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)}\\
+\caption{\label{tab:unnamed-chunk-5}Descripción de Variables del Dataset Inmobiliario (Conversión de Compra)}\\
 \toprule
 Variable & Tipo\_dato & Descripción\\
 \midrule
@@ -431,7 +434,7 @@ friccion & 24 & 2076 & 1.16\\
 
 Matriz de Correlacion:
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-7-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-8-1.pdf}}
 
 \begin{verbatim}
 # A tibble: 6 x 19
@@ -481,8 +484,6 @@ tiempo de publicación, rotación de inventario y urgencia comercial.
 #   año_primer_listing <dbl>, antiguedad_años <dbl>
 \end{verbatim}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-9-1.pdf}}
-
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-10-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-11-1.pdf}}
@@ -490,6 +491,8 @@ tiempo de publicación, rotación de inventario y urgencia comercial.
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-12-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-13-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-14-1.pdf}}
 
 gráfico barras apiladas por proporción. sexo y éxito. se observa que la
 proporción de éxito de hombre es apenas mayor, sin embargo, al tener tan
@@ -714,31 +717,31 @@ primer ascenso.
 
 \section{Modelo 1}\label{modelo-1-1}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-16-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-17-1.pdf}}
 
 La barra vertical es el éxito promedio del dataframe. El resto en
 celeste es la tasa de éxito en nuestros 100 dataframes simulados.
 
 Modelo 2
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-17-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-18-1.pdf}}
 
 Notamos que este modelo tiene una mejoría respecto al anterior, pero de
 igual forma pensamos que todavía se puede mejorar más
 
 Modelo 3
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-18-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-1.pdf}}
 
 \section{Modelo 4}\label{modelo-4-1}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-1.pdf}}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-19-2.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-2.pdf}}
 
 \section{PP\_Checks:}\label{pp_checks}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-20-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-1.pdf}}
 
 Se observa de forma visual que no existen diferencias sustanciales entre
 los modelos. Se podría decir que en principio no aporta una mejoría
@@ -746,139 +749,34 @@ realizar agrupamiento.
 
 \section{MCMC diagnostics}\label{mcmc-diagnostics}
 
-\begin{verbatim}
-Priors for model 'modjs' 
-------
-Intercept (after predictors centered)
- ~ normal(location = 0, scale = 2.5)
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-22-1.pdf}}
 
-Coefficients
-  Specified prior:
-    ~ normal(location = [0,0,0,...], scale = [2.5,2.5,2.5,...])
-  Adjusted prior:
-    ~ normal(location = [0,0,0,...], scale = [ 5.51, 5.05,15.14,...])
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-22-2.pdf}}
 
-Covariance
- ~ decov(reg. = 1, conc. = 1, shape = 1, scale = 1)
-------
-See help('prior_summary.stanreg') for more details
-\end{verbatim}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-1.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-2.pdf}}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-21-3.pdf}}
-
-\begin{verbatim}
-                                 (Intercept) 
-                                     0.24870 
-                                 premiumTRUE 
-                                     0.87620 
-                         ciclo_mercadoAutumn 
-                                     0.26945 
-                         ciclo_mercadoWinter 
-                                     0.24635 
-                         ciclo_mercadoSummer 
-                                     0.37660 
-                          años_desde_listing 
-                                     0.88870 
-         b[(Intercept) ciclo_mercado:Spring] 
-                                     0.23825 
-         b[(Intercept) ciclo_mercado:Autumn] 
-                                     0.30675 
-         b[(Intercept) ciclo_mercado:Winter] 
-                                     0.32580 
-         b[(Intercept) ciclo_mercado:Summer] 
-                                     0.65680 
-Sigma[ciclo_mercado:(Intercept),(Intercept)] 
-                                     0.21905 
-\end{verbatim}
-
-\begin{verbatim}
-
-Model Info:
- function:     stan_glmer
- family:       binomial [logit]
- formula:      compra ~ premium + ciclo_mercado + años_desde_listing + (1 | 
-       ciclo_mercado)
- algorithm:    sampling
- sample:       20000 (posterior sample size)
- priors:       see help('prior_summary')
- observations: 2069
- groups:       ciclo_mercado (4)
-
-Estimates:
-                                               mean   sd   10%   50%   90%
-(Intercept)                                  -1.8    0.9 -2.7  -1.8  -0.8 
-premiumTRUE                                   3.3    0.2  3.1   3.3   3.5 
-ciclo_mercadoAutumn                           0.8    1.2 -0.6   0.8   2.0 
-ciclo_mercadoWinter                          -0.3    1.4 -1.7  -0.2   1.2 
-ciclo_mercadoSummer                          39.8   27.4  9.6  34.1  78.4 
-años_desde_listing                            0.0    0.0  0.0   0.0   0.0 
-b[(Intercept) ciclo_mercado:Spring]          -0.1    0.8 -1.0   0.0   0.8 
-b[(Intercept) ciclo_mercado:Autumn]           0.0    0.9 -0.9   0.0   0.9 
-b[(Intercept) ciclo_mercado:Winter]           0.0    1.0 -1.0   0.0   1.0 
-b[(Intercept) ciclo_mercado:Summer]           0.0    1.1 -1.0   0.0   1.0 
-Sigma[ciclo_mercado:(Intercept),(Intercept)]  1.1    2.1  0.0   0.3   3.0 
-
-Fit Diagnostics:
-           mean   sd   10%   50%   90%
-mean_PPD 0.4    0.0  0.4   0.4   0.4  
-
-The mean_ppd is the sample average posterior predictive distribution of the outcome variable (for details see help('summary.stanreg')).
-
-MCMC diagnostics
-                                             mcse Rhat n_eff
-(Intercept)                                  0.0  1.0   4974
-premiumTRUE                                  0.0  1.0  17524
-ciclo_mercadoAutumn                          0.0  1.0   5389
-ciclo_mercadoWinter                          0.0  1.0   4927
-ciclo_mercadoSummer                          0.3  1.0   7532
-años_desde_listing                           0.0  1.0  17774
-b[(Intercept) ciclo_mercado:Spring]          0.0  1.0   4765
-b[(Intercept) ciclo_mercado:Autumn]          0.0  1.0   6135
-b[(Intercept) ciclo_mercado:Winter]          0.0  1.0   6516
-b[(Intercept) ciclo_mercado:Summer]          0.0  1.0  13136
-Sigma[ciclo_mercado:(Intercept),(Intercept)] 0.0  1.0   4381
-mean_PPD                                     0.0  1.0  20328
-log-posterior                                0.0  1.0   7794
-
-For each parameter, mcse is Monte Carlo standard error, n_eff is a crude measure of effective sample size, and Rhat is the potential scale reduction factor on split chains (at convergence Rhat=1).
-\end{verbatim}
-
-\begin{verbatim}
-# A tibble: 6 x 5
-  term                    estimate std.error conf.low conf.high
-  <chr>                      <dbl>     <dbl>    <dbl>     <dbl>
-1 (Intercept)             -3.99       0.918   -5.86     -2.25  
-2 seasonAutumn             1.73       0.619    0.533     2.94  
-3 seasonWinter            -0.106      1.74    -3.71      3.25  
-4 seasonSummer            35.8       26.6      5.83    110.    
-5 year_since_first_ascent -0.00106    0.0177  -0.0354    0.0347
-6 oxygen_usedTRUE          6.15       0.522    5.20      7.25  
-\end{verbatim}
-
-\begin{longtable}[t]{lrrrr}
-\caption{\label{tab:unnamed-chunk-23}Estimación de efectos fijos con interpretación de impacto en retención de clientes}\\
+\begin{table}[!h]
+\centering
+\caption{\label{tab:unnamed-chunk-24}Estimación de efectos fijos}
+\centering
+\begin{tabular}[t]{lrrrr}
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
-Intercepto & -3.987 & 0.918 & -5.858 & -2.253\\
-ciclo\_mercadoAutumn & 1.726 & 0.619 & 0.533 & 2.940\\
-ciclo\_mercadoWinter & -0.106 & 1.739 & -3.706 & 3.246\\
-ciclo\_mercadoSummer & 35.814 & 26.553 & 5.827 & 110.084\\
-antiguedad\_años & -0.001 & 0.018 & -0.035 & 0.035\\
+\cellcolor{gray!10}{Intercepto} & \cellcolor{gray!10}{-3.987} & \cellcolor{gray!10}{0.918} & \cellcolor{gray!10}{-5.858} & \cellcolor{gray!10}{-2.253}\\
+Ciclo\_Autumn & 1.726 & 0.619 & 0.533 & 2.940\\
+\cellcolor{gray!10}{Ciclo\_Winter} & \cellcolor{gray!10}{-0.106} & \cellcolor{gray!10}{1.739} & \cellcolor{gray!10}{-3.706} & \cellcolor{gray!10}{3.246}\\
+Ciclo\_Summer & 35.814 & 26.553 & 5.827 & 110.084\\
+\cellcolor{gray!10}{Antiguedad} & \cellcolor{gray!10}{-0.001} & \cellcolor{gray!10}{0.018} & \cellcolor{gray!10}{-0.035} & \cellcolor{gray!10}{0.035}\\
 \addlinespace
-premium & 6.146 & 0.522 & 5.204 & 7.246\\
+Premium & 6.146 & 0.522 & 5.204 & 7.246\\
 \bottomrule
-\end{longtable}
-
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-24-1.pdf}}
+\end{tabular}
+\end{table}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-25-1.pdf}}
 
 \pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-26-1.pdf}}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-27-1.pdf}}
 
 Modelo sin oxigeno
 
@@ -887,7 +785,7 @@ Modelo sin oxigeno
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
-(Intercept) & -3.6085705 & 0.8683727 & -4.7851841 & -2.5462811\\
+Intercept & -3.6085705 & 0.8683727 & -4.7851841 & -2.5462811\\
 seasonAutumn & -0.0720445 & 0.5732634 & -0.8217776 & 0.6611852\\
 seasonWinter & -1.1419446 & 1.7162429 & -3.4014098 & 1.0027344\\
 seasonSummer & 33.6362966 & 27.6343194 & 8.4793551 & 79.5369982\\
@@ -895,12 +793,37 @@ year\_since\_first\_ascent & 0.0491697 & 0.0166085 & 0.0286509 & 0.0716704\\
 \bottomrule
 \end{longtable}
 
+\begin{verbatim}
+[1] "C:/Users/diego/OneDrive/Escritorio/Trabajo/Portafolio_Web/Diegod01.github.io/archivos/Inferencia_II"
+\end{verbatim}
+
+\begin{verbatim}
+ [1] "climbers.xlsx"                    "Inferencia_Bien.aux"             
+ [3] "Inferencia_Bien.log"              "Inferencia_Bien.qmd"             
+ [5] "Inferencia_Bien.rmarkdown"        "Inferencia_Bien.tex"             
+ [7] "Inferencia_Bien_files"            "modje.rds"                       
+ [9] "modje_original.rds"               "modje_sin_anios.rds"             
+[11] "modje_sin_oxi.rds"                "modjp.rds"                       
+[13] "modjs.rds"                        "modsj.rds"                       
+[15] "proyecto-inf-FINAL--1-.rmarkdown" "proyecto-inf-FINAL--1-_files"    
+[17] "proyecto inf FINAL (1).qmd"       "proyecto inf FINAL (1).rmarkdown"
+[19] "Proyecto_final_inf2.pdf"         
+\end{verbatim}
+
+\begin{verbatim}
+[1] TRUE
+\end{verbatim}
+
+\begin{verbatim}
+[1] TRUE
+\end{verbatim}
+
 \begin{longtable}[t]{lrrrr}
-\caption{\label{tab:unnamed-chunk-31}Estimacion de efectos fijos}\\
+\caption{\label{tab:unnamed-chunk-30}Estimación de efectos fijos (Modelo sin años)}\\
 \toprule
 term & estimate & std.error & conf.low & conf.high\\
 \midrule
-(Intercept) & -3.991 & 0.491 & -5.010 & -3.077\\
+Intercept & -3.991 & 0.491 & -5.010 & -3.077\\
 seasonAutumn & 1.696 & 0.602 & 0.570 & 2.941\\
 seasonWinter & -0.126 & 1.695 & -3.600 & 3.133\\
 seasonSummer & 36.012 & 26.336 & 5.746 & 107.405\\
@@ -908,10 +831,10 @@ oxygen\_usedTRUE & 6.122 & 0.515 & 5.199 & 7.203\\
 \bottomrule
 \end{longtable}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-32-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Inferencia_Bien_files/figure-pdf/unnamed-chunk-34-1.pdf}}
 
 \begin{longtable}[t]{lllr}
-\caption{\label{tab:unnamed-chunk-33}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
+\caption{\label{tab:unnamed-chunk-35}Predicción de éxito para una nueva Campaña Inmobiliaria}\\
 \toprule
  & Servicio & Ciclo\_Mercado & Probabilidad\_Compra\\
 \midrule
@@ -926,22 +849,6 @@ oxygen\_usedTRUE & 6.122 & 0.515 & 5.199 & 7.203\\
 1 & Estándar & Spring & 0.151\\
 \bottomrule
 \end{longtable}
-
-\begin{verbatim}
-# A tibble: 6 x 21
-  campaña  cliente_id propiedad año_interaccion ciclo_mercado sexo   edad origen
-  <chr>    <fct>      <fct>               <dbl> <fct>         <fct> <dbl> <fct> 
-1 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        28 Spain 
-2 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        27 Spain 
-3 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        35 Spain 
-4 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        37 Spain 
-5 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        43 France
-6 AMAD811~ AMAD81101~ Ama Dabl~            1981 Spring        M        38 Spain 
-# i 13 more variables: rol_decision <fct>, partner_externo <lgl>,
-#   interes_max <dbl>, compra <lgl>, decision_individual <lgl>, premium <lgl>,
-#   lead_fallo <lgl>, friccion <lgl>, asesores <int>, tam_propiedad <dbl>,
-#   año_primer_listing <dbl>, antiguedad_años <dbl>, tramo_antiguedad <fct>
-\end{verbatim}
 
 
 

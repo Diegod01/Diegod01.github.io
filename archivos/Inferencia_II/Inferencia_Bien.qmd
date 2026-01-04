@@ -3,14 +3,21 @@ title: "Proyecto Inferencia II: Climbers"
 author: "Diego Da Rosa"
 format:
   pdf:
-    pdf-engine: lualatex
+    pdf-engine: pdflatex
+    keep-tex: true
+    include-in-header: 
+      text: |
+        \usepackage{booktabs}
+        \usepackage{longtable}
+        \usepackage{threeparttable}
 execute:
   echo: false
   warning: false
   message: false
-  error: false
+  error: true
 editor: visual
 ---
+
 
 
 ```{r}
@@ -43,6 +50,15 @@ data(climbers_sub)
 climbers <- climbers_sub 
 climbers
 ```
+
+```{r}
+# install.packages("tinytex")
+# tinytex::install_tinytex()
+
+#options(kableExtra.latex.load_packages = FALSE)
+
+```
+
 
 
 
@@ -218,7 +234,6 @@ knitr::kable(
 
 library(dplyr)
 library(tidyr)
-library(kableExtra)
 climbers_sub
 
 # variables numéricas
@@ -981,15 +996,22 @@ Se observa de forma visual que no existen diferencias sustanciales entre los mod
 
 
 ```{r}
-# Demora un poco
+#| results: 'hide'
+#| echo: false
 
-prior_summary(modjs)
-
+# Deja los gráficos
 mcmc_trace(modjs, size = 0.1)
 mcmc_dens_overlay(modjs)
-mcmc_acf(modjs)
-neff_ratio(modjs)
-summary(modjs)
+
+# CORRECCIÓN AQUÍ:
+resumen_stats <- as.data.frame(summary(modjs))
+# Quitamos paréntesis de los nombres de las filas para que LaTeX no explote
+rownames(resumen_stats) <- gsub("[()]", "", rownames(resumen_stats))
+
+resumen_stats %>% 
+  head(10) %>% 
+  kable(caption = "Resumen estadístico del modelo") %>%
+  kable_styling(latex_options = "hold_position")
 ```
 
 
@@ -1012,36 +1034,26 @@ summary(modjs)
 
 
 ```{r}
-library(dplyr)
-#
+library(tidyverse)
+
 resumen_post <- tidy(modje, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
-resumen_post
-#
-library(dplyr)
 
-resumen_post <- resumen_post %>%
-  mutate(
-    term = recode(term,
-      "(Intercept)" = "Intercepto",
-      "seasonAutumn" = "ciclo_mercadoAutumn",
-      "seasonWinter" = "ciclo_mercadoWinter",
-      "seasonSummer" = "ciclo_mercadoSummer",
-      "year_since_first_ascent" = "antiguedad_años",
-      "oxygen_usedTRUE" = "premium"
-    )
-  )
+# IMPORTANTE: No escribas 'resumen_post' solo en una línea, 
+# eso lo imprime en crudo y rompe el PDF.
 
-#
-#
-#
-#
-#
 resumen_post %>%
-  kable(digits = 3, caption = "Estimación de efectos fijos con interpretación de impacto en retención de clientes") %>%
-  kable_styling()
-#
-#
-
+  mutate(term = case_when(
+    term == "(Intercept)" ~ "Intercepto",
+    term == "seasonAutumn" ~ "Ciclo_Autumn",
+    term == "seasonWinter" ~ "Ciclo_Winter",
+    term == "seasonSummer" ~ "Ciclo_Summer",
+    term == "year_since_first_ascent" ~ "Antiguedad",
+    term == "oxygen_usedTRUE" ~ "Premium",
+    TRUE ~ term
+  )) %>%
+  kable(digits = 3, format = "latex", booktabs = TRUE, 
+        caption = "Estimación de efectos fijos") %>%
+  kable_styling(latex_options = c("striped", "hold_position"))
 
 #table(climbers$ciclo_mercado)
 ```
@@ -1186,15 +1198,14 @@ Modelo sin oxigeno
 ```{r}
 # Modelo sin oxigeno 
 modje_sin_oxi <- readRDS("modje_sin_oxi.rds")
-```
 
-
-```{r}
-#tidy 
+# CORRECCIÓN AQUÍ:
 tidy(modje_sin_oxi, effects = "fixed", conf.int = TRUE, conf.level = 0.80) %>%
+  mutate(term = gsub("[()]", "", term)) %>% # Limpieza de seguridad
   kable(caption = "Estimación de efectos fijos para modelo sin oxígeno") %>%
-  kable_styling()
+  kable_styling(latex_options = "hold_position")
 ```
+
 
 
 ```{r}
@@ -1214,23 +1225,69 @@ climbers_common <- climbers %>%
 
 
 
+
 ```{r}
+
+getwd()
+list.files()
+file.exists("modje_sin_anios.rds")
+file.exists("modje_original.rds")
+
+
+
+
+
+# Cargamos y procesamos en el mismo lugar para evitar que se pierda el objeto
 modje_sin_anios <- readRDS("modje_sin_anios.rds")
 modje_original <- readRDS("modje_original.rds")
+
+
+library(broom.mixed)
+library(dplyr)
+library(knitr)
+library(kableExtra)
+
+resumen_post_sin <- tidy(modje_sin_anios, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+
+resumen_post_sin %>%
+  mutate(term = gsub("[()]", "", term)) %>% # Elimina paréntesis de forma global
+  select(term, estimate, std.error, conf.low, conf.high) %>%
+  kable(digits = 3, caption = "Estimación de efectos fijos (Modelo sin años)") %>%
+  kable_styling(latex_options = "hold_position")
+```
+
+
+```{r}
+#modje_sin_anios <- readRDS("modje_sin_anios.rds")
 ```
 
 
 
 ```{r}
-resumen_post <- tidy(modje_sin_anios, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
 
-resumen_post %>%
-  select(term, estimate, std.error, conf.low, conf.high) %>%
-  kable(digits = 3, caption = "Estimacion de efectos fijos ") %>%
-  kable_styling()
+# 
+# resumen_post <- tidy(modje_sin_anios, effects = "fixed", conf.int = TRUE, conf.level = 0.95)
+# # 
+# resumen_post %>%
+#   select(term, estimate, std.error, conf.low, conf.high) %>%
+#   kable(digits = 3, caption = "Estimacion de efectos fijos ") %>%
+#   kable_styling()
 ```
 
 
+
+
+```{r}
+# Bloque de carga (Asegúrate de que este bloque se ejecute)
+# if (file.exists("modje_sin_anios.rds")) {
+#   modje_sin_anios <- readRDS("modje_sin_anios.rds")
+# } else {
+#   stop("¡El archivo modje_sin_anios.rds no se encuentra en el directorio de trabajo!")
+# }
+# 
+# modje_original <- readRDS("modje_original.rds")
+
+```
 
 
 
@@ -1300,7 +1357,7 @@ pred_binaria <- posterior_predict(
 # colMeans sobre una predicción binaria nos da la proporción de éxitos (probabilidad)
 prob_exito <- colMeans(pred_binaria)
 
-# 4. Tabla con resultados adaptados al negocio
+#4. Tabla con resultados adaptados al negocio
 data.frame(
   Servicio = ifelse(new_campaña_data$oxygen_used, "Premium", "Estándar"),
   Ciclo_Mercado = new_campaña_data$season,
@@ -1313,9 +1370,6 @@ data.frame(
 
 
 
-```{r}
-head(climbers)
-```
 
 
 
@@ -1324,11 +1378,4 @@ head(climbers)
 
 
 
-
-
-```{r}
-unlink("_freeze", recursive = TRUE, force = TRUE)
-unlink("_cache", recursive = TRUE, force = TRUE)
-unlink(".quarto", recursive = TRUE, force = TRUE)
-```
 
