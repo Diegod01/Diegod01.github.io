@@ -97,6 +97,20 @@
 
 <h2>Diseño de Simulación</h2>
      
+<p>Seudocodigo usando el paquete algorithm. </p>
+
+<p>El criterio de parada es que todos los agentes estén maximizando el numero de vecinos de igual color en la posición en la que están. Si 𝑈𝑡 = ∅, en la simulación es que la lista donde almacenamos los estados movibles sea vacía. El criterio de parada depende de cierta manera del parámetro de tolerancia porque para valores mas bajos de tolerancia, para estar satisfechos aceptamos pocos vecinos del mismo color y esto repercute en que el numero de transiciones a estados maximizadores sea menor, porque habrá muchos agente satisfechos, lo que causa que la cadena llegue mas rápido al criterio de parada. En el otro caso, si el parámetro de tolerancia es mas alto, exigimos muchos vecinos del mismo color para estar satisfechos, entonces el numero de transiciones a estados maximizadores sera mayor, porque habrá mas agente insatisfechos que se moverán, lo que causa que la cadena llegue mas lento al criterio de parada.</p>
+
+<p>El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), el vecino se considera insatisfecho. Los insatisfechos miran todas las casas vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso, moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias de cómo queda el mapa. Después corre la simulación para distintos valores de tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para distintos pasos de tiempo, cómo los barrios se van re ordenando y qué tan mezclados osegregados quedan los rojos y los azules. </p>
+
+     
+<p>Utilizamos las funciones ya definidas para empezar a hacer los plots.</p>
+
+<p>En ejecuciones para distintos valores de tau (nivel de tolerancia) que se deben ir cambiandomanualmente:</p>
+
+
+     
+     
 
 <h2>Experimentos</h2>
      
