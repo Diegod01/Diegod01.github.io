@@ -25,8 +25,11 @@
 
  <p>Cuenta con 24 variables y 2,076 observaciones, antes usadas para expediciones, ahora reinterpretadas como registros de clientes.</p>
 
- <p>Algunas variables refieren a características del cliente (edad, género, nacionalidad, perfil), otras al proceso de consulta o decisión de compra (campaña, referidos, trimestre de búsqueda), y algunas a atributos del inmueble consultado, que deberán filtrarse o transformarse para el análisis.</p>
+ <p>Algunas variables refieren a características del cliente (edad, género, nacionalidad, perfil), otras al proceso de consulta o decisión de compra (referidos, trimestre de búsqueda), y algunas a atributos del inmueble consultado, que deberán filtrarse o transformarse para el análisis. Luego cada campaña representa una iniciativa de ventas concreta donde se agrupan varios clientes.</p>
 
+         
+
+         
  <p>La variable de interés es la compra o no del inmueble (renombrada a compra), es decir, queremos predecir un evento binario (1 = compra, 0 = no compra).</p>
 
  <p>Por ello utilizaremos un modelo logístico, apropiado para modelar la probabilidad de ocurrencia de un suceso dicotómico.</p>
@@ -228,10 +231,10 @@
 <p> \( \sigma_0 \sim \text{Exp}(\lambda) \)</p>
 
 <p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultado del individuo i
-que pertenece al grupo j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernoulli.
+que pertenece a la campaña j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernoulli.
 Con \( beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \) estamos asumiendo Independencia condicional</p>
 
-<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por grupo. Cada grupo tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre grupos, el cual controla qué tan diferentes permitimos que sean los grupos entre sí. Si es baja, los grupos son parecidos, si es alta, los grupos son heterogéneos heterogéneos</p>
+<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por campaña. Cada campaña tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre campañas, el cual controla qué tan diferentes permitimos que sean los campañas entre sí. Si es baja, las campaña son parecidos, si es alta, las campaña son heterogéneos heterogéneos</p>
 
 
 <p>EN RESUMEN</p>
@@ -242,12 +245,12 @@ Con \( beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, 
 interceptos. Su interpretación es la habitual, representa la media cuando los predictores se
 encuentran en su punto medio (centrados).</p>
  
-<p>● Por otro lado, vemos los interceptos específicos de cada grupo beta_0j. Representan la tasa
-base de éxito (en log-odds) para cada grupo j. Estos interceptos se modelan con
+<p>● Por otro lado, vemos los interceptos específicos de cada campaña beta_0j. Representan la tasa
+base de éxito (en log-odds) para cada campaña j. Estos interceptos se modelan con
 distribución Normal alrededor del intercepto global beta_0, con desviación estándar
 \( sigma_0 \) </p>
  
-<p>● Esto permite diferenciar cada grupo entre sí, donde por ejemplo algunos grupos
+<p>● Esto permite diferenciar cada campaña entre sí, donde por ejemplo algunas campañas
 tienen niveles de éxito más altos que otros, pero siempre entorno a una línea base.</p>
  
 <p>● El resto de interceptos mantienen su interpretación clásica, describiendo el resto de las
@@ -264,12 +267,12 @@ elección de modelado. Le daremos cierta “estructura” a nuestros datos. </p>
 <p>COMPLETE POOLING: Ignora cualquier agrupación. Asume que todas las observaciones son
 iguales. (Toda la información es compartida).</p>
 
-<p>NO POOLING: Trata cada montaña/expedición,etc (nuestros grupos) de forma independiente
-entre sí. (No comparten ninguna información, se asume independencia entre grupos.)</p>
+<p>NO POOLING: Trata cada montaña/expedición,etc (nuestras campaña) de forma independiente
+entre sí. (No comparten ninguna información, se asume independencia entre campañas)</p>
 
-<p>MODELO JERÁRQUICO (PARTIAL POOLING): Contempla que cada grupo es único, pero
+<p>MODELO JERÁRQUICO (PARTIAL POOLING): Contempla que cada campaña es único, pero
 también contempla que todos siguen una distribución común (“pertenecen a una familia”).
-Los grupos con pocos datos "toman datos" del promedio global. (captan/aprenden del
+Las campaña con pocos datos "toman datos" del promedio global. (captan/aprenden del
 promedio.)</p>
 
 
@@ -280,21 +283,37 @@ promedio.)</p>
 
  <p>Se decidió así para:</p>
 
-  <p>- Evitar hacer overfitting cuando tenemos pocos datos.</p>
+  <p> - Evitar hacer overfitting cuando tenemos pocos datos.</p>
 
-   <p>- En la escala de odds logarítmica, coeficientes mayores a 5 implican certeza prácticamente.</p>
+  <p> - En la escala de odds logarítmica, coeficientes mayores a 5 implican certeza prácticamente.</p>
 
-    <p>- Nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan qué fue lo que pasó.</p>
+  <p> - Nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan qué fue lo que pasó.</p>
 
-     <p>- Nos centramos en cero ya que queremos tener una postura neutral.</p>
+  <p> - Nos centramos en cero ya que queremos tener una postura neutral.</p>
 
-      <p>- Asumimos a priori que las variables no tienen efecto sobre el éxito (por eso mu es 0).</p>
+  <p> - Asumimos a priori que las variables no tienen efecto sobre el éxito (por eso mu es 0).</p>
 
-       <p>- Para el error se utilizó exp(1), la cual es estándar en este tipo de problemas. Contempla que la varianza no puede ser negativa.</p>
+  <p> - Para el error se utilizó exp(1), la cual es estándar en este tipo de problemas. Contempla que la varianza no puede ser negativa.</p>
          
 
          
+<h2>Modelo 1: Complete Pooling (no jerárquico)</h2>
 
+<p>La definición matemática de este modelo es:</p>
+
+<img src="../images/Imagen177.png" alt="Título" class="img-proyecto" width="650">
+
+
+<p>Las variables son:<p>
+
+ <p>- Y_i: Éxito del escalador i.
+ <p>- X_i1: Uso de oxígeno.
+ <p>- X_i2: Estación del año.
+ <p>- X_i3: Años desde el primer ascenso.
+
+
+         
+         
 
          
      
