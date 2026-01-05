@@ -315,12 +315,86 @@ promedio.)</p>
 
 <img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
 
+
+
+<h2>Modelo 2: Partial pooling por campaña</h2>
+
+<img src="../images/Imagen178.png" alt="Título" class="img-proyecto" width="650">
          
-     
+<p>Jerarquía por campaña j</p>         
+
+<p>Las variables en este modelo son:<p>
+
+<p>- Y_i,j: Éxito (Compra) del cliente i en la campaña j.</p>   
+         
+<p>- X_i,j1: Uso de servicios premium.</p>   
+         
+<p>- X_i,j2: Ciclo del mercado.</p>   
+         
+<p>- X_i,j3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>   
+
+<p>El modelo especificado con el codigo es:</p>
+
 <img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
+
+
+<h2>Modelo 3: Partial pooling por propiedad</h2>
+
+<img src="../images/Imagen179.png" alt="Título" class="img-proyecto" width="650">
+         
+<p>Jerarquía por propiedad k</p>
+
+
+<p>Variables:</p>
+         
+<p>- Y_i,k: Éxito (compra) del cliente i en la propiedad k</p>
+         
+<p>- X_i,k1: Uso de servicios premium.</p>
+
+<p>- X_i,k2: Ciclo del mercado.</p>
+
+<p>- X_i,k3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>
+
+<p>El modelo especificado con el codigo es:</p>
+
 <img src="../images/Imagen153.png" alt="Título" class="img-proyecto" width="650">
+      
+
+<h2>Modelo 4: Partial pooling por Ciclo del mercado</h2>
+
+<img src="../images/Imagen180.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Jerarquía por Ciclo del mercado (s)</p>
+
+<p>Variables:</p>
+         
+<p>- Y_i,k: Éxito (compra) del cliente i en el ciclo de mercado k</p>
+         
+<p>- X_i,k1: Uso de servicios premium.</p>
+
+<p>- X_i,k2: Ciclo del mercado.</p>
+
+<p>- X_i,k3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>
+
+<p>El modelo especificado con el codigo es:</p>
+
+       
 <img src="../images/Imagen154.png" alt="Título" class="img-proyecto" width="650">
+
+
+<h2>PPCHECK DE LOS MODELOS</h2>
+
+<p>Definimos una función auxiliar para calcular la tasa de éxito de cada modelo y del set de datos:</p>
+         
+<p>La línea vertical azul es la tasa de éxito de los datos reales. Lo que hace este pp_check es simular 100 posteriors y agruparlas en histogramas en vez de densidades. Se observan resultados muy similares para
+todos los modelos. No obstante, es levemente más preciso que todos el modelo jerárquico por campaña</p>
+         
 <img src="../images/Imagen155.png" alt="Título" class="img-proyecto" width="650">
+
+
+
+<p>a</p>
+         
 <img src="../images/Imagen156.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen157.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen158.png" alt="Título" class="img-proyecto" width="650">
