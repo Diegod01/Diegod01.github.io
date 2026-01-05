@@ -88,6 +88,14 @@ $$\frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \quad\text{o, despejand
 
 
 
+
+
+
+
+
+
+
+
 En cambio, dado que queremos incorporar jerarquias, debemos hacer ciertos cambios sobre el modelo. Mas precisamente, queremos reflejar que los parametros $\beta_i$ dependen de cada grupo.
 
 $$Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij})$$ $$\text{con} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right) = \beta_{0j} + \sum_{k=1}^{p} \beta_k X_{ijk}$$ $$\beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \text{ representa la variabilidad entre grupos}$$ Las Priors globales son:
@@ -1235,17 +1243,17 @@ climbers_common <- climbers %>%
 
 ```{r}
 # Modelo sin premium
-
-modje_sin_premium <- stan_glmer(
-  compra ~ ciclo_mercado + antiguedad_años + (1 | campaña),
-)
-  
-
-# Modelo sin años
-
-modje_sin_anios <- stan_glmer(
-  compra ~ season + oxygen_used + (1 | expedition_id), 
-)
+# 
+# modje_sin_premium <- stan_glmer(
+#   compra ~ ciclo_mercado + antiguedad_años + (1 | campaña),
+# )
+#   
+# 
+# # Modelo sin años
+# 
+# modje_sin_anios <- stan_glmer(
+#   compra ~ season + oxygen_used + (1 | expedition_id), 
+# )
 
   
   
