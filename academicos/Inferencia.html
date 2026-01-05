@@ -228,11 +228,59 @@
 <p> \( \sigma_0 \sim \text{Exp}(\lambda) \)</p>
 
 <p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultado del individuo i
-que pertenece al grupo j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernouilli.
+que pertenece al grupo j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernoulli.
 Con \( beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \) estamos asumiendo Independencia condicional</p>
 
-<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por grupo. Cada grupo tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre grupos, el cual controla qué tan diferentes permitimos que sean los grupos entre sí. Si es baja, los grupos son parecidos, si es alta, los grupos son heterogéneos.heterogéneos</p>
+<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por grupo. Cada grupo tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre grupos, el cual controla qué tan diferentes permitimos que sean los grupos entre sí. Si es baja, los grupos son parecidos, si es alta, los grupos son heterogéneos heterogéneos</p>
 
+
+<p>EN RESUMEN</p>
+
+<p> ● El intercepto pasa a estar formado por dos términos:</p>
+         
+<p>● Por un lado tenemos un término genérico beta0 que representa una línea base para los
+interceptos. Su interpretación es la habitual, representa la media cuando los predictores se
+encuentran en su punto medio (centrados).</p>
+ 
+<p>● Por otro lado, vemos los interceptos específicos de cada grupo beta_0j. Representan la tasa
+base de éxito (en log-odds) para cada grupo j. Estos interceptos se modelan con
+distribución Normal alrededor del intercepto global beta_0, con desviación estándar
+\( sigma_0 \) </p>
+ 
+<p>● Esto permite diferenciar cada grupo entre sí, donde por ejemplo algunos grupos
+tienen niveles de éxito más altos que otros, pero siempre entorno a una línea base.</p>
+ 
+<p>● El resto de interceptos mantienen su interpretación clásica, describiendo el resto de las
+variables y la relación entre ellas.</p>
+
+
+
+
+<h2>odelo jerárquico para nuestro estudio</h2>
+        
+<p>Recordamos las diferentes maneras de agrupar los datos (pooling) para justificar nuestra
+elección de modelado. Le daremos cierta “estructura” a nuestros datos. </p>
+
+<p>COMPLETE POOLING: Ignora cualquier agrupación. Asume que todas las observaciones son
+iguales. (Toda la información es compartida).</p>
+
+<p>NO POOLING: Trata cada montaña/expedición,etc (nuestros grupos) de forma independiente
+entre sí. (No comparten ninguna información, se asume independencia entre grupos.)</p>
+
+<p>MODELO JERÁRQUICO (PARTIAL POOLING): Contempla que cada grupo es único, pero
+también contempla que todos siguen una distribución común (“pertenecen a una familia”).
+Los grupos con pocos datos "toman datos" del promedio global. (captan/aprenden del
+promedio.)</p>
+
+
+
+         
+
+
+         
+
+
+         
      
 <img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
