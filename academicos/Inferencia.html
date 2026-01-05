@@ -18,26 +18,312 @@
     <main>
         <section>
 
-         
- <p>El Dataset que tenemos es climbers_sub.</p>
 
- <p>Este dataframe contiene información de clientes provenientes de distintas campañas o procesos de consulta inmobiliaria.</p>
+      <h2>Introduccion</h2>
+         
+ <p>El set de daatos contiene información de clientes provenientes de distintas campañas o procesos de consulta inmobiliaria.</p>
 
  <p>Cuenta con 24 variables y 2,076 observaciones, antes usadas para expediciones, ahora reinterpretadas como registros de clientes.</p>
 
  <p>Algunas variables refieren a características del cliente (edad, género, nacionalidad, perfil), otras al proceso de consulta o decisión de compra (campaña, referidos, trimestre de búsqueda), y algunas a atributos del inmueble consultado, que deberán filtrarse o transformarse para el análisis.</p>
 
- <p>La variable de interés es la compra o no del inmueble (success, renombrada a compra), es decir, queremos predecir un evento binario (1 = compra, 0 = no compra).</p>
+ <p>La variable de interés es la compra o no del inmueble (renombrada a compra), es decir, queremos predecir un evento binario (1 = compra, 0 = no compra).</p>
 
  <p>Por ello utilizaremos un modelo logístico, apropiado para modelar la probabilidad de ocurrencia de un suceso dicotómico.</p>
 
  <p>Una compra exitosa se define cuando el cliente concreta la adquisición del inmueble consultado. En los datos originales esto se representaba con una igualdad de alturas; en el nuevo enfoque, equivale al momento en que el cliente pasa de la consulta a la transacción efectiva.</p>
 
 
+
+
+
+
+         
+
    
           <p>Tabla Descriptiva de las variables</p>
 
-         <img src="../images/Imagen142.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen142.png" alt="Título" class="img-proyecto" width="650">
+
+
+         <p>Si queremos una tabla con medidas descriptivas de las variables, usamos</p>
+
+         <p>Estadisticos como el minimo, el primer cuartil, la mediana, la media, el tercer cuartil y el maximo para variables cuantitativas</p>
+
+         <p>La cantidad de TRUES y Totales con su porcentaje asociado haciendo el cociente entre TRUES y el Total para variable categoricas binarias</p>
+
+
+
+
+         
+<img src="../images/Imagen143.png" alt="Título" class="img-proyecto" width="650">
+
+<h2>Análisis Descriptivo: Cartera de Activos Inmobiliarios y Perfil de Leads</h2>
+         
+         <p>Tenemos con un portafolio de activos inmobiliarios diferenciados (propiedad). Estas propiedades tienen una gran variabilidad en su tamaño o valor base (tam_propiedad), lo cual influye directamente en el interés máximo mostrado por el cliente (interes_max) durante el proceso de negociación.</p>
+
+         <p>La edad de los clientes potenciales muestra un rango amplio; sin embargo, el grueso de los interesados se concentra en un segmento de madurez financiera, con edades comprendidas principalmente entre los 29 y 43 años.</p>
+
+         <p>El análisis abarca un historial de interacciones comerciales (año_interaccion) desde 1978 hasta 2019, con un punto medio de actividad en el año 2002. Además, el modelo considera la trayectoria del activo en el mercado, usando el año de su primer listado o salida a la venta (año_primer_listing) como referencia de antigüedad.</p>
+
+
+<p>Los datos muestran que 807 leads concretaron la operación de compra de un total de 2,076 interesados. Esto representa una tasa de conversión del 39%, lo que sirve para medir la eficacia del equipo de ventas.</p>
+
+<p>Se observa que 507 de los 2,076 clientes optaron por servicios o características de alta gama. Veremos mas adelante si existe una correlación positiva entre la contratación de servicios premium y la probabilidad de cierre de la venta.</p>
+
+<p>Las métricas relacionadas con la pérdida definitiva del cliente o incidentes graves durante la negociación presentan una frecuencia extremadamente baja (pocos valores TRUE). Debido a esta escasez de datos, las variables dependientes (como el motivo exacto de la pérdida o el punto del embudo donde ocurrió el incidente) presentan demasiados valores nulos (NA). Por lo tanto, se ha decidido excluir estas variables específicas del modelo predictivo para evitar ruidos estadísticos.</p>
+
+<p>La variable que identifica si el cliente tomó la decisión de compra de forma totalmente independiente, sin asesores externos, solo cuenta con dos registros positivos. Dada su nula representatividad estadística, esta variable también ha sido descartada del análisis.</p>
+
+
+<p>Para tener un dataframe más limpio y eficiente para el modelado predictivo, se eliminaron variables que no aportan valor estadístico o que presentan redundancia informativa. Las variables descartadas son:</p>
+
+<p>- propiedad_id: Se eliminó para evitar la duplicidad de información, ya que el análisis se centrará en el nombre descriptivo del activo (propiedad), el cual ya funciona como identificador único para nuestros fines.</p>
+
+<p>- decision_individual: Descartada debido a su nula variabilidad (solo dos registros positivos), lo que impide que el modelo aprenda patrones significativos sobre las compras sin asesores.</p>
+
+<p>- Variables de Fricción Detallada (motivo_fallo, tam_fallo, tipo_incidente, tam_incidente): Estos campos, que describían la naturaleza exacta de una pérdida de cliente o un problema en la negociación, fueron descartados por la alta frecuencia de valores nulos (NA), derivada de la baja tasa de incidentes críticos en la muestra.</p>
+
+<p>Tras este proceso de limpieza, el nuevo conjunto de datos queda conformado por 18 variables clave, optimizadas para identificar los factores que realmente impulsan la conversión inmobiliaria.</p>
+         
+         
+         
+
+
+<h2>Correlaciones entre variables numéricas:</h2>
+
+<img src="../images/Imagen144.png" alt="Título" class="img-proyecto" width="650">
+
+         
+<p>Matriz de correlación entre los predictores cuantitativos usados para explicar a la variable de interés "compra"</p>         
+
+<p>El Coeficiente de correlación entre pares de variables cuantitativas. Varia entre 1 y -1, y toma distintos colores donde:</p>
+
+         <p>- Azul oscuro: correlación positiva elevada. A medida que un predictor aumenta, también lo hace el otro.</p>
+
+        <p>- Rojo: correlación negativa. A medida que un predictor aumenta, el otro disminuye.</p>
+
+         <p>- Blanco: no existe correlación.</p>
+
+
+ <p>Al analizar las relaciones entre las variables cuantitativas de nuestro portafolio inmobiliario, se observan los siguientes hallazgos estratégicos:</p>
+
+ <p>tam_propiedad y interes_max (Correlación: 0.76): Existe una fuerte relación lineal positiva entre el tamaño o valor del activo y el nivel de interés alcanzado por el lead. Es razonable concluir que las propiedades de mayor envergadura o prestigio tienden a traccionar negociaciones que llegan a etapas más avanzadas o "altas" del embudo de ventas.</p>
+
+ <p>tam_propiedad y asesores (Correlación: 0.45): El número de asesores involucrados en la interacción comercial muestra una correlación moderada con el tamaño de la propiedad. Los activos más grandes o complejos suelen demandar equipos de asesoramiento más robustos o expediciones comerciales de mayor escala.</p>
+
+ <p>interes_max y asesores (Correlación: 0.36): Se observa que cuando el proceso de venta alcanza sus puntos más altos de interés, suele haber una mayor presencia de asesores. Esto sugiere que las negociaciones exitosas en propiedades de lujo requieren un acompañamiento técnico más intensivo.</p>
+
+         <h2>Nueva Variable: antiguedad_años </h2>
+         
+ <p>Se detectó que el año del primer listado (año_primer_listing) guarda una estrecha relación con el tamaño de la propiedad y el interés alcanzado. Resulta lógico pensar que, con el paso de las décadas, el mercado ha evolucionado para gestionar propiedades más complejas y alcanzar niveles de negociación más ambiciosos, para verificar esto creamos una nueva variable definida como:</p>
+ <p>antiguedad_años = año_interaccion - año_primer_listing</p>
+ <p>Esta variable calcula cuántos años han pasado desde que la propiedad entró por primera vez al mercado hasta la interacción actual. Esto nos permitirá evaluar si los activos con mayor trayectoria en el mercado inmobiliario presentan un comportamiento de cierre de ventas distinto a los listados más recientes. </p>
+
+        
+         <p>Realizamos un grafico de esta nueva variable en relacion a la variable de interes "compra"</p>       
+         
+<img src="../images/Imagen145.png" alt="Título" class="img-proyecto" width="650">
+
+         <p>Nuestra nueva variable, antiguedad_años, tiene una tendencia, los datos sugieren que existe una correlación positiva entre el tiempo que una propiedad lleva posicionada en el mercado (desde su primer listado) y la probabilidad de éxito en la venta.</p>
+         <p>A medida que el activo acumula años de trayectoria comercial, la tasa de cierre tiende a incrementarse. Esto podría explicarse por una mayor consolidación del valor del inmueble en el imaginario del mercado o por un ajuste más preciso entre la oferta y el perfil del cliente interesado a lo largo del tiempo.</p>
+
+<h2>Analisis Exploratorio de Datos</h2>
+
+       <p>Si queremos ver las distribuciones de distintas variables</p>
+
+         <img src="../images/Imagen147.png" alt="Título" class="img-proyecto" width="650">
+
+         <img src="../images/Imagen148.png" alt="Título" class="img-proyecto" width="650">
+         
+<p>Tras analizar la distribución de las variables principales, se identifican los siguientes patrones de mercado:</p>
+
+<p>Si bien el portafolio cuenta con una amplia variedad de inmuebles, la gran mayoría de las interacciones y campañas se concentraron en la propiedad principal.</p>
+
+<p>El volumen de actividad comercial muestra un crecimiento exponencial reciente, concentrándose la mayor parte de las interacciones de los años 2000 en adelante.</p>
+
+<p>Existe una marcada predominancia de hombres en la base de datos de interesados, y el segmento de edad con mayor densidad se sitúa entre los 20 y 40 años, lo que define a un lead joven pero con capacidad de decisión.</p>
+
+<p>La actividad comercial es altamente estacional. La mayor parte de las negociaciones se inician en primavera u otoño, mientras que los ciclos de invierno y verano muestran un volumen de operaciones significativamente menor.</p>
+
+<p>En cuanto al rol de los participantes en la negociación (rol_decision), el perfil más frecuente es, con diferencia, el de "Cliente/Interesado", seguido por el personal de "Soporte Técnico/Asesores de Campo" y, finalmente, los "Líderes de Proyecto" o gerentes de cuenta.</p>
+
+
+         
+<img src="../images/Imagen149.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Análisis Comparativo mediante Diagramas de Caja (Boxplots)</p>
+
+<p>Al agrupar la distribución de las variables clave según el resultado final de la operación (Compra: Éxito vs. Fracaso), observamos los siguientes comportamientos:</p>
+
+<p>La edad del cliente no representa una diferencia sustancial en el desenlace de la operación. Tanto los cierres exitosos como las ventas fallidas muestran distribuciones de edad muy similares, lo que sugiere que este factor demográfico no es un predictor determinante por sí solo.</p>
+
+<p>El tamaño de la propiedad (tam_propiedad) por sí solo no muestra una diferencia drástica entre éxito y fracaso. Sin embargo, el interés máximo alcanzado (interes_max) sí es un diferenciador crítico.</p>
+
+<p>Consideramos que la envergadura del activo puede ser un dato "engañoso" debido a la gran concentración de operaciones en nuestra "propiedad estrella" (el equivalente al Everest). Por ello, hemos decidido excluir el tamaño de la propiedad como variable predictora, priorizando variables que reflejen mejor la dinámica de la negociación.</p>
+
+<p>El año de interacción muestra una diferencia clara entre los casos de éxito y fracaso. Existe una tendencia donde las operaciones más recientes muestran patrones de cierre distintos, lo que refleja una evolución en las tácticas de venta o en las condiciones del mercado inmobiliario actual.</p>
+
+         
+<img src="../images/Imagen150.png" alt="Título" class="img-proyecto" width="650">
+
+
+<p>Análisis de Proporciones Categóricas y Conversión</p>
+ 
+<p>Al analizar cómo influyen las variables cualitativas en la tasa de cierre de ventas, se han tomado las siguientes determinaciones para el modelo predictivo:</p>
+
+<p>Es evidente que el uso de servicios adicionales de alta gama (como asesoría personalizada o tecnología avanzada) afecta positivamente la proporción de éxitos. Debido a este fuerte contraste, la variable premium será utilizada como un predictor fundamental en nuestro modelo.</p>
+
+<p>Si bien se observa una ligera diferencia en la proporción de éxito entre hombres y mujeres, se ha decidido descartar el sexo como variable predictora. Esta decisión se basa en la gran disparidad en el volumen de datos (la cantidad de leads masculinos es significativamente superior), lo que podría inducir a conclusiones sesgadas o poco representativas.</p>
+
+<p>Se identifican variaciones considerables según la temporada del año. Es importante notar que, aunque la tasa de éxito en el ciclo de verano aparece como el 100%, este dato debe tomarse con cautela debido al bajo volumen de observaciones en esa época. No obstante, las diferencias entre primavera y otoño son lo suficientemente sólidas como para ser consideradas en el análisis.</p>
+
+
+<h2>Definición de los modelos</h2>
+
+<p>Usaremos un modelo logístico, esto debido a que la variable de interes "Compra" se puede pensar como un Éxito en caso de que se de la compra del inmueble o Fracaso en caso de que no se de la compra del inmueble</p>
+
+<p>Utilizamos variables Bernoullis, con probabilidad \( \pi \) de éxito. La variable de respuesta Y distribuye: \( Y_i \mid \pi_i \sim \text{Bern}(\pi_i)  \) con \( E(Y_i \mid \pi_i) = \pi_i \)</p>
+
+<p>Utilizaremos las odds, que son una manera alternativa de expresar la incertidumbre, donde comparamos la probabilidad de éxito contra su complemento (la probabilidad de fracaso):  \( odds = \frac{\pi}{\pi} \) </p>
+<p>Las ventajas de usar odds son que mientras la probabilidad se encuentra entre 0 y 1, los odds van de 0 a infinito y el logaritmo de los ddds (Log-Odds) abarca todos los reales.</p>
+<p>La pregunta que buscamos contestar con odds es cuántas veces es más probable que el evento ocurra en comparación con que NO ocurra</p>         
+
+<p>Definimos el modelo logístico</p>
+
+<p> \( Y_i \mid \boldsymbol{\beta_0},{\beta_1}...{\beta_n} \sim \mathrm{Bern}(\pi_i)  \text{ ,  con } \log\!\left(\frac{\pi_i}{1-\pi_i}\right) = \mathbf{x}_i^\top \boldsymbol{\beta}  \) </p>
+       
+     <p>Donde</p>
+
+<p> \( \beta_{0} \sim N(m_{0}, s_{0}^{2})  \) </p>   
+
+<p> \( \beta_{1} \sim N(m_{1}, s_{1}^{2}) \) </p>         
+
+<p> \( \vdots \) </p>   
+         
+<p> \( \beta_{n} \sim N(m_{n}, s_{n}^{2}) \) </p>
+
+
+<p>Tenemos una forma de despejar para pasar de los oods a las probabilidades:</p>        
+
+<p>\( \frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \) </p>
+         
+<p>\( \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}} \)</p>
+
+<p>Donde Yi es el componente aleatorio (la verosimilitud). El \( \beta_0 \) es el intercepto y los demas betas son los prioris. Luego \( \mathbf{x}_i^\top \boldsymbol{\beta} \) es la "link function"  </p>
+
+
+<h2>Modelo Jerárquico logístico</h2>
+
+<p>El nuevo modelo es:</p>
+
+<p> \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \text{con} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right) = \beta_{0j} + \sum_{k=1}^{p} \beta_k X_{ijk} \) </p>
+
+<p>\(\beta_0 \sim \mathrm{N}(m_0, s_0^2) \)</p>      
+
+<p> \( \beta_{0j} = \beta_0 + b_{0j} \)</p>
+
+<p> \(  beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2)  \)</p>   
+
+<p> \( \sigma_0 \sim \text{Exp}(\lambda) \)</p>
+
+<p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultado del individuo i
+que pertenece al grupo j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernoulli.
+Con \( beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \) estamos asumiendo Independencia condicional</p>
+
+<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por grupo. Cada grupo tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre grupos, el cual controla qué tan diferentes permitimos que sean los grupos entre sí. Si es baja, los grupos son parecidos, si es alta, los grupos son heterogéneos heterogéneos</p>
+
+
+<p>EN RESUMEN</p>
+
+<p> ● El intercepto pasa a estar formado por dos términos:</p>
+         
+<p>● Por un lado tenemos un término genérico beta0 que representa una línea base para los
+interceptos. Su interpretación es la habitual, representa la media cuando los predictores se
+encuentran en su punto medio (centrados).</p>
+ 
+<p>● Por otro lado, vemos los interceptos específicos de cada grupo beta_0j. Representan la tasa
+base de éxito (en log-odds) para cada grupo j. Estos interceptos se modelan con
+distribución Normal alrededor del intercepto global beta_0, con desviación estándar
+\( sigma_0 \) </p>
+ 
+<p>● Esto permite diferenciar cada grupo entre sí, donde por ejemplo algunos grupos
+tienen niveles de éxito más altos que otros, pero siempre entorno a una línea base.</p>
+ 
+<p>● El resto de interceptos mantienen su interpretación clásica, describiendo el resto de las
+variables y la relación entre ellas.</p>
+
+
+
+
+<h2>odelo jerárquico para nuestro estudio</h2>
+        
+<p>Recordamos las diferentes maneras de agrupar los datos (pooling) para justificar nuestra
+elección de modelado. Le daremos cierta “estructura” a nuestros datos. </p>
+
+<p>COMPLETE POOLING: Ignora cualquier agrupación. Asume que todas las observaciones son
+iguales. (Toda la información es compartida).</p>
+
+<p>NO POOLING: Trata cada montaña/expedición,etc (nuestros grupos) de forma independiente
+entre sí. (No comparten ninguna información, se asume independencia entre grupos.)</p>
+
+<p>MODELO JERÁRQUICO (PARTIAL POOLING): Contempla que cada grupo es único, pero
+también contempla que todos siguen una distribución común (“pertenecen a una familia”).
+Los grupos con pocos datos "toman datos" del promedio global. (captan/aprenden del
+promedio.)</p>
+
+
+
+<h2>Prioris Poco Informativas</h2>
+
+<p>Se trabajó con prioris poco informativas, de la forma: Normal (0,2.5)</p>
+
+ <p>Se decidió así para:</p>
+
+  <p>- Evitar hacer overfitting cuando tenemos pocos datos.</p>
+
+   <p>- En la escala de odds logarítmica, coeficientes mayores a 5 implican certeza prácticamente.</p>
+
+    <p>- Nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan qué fue lo que pasó.</p>
+
+     <p>- Nos centramos en cero ya que queremos tener una postura neutral.</p>
+
+      <p>- Asumimos a priori que las variables no tienen efecto sobre el éxito (por eso mu es 0).</p>
+
+       <p>- Para el error se utilizó exp(1), la cual es estándar en este tipo de problemas. Contempla que la varianza no puede ser negativa.</p>
+         
+
+         
+
+
+         
+     
+<img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen153.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen154.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen155.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen156.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen157.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen158.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen159.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen160.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen161.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen162.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen163.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen164.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen166.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen167.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen168.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen169.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen170.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen171.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen172.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen174.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen175.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen176.png" alt="Título" class="img-proyecto" width="650">
 
 
          
