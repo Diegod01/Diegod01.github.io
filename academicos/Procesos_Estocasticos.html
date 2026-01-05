@@ -194,8 +194,73 @@ nivel de tolerancia \( \tau \). </p>
      
 <h2>Experimentos</h2>
      
+<img src="../images/Imagen186.png" alt="Título" class="img-proyecto" width="450">
 
-<h2>Resultados y Análisis </h2>
+<img src="../images/Imagen187.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En estos experimentos lo que buscábamos era ver como se comportaba el tiempo de convergencia en pasos a medida que cambiábamos el tamaño de la grilla para diferentes \( \tau \) (intolerancia social), vemos que para \( \tau = 0.3\) la convergencia en pasos parece crecer de manera lineal a
+medida que aumentamos el tamaño de grilla, esto quiere decir que con un nivel de tolerancia bajo, el aumento del tamaño de la grilla pareciera producir un aumento lineal en la cantidad
+de pasos de convergencia, cabe aclarar que para estos experimentos usamos una cantidad de pasos máxima de 3000. Para este \( \tau \) no logra alcanzar el máximo de pasos, la grilla de 100x100
+logra la convergencia en el paso numero 1999</p>
+
+
+<img src="../images/Imagen188.png" alt="Título" class="img-proyecto" width="450">
+
+<img src="../images/Imagen189.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Para \( \tau = 0.5 \) vemos que se sigue comportando de una manera bastante lineal a medida que aumentamos el tamaño de la grilla, pero en este caso con una grilla de 100x100 no logra
+converger y alcanza el numero máximo de iteraciones, esto nos hace pensar que a medida que el nivel de intolerancia es mayor los agentes tienden a no maximizar su satisfacción de una
+manera tan rápida como vimos para el 𝜏 = 0.3 en el que para un tamaño de grilla de 100x100 logró la convergencia</p>
+
+
+<img src="../images/Imagen190.png" alt="Título" class="img-proyecto" width="450">
+
+<img src="../images/Imagen191.png" alt="Título" class="img-proyecto" width="450">
+
+<p> Para \( \tau = 0.7 \) vemos que no se comporta de una forma tan lineal sino que más exponencial, para
+un tamaño de grilla de 50x50 ya logra alcanzar el numero máximo de iteraciones, esto quiere decir que la tolerancia tiene un papel clave a la hora poder maximizar su satisfacción.</p>
+
+
+     
+<p>Ahora vamos a generar un resumen usando algunos valores representativos de tau (0.2, 0.4, 0.6 y 0.8) para ver cómo cambian las principales métricas del modelo. Para cada tau corremos
+varias simulaciones con distintas semillas y nos quedamos con los valores importantes: cuántos pasos tarda en estabilizarse el sistema, qué proporción de agentes queda insatisfecha, qué
+tan segregado queda el mapa (Moran) y qué tan grandes son los grupos de un mismo color. Después promediamos todo, calculamos la variabilidad y guardamos los resultados para no
+repetir cálculos.Para ilustrar, armamos gráficos que muestran cómo cada métrica cambia según la tolerancia, para ver de un vistazo cómo afecta al comportamiento del modelo</p>
+
+
+<p>Análisis paramétrico RÁPIDO: 5 corridas por tau, 400 iter máx., 4 valores de tau.</p>
+
+<p>Resultados del análisis paramétrico (Promedio por tau):</p>
+
+<img src="../images/Imagen192.png" alt="Título" class="img-proyecto" width="450">
+
+<img src="../images/Imagen193.png" alt="Título" class="img-proyecto" width="450">
+
+<img src="../images/Imagen194.png" alt="Título" class="img-proyecto" width="450">
+
+<img src="../images/Imagen195.png" alt="Título" class="img-proyecto" width="450">
+
+
+<p>Al observar cómo cambia el comportamiento del modelo de Schelling a medida que aumentamos la intolerancia social \( (\tau) \), aparece un patrón muy claro: cuanto mayor es \( \tau \) más tiempo tarda
+el sistema en estabilizarse y más segregado termina quedando el mapa. Con \( \tau = 0.2 \), los agentes son bastante tolerantes, así que el sistema llega rápido al equilibrio  \( (\sim \ 29 \ pasos) \), 
+y apenas se forman agrupamientos fuertes; esto se ve en el índice de Moran bajo (0.23) y en un tamaño de clúster moderado. A medida que subimos a  \( \tau = 0.4 \) ya se nota un salto, los
+agentes se vuelven más exigentes, tardan más en acomodarse  (106 pasos)  y la segregación espacial aumenta de forma notable.
+El comportamiento más extremo se ve en  \( \tau = 0.6 \) y  \( \tau = 0.8 \). Con  \( \tau = 0.6 \),  la segregación crece mucho (Moran  \( \sim 0.93 \) ). los clústeres se vuelven mucho más grandes y el sistema necesita
+muchos más pasos para acercarse al equilibrio. Finalmente, en  \( \tau = 0.8 \)  la tolerancia es tan baja que prácticamente todos los agentes se sienten insatisfechos; como consecuencia, el sistema
+no llega a absorberse dentro del límite de iteraciones (400 pasos), pero aun así produce una segregación muy marcada (Moran  \( \sim 0.79 \) ).</p>
+
+
+<p>• Tolerancia baja (0.2): todos conviven más o menos mezclados.</p>
+
+<p>• Tolerancia media (0.4): se empiezan a separar.</p>
+
+<p>• Tolerancia un poco alta (0.6): se forman barrios enormes y bien definidos.</p>
+
+<p>• Tolerancia extrema (0.8): quieren tanto orden que terminan generando más desorden:</p> 
+     
+
+  
+     <h2>Resultados y Análisis </h2>
 
 
 <h2>Conclusiones </h2>
