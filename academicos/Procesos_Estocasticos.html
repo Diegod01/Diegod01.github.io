@@ -169,9 +169,8 @@ nivel de tolerancia \( \tau \). </p>
 <p>El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), el vecino se considera insatisfecho. Los insatisfechos miran todas las casas vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso, moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias de cómo queda el mapa. Después corre la simulación para distintos valores de tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para distintos pasos de tiempo, cómo los barrios se van reordenando y qué tan mezclados o segregados quedan los rojos y los azules.</p>
 
      
-<p>Utilizamos las funciones ya definidas para empezar a hacer los plots.</p>
+<p>Utilizamos las funciones ya definidas para empezar a hacer los plots, donde en las ejecuciones para distintos valores de tau (nivel de tolerancia) obtuvimos los siguientes graficos: </p>
 
-<p>En ejecuciones para distintos valores de tau (nivel de tolerancia) que se deben ir cambiandomanualmente:</p>
 
 
      
