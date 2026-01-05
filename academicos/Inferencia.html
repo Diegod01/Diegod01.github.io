@@ -133,52 +133,47 @@
 
          <img src="../images/Imagen148.png" alt="Título" class="img-proyecto" width="650">
          
-Tras analizar la distribución de las variables principales, se identifican los siguientes patrones de mercado:
+<p>Tras analizar la distribución de las variables principales, se identifican los siguientes patrones de mercado:</p>
 
-Concentración de Activos: Si bien el portafolio cuenta con una amplia variedad de inmuebles, la gran mayoría de las interacciones y campañas se concentraron en la propiedad principal.
+<p>Si bien el portafolio cuenta con una amplia variedad de inmuebles, la gran mayoría de las interacciones y campañas se concentraron en la propiedad principal.</p>
 
-Dinámica Histórica: El volumen de actividad comercial muestra un crecimiento exponencial reciente, concentrándose la mayor parte de las interacciones de los años 2000 en adelante.
+<p>El volumen de actividad comercial muestra un crecimiento exponencial reciente, concentrándose la mayor parte de las interacciones de los años 2000 en adelante.</p>
 
-Perfil Demográfico: Existe una marcada predominancia de hombres en la base de datos de interesados, y el segmento de edad con mayor densidad se sitúa entre los 20 y 40 años, lo que define a un lead joven pero con capacidad de decisión.
+<p>Existe una marcada predominancia de hombres en la base de datos de interesados, y el segmento de edad con mayor densidad se sitúa entre los 20 y 40 años, lo que define a un lead joven pero con capacidad de decisión.</p>
 
-Estacionalidad (Ciclo de Mercado): La actividad comercial es altamente estacional. La mayor parte de las negociaciones se inician en primavera u otoño, mientras que los ciclos de invierno y verano muestran un volumen de operaciones significativamente menor.
+<p>La actividad comercial es altamente estacional. La mayor parte de las negociaciones se inician en primavera u otoño, mientras que los ciclos de invierno y verano muestran un volumen de operaciones significativamente menor.</p>
 
-Estructura del Equipo de Soporte: En cuanto al rol de los participantes en la negociación (rol_decision), el perfil más frecuente es, con diferencia, el de "Cliente/Interesado", seguido por el personal de "Soporte Técnico/Asesores de Campo" y, finalmente, los "Líderes de Proyecto" o gerentes de cuenta.
-
-
-
-
-         
-         
-
+<p>En cuanto al rol de los participantes en la negociación (rol_decision), el perfil más frecuente es, con diferencia, el de "Cliente/Interesado", seguido por el personal de "Soporte Técnico/Asesores de Campo" y, finalmente, los "Líderes de Proyecto" o gerentes de cuenta.</p>
 
 
          
 <img src="../images/Imagen149.png" alt="Título" class="img-proyecto" width="650">
 
-Análisis Comparativo mediante Diagramas de Caja (Boxplots)
-Al agrupar la distribución de las variables clave según el resultado final de la operación (Compra: Éxito vs. Fracaso), observamos los siguientes comportamientos:
+<p>Análisis Comparativo mediante Diagramas de Caja (Boxplots)</p>
 
-Perfil de Edad: La edad del cliente no representa una diferencia sustancial en el desenlace de la operación. Tanto los cierres exitosos como las ventas fallidas muestran distribuciones de edad muy similares, lo que sugiere que este factor demográfico no es un predictor determinante por sí solo.
+<p>Al agrupar la distribución de las variables clave según el resultado final de la operación (Compra: Éxito vs. Fracaso), observamos los siguientes comportamientos:</p>
 
-Envergadura del Activo vs. Nivel de Interés: El tamaño de la propiedad (tam_propiedad) por sí solo no muestra una diferencia drástica entre éxito y fracaso. Sin embargo, el interés máximo alcanzado (interes_max) sí es un diferenciador crítico.
+<p>La edad del cliente no representa una diferencia sustancial en el desenlace de la operación. Tanto los cierres exitosos como las ventas fallidas muestran distribuciones de edad muy similares, lo que sugiere que este factor demográfico no es un predictor determinante por sí solo.</p>
 
-Nota metodológica: Consideramos que la envergadura del activo puede ser un dato "engañoso" debido a la gran concentración de operaciones en nuestra "propiedad estrella" (el equivalente al Everest). Por ello, hemos decidido excluir el tamaño de la propiedad como variable predictora, priorizando variables que reflejen mejor la dinámica de la negociación.
+<p>El tamaño de la propiedad (tam_propiedad) por sí solo no muestra una diferencia drástica entre éxito y fracaso. Sin embargo, el interés máximo alcanzado (interes_max) sí es un diferenciador crítico.</p>
 
-Evolución Temporal: El año de interacción muestra una diferencia clara entre los casos de éxito y fracaso. Existe una tendencia donde las operaciones más recientes muestran patrones de cierre distintos, lo que refleja una evolución en las tácticas de venta o en las condiciones del mercado inmobiliario actual.
+<p>Consideramos que la envergadura del activo puede ser un dato "engañoso" debido a la gran concentración de operaciones en nuestra "propiedad estrella" (el equivalente al Everest). Por ello, hemos decidido excluir el tamaño de la propiedad como variable predictora, priorizando variables que reflejen mejor la dinámica de la negociación.</p>
+
+<p>El año de interacción muestra una diferencia clara entre los casos de éxito y fracaso. Existe una tendencia donde las operaciones más recientes muestran patrones de cierre distintos, lo que refleja una evolución en las tácticas de venta o en las condiciones del mercado inmobiliario actual.</p>
 
          
 <img src="../images/Imagen150.png" alt="Título" class="img-proyecto" width="650">
 
 
-Análisis de Proporciones Categóricas y Conversión
-Al analizar cómo influyen las variables cualitativas en la tasa de cierre de ventas, se han tomado las siguientes determinaciones para el modelo predictivo:
+<p>Análisis de Proporciones Categóricas y Conversión</p>
+ 
+<p>Al analizar cómo influyen las variables cualitativas en la tasa de cierre de ventas, se han tomado las siguientes determinaciones para el modelo predictivo:</p>
 
-Impacto del Servicio premium: Es evidente que el uso de servicios adicionales de alta gama (como asesoría personalizada o tecnología avanzada) afecta positivamente la proporción de éxitos. Debido a este fuerte contraste, la variable premium será utilizada como un predictor fundamental en nuestro modelo.
+<p>Es evidente que el uso de servicios adicionales de alta gama (como asesoría personalizada o tecnología avanzada) afecta positivamente la proporción de éxitos. Debido a este fuerte contraste, la variable premium será utilizada como un predictor fundamental en nuestro modelo.</p>
 
-Segmentación por Género: Si bien se observa una ligera diferencia en la proporción de éxito entre hombres y mujeres, se ha decidido descartar el sexo como variable predictora. Esta decisión se basa en la gran disparidad en el volumen de datos (la cantidad de leads masculinos es significativamente superior), lo que podría inducir a conclusiones sesgadas o poco representativas.
+<p>Si bien se observa una ligera diferencia en la proporción de éxito entre hombres y mujeres, se ha decidido descartar el sexo como variable predictora. Esta decisión se basa en la gran disparidad en el volumen de datos (la cantidad de leads masculinos es significativamente superior), lo que podría inducir a conclusiones sesgadas o poco representativas.</p>
 
-Estacionalidad y Ciclo de Mercado (ciclo_mercado): Se identifican variaciones considerables según la temporada del año. Es importante notar que, aunque la tasa de éxito en el ciclo de verano aparece como el 100%, este dato debe tomarse con cautela debido al bajo volumen de observaciones en esa época. No obstante, las diferencias entre primavera y otoño son lo suficientemente sólidas como para ser consideradas en el análisis.
+<p>Se identifican variaciones considerables según la temporada del año. Es importante notar que, aunque la tasa de éxito en el ciclo de verano aparece como el 100%, este dato debe tomarse con cautela debido al bajo volumen de observaciones en esa época. No obstante, las diferencias entre primavera y otoño son lo suficientemente sólidas como para ser consideradas en el análisis.</p>
 
 
 
