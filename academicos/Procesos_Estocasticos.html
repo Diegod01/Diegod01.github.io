@@ -262,8 +262,49 @@ no llega a absorberse dentro del límite de iteraciones (400 pasos), pero aun as
   
      <h2>Resultados y Análisis </h2>
 
+<p>Luego de observar los gráficos y ver como afecta el nivel de tolerancia \( (\tau) \) a distintas métricas como el tamaño medio de clusters, el índice de Moran, y el tiempo a cuasi-absorción, concluimos que: </p>
+
+<p>El Tamaño Medio de Clústeres es una métrica que indica el tamaño promedio de los
+clusters formados, un cluster es un grupo de agentes del mismo color. Para calcularlos
+identificamos cada grupo de vecinos similares calculamos el promedio de sus tamaños.
+Lo aplicamos a la grilla final de la simulación. En la gráfica que obtuvimos vimos que al
+subir el umbral de tolerancia ( \( \tau \) ) el tamaño medio de los clusters va aumentando, aunque
+este valor fluctúa para valores de tolerancia mayores que 0.7. Esto tiene sentido porque
+para valores bajos de tolerancia, vimos que el gráfico tendía a segregar menos, por eso
+el tamaño promedio de clusters es menor, en cambio para valores altos de tolerancia, el
+cluster tendría a hacer una segregación casi perfecta, por eso el tamaño medio de clusters
+es mayor.</p>
+
+
+<p>El Índice de Moran mide la autocorrelación espacial, la tendencia de los valores de atributos a estar correlacionados con valores vecinos. Es una medida formal de segregación,
+cuantifica el grado de agrupamiento de los agentes del mismo tipo. Es un valor entre -1
+y 1 que se aplica a la grilla final. En el gráfico que hicimos vimos que para niveles bajos
+de tolerancia, este indica tiene valores bajos, esto tiene sentido ya que la segregación
+es menor y tenemos menos agrupamiento de vecinos similares. En cambio para niveles
+altos de tolerancia, tenemos clusters con la mayoría todos sus vecinos iguales, por lo que
+este indice es mayor.</p>
+
+
+<p>El tiempo de Cuasi-Absorción mide el tiempo que se demora en llegar a un estado
+absorbente. Vemos que cuando aumentamos el valor de tolerancia el tiempo de cuasiabsorción aumenta, esto se debe a que para niveles bajos de tolerancia la mayoría de
+agentes estarán satisfechos y habrá pocos desplazamientos, por lo que llegaremos rápido al estado absorbente. En cambio para niveles altos de tolerancia, la mayoría de agentes
+estarán insatisfechos y habrá mas desplazamientos, por lo que llegaremos mas lento al estado absorbente.</p>
+
 
 <h2>Conclusiones </h2>
+
+
+<p>Concluimos que logramos exitosamente formalizar el modelo de Schelling como una Cadena
+de Markov, definimos el espacio de estados, la regla de transición y la probabilidad de esas
+transiciones.</p>
+
+<p>Realizamos una simulación con código en la cual obtuvimos el comportamiento de la grilla
+para distintos valores de tolerancia \( \tau \), ademas de distintas métricas donde vimos la relación de
+este nivel de tolerancia con distintos elementos como el tamaño medio de clusters, el índice de
+Moran, y el tiempo a cuasi-absorción.</p>
+
+
+
      
     </section>
   </body>
