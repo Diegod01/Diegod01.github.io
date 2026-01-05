@@ -213,13 +213,27 @@
 <p>Donde Yi es el componente aleatorio (la verosimilitud). El \( \beta_0 \) es el intercepto y los demas betas son los prioris. Luego \( \mathbf{x}_i^\top \boldsymbol{\beta} \) es la "link function"  </p>
 
 
+<h2>Modelo Jerárquico logístico</h2>
 
+<p>El nuevo modelo es:</p>
 
+<p> \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \text{con} \quad \log\!\left(\frac{\pi_{ij}}{1 - \pi_{ij}}\right) = \beta_{0j} + \sum_{k=1}^{p} \beta_k X_{ijk} \) </p>
 
+<p>\(\beta_0 \sim \mathrm{N}(m_0, s_0^2) \)</p>      
 
+<p> \( \beta_{0j} = \beta_0 + b_{0j} \)</p>
 
-         
-         
+<p> \(  beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2)  \)</p>   
+
+<p> \( \sigma_0 \sim \text{Exp}(\lambda) \)</p>
+
+<p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultado del individuo i
+que pertenece al grupo j. Con \( \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernouilli.
+Con  beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) estamos asumiendo Independencia condicional</p>
+
+<p>\(\beta_0\) es el priori intercepto global, mientras que \(b_{0j} es el intercepto específico por grupo. Cada grupo tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre grupos, el cual controla qué tan diferentes permitimos que sean los grupos entre sí. Si es baja, los grupos son parecidos, si es alta, los grupos son heterogéneos.heterogéneos</p>
+
+     
 <img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen153.png" alt="Título" class="img-proyecto" width="650">
