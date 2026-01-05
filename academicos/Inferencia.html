@@ -183,10 +183,16 @@
 
 <p>Usaremos un modelo logístico, esto debido a que la variable de interes "Compra" se puede pensar como un Éxito en caso de que se de la compra del inmueble o Fracaso en caso de que no se de la compra del inmueble</p>
 
-<p>Utilizamos variables Bernoullis, con probabilidad \( \pi \) de éxito. La variable de respuesta Y distribuye: \( Y_i \mid \pi_i \sim \text{Bern}(\pi_i)  \)</p>
+<p>Utilizamos variables Bernoullis, con probabilidad \( \pi \) de éxito. La variable de respuesta Y distribuye: \( Y_i \mid \pi_i \sim \text{Bern}(\pi_i)  \) con \( E(Y_i \mid \pi_i) = \pi_i \)</p>
 
+<p>Utilizaremos las odds, que son una manera alternativa de expresar la incertidumbre, donde comparamos la probabilidad de éxito contra su complemento (la probabilidad de fracaso):  \( odds = \frac{\pi}{\pi} \) </p>
+<p>Las ventajas de usar odds son que mientras la probabilidad se encuentra entre 0 y 1, los odds van de 0 a infinito y el logaritmo de los ddds (Log-Odds) abarca todos los reales.</p>
+<p>La pregunta que buscamos contestar con odds es cuántas veces es más probable que el evento ocurra en comparación con que NO ocurra</p>         
 
+<p>Definimos el modelo logístico</p>
 
+<p> \( Y_i \mid \boldsymbol{\beta_0},{\beta_1}...{\beta_n} \sim \mathrm{Bern}(\pi_i)  \text{ ,  con } \log\!\left(\frac{\pi_i}{1-\pi_i}\right) = \mathbf{x}_i^\top \boldsymbol{\beta}  \) </p>
+         <p>Donde</p>
          
          
          
