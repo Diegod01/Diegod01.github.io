@@ -274,8 +274,24 @@ promedio.)</p>
 
 
 
-         
+<h2>Prioris Poco Informativas</h2>
 
+<p>Se trabajó con prioris poco informativas, de la forma: Normal (0,2.5)</p>
+
+ <p>Se decidió así para:</p>
+
+  <p>- Evitar hacer overfitting cuando tenemos pocos datos.</p>
+
+   <p>- En la escala de odds logarítmica, coeficientes mayores a 5 implican certeza prácticamente.</p>
+
+    <p>- Nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan qué fue lo que pasó.</p>
+
+     <p>- Nos centramos en cero ya que queremos tener una postura neutral.</p>
+
+      <p>- Asumimos a priori que las variables no tienen efecto sobre el éxito (por eso mu es 0).</p>
+
+       <p>- Para el error se utilizó exp(1), la cual es estándar en este tipo de problemas. Contempla que la varianza no puede ser negativa.</p>
+         
 
          
 
