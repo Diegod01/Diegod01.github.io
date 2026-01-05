@@ -392,14 +392,53 @@ todos los modelos. No obstante, es levemente más preciso que todos el modelo je
 <img src="../images/Imagen155.png" alt="Título" class="img-proyecto" width="650">
 
 
+<h2>MCMC diagnostics del modelo 4: Traza</h2>
 
-<p>a</p>
-         
+<p>Se revisó la convergencia de todos los 3 modelos anteriores a este, la cual fue la adecuada. En el caso de jerarquía por ciclo de mercado, los resultados son levemente
+inestables. Se detectan ciertos problemas de convergencia en alguna de las cadenas. Esto ocurre dada la poca cantidad de datos para verano.</p>
+
 <img src="../images/Imagen156.png" alt="Título" class="img-proyecto" width="650">
+
+<h2>MCMC diagnostics del modelo 4: Densidades </h2>
+
+<p>Nuevamente, la convergencia de los otros tres modelos fue correcta, generando densidades adecuadas. En jerárquico por ciclo de mercado, los resultados de las densidades de los
+parámetros por cadena son consistentes entre las distintas cadenas. </p>
+         
 <img src="../images/Imagen157.png" alt="Título" class="img-proyecto" width="650">
+
+
+<h2>MCMC diagnostics del modelo 4: Correlación</h2>
+
+<p>Nuevamente se encuentra todo correcto para los otros tres modelos. En jerárquico por ciclo de mercado, los resultados de las
+correlaciones de los parámetros por cadena muestran que cierto nivel (bajo) de correlació</p>
+         
 <img src="../images/Imagen158.png" alt="Título" class="img-proyecto" width="650">
+
+
+<h2>Comparación entre Modelos: Método LOO</h2>
+
+
 <img src="../images/Imagen159.png" alt="Título" class="img-proyecto" width="650">
+
+<p>El método LOO sirve para comparar modelos según su capacidad predictiva usando Leave-One-Out Cross-Validation (LOO). El resultado muestra, para cada modelo, cuánto peor
+es respecto al mejor (el que tiene 0 en elpd_diff). Cuanto más negativo es, peor predice. Si la diferencia entre modelos supera aproximadamente 2 x se_diff se considera relevante.</p>
+
+<p>El modelo modje (jerárquico por campaña) es claramente el mejor modelo, con una diferencia considerable respecto al resto.
+Esto tiene sentido: el éxito de un cliente (que compre la propiedad) depende en gran parte de la campaña a la que pertenece. En cambio, no depende de la propiedad que sube o la época del año en la que lo hace, donde esto ultimo seria el ciclo de mercado.</p>
+
+
+<h2>Análisis de los posteriors del modelo 2</h2>
+
+<p>Mediante la función tidy () se realizó el análisis de los posteriors. Para los IC se toma 95% de confianza</p>         
+
+<p>La variable antiguedad_años no tiene relevancia predictiva dado que está prácticamente centrada en cero.
+El resto de variables tienden a ser relevantes. El error estándar alto de la categoria verano en la variable ciclo de mercado se debe a los pocos datos.</p>
+         
 <img src="../images/Imagen160.png" alt="Título" class="img-proyecto" width="650">
+
+         
+
+         
 <img src="../images/Imagen161.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen162.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen163.png" alt="Título" class="img-proyecto" width="650">
