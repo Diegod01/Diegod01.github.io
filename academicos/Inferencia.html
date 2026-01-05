@@ -192,8 +192,8 @@
 <p>Definimos el modelo logístico</p>
 
 <p> \( Y_i \mid \boldsymbol{\beta_0},{\beta_1}...{\beta_n} \sim \mathrm{Bern}(\pi_i)  \text{ ,  con } \log\!\left(\frac{\pi_i}{1-\pi_i}\right) = \mathbf{x}_i^\top \boldsymbol{\beta}  \) </p>
-         <p>Donde</p>
-
+       
+     <p>Donde</p>
 
 <p> \( \beta_{0} \sim N(m_{0}, s_{0}^{2})  \) </p>   
 
@@ -204,13 +204,21 @@
 <p> \( \beta_{n} \sim N(m_{n}, s_{n}^{2}) \) </p>
 
 
-<p>Tenemos:</p>        
+<p>Tenemos una forma de despejar para pasar de los oods a las probabilidades:</p>        
 
-\( \frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \) 
+<p>\( \frac{\pi_i}{1 - \pi_i} = e^{\beta_0 + \beta_1 X_{i1}} \) </p>
          
-\( \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}} \)
+<p>\( \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}} \)</p>
+
+<p>Donde Yi es el componente aleatorio (la verosimilitud). El \( \beta_0 \) es el intercepto y los demas betas son los prioris. Luego \( \mathbf{x}_i^\top \boldsymbol{\beta} \) es la "link function"  </p>
 
 
+
+
+
+
+
+         
          
 <img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
