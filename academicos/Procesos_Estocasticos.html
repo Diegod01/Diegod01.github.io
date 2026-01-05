@@ -113,9 +113,21 @@
 
 <p>Ponemos él -3 (o 3 veces el -1) para no considerar la celda centra (i,j)</p>
 
-<p> Entonces la regla de decisión es que si 𝑆 \leq 𝜏, entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.</p>
+<p> Entonces la regla de decisión es que si \( 𝑆 \leq \tau \), entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.</p>
 
-<p> En cuanto a las transiciones de la cadena 𝐻𝑡 → 𝐻_{𝑡+1}, pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual sera seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.</p>
+<p> En cuanto a las transiciones de la cadena \( 𝐻_𝑡 → 𝐻_{𝑡+1} \), pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual sera seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.</p>
+
+<p>Recordando que las notaciones que estamos usando para la celda donde se encuentra al agente: \( 𝑘 = (𝑖, 𝑗) \) y las celdas que no son donde se encuentra el agente \( 𝑘′ ≠ 𝑘 => (𝑖′, 𝑗′) ≠ (𝑖, 𝑗) \) </p>
+
+<p>Podemos definir el conjunto  \( U_t = {k' \in U_t / k -> k' }  \) como el conjunto de celdas vacantes a las
+que se puede mover un agente insatisfecho que se encuentra en la celda k en el momento t de la grilla. Luego el conjunto \( V_t = {k' \in V_t / S_{k'} \geq S_k }  \). Es el conjunto de celdas que maximizan
+el numero de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a \( max(S_{k'} \), la celda \( k' \) que maximiza el numero de vecinos del mismo color, y por lo tanto se cumple que 
+\( max(S_{k'}) > S_k \).  Notar que bajo esta definición se cumple que \( V_t \subset U_t \).</p>
+
+<p>Pero debemos tener en cuenta que puede ocurrir tres casos para el agente en la posición k.</p>
+
+
+
 
      
 
@@ -125,7 +137,7 @@
 
 <p>El criterio de parada es que todos los agentes estén maximizando el numero de vecinos de igual color en la posición en la que están. Si 𝑈𝑡 = ∅, en la simulación es que la lista donde almacenamos los estados movibles sea vacía. El criterio de parada depende de cierta manera del parámetro de tolerancia porque para valores mas bajos de tolerancia, para estar satisfechos aceptamos pocos vecinos del mismo color y esto repercute en que el numero de transiciones a estados maximizadores sea menor, porque habrá muchos agente satisfechos, lo que causa que la cadena llegue mas rápido al criterio de parada. En el otro caso, si el parámetro de tolerancia es mas alto, exigimos muchos vecinos del mismo color para estar satisfechos, entonces el numero de transiciones a estados maximizadores sera mayor, porque habrá mas agente insatisfechos que se moverán, lo que causa que la cadena llegue mas lento al criterio de parada.</p>
 
-<p>El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), el vecino se considera insatisfecho. Los insatisfechos miran todas las casas vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso, moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias de cómo queda el mapa. Después corre la simulación para distintos valores de tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para distintos pasos de tiempo, cómo los barrios se van re ordenando y qué tan mezclados osegregados quedan los rojos y los azules. </p>
+<p>El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), el vecino se considera insatisfecho. Los insatisfechos miran todas las casas vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso, moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias de cómo queda el mapa. Después corre la simulación para distintos valores de tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para distintos pasos de tiempo, cómo los barrios se van reordenando y qué tan mezclados o segregados quedan los rojos y los azules.</p>
 
      
 <p>Utilizamos las funciones ya definidas para empezar a hacer los plots.</p>
