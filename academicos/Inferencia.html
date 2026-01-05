@@ -491,7 +491,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>Mediante el método LOO comprobamos que este modelo es considerablemente peor que el modelo con servicios premium como variable, por lo que comprobamos que es necesario incluirla en el modelo.</p>
 
-<img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="350">
 
 
 <h2>¿Qué pasa si eliminamos la variable de años?</h2>         
@@ -502,7 +502,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>Mediante el método LOO comprobamos que este modelo es igual de preciso que el anterior, por lo que podríamos eliminar esta variable del análisis sin perder precisión.</p>
 
-<img src="../images/Imagen168.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen168.png" alt="Título" class="img-proyecto" width="350">
 
 
 <h2>¿Cómo influye el uso de servicios premium junto al ciclo de mercado?</h2>
@@ -557,7 +557,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>0 y 1 representan la predicción del modelo, TRUE y FALSE representan la realidad.</p>        
          
-<img src="../images/Imagen171.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen171.png" alt="Título" class="img-proyecto" width="350">
 <img src="../images/Imagen172.png" alt="Título" class="img-proyecto" width="650">
 
 <p>Sensitivity es la capacidad para detectar los éxitos. El modelo logró identificar correctamente al 90.8%</p>   
@@ -573,7 +573,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>Un cutoff de 0.8 da los siguientes resultados</p>
         
-<img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="350">
 <img src="../images/Imagen174.png" alt="Título" class="img-proyecto" width="650">
 
 <p>Es muy exigente para detectar los éxitos. Casi no tiene falsos positivos y su capacidad para prever el fracaso es muy buena. Sin embargo, se le “escapan” éxitos. Predice que 267 serán fracasos pero en realidad fueron éxitos.</p>
@@ -581,15 +581,37 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>Un cutoff de 0.3 da los siguientes resultados</p>
          
-<img src="../images/Imagen175.png" alt="Título" class="img-proyecto" width="650">
+<img src="../images/Imagen175.png" alt="Título" class="img-proyecto" width="350">
 <img src="../images/Imagen176.png" alt="Título" class="img-proyecto" width="650">
 
 <p>No es exigente para detectar los éxitos. Detecta correctamente el 95% de los éxitos y 87% de fracasos. Nos da buenos resultados este cutoff.</p>
          
 
 
+  <h3>Resumen y Resultados</h3>       
+
+<p>Propusimos cuatro candidatos de modelos:<p>
+
+         <p>1) Complete pooling.</p>
+
+         <p>2) Partial pooling con jerarquía por campaña.</p>
+
+         <p>3) Partial pooling con jerarquía por propiedad.</p>
+
+         <p>4) Partial pooling con jerarquía por ciclo de mercado.</p>
+
+         <p>Con las predictoras: servicios premium, ciclo de mercado y antiguedad_años.</p>
+
+
+<p>Utilizamos validación cruzada mediante LOO para medir la capacidad predictiva fuera de la muestra y penalizar el overfitting. El modelo jerárquico por campaña fue el mejor.</p>
+
+<p>Se demostró que la predictora antiguedad_años no aportaba nada estadísticamente significativo, por lo que se eliminó del modelo</p>
+
+<p>Nuestro modelo resultante fue muy bueno en terminos generales</p>
+
+
          
- 
+         
         </section>
 
 
