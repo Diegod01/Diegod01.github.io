@@ -436,15 +436,66 @@ El resto de variables tienden a ser relevantes. El error estándar alto de la ca
          
 <img src="../images/Imagen160.png" alt="Título" class="img-proyecto" width="650">
 
-         
+        
+<h2>Efecto de premium en el posterior</h2>
 
+<p>Se graficó la probabilidad de éxito (compra de la propiedad) en función de si el individuo usa o no servicios premium</p>
+
+<p>Cuando se usa servicios premium, la distribución se mueve hacia valores claramente más altos, mostrando
+que aumenta la probabilidad de éxito (compra de la propiedad).
+Cuando no se usa servicios premium, la probabilidad es muy baja (la densidad está concentrada cerca de 0). Se observa una
+cola de probabilidad inferior.</p>
          
 <img src="../images/Imagen161.png" alt="Título" class="img-proyecto" width="650">
+
+
+
+<h2>Caterpillar Plot basado en Log-Odds</h2>
+
+<p>Se toman 30 campañas al azar. Para cada una se calculan sus log-odds y se comparan con 0. Se toma como base 0 dado que 0 es el
+logaritmo del odd neutro (1).</p>
+
+
+
+<p>Los valores a la derecha del 0 son aquellos en los que es más probable que hayan sido éxito (compra de la propiedad).
+Los valores a la izquierda son los que son más probable que haya sido fracasos (no compra de la propiedad).</p>
+
 <img src="../images/Imagen162.png" alt="Título" class="img-proyecto" width="650">
-<img src="../images/Imagen163.png" alt="Título" class="img-proyecto" width="650">
+
+
+
+<h2>Tabla de conversión entre log-odds, odds y probabilidad</h2>
+         
 <img src="../images/Imagen164.png" alt="Título" class="img-proyecto" width="650">
-<img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="650">
+
+
+
+
+<h2>¿Cómo influye el tener servicios premium junto a antiguedad_años?</h2>
+         
+<img src="../images/Imagen163.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Claramente los años entre la campaña y los años que pasaron desde que la propiedad fue publica no
+influyen en la probabilidad de éxito (compra de la propiedad) ni en el uso o no de servicios premium.
+Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, nos da a pensar que no es una variable relevante del modelo</p>
+         
+
+
+<h2>¿Qué pasa si eliminamos la variable servicios premium?</h2>
+
+<p>Según el gráfico anterior, vimos que la variable servicios premium es sumamente relevante a la hora de modelar la probabilidad de éxito de compra de la propiedad por parte del cliente.</p>
+<p>Vamos a comprobar la importancia de incluir servicios premium corriendo el modelo sin dicha variable</p>
+         
+         
 <img src="../images/Imagen166.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Mediante el método LOO comprobamos que este modelo es considerablemente peor que el modelo con servicios premium como variable, por lo que comprobamos que es necesario incluirla en el modelo.</p>
+
+<img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="650">
+
+
+
+         
 <img src="../images/Imagen167.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen168.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen169.png" alt="Título" class="img-proyecto" width="650">
