@@ -20,7 +20,7 @@
 
 <p>El modelo de Schelling fue originalmente propuesto para estudiar cómo decisiones locales basadas en preferencias individuales pueden generar patrones de segregación a gran escala dentro de un sistema social. Esta lógica de interacción espacial y ajuste iterativo presenta una conexión natural con las cadenas de Markov, ya que la evolución del sistema puede formalizarse como un proceso estocástico con transiciones entre estados y posibles configuraciones absorbentes.</p>
 
-<p>En este trabajo, reinterpretamos el modelo desde una perspectiva de negocio en mercados financieros y ecosistemas fintech. Consideramos una grilla de 20×20 (400 celdas), donde cada celda representa un producto financiero, plataforma de inversión o nicho de mercado, y puede estar ocupada por un cliente del segmento Tradicional (rojo), Fintech/Neobank (azul), o encontrarse vacante —lo que representa espacios de mercado disponibles para adopción o migración de clientes.</p>
+<p>En este trabajo, reinterpretamos el modelo desde una perspectiva de negocio en mercados financieros y ecosistemas fintech. Consideramos una grilla de 20×20 (400 celdas), donde cada celda representa un producto financiero, plataforma de inversión o nicho de mercado, y puede estar ocupada por un cliente del segmento Tradicional (rojo), Fintech/Neobank (azul), o encontrarse vacante lo que representa espacios de mercado disponibles para adopción o migración de clientes.</p>
 
 <p> Cada agente representa un cliente o inversor que toma decisiones de localización influenciado por efectos de red y afinidad de segmento. Los “vecinos” de una celda se interpretan como clientes con perfiles similares dentro del mismo ecosistema de producto, que generan referencias, confianza, engagement y externalidades positivas propias de los mercados con efectos de red.</p>
 
@@ -28,7 +28,13 @@
 
 <p>La dinámica del modelo consiste en identificar agentes insatisfechos y permitirles migrar hacia celdas vacantes donde puedan maximizar su afinidad de segmento, siempre que el nuevo espacio supere el umbral τ. Este proceso se repite hasta alcanzar un equilibrio donde ya no se observan migraciones adicionales y el sistema converge a una configuración estable de mercado.</p>
 
-<p>Los objetivos del trabajo son: (1) estudiar cómo surgen patrones de segmentación y concentración de clientes en productos financieros a partir de decisiones locales, (2) analizar la relación entre τ y el grado de especialización de nicho de mercado, y (3) formalizar la evolución del ecosistema como una cadena de Markov, caracterizando estados absorbentes como configuraciones de mercado estables donde no existe switching adicional de clientes.</p>
+<p>Los objetivos del trabajo son: 
+ 
+ <p>(1) estudiar cómo surgen patrones de segmentación y concentración de clientes en productos financieros a partir de decisiones locales.</p>
+ 
+ <p>(2) analizar la relación entre τ y el grado de especialización de nicho de mercado.</p>
+ 
+ <p>(3) formalizar la evolución del ecosistema como una cadena de Markov, caracterizando estados absorbentes como configuraciones de mercado estables donde no existe switching adicional de clientes.</p>
 
 <p>Las preguntas centrales que buscamos responder son cómo influye el umbral de tolerancia τ en la concentración de segmentos por producto, en qué medida determina la existencia y probabilidad de alcanzar un equilibrio absorbente de mercado, y cuántos pasos requiere el sistema —en promedio— para converger a un estado de retención estable. Asimismo, analizamos el proceso de migración para construir y estudiar la matriz de switching entre segmentos, un indicador clave en modelos de adopción competitiva de productos financieros.</p>
 
@@ -36,33 +42,51 @@
      
 <h2>Resultados Teóricos </h2>
 
-<p>Grilla NxN = 20x20. 400 celdas en total. Podemos definir el siguiente conjunto finito de todas las celdas posibles a través del producto cartesiano Λ = {1, ..., 20} × {1, ..., 20}</p>
+<p>Grilla NxN = 20x20. 400 celdas en total. Podemos definir el siguiente conjunto finito de todas las celdas posibles a través del producto cartesiano \( Λ = {1, ..., 20} × {1, ..., 20} \) </p>
 
-<p>Luego podemos considerar el conjunto finito de colores posibles, donde cada celda puede ser  𝑋 = {𝑅, 𝐴, 𝑉 } (Rojo, Azul, Vacante)</p>
+<p>Luego podemos considerar el conjunto finito de colores posibles, donde cada celda puede ser \( 𝑋 = {𝑅, 𝐴, 𝑉 } \) (Rojo, Azul, Vacante)</p>
 
 <p>Podemos ver el Espacio de Estados como una función que asigna a cada celda posible un color:</p>
 
-<p> 𝑆 = 𝑋^Λ = {𝑠 ∶ Λ → 𝑋}. Donde 𝑠(𝑖, 𝑗) ∈ 𝑋 ∀ (𝑖, 𝑗) ∈ Λ </p>
+<p> \( 𝑆 = 𝑋^Λ = {𝑠 ∶ Λ → 𝑋}. Donde 𝑠(𝑖, 𝑗) ∈ 𝑋 ∀ (𝑖, 𝑗) ∈ Λ  \) </p>
 
-<p> Podemos definir también: 𝑆 = {𝑠 ∈ 𝑋^Λ ∶ #𝑅 = 180, #𝐴 = 180, #𝑉 = 40} </p>
+<p> Podemos definir también:  \( 𝑆 = {𝑠 ∈ 𝑋^Λ ∶ #𝑅 = 180, #𝐴 = 180, #𝑉 = 40} \) </p>
 
 
-<p>En cuanto a la cardinalidad del este Espacio de Estados, tenemos que 3^{(20𝑥20)} combinaciones posibles de grillas de 20x20 que tienen 3 colores. Es decir #𝑆 = 3^{(20𝑥20)} = 3^{400} </p>
+<p>En cuanto a la cardinalidad del este Espacio de Estados, tenemos que  \( 3^{(20𝑥20)} \) combinaciones posibles de grillas de 20x20 que tienen 3 colores. Es decir  \( #𝑆 = 3^{(20𝑥20)} = 3^{400} \) </p>
 
 <p>El espacio de estados tiene estados posibles que son configuraciones de toda la grilla. Cada configuración que puede tomar la grilla es un estado del espacio de estados.</p>
 
 <p>Luego tenemos 100% = 400 es el total de celdas en la grilla, por lo que usando regla de tres, el 10% = 40 son celdas vacantes. Luego tenemos 400-40=360 celdas disponibles para celdas rojas y azules, sabemos que la proporción debe ser 50/50 por lo que tenemos 180 celdas rojas y 180 celdas azules. El espacio de estados se reduce a las grillas que cumplan esta condición, pero de todas formas sigue siendo un espacio de estados muy grande. </p>
 
-<p>Para contar el número de vecinos de igual color que la celda central (i,j) definimos la siguiente función que va del conjunto de celdas a los reales entre [0, 1], 𝑆 ∶ 𝑆𝑋𝑁^2 → [0, 1]. Esta función será nuestra regla de decisión para decidir si un agente esta o no insatisfecho.</p>
+<p>Para contar el número de vecinos de igual color que la celda central (i,j) definimos la siguiente función que va del conjunto de celdas a los reales entre \( [0, 1], 𝑆 ∶ 𝑆𝑋𝑁^2 → [0, 1] \)  Esta función será nuestra regla de decisión para decidir si un agente esta o no insatisfecho.</p>
 
-<p> Entonces: 𝜏 = 𝑥% indica que tenemos que tener al menos x% (100*x%) agentes similares de vecinos para estar satisfechos como agente principal. 𝑆(𝐻t, 𝑖, 𝑗) \leq 𝜏 tenemos que el agente esta insatisfecho. 0 ≤ 𝑆(𝐻𝑡, 𝑖, 𝑗) ≤ 1  y  0 ≤ 𝜏 ≤ 1 </p>
+<p> Entonces: \tau = 𝑥% indica que tenemos que tener al menos x% (100*x%) agentes similares de vecinos para estar satisfechos como agente principal.  \( 𝑆(𝐻t, 𝑖, 𝑗) \leq \tau \) tenemos que el agente esta insatisfecho.  \( 0 ≤ 𝑆(𝐻𝑡, 𝑖, 𝑗) ≤ 1  \ y  \ 0 ≤ 𝜏 ≤ 1 \) </p>
 
 
 <p> Entonces notemos que los vecinos se pueden definir de la siguiente forma:</p>
 
-<p> Tabla 9x9</p>
+<table border="1" cellpadding="8" cellspacing="0">
+  <tr>
+    <td>(i-1, j-1)</td>
+    <td>(i-1, j)</td>
+    <td>(i-1, j+1)</td>
+  </tr>
+  <tr>
+    <td>(i, j-1)</td>
+    <td>(i, j)</td>
+    <td>(i, j+1)</td>
+  </tr>
+  <tr>
+    <td>(i+1, j-1)</td>
+    <td>(i+1, j)</td>
+    <td>(i+1, j+1)</td>
+  </tr>
+</table>
 
 <p>Definimos las siguienes funciones indicadores que serviran para contar el numero de vecinos del mismo color y la proporcion de estos</p>
+
+     <img src="../images/Imagen181.png" alt="Título" class="img-proyecto" width="650">
 
 
 <p>Indicatrices </p>
