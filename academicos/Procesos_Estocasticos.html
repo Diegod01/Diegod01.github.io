@@ -113,7 +113,7 @@
 
 <p>Ponemos él -3 (o 3 veces el -1) para no considerar la celda centra (i,j)</p>
 
-<p> Entonces la regla de decisión es que si \( 𝑆 \leq \tau \), entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.</p>
+<p> Entonces la regla de decisión es que si \( 𝑆 < \tau \), entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.</p>
 
 <p> En cuanto a las transiciones de la cadena \( 𝐻_𝑡 → 𝐻_{𝑡+1} \), pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual sera seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.</p>
 
@@ -121,14 +121,43 @@
 
 <p>Podemos definir el conjunto  \( U_t = {k' \in U_t / k -> k' }  \) como el conjunto de celdas vacantes a las
 que se puede mover un agente insatisfecho que se encuentra en la celda k en el momento t de la grilla. Luego el conjunto \( V_t = {k' \in V_t / S_{k'} \geq S_k }  \). Es el conjunto de celdas que maximizan
-el numero de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a \( max(S_{k'} \), la celda \( k' \) que maximiza el numero de vecinos del mismo color, y por lo tanto se cumple que 
+el numero de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a \( max(S_{k'}) \), la celda \( k' \) que maximiza el numero de vecinos del mismo color, y por lo tanto se cumple que 
 \( max(S_{k'}) > S_k \).  Notar que bajo esta definición se cumple que \( V_t \subset U_t \).</p>
 
-<p>Pero debemos tener en cuenta que puede ocurrir tres casos para el agente en la posición k.</p>
+<p>Pero debemos tener en cuenta que puede ocurrir tres casos para el agente en la posición k:</p>
+
+<p>1) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), del cual buscaremos el máximo de \( 𝑉_𝑡 \) y el agente se moverá para maximizar su numero de vecinos de igual color.</p>
+
+<p>2) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), pero se cumple que estos elementos dan una numero de agentes de igual color que es igual o menor con respecto a la posicion actual en la que se encuentra el agente, en este caso el agente tambien se mueve a cualquiera
+de las celdas que dan un numero de agentes del mismo color equivalente a la cantidad que tiene con respecto a la celda en la que esta y ignora las que dan un numero menor de agentes de igual color.</p>
+
+<p>3) Que de \( 𝑈_𝑡 \) no exista al menos un elemento en \( 𝑉_𝑡 \), es decir todas las celdas a las que se pueden mover el agente dan un numero de vecinos de igual color menor con respecto a
+la que se encuentra actualmente, en este caso el agente no se mueve y se queda en la posicion en la que esta.</p>
+
+
+<p>Este ultimo caso es importante porque dado que la celda actual es la que maximiza el numero de agentes de igual color (aunque esto no implica necesariamente que el agente este satisfecho),
+y no hay otra celda que lo haga, si esto ocurre para todos los agentes insatisfechos de la grilla entonces decimos que la cadena entro en un estado absorbente y la grilla se quedara con esa configuración por un tiempo infinito</p>
+
+<p>Si todos los agentes maximizan el número de vecinos del mismo color en la celda en la que están, entonces ya no hay más movimientos y la grilla queda segregada, quedando en este
+estado por siempre, por lo que tenemos un estado absorbente. Notar que no necesariamente los agentes que están maximizando el número de vecinos de igual color, están satisfechos, eso dependerá del nivel de tolerancia \( \tau \) definido.</p>
+
+
+<p>Si lo queremos formalizar decimos que una configuracion de la grilla 𝑖 es absorbente si solo si, no existe ningún movimiento que suba la satisfacción de cualquier agent</p>
+
+<p> \( p_{ii} = 1 \iff \forall \ k' \in H_t, S_{k'} \leq  S_k, \ k \neq k' \)</p>
+
+<p>siendo k la celda actual en la que se encuentra el agente en el momento t de la grilla.</p>
 
 
 
 
+<p>Notar que los estados absorbentes a los que puede entrar la grilla son varios, definidos según el número de agentes que maximizan su número de vecinos del mismo color, pero se diferencian
+en que algunos pueden estar satisfechos y otros no, puede ocurrir que todos los agentes en el momento t de la grilla estén satisfechos al maximizar su número de vecinos adyacentes
+ \( argmax(S(i,j)) = (i', j') \) y  \( S(i', j') \geq \tau \), que algunos estén satisfechos y otros no, o que todos estén insatisfechos \( argmax(S(i,j)) = (i', j') \) y  \( S(i', j') < \tau \), todo esto dependerá del
+nivel de tolerancia \( \tau \). </p>     
+
+
+     
      
 
 <h2>Diseño de Simulación</h2>
