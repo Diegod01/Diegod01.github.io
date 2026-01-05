@@ -553,19 +553,38 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>¿Por qué decimos que clasificamos? Aquí es donde se introduce el concepto de CUTOFF, que es el umbral el cual utilizamos para clasificar un éxito de escalada o no. Si la probabilidad de éxito es mayor al cutoff definido entonces clasificamos a ese climber como exitoso.</p>
          
+<p>Classification summary y confusion matrix con un cutoff de 0.5</p>
 
- <h3>Evaluación Predictiva</h3>        
-
-         
+<p>0 y 1 representan la predicción del modelo, TRUE y FALSE representan la realidad.</p>        
          
 <img src="../images/Imagen171.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen172.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Sensitivity es la capacidad para detectar los éxitos. El modelo logró identificar correctamente al 90.8%</p>   
+
+<p>Specificity es la capacidad para prever los fracasos. El modelo clasificó correctamente al 91.3%.</p>   
+
+<p>Muy buen desempeño global (teniendo en cuenta nuestro conjunto de datos). Muy balanceado. Acierta en más de 9 de cada 10 casos.</p>   
+<p>Recordemos que este modelo que estamos usando y el que obtuvo estos resultados es el que tiene Jerarquía por campaña, la variable de respuesta es "compra". Los predictore ciclo de mercado y servicios premium.</p>   
+<p>Ademas, ciclo de mercado es una variable Categórica y Discreta, esta variable refiere a lo ambiental mientras que servicios premium refiere a caracteristicas del inmueble de interes. La estación nos ayuda a definir cuándo deberia ir un cliente a comprar el inmueble, teniendo en cuenta también la presencia de servicios premium.</p>   
+
+         
+<h3>¿Qué pasa si cambiamos el cutoff?</h3>
+
+<p>Un cutoff de 0.8 da los siguientes resultados</p>
+        
 <img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen174.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Es muy exigente para detectar los éxitos. Casi no tiene falsos positivos y su capacidad para prever el fracaso es muy buena. Sin embargo, se le “escapan” éxitos. Predice que 267 serán fracasos pero en realidad fueron éxitos.</p>
+
+
+<p>Un cutoff de 0.3 da los siguientes resultados</p>
+         
 <img src="../images/Imagen175.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen176.png" alt="Título" class="img-proyecto" width="650">
 
-
+<p>No es exigente para detectar los éxitos. Detecta correctamente el 95% de los éxitos y 87% de fracasos. Nos da buenos resultados este cutoff.</p>
          
 
 
