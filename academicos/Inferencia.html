@@ -494,12 +494,70 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 <img src="../images/Imagen165.png" alt="Título" class="img-proyecto" width="650">
 
 
+<h2>¿Qué pasa si eliminamos la variable de años?</h2>         
 
+<p>Vimos que la variable antiguedad_años no era relevante a la hora de modelar la probabilidad de éxito (comprar la propiedad). Vamos a comprobar si realmente vale la pena o no incluirla corriendo el modelo sin la misma.</p>
          
 <img src="../images/Imagen167.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Mediante el método LOO comprobamos que este modelo es igual de preciso que el anterior, por lo que podríamos eliminar esta variable del análisis sin perder precisión.</p>
+
 <img src="../images/Imagen168.png" alt="Título" class="img-proyecto" width="650">
+
+
+<h2>¿Cómo influye el uso de servicios premium junto al ciclo de mercado?</h2>
+         
 <img src="../images/Imagen169.png" alt="Título" class="img-proyecto" width="650">
+
+
+<p>- Otoño: eficacia y consistencia (tenemos mínima incertidumbre).</p>
+
+<p>- Invierno y Primavera: Alta mediana, pero con gran variabilidad.</p>
+
+<p>- Verano: tenemos muy pocas observaciones, lo que hace que la simulación genere muchos datos atípicos y ninguna caja.</p>
+
+<p>Nuestra cantidad de observaciones es:</p>
+         
+<p>Spring (Primavera): 1129</p>
+<p>Autumn (Otoño): 883</p>         
+<p>Winter (Invierno): 58</p>
+<p>Summer (Verano): 6</p>
+
+
+
+<h2>Creación de nuevas campañas</h2>
+
+
+
+<p>Queremos ver la capacidad de generalización del modelo. Ya sabemos lo que ocurrió (caterpillar plot), pero nos interesa ver qué puede pasar a futuro, usaremos la Distribución Predictiva Posteriori para pasar nuevos datos nunca vistos para el modelo para que prediga las probabilidades de exito (compra de las propiedades) de nuevos datos</p>
+    
 <img src="../images/Imagen170.png" alt="Título" class="img-proyecto" width="650">
+
+<p>Esta matriz muestra a usuarios nuevos nunca vistos por el modelo, con caracteristicas de los clientes como si usan servicios premium o no y el ciclo de mercado en el que se encuentra, para estos usuarios nuevos, el modelo predice su probabilidad de exito, o sea, la probabilidad de que compre la propiedad segun las caracteristicas del cliente.</p>
+
+
+         
+<h2>Evaluación Predictiva</h2>
+
+<p>Matriz de clasificación y confusión</p>
+
+<p>Es una tabla que compara lo que el modelo predice contra lo que realmente ocurrió.</p>
+
+<p>Resume en cuántos casos el modelo:</p>
+
+ <p>1) Predice bien (verdaderos positivos y verdaderos negativos)</p>
+ <p>2) Es erróneo por exceso (falsos positivos)</p>
+ <p>3) Es erróneo por defecto (falsos negativos)</p>
+  
+<p>Es una forma de evaluar qué tan bien acierta el modelo cuando estamos trabajando con una variable de decisión binaria, en nuestro caso el éxito de escalada.</p>
+
+<p>¿Por qué decimos que clasificamos? Aquí es donde se introduce el concepto de CUTOFF, que es el umbral el cual utilizamos para clasificar un éxito de escalada o no. Si la probabilidad de éxito es mayor al cutoff definido entonces clasificamos a ese climber como exitoso.</p>
+         
+
+ <h3>Evaluación Predictiva</h3>        
+
+         
+         
 <img src="../images/Imagen171.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen172.png" alt="Título" class="img-proyecto" width="650">
 <img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="650">
