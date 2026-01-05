@@ -86,7 +86,7 @@
 
 <p>Definimos las siguienes funciones indicadores que serviran para contar el numero de vecinos del mismo color y la proporcion de estos</p>
 
-     <img src="../images/Imagen181.png" alt="Título" class="img-proyecto" width="650">
+     <img src="../images/Imagen181.png" alt="Título" class="img-proyecto" width="450">
 
 
 <p>Indicatrices </p>
@@ -101,14 +101,14 @@
 
 <p> Definimos la siguiente expresión para contar el número de vecinos de igual color</p>
 
-<p> \( \left( \sum_{c \in C} \sum_{f \in F} R_k  \right    - 1 \)  </p>
+<p> \( \left( \sum_{c \in C} \sum_{f \in F} R_k  \right)    - 1 \)  </p>
 
 <p> Ponemos él -1 porque en la doble sumatoria estamos contando también a la celda central, la (i,j).</p>
 
 
 <p> Definimos la siguiente expresión para contar la proporción de vecinos de igual color</p>
 
-<p> Formula </p>
+<p> \( \frac{ \left( \sum_{c \in C} \sum_{f \in F} R_k  \right)  - 1 }{ \left( \sum_{c \in C} \sum_{f \in F} R_k  \right) - 1 + \left( \sum_{c \in C} \sum_{f \in F} A_k  \right)  - 1 + \left( \sum_{c \in C} \sum_{f \in F} V_k  \right)  - 1}     =   \frac{ \left( \sum_{c \in C} \sum_{f \in F} R_k  \right)  - 1 }{\left( \sum_{c \in C} \sum_{f \in F} R_k  \right)  + \left( \sum_{c \in C} \sum_{f \in F} A_k  \right) + \left( \sum_{c \in C} \sum_{f \in F} V_k  \right)  - 3}   \) </p>
 
 
 <p>Ponemos él -3 (o 3 veces el -1) para no considerar la celda centra (i,j)</p>
