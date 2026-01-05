@@ -701,10 +701,10 @@ $$
 \begin{aligned}
 Y_{ij} | \beta_{0j}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ij}) && \text{(verosimilitud)} \\
 \text{with} \quad \log\left(\frac{\pi_{ij}}{1-\pi_{ij}}\right) & = \beta_{0j} + \beta_1 X_{ij1} + \beta_2 X_{ij2} + \beta_3 X_{ij3}\\
-\beta_{0j} | \beta_{0c}, \sigma_{exp} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{exp}^2) && \text{(variabilidad entre expediciones)} \\
+\beta_{0j} | \beta_{0c}, \sigma_{exp} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{exp}^2) && \text{(variabilidad entre campañas)} \\
 \beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
 \beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
-\sigma_{exp} & \sim \text{Exp}(1) && \text{(desvío est. entre expediciones)}
+\sigma_{exp} & \sim \text{Exp}(1) && \text{(desvío est. entre campañas)}
 \end{aligned}
 \hspace{0.5em}
 }
@@ -729,10 +729,10 @@ $$\boxed{
 \begin{aligned}
 Y_{ik} | \beta_{0k}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{ik}) && \text{(verosimilitud)} \\
 \text{with} \quad \log\left(\frac{\pi_{ik}}{1-\pi_{ik}}\right) & = \beta_{0k} + \beta_1 X_{ik1} + \beta_2 X_{ik2} + \beta_3 X_{ik3} \\
-\beta_{0k} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0k} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre propiedades)} \\
 \beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
 \beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
-\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre propiedades)}
 \end{aligned}
 \hspace{0.5em}
 }$$
@@ -764,10 +764,10 @@ $$\boxed{
 \begin{aligned}
 Y_{is} | \beta_{0s}, \beta_1, \beta_2, \beta_3 & \sim \text{Bern}(\pi_{is}) && \text{(verosimilitud)} \\
 \text{with} \quad \log\left(\frac{\pi_{is}}{1-\pi_{is}}\right) & = \beta_{0s} + \beta_1 X_{is1} + \beta_2 X_{is2} + \beta_3 X_{is3} \\
-\beta_{0s} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre picos)} \\
+\beta_{0s} | \beta_{0c}, \sigma_{peak} & \overset{ind}{\sim} N(\beta_{0c}, \sigma_{peak}^2) && \text{(variabilidad entre propiedades)} \\
 \beta_{0c} & \sim N(0, 2.5^2) && \text{(intercepto global)} \\
 \beta_1, \beta_2, \beta_3 & \overset{ind}{\sim} N(0, 2.5^2) && \text{(coeficientes fijos)} \\
-\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre picos)}
+\sigma_{peak} & \sim \text{Exp}(1) && \text{(desvío est. entre propiedades)}
 \end{aligned}
 \hspace{0.5em}
 }$$
