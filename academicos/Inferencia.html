@@ -19,9 +19,9 @@
         <section>
 
 
-      <h2>Introduccion</h2>
+      <h2>Introducción</h2>
          
- <p>El set de daatos contiene información de clientes provenientes de distintas campañas o procesos de consulta inmobiliaria.</p>
+ <p>El set de datos contiene información de clientes provenientes de distintas campañas o procesos de consulta inmobiliaria.</p>
 
  <p>Cuenta con 24 variables y 2,076 observaciones, antes usadas para expediciones, ahora reinterpretadas como registros de clientes.</p>
 
@@ -34,7 +34,7 @@
 
  <p>Por ello utilizaremos un modelo logístico, apropiado para modelar la probabilidad de ocurrencia de un suceso dicotómico.</p>
 
- <p>Una compra exitosa se define cuando el cliente concreta la adquisición del inmueble consultado. En los datos originales esto se representaba con una igualdad de alturas; en el nuevo enfoque, equivale al momento en que el cliente pasa de la consulta a la transacción efectiva.</p>
+ <p>Una compra exitosa se define cuando el cliente concreta la adquisición del inmueble consultado. En los datos originales, esto se representaba con una igualdad de alturas; en el nuevo enfoque, equivale al momento en que el cliente pasa de la consulta a la transacción efectiva.</p>
 
 
 
@@ -49,11 +49,11 @@
 <img src="../images/Imagen142.png" alt="Título" class="img-proyecto" width="650">
 
 
-         <p>Si queremos una tabla con medidas descriptivas de las variables, usamos</p>
+         <p>Si queremos una tabla con medidas descriptivas de las variables, usamos.</p>
 
-         <p>Estadisticos como el minimo, el primer cuartil, la mediana, la media, el tercer cuartil y el maximo para variables cuantitativas</p>
+         <p>Estadísticos como el mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el máximo para variables cuantitativas.</p>
 
-         <p>La cantidad de TRUES y Totales con su porcentaje asociado haciendo el cociente entre TRUES y el Total para variable categoricas binarias</p>
+         <p>La cantidad de TRUES y Totales con su porcentaje asociado haciendo el cociente entre TRUES y el Total para variable categóricas binarias</p>
 
 
 
@@ -72,7 +72,7 @@
 
 <p>Los datos muestran que 807 leads concretaron la operación de compra de un total de 2,076 interesados. Esto representa una tasa de conversión del 39%, lo que sirve para medir la eficacia del equipo de ventas.</p>
 
-<p>Se observa que 507 de los 2,076 clientes optaron por servicios o características de alta gama. Veremos mas adelante si existe una correlación positiva entre la contratación de servicios premium y la probabilidad de cierre de la venta.</p>
+<p>Se observa que 507 de los 2,076 clientes optaron por servicios o características de alta gama. Veremos más adelante si existe una correlación positiva entre la contratación de servicios premium y la probabilidad de cierre de la venta.</p>
 
 <p>Las métricas relacionadas con la pérdida definitiva del cliente o incidentes graves durante la negociación presentan una frecuencia extremadamente baja (pocos valores TRUE). Debido a esta escasez de datos, las variables dependientes (como el motivo exacto de la pérdida o el punto del embudo donde ocurrió el incidente) presentan demasiados valores nulos (NA). Por lo tanto, se ha decidido excluir estas variables específicas del modelo predictivo para evitar ruidos estadísticos.</p>
 
@@ -100,7 +100,7 @@
          
 <p>Matriz de correlación entre los predictores cuantitativos usados para explicar a la variable de interés "compra"</p>         
 
-<p>El Coeficiente de correlación entre pares de variables cuantitativas. Varia entre 1 y -1, y toma distintos colores donde:</p>
+<p>El Coeficiente de correlación entre pares de variables cuantitativas. Varía entre 1 y -1, y toma distintos colores donde:</p>
 
          <p>- Azul oscuro: correlación positiva elevada. A medida que un predictor aumenta, también lo hace el otro.</p>
 
@@ -111,7 +111,7 @@
 
  <p>Al analizar las relaciones entre las variables cuantitativas de nuestro portafolio inmobiliario, se observan los siguientes hallazgos estratégicos:</p>
 
- <p>tam_propiedad y interes_max (Correlación: 0.76): Existe una fuerte relación lineal positiva entre el tamaño o valor del activo y el nivel de interés alcanzado por el lead. Es razonable concluir que las propiedades de mayor envergadura o prestigio tienden a traccionar negociaciones que llegan a etapas más avanzadas o "altas" del embudo de ventas.</p>
+ <p>tam_propiedad y interes_max (Correlación: 0.76): Existe una fuerte relación lineal positiva entre el tamaño o valor del activo y el nivel de interés alcanzado por el lead. Es razonable concluir que las propiedades de mayor envergadura o prestigio tienden a implicar negociaciones que llegan a etapas más avanzadas o altas del embudo de ventas.</p>
 
  <p>tam_propiedad y asesores (Correlación: 0.45): El número de asesores involucrados en la interacción comercial muestra una correlación moderada con el tamaño de la propiedad. Los activos más grandes o complejos suelen demandar equipos de asesoramiento más robustos o expediciones comerciales de mayor escala.</p>
 
@@ -124,14 +124,14 @@
  <p>Esta variable calcula cuántos años han pasado desde que la propiedad entró por primera vez al mercado hasta la interacción actual. Esto nos permitirá evaluar si los activos con mayor trayectoria en el mercado inmobiliario presentan un comportamiento de cierre de ventas distinto a los listados más recientes. </p>
 
         
-         <p>Realizamos un grafico de esta nueva variable en relacion a la variable de interes "compra"</p>       
+         <p>Realizamos un gráfico de esta nueva variable en relación a la variable de interés "compra"</p>       
          
 <img src="../images/Imagen145.png" alt="Título" class="img-proyecto" width="650">
 
          <p>Nuestra nueva variable, antiguedad_años, tiene una tendencia, los datos sugieren que existe una correlación positiva entre el tiempo que una propiedad lleva posicionada en el mercado (desde su primer listado) y la probabilidad de éxito en la venta.</p>
          <p>A medida que el activo acumula años de trayectoria comercial, la tasa de cierre tiende a incrementarse. Esto podría explicarse por una mayor consolidación del valor del inmueble en el imaginario del mercado o por un ajuste más preciso entre la oferta y el perfil del cliente interesado a lo largo del tiempo.</p>
 
-<h2>Analisis Exploratorio de Datos</h2>
+<h2>Análisis Exploratorio de Datos</h2>
 
        <p>Si queremos ver las distribuciones de distintas variables</p>
 
@@ -184,8 +184,8 @@
 
 <h2>Definición de los modelos</h2>
 
-<p>Usaremos un modelo logístico, esto debido a que la variable de interes "Compra" se puede pensar como un Éxito en caso de que se de la compra del inmueble o Fracaso en caso de que no se de la compra del inmueble</p>
-
+<p>Usaremos un modelo logístico, esto debido a que la variable de interés "Compra" se puede pensar como un Éxito en caso de que ocurra la compra del inmueble o Fracaso en caso de que no ocurra la compra del inmueble</p>
+         
 <p>Utilizamos variables Bernoullis, con probabilidad \( \pi \) de éxito. La variable de respuesta Y distribuye: \( Y_i \mid \pi_i \sim \text{Bern}(\pi_i)  \) con \( E(Y_i \mid \pi_i) = \pi_i \)</p>
 
 <p>Utilizaremos las odds, que son una manera alternativa de expresar la incertidumbre, donde comparamos la probabilidad de éxito contra su complemento (la probabilidad de fracaso):  \( odds = \frac{\pi}{\pi} \) </p>
@@ -213,7 +213,7 @@
          
 <p>\( \pi_i = \frac{e^{\beta_0 + \beta_1 X_{i1}}}{1 + e^{\beta_0 + \beta_1 X_{i1}}} \)</p>
 
-<p>Donde Yi es el componente aleatorio (la verosimilitud). El \( \beta_0 \) es el intercepto y los demas betas son los prioris. Luego \( \mathbf{x}_i^\top \boldsymbol{\beta} \) es la "link function"  </p>
+<p>Donde Yi es el componente aleatorio (la verosimilitud). El \( \beta_0 \) es el intercepto y los demás betas son los prioris. Luego \( \mathbf{x}_i^\top \boldsymbol{\beta} \) es la "link function"  </p>
 
 
 <h2>Modelo Jerárquico logístico</h2>
@@ -230,18 +230,18 @@
 
 <p> \( \sigma_0 \sim \text{Exp}(\lambda) \)</p>
 
-<p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultado del individuo i
+<p>Donde \(\beta_k \) son los efectos fijos de las otras variables (iguales para todos). \(Y_{ij} \) son los resultados del individuo i
 que pertenece a la campaña j. Con \( Y_{ij} \mid \pi_{ij} \sim \mathrm{Bern}(\pi_{ij}) \) estamos asumiendo que los datos “vienen” de una Bernoulli.
 Con \( beta_{0j} \mid \beta_0, \sigma_0 \overset{ind}{\sim} \mathrm{N}(\beta_0, \sigma_0^2) \) estamos asumiendo Independencia condicional</p>
 
-<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por campaña. Cada campaña tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre campañas, el cual controla qué tan diferentes permitimos que sean los campañas entre sí. Si es baja, las campaña son parecidos, si es alta, las campaña son heterogéneos heterogéneos</p>
+<p>\(\beta_0\) es el priori intercepto global, mientras que \( b_{0j} \) es el intercepto específico por campaña. Cada campaña tiene su propio punto de partida. Luego \(\sigma_0 \) es el desvío entre campañas, el cual controla qué tan diferentes permitimos que sean las campañas entre sí. Si es baja, las campañas son parecidas, si es alta, las campañas son heterogéneas (diferentes)</p>
 
 
 <p>EN RESUMEN</p>
 
 <p> ● El intercepto pasa a estar formado por dos términos:</p>
          
-<p>● Por un lado tenemos un término genérico beta0 que representa una línea base para los
+<p>● Por un lado, tenemos un término genérico beta0 que representa una línea base para los
 interceptos. Su interpretación es la habitual, representa la media cuando los predictores se
 encuentran en su punto medio (centrados).</p>
  
@@ -251,7 +251,7 @@ distribución Normal alrededor del intercepto global beta_0, con desviación est
 \( sigma_0 \) </p>
  
 <p>● Esto permite diferenciar cada campaña entre sí, donde por ejemplo algunas campañas
-tienen niveles de éxito más altos que otros, pero siempre entorno a una línea base.</p>
+tienen niveles de éxito más altos que otros, pero siempre en torno a una línea base.</p>
  
 <p>● El resto de interceptos mantienen su interpretación clásica, describiendo el resto de las
 variables y la relación entre ellas.</p>
@@ -272,8 +272,7 @@ entre sí. (No comparten ninguna información, se asume independencia entre camp
 
 <p>MODELO JERÁRQUICO (PARTIAL POOLING): Contempla que cada campaña es único, pero
 también contempla que todos siguen una distribución común (“pertenecen a una familia”).
-Las campaña con pocos datos "toman datos" del promedio global. (captan/aprenden del
-promedio.)</p>
+Las campañas con pocos datos "toman datos" del promedio global</p>
 
 
 
@@ -289,7 +288,7 @@ promedio.)</p>
 
   <p> - Nosotros nos queremos posicionar "en el medio" y dejar que los datos nos digan qué fue lo que pasó.</p>
 
-  <p> - Nos centramos en cero ya que queremos tener una postura neutral.</p>
+  <p> - Nos centramos en cero, ya que queremos tener una postura neutral.</p>
 
   <p> - Asumimos a priori que las variables no tienen efecto sobre el éxito (por eso mu es 0).</p>
 
@@ -306,12 +305,12 @@ promedio.)</p>
 
 <p>Las variables en este modelo son:<p>
 
- <p>- Y_i: Es la variable de interes, es el exito en la compra, indica si el cliente i concretó la adquisición del activo inmobiliario (1) o no (0).
+ <p>- Y_i: Es la variable de interés, es el éxito en la compra, indica si el cliente i concretó la adquisición del activo inmobiliario (1) o no (0).
  <p>- X_i1: Uso de servicios premium, es una variable binaria que indica si el cliente contrató servicios de valor añadido (premium) durante la negociación.
  <p>- X_i2: Es el ciclo del mercado, representa la época del año en la que se inició la interacción comercial (Primavera, Otoño, Verano, Invierno), capturando las tendencias cíclicas del sector.
  <p>- X_i3: Es la nueva variable antiguedad_años, es una variable cuantitativa que mide los años transcurridos desde que la propiedad entró por primera vez al mercado hasta la interacción actual del cliente.
 
-<p>El modelo especificado con el codigo es</p>
+<p>El modelo especificado con el código es</p>
 
 <img src="../images/Imagen151.png" alt="Título" class="img-proyecto" width="650">
 
@@ -333,7 +332,7 @@ promedio.)</p>
          
 <p>- X_i,j3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>   
 
-<p>El modelo especificado con el codigo es:</p>
+<p>El modelo especificado con el código es:</p>
 
 <img src="../images/Imagen152.png" alt="Título" class="img-proyecto" width="650">
 
@@ -355,7 +354,7 @@ promedio.)</p>
 
 <p>- X_i,k3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>
 
-<p>El modelo especificado con el codigo es:</p>
+<p>El modelo especificado con el código es:</p>
 
 <img src="../images/Imagen153.png" alt="Título" class="img-proyecto" width="650">
       
@@ -376,7 +375,7 @@ promedio.)</p>
 
 <p>- X_i,k3: Años transcurridos desde que la propiedad entró por primera vez al mercado</p>
 
-<p>El modelo especificado con el codigo es:</p>
+<p>El modelo especificado con el código es:</p>
 
        
 <img src="../images/Imagen154.png" alt="Título" class="img-proyecto" width="650">
@@ -386,8 +385,8 @@ promedio.)</p>
 
 <p>Definimos una función auxiliar para calcular la tasa de éxito de cada modelo y del set de datos:</p>
          
-<p>La línea vertical azul es la tasa de éxito de los datos reales. Lo que hace este pp_check es simular 100 posteriors y agruparlas en histogramas en vez de densidades. Se observan resultados muy similares para
-todos los modelos. No obstante, es levemente más preciso que todos el modelo jerárquico por campaña</p>
+<p>La línea vertical azul es la tasa de éxito de los datos reales. Lo que hace este pp_check es simular 100 posterioris y agruparlas en histogramas en vez de densidades. Se observan resultados muy similares para
+todos los modelos. No obstante, el modelo jerárquico por campaña es levemente más preciso que todos los demás modelos</p>
          
 <img src="../images/Imagen155.png" alt="Título" class="img-proyecto" width="650">
 
@@ -410,7 +409,7 @@ parámetros por cadena son consistentes entre las distintas cadenas. </p>
 <h2>MCMC diagnostics del modelo 4: Correlación</h2>
 
 <p>Nuevamente se encuentra todo correcto para los otros tres modelos. En jerárquico por ciclo de mercado, los resultados de las
-correlaciones de los parámetros por cadena muestran que cierto nivel (bajo) de correlació</p>
+correlaciones de los parámetros por cadena muestran que cierto nivel (bajo) de correlación</p>
          
 <img src="../images/Imagen158.png" alt="Título" class="img-proyecto" width="650">
 
@@ -424,7 +423,7 @@ correlaciones de los parámetros por cadena muestran que cierto nivel (bajo) de 
 es respecto al mejor (el que tiene 0 en elpd_diff). Cuanto más negativo es, peor predice. Si la diferencia entre modelos supera aproximadamente 2 x se_diff se considera relevante.</p>
 
 <p>El modelo modje (jerárquico por campaña) es claramente el mejor modelo, con una diferencia considerable respecto al resto.
-Esto tiene sentido: el éxito de un cliente (que compre la propiedad) depende en gran parte de la campaña a la que pertenece. En cambio, no depende de la propiedad que sube o la época del año en la que lo hace, donde esto ultimo seria el ciclo de mercado.</p>
+Esto tiene sentido: el éxito de un cliente (que compre la propiedad) depende en gran parte de la campaña a la que pertenece. En cambio, no depende de la propiedad que sube o la época del año en la que lo hace, donde esto último sería el ciclo de mercado.</p>
 
 
 <h2>Análisis de los posteriors del modelo 2</h2>
@@ -432,7 +431,7 @@ Esto tiene sentido: el éxito de un cliente (que compre la propiedad) depende en
 <p>Mediante la función tidy () se realizó el análisis de los posteriors. Para los IC se toma 95% de confianza</p>         
 
 <p>La variable antiguedad_años no tiene relevancia predictiva dado que está prácticamente centrada en cero.
-El resto de variables tienden a ser relevantes. El error estándar alto de la categoria verano en la variable ciclo de mercado se debe a los pocos datos.</p>
+El resto de variables tienden a ser relevantes. El error estándar alto de la categoría verano en la variable ciclo de mercado se debe a los pocos datos.</p>
          
 <img src="../images/Imagen160.png" alt="Título" class="img-proyecto" width="650">
 
@@ -475,7 +474,7 @@ Los valores a la izquierda son los que son más probable que haya sido fracasos 
          
 <img src="../images/Imagen163.png" alt="Título" class="img-proyecto" width="650">
 
-<p>Claramente los años entre la campaña y los años que pasaron desde que la propiedad fue publica no
+<p>Claramente los años entre la campaña y los años que pasaron desde que la propiedad fue pública no
 influyen en la probabilidad de éxito (compra de la propiedad) ni en el uso o no de servicios premium.
 Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, nos da a pensar que no es una variable relevante del modelo</p>
          
@@ -529,12 +528,11 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 
 
-<p>Queremos ver la capacidad de generalización del modelo. Ya sabemos lo que ocurrió (caterpillar plot), pero nos interesa ver qué puede pasar a futuro, usaremos la Distribución Predictiva Posteriori para pasar nuevos datos nunca vistos para el modelo para que prediga las probabilidades de exito (compra de las propiedades) de nuevos datos</p>
+<p>Queremos ver la capacidad de generalización del modelo. Ya sabemos lo que ocurrió (caterpillar plot), pero nos interesa ver qué puede pasar a futuro, usaremos la Distribución Predictiva Posteriori para pasar nuevos datos nunca vistos para el modelo para que prediga las probabilidades de éxito (compra de las propiedades) de nuevos datos</p>
     
 <img src="../images/Imagen170.png" alt="Título" class="img-proyecto" width="650">
 
-<p>Esta matriz muestra a usuarios nuevos nunca vistos por el modelo, con caracteristicas de los clientes como si usan servicios premium o no y el ciclo de mercado en el que se encuentra, para estos usuarios nuevos, el modelo predice su probabilidad de exito, o sea, la probabilidad de que compre la propiedad segun las caracteristicas del cliente.</p>
-
+<p>Esta matriz muestra a usuarios nuevos nunca vistos por el modelo, con características de los clientes como si usan servicios premium o no y el ciclo de mercado en el que se encuentra, para estos usuarios nuevos, el modelo predice su probabilidad de éxito, o sea, la probabilidad de que compre la propiedad según las características del cliente.</p>
 
          
 <h2>Evaluación Predictiva</h2>
@@ -551,7 +549,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
   
 <p>Es una forma de evaluar qué tan bien acierta el modelo cuando estamos trabajando con una variable de decisión binaria, en nuestro caso el éxito de escalada.</p>
 
-<p>¿Por qué decimos que clasificamos? Aquí es donde se introduce el concepto de CUTOFF, que es el umbral el cual utilizamos para clasificar un éxito de escalada o no. Si la probabilidad de éxito es mayor al cutoff definido entonces clasificamos a ese climber como exitoso.</p>
+<p>¿Por qué decimos que clasificamos? Aquí es donde se introduce el concepto de CUTOFF, que es el umbral el cual utilizamos para clasificar un éxito de escalada o no. Si la probabilidad de éxito es mayor al cutoff definido entonces clasificamos a ese cliente como exitoso.</p>
          
 <p>Classification summary y confusion matrix con un cutoff de 0.5</p>
 
@@ -565,9 +563,8 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 <p>Specificity es la capacidad para prever los fracasos. El modelo clasificó correctamente al 91.3%.</p>   
 
 <p>Muy buen desempeño global (teniendo en cuenta nuestro conjunto de datos). Muy balanceado. Acierta en más de 9 de cada 10 casos.</p>   
-<p>Recordemos que este modelo que estamos usando y el que obtuvo estos resultados es el que tiene Jerarquía por campaña, la variable de respuesta es "compra". Los predictore ciclo de mercado y servicios premium.</p>   
-<p>Ademas, ciclo de mercado es una variable Categórica y Discreta, esta variable refiere a lo ambiental mientras que servicios premium refiere a caracteristicas del inmueble de interes. La estación nos ayuda a definir cuándo deberia ir un cliente a comprar el inmueble, teniendo en cuenta también la presencia de servicios premium.</p>   
-
+<p>Recordemos que este modelo que estamos usando y el que obtuvo estos resultados es el que tiene Jerarquía por campaña, la variable de respuesta es "compra". Los predictores ciclo de mercado y servicios premium.</p>   
+<p>Además, ciclo de mercado es una variable Categórica y Discreta, esta variable refiere a lo ambiental mientras que servicios premium refiere a características del inmueble de interés. La estación nos ayuda a definir cuándo debería ir un cliente a comprar el inmueble, teniendo en cuenta también la presencia de servicios premium.</p>   
          
 <h3>¿Qué pasa si cambiamos el cutoff?</h3>
 
@@ -576,7 +573,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 <img src="../images/Imagen173.png" alt="Título" class="img-proyecto" width="350">
 <img src="../images/Imagen174.png" alt="Título" class="img-proyecto" width="650">
 
-<p>Es muy exigente para detectar los éxitos. Casi no tiene falsos positivos y su capacidad para prever el fracaso es muy buena. Sin embargo, se le “escapan” éxitos. Predice que 267 serán fracasos pero en realidad fueron éxitos.</p>
+<p>Es muy exigente para detectar los éxitos. Casi no tiene falsos positivos y su capacidad para prever el fracaso es muy buena. Sin embargo, se le “escapan” éxitos. Predice que 267 serán fracasos, pero en realidad fueron éxitos.</p>
 
 
 <p>Un cutoff de 0.3 da los siguientes resultados</p>
@@ -607,7 +604,7 @@ Esta nueva evidencia, sumada a la obtenida en el análisis de los posteriors, no
 
 <p>Se demostró que la predictora antiguedad_años no aportaba nada estadísticamente significativo, por lo que se eliminó del modelo</p>
 
-<p>Nuestro modelo resultante fue muy bueno en terminos generales</p>
+<p>Nuestro modelo resultante fue muy bueno en términos generales</p>
 
 
          
