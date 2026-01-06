@@ -17,8 +17,9 @@
 
     <main>
         <section>
-             <p>Proyecto para el curso de Modelos Multinivel de la Licenciatura en Estadistica</p>
-             <h2>Motivacion</h2>
+             <p>Proyecto para el curso de Modelos Multinivel de la Licenciatura en Estadística</p>
+            
+         <h2>Motivación</h2>
          
 <p>La calidad del transporte público es clave para la planificación de la movilidad.</p>
 
@@ -30,7 +31,7 @@
 <p>La pregunta que buscamos responder es: ¿Qué factores explican que algunos usuarios estén más satisfechos que otros?</p>
 
 
-         <h2>Metodologia</h2>
+         <h2>Metodología</h2>
 
          <p>Análisis exploratorio y descriptivo</p>
 
@@ -53,37 +54,37 @@
 
 
 
-<h2>Analisis Descriptivo</h2>
+<h2>Análisis Descriptivo</h2>
 
-<p>Tenemos un total de 780 observaciones de individuos agrupados en 17 líneas distintas de  transporte interurbano. Las lineas cuentan con un entorno de 40-50 observaciones cada una.</p>
+<p>Tenemos un total de 780 observaciones de individuos agrupados en 17 líneas distintas de  transporte interurbano. Las líneas cuentan con un entorno de 40-50 observaciones cada una.</p>
 
 <img src="../images/Imagen196.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Para tener un primer acercamiento a la posible estructura jerarquica graficamos el nivel de satisfaccion por linea de transporte</p>
+<p>Para tener un primer acercamiento a la posible estructura jerárquica graficamos el nivel de satisfacción por línea de transporte.</p>
 
 <img src="../images/Imagen197.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Se observa que la satisfacción de los individuos varía de acuerdo a cada línea, las diferencias son notorias lo que podria indicar una posible estructura jerarquica</p>
+<p>Se observa que la satisfacción de los individuos varía de acuerdo a cada línea, las diferencias son notorias lo que podría indicar una posible estructura jerárquica.</p>
          
-<p>Ahora si graficamos la satisfaccion en relacion a distintas variables individuales</p>
+<p>Ahora sí graficamos la satisfacción en relación a distintas variables individuales</p>
          
 <img src="../images/Imagen198.png" alt="Título" class="img-proyecto" width="450">
 
 
-<p>Luego graficamos la satisfaccion en relacion a distintas variables grupales</p>
+<p>Luego graficamos la satisfacción en relación a distintas variables grupales</p>
 
 <img src="../images/Imagen199.png" alt="Título" class="img-proyecto" width="450">
 
 
-         <h2>Modelo Lineal Clasico</h2>
+         <h2>Modelo Lineal Clásico</h2>
          
-<p>Podemos platear si el modelo lineal clasico es suficiente para estos datos, para esto ajustamos un modelo lineal simple que contenga todas las variables.</p>
+<p>Podemos platear si el modelo lineal clásico es suficiente para estos datos, para esto ajustamos un modelo lineal simple que contenga todas las variables.</p>
          
  <img src="../images/Imagen200.png" alt="Título" class="img-proyecto" width="450">
 
-<p>El modelo contendrá muchos niveles, por lo que ya de por si sera inconveniente su manejo.</p>
+<p>El modelo contendrá muchos niveles, por lo que ya de por sí será inconveniente su manejo.</p>
 
-<p>Podemos graficar algunos diagnosticos</p>         
+<p>Podemos graficar algunos diagnósticos</p>         
          
 <img src="../images/Imagen201.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen202.png" alt="Título" class="img-proyecto" width="450">
@@ -92,20 +93,20 @@
 <img src="../images/Imagen205.png" alt="Título" class="img-proyecto" width="450">
 
 
-<p>Ahora si observamos test mas estadisticos y formales</p>
+<p>Ahora si observamos test más estadísticos y formales</p>
          
 <img src="../images/Imagen206.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Pero vimos las observaciones agrupadas por línea lo que rompe la independencia, ademas de que representar 17 líneas como dummies implica un modelo modelo recargado y difícil de interpretar.</p>
+<p>Pero vimos las observaciones agrupadas por línea, lo que rompe la independencia, además de que representar 17 líneas como dummies implica un modelo recargado y difícil de interpretar.</p>
 
-<p>En conclusion, desde los supuestos clásicos el modelo ‘funciona’, pero no respeta la idea fundamental. Es necesario establecer una estructura jerárquica de los datos.</p>
+<p>En conclusión, desde los supuestos clásicos el modelo ‘funciona’, pero no respeta la idea fundamental. Es necesario establecer una estructura jerárquica de los datos.</p>
 
          
 <h2>Modelo Multinivel</h2>h2>
          
-<h2>La estructura de nuestro modelo multinivel sera un modelo de efectos mixtos con intercepto aleatorio por línea.</h2>
+<h2>La estructura de nuestro modelo multinivel será un modelo de efectos mixtos con intercepto aleatorio por línea.</h2>
 
-<p>Donde en el nivel 1 (pasajeros) tenemos la edad, género, frecuencia, porcentaje de ocupación, puntualidad, informacion disponible en tiempo real.</p>
+<p>Donde en el nivel 1 (pasajeros) tenemos la edad, género, frecuencia, porcentaje de ocupación, puntualidad, información disponible en tiempo real.</p>
 
 <p>Luego en el nivel 2 (líneas) tenemos el intercepto aleatorio para cada línea</p>        
         
@@ -114,7 +115,7 @@
 
          <h2>ICC y comparación de modelos</h2>
 
-<p>ICC es Intraclass Correlation Coefficien, nos sirve para ver qué proporción de la variabilidad total de satisfacción se debe al nivel de línea</p>         
+<p>ICC es Intraclass Correlation Coefficient, nos sirve para ver qué proporción de la variabilidad total de satisfacción se debe al nivel de línea</p>         
 
 <p>En el modelo nulo (solo intercepto aleatorio) tenemos un ICC de 0.157, o sea entre el 15% y el 16% de la variabilidad en satisfacción se debe a diferencias entre líneas.</p>
        
@@ -127,11 +128,11 @@
 
 <h2>Elección de modelos</h2>
          
-<p>Discutiremos entre si a los siguientes dos modelos</p>
+<p>Discutiremos entre sí a los siguientes dos modelos</p>
          
 <img src="../images/Imagen210.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Los criterios de eleccion de modelos dicen que:</p>
+<p>Los criterios de elección de modelos dicen que:</p>
 <img src="../images/Imagen211.png" alt="Título" class="img-proyecto" width="450">
 
 <p>Preferimos quedarnos con el modelo multinivel porque tiene mejores indicadores en la tabla anterior</p>
@@ -144,15 +145,15 @@
 
 <h2>Capacidad Explicativa del Modelo Multinivel</h2>
 
-<p>El \(R^2\) Marginal vale 0.611, esto indica que los efectos fijos (predictores individales) explican el 61.1% de la varianza.</p>
+<p>El \(R^2\) Marginal vale 0.611, esto indica que los efectos fijos (predictores individuales) explican el 61.1% de la varianza.</p>
 
-<p>El \(R^2\) Condicional vale 0.768, indica que el modelo completo (incluyendo el efecto de las lineas) explica el 76.8% de la variabilidad totale en la satisfaccion</p>
+<p>El \(R^2\)  Condicional vale 0.768, indica que el modelo completo (incluyendo el efecto de las líneas) explica el 76.8% de la variabilidad total en la satisfacción.</p>
 
-         <p>Si graficamos, vemos que si hay diferencias (variabilidad) entre las lineas, </p>
+         <p>Si graficamos, vemos que si hay diferencias (variabilidad) entre las líneas</p>
 <img src="../images/Imagen213.png" alt="Título" class="img-proyecto" width="450">
 
-
-<h2>Supuestos del modelo multinivl</h2>
+DIEGOD
+<h2>Supuestos del modelo multinivel</h2>
          
 <img src="../images/Imagen214.png" alt="Título" class="img-proyecto" width="450">
 
@@ -196,6 +197,9 @@
 
 <p>Con un intercepto aleatorio por linea \(  \mu_{0j} \sim N(0, \sigma^2_u) \)</p>
 
+<p>De nuevo, el modelo multinivel original tiene un mejor rendimiento que este modelo multinivel con interacciones</p>
+
+         
 
 <h2>Conclusiones</h2>
 
