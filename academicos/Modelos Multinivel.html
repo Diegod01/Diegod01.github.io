@@ -74,7 +74,8 @@
 
 <img src="../images/Imagen199.png" alt="Título" class="img-proyecto" width="450">
 
-         
+
+         <h2>Modelo Lineal Clasico</h2>
          
 <p>Podemos platear si el modelo lineal clasico es suficiente para estos datos, para esto ajustamos un modelo lineal simple que contenga todas las variables.</p>
          
@@ -95,29 +96,107 @@
          
 <img src="../images/Imagen206.png" alt="Título" class="img-proyecto" width="450">
 
+<p>Pero vimos las observaciones agrupadas por línea lo que rompe la independencia, ademas de que representar 17 líneas como dummies implica un modelo modelo recargado y difícil de interpretar.</p>
 
-
-
+<p>En conclusion, desde los supuestos clásicos el modelo ‘funciona’, pero no respeta la idea fundamental. Es necesario establecer una estructura jerárquica de los datos.</p>
 
          
+<h2>Modelo Multinivel</h2>h2>
+         
+<h2>La estructura de nuestro modelo multinivel sera un modelo de efectos mixtos con intercepto aleatorio por línea.</h2>
+
+<p>Donde en el nivel 1 (pasajeros) tenemos la edad, género, frecuencia, porcentaje de ocupación, puntualidad, informacion disponible en tiempo real.</p>
+
+<p>Luego en el nivel 2 (líneas) tenemos el intercepto aleatorio para cada línea</p>        
+        
 <img src="../images/Imagen207.png" alt="Título" class="img-proyecto" width="450">
+
+
+         <h2>ICC y comparación de modelos</h2>
+
+<p>ICC es Intraclass Correlation Coefficien, nos sirve para ver qué proporción de la variabilidad total de satisfacción se debe al nivel de línea</p>         
+
+<p>En el modelo nulo (solo intercepto aleatorio) tenemos un ICC de 0.157, o sea entre el 15% y el 16% de la variabilidad en satisfacción se debe a diferencias entre líneas.</p>
+       
 <img src="../images/Imagen208.png" alt="Título" class="img-proyecto" width="450">
+
+<p>En el caso del modelo completo (con covariables) el ICC es de 0.40, lo que implica que el 40% de la variabilidad explicada por diferencias entre líneas.</p>
+         
 <img src="../images/Imagen209.png" alt="Título" class="img-proyecto" width="450">
+
+
+<h2>Elección de modelos</h2>
+         
+<p>Discutiremos entre si a los siguientes dos modelos</p>
+         
 <img src="../images/Imagen210.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Los criterios de eleccion de modelos dicen que:</p>
 <img src="../images/Imagen211.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Preferimos quedarnos con el modelo multinivel porque tiene mejores indicadores en la tabla anterior</p>
+
+        
+<p>Ahora los valores de la estimación de Efectos Fijos son:</p>
+         
 <img src="../images/Imagen212.png" alt="Título" class="img-proyecto" width="450">
+
+
+<h2>Capacidad Explicativa del Modelo Multinivel</h2>
+
+<p>El \(R^2\) Marginal vale 0.611, esto indica que los efectos fijos (predictores individales) explican el 61.1% de la varianza.</p>
+
+<p>El \(R^2\) Condicional vale 0.768, indica que el modelo completo (incluyendo el efecto de las lineas) explica el 76.8% de la variabilidad totale en la satisfaccion</p>
+
+         <p>Si graficamos, vemos que si hay diferencias (variabilidad) entre las lineas, </p>
 <img src="../images/Imagen213.png" alt="Título" class="img-proyecto" width="450">
+
+
+<h2>Supuestos del modelo multinivl</h2>
+         
 <img src="../images/Imagen214.png" alt="Título" class="img-proyecto" width="450">
+
+
+<h2>Varianza Explicada por Niveles</h2>
+         
+<img src="../images/Imagen219.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Explicar cada una</p>
+
+
+        <h2>Modelos Multinivel con pendiente aleatoria</h2> 
+         
 <img src="../images/Imagen215.png" alt="Título" class="img-proyecto" width="450">
+
+\( u_{0j}  \) es la desviación del intercepto de la línea j
+
+\( u_{1j}  \)  es la desviación de la pendiente de la edad en la línea j
+  
 <img src="../images/Imagen216.png" alt="Título" class="img-proyecto" width="450">
+
+<p>Vemos que segun los criterios de seleccion de modelos, el modelo multinivel original que teniamos era mejor que este nuevo, no es necesario usar modelos multinivel con pendiente aleatoria</p>
+
+
+        <h2>Modelos Multinivel con interacciones</h2> 
+
+         
 <img src="../images/Imagen217.png" alt="Título" class="img-proyecto" width="450">
 <img src="../images/Imagen218.png" alt="Título" class="img-proyecto" width="450">
 
+<p>Con un intercepto aleatorio por linea \(  \mu_{0j} \sim N(0, \sigma^2_u) \)</p>
 
 
+<h2>Conclusiones</h2>
 
+<p>Existen diferencias significativas de satisfacción entre líneas.</p>
+
+<p>Una fracción importante de la variabilidad (15–40%) se debe al nivel línea.</p>
+
+<p>A nivel individual, mayor satisfacción se asocia con mayor edad, uso frecuente, puntualidad alta, disponibilidad de información en tiempo real y género femenino (en promedio).</p>
+
+<p>El porcentaje de ocupación no mostró un efecto claro en el modelo.</p>
+ 
          
- <p>a</p>
 
 
               
