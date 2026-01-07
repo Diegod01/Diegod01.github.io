@@ -21,13 +21,13 @@
 
 
      
-        <p>Proyecto para el curso de Procesos Estocasticos de la Licenciatura en Estadistica</p>
+        <p>Proyecto para el curso de Procesos Estocásticos de la Licenciatura en Estadística</p>
         <h2>Modelo y Objetivos</h2>
     
      
         
 
-<p>El modelo de Schelling fue originalmente propuesto para estudiar cómo decisiones locales basadas en preferencias individuales pueden generar patrones de segregación a gran escala dentro de un sistema social. Esta lógica de interacción espacial y ajuste iterativo presenta una conexión natural con las cadenas de Markov, ya que la evolución del sistema puede formalizarse como un proceso estocástico con transiciones entre estados y posibles configuraciones absorbentes.</p>
+<p>El modelo de Schelling fue originalmente propuesto para estudiar como decisiones locales basadas en preferencias individuales pueden generar patrones de segregación a gran escala dentro de un sistema social. Esta lógica de interacción espacial y ajuste iterativo presenta una conexión natural con las cadenas de Markov, ya que la evolución del sistema puede formalizarse como un proceso estocástico con transiciones entre estados y posibles configuraciones absorbentes.</p>
 
 <p>En este trabajo, reinterpretamos el modelo desde una perspectiva de negocio en mercados financieros y ecosistemas fintech. Consideramos una grilla de 20×20 (400 celdas), donde cada celda representa un producto financiero, plataforma de inversión o nicho de mercado, y puede estar ocupada por un cliente del segmento Tradicional (rojo), Fintech/Neobank (azul), o encontrarse vacante lo que representa espacios de mercado disponibles para adopción o migración de clientes.</p>
 
@@ -93,8 +93,8 @@
   </tr>
 </table>
 
-<p>Definimos las siguienes funciones indicadores que serviran para contar el numero de vecinos del mismo color y la proporcion de estos</p>
-
+<p>Definimos las siguientes funciones indicadoras que servirán para contar el número de vecinos del mismo color y la proporción de estos</p>
+     
      <img src="../images/Imagen181.png" alt="Título" class="img-proyecto" width="450">
 
 
@@ -124,34 +124,34 @@
 
 <p> Entonces la regla de decisión es que si \( 𝑆 < \tau \), entonces el agente esta insatisfecho (el número de vecinos de igual color es menor que el número de vecinos mínimos de igual color que toleraríamos para estar satisfechos), por lo que el agente debe moverse.</p>
 
-<p> En cuanto a las transiciones de la cadena \( 𝐻_𝑡 → 𝐻_{𝑡+1} \), pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual sera seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.</p>
+<p> En cuanto a las transiciones de la cadena \( 𝐻_𝑡 → 𝐻_{𝑡+1} \), pasar de una configuración de la grilla a otra configuración de la grilla es que haya al menos un agente insatisfecho, el cual será seleccionado de forma aleatoria y se moverá a la celda que maximice el número de vecinos del mismo color, notar que bajo esta lógica, el agente puede moverse a esta celda maximizadora, pero no estar satisfecho, lo ideal es que el agente quede satisfecho al moverse, pero no siempre será posible.</p>
 
 <p>Recordando que las notaciones que estamos usando para la celda donde se encuentra al agente: \( 𝑘 = (𝑖, 𝑗) \) y las celdas que no son donde se encuentra el agente \( 𝑘′ ≠ 𝑘 => (𝑖′, 𝑗′) ≠ (𝑖, 𝑗) \) </p>
 
 <p>Podemos definir el conjunto  \( U_t = {k' \in U_t / k -> k' }  \) como el conjunto de celdas vacantes a las
 que se puede mover un agente insatisfecho que se encuentra en la celda k en el momento t de la grilla. Luego el conjunto \( V_t = {k' \in V_t / S_{k'} \geq S_k }  \). Es el conjunto de celdas que maximizan
-el numero de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a \( max(S_{k'}) \), la celda \( k' \) que maximiza el numero de vecinos del mismo color, y por lo tanto se cumple que 
+el número de vecinos del mismo color del agente con respecto a la celda en la que se encuentra en el momento t. Buscaremos movernos a \( max(S_{k'}) \), la celda \( k' \) que maximiza el número de vecinos del mismo color, y por lo tanto se cumple que 
 \( max(S_{k'}) > S_k \).  Notar que bajo esta definición se cumple que \( V_t \subset U_t \).</p>
 
 <p>Pero debemos tener en cuenta que puede ocurrir tres casos para el agente en la posición k:</p>
 
-<p>1) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), del cual buscaremos el máximo de \( 𝑉_𝑡 \) y el agente se moverá para maximizar su numero de vecinos de igual color.</p>
+<p>1) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), del cual buscaremos el máximo de \( 𝑉_𝑡 \) y el agente se moverá para maximizar su número de vecinos de igual color.</p>
 
-<p>2) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), pero se cumple que estos elementos dan una numero de agentes de igual color que es igual o menor con respecto a la posicion actual en la que se encuentra el agente, en este caso el agente tambien se mueve a cualquiera
-de las celdas que dan un numero de agentes del mismo color equivalente a la cantidad que tiene con respecto a la celda en la que esta y ignora las que dan un numero menor de agentes de igual color.</p>
+<p>2) Que de \( 𝑈_𝑡 \) exista al menos un elemento en \( 𝑉_𝑡 \), pero se cumple que estos elementos dan una número de agentes de igual color que es igual o menor con respecto a la posición actual en la que se encuentra el agente, en este caso el agente también se mueve a cualquiera
+de las celdas que dan un número de agentes del mismo color equivalente a la cantidad que tiene con respecto a la celda en la que esta y ignora las que dan un número menor de agentes de igual color.</p>
 
-<p>3) Que de \( 𝑈_𝑡 \) no exista al menos un elemento en \( 𝑉_𝑡 \), es decir todas las celdas a las que se pueden mover el agente dan un numero de vecinos de igual color menor con respecto a
-la que se encuentra actualmente, en este caso el agente no se mueve y se queda en la posicion en la que esta.</p>
+<p>3) Que de \( 𝑈_𝑡 \) no exista al menos un elemento en \( 𝑉_𝑡 \), es decir todas las celdas a las que se pueden mover el agente dan un número de vecinos de igual color menor con respecto a
+la que se encuentra actualmente, en este caso el agente no se mueve y se queda en la posición en la que esta.</p>
 
 
-<p>Este ultimo caso es importante porque dado que la celda actual es la que maximiza el numero de agentes de igual color (aunque esto no implica necesariamente que el agente este satisfecho),
-y no hay otra celda que lo haga, si esto ocurre para todos los agentes insatisfechos de la grilla entonces decimos que la cadena entro en un estado absorbente y la grilla se quedara con esa configuración por un tiempo infinito</p>
-
+<p>Este último caso es importante porque dado que la celda actual es la que maximiza el número de agentes de igual color (aunque esto no implica necesariamente que el agente este satisfecho),
+y no hay otra celda que lo haga, si esto ocurre para todos los agentes insatisfechos de la grilla entonces décimos que la cadena entro en un estado absorbente y la grilla se quedara con esa configuración por un tiempo infinito</p>
+     
 <p>Si todos los agentes maximizan el número de vecinos del mismo color en la celda en la que están, entonces ya no hay más movimientos y la grilla queda segregada, quedando en este
 estado por siempre, por lo que tenemos un estado absorbente. Notar que no necesariamente los agentes que están maximizando el número de vecinos de igual color, están satisfechos, eso dependerá del nivel de tolerancia \( \tau \) definido.</p>
 
 
-<p>Si lo queremos formalizar decimos que una configuracion de la grilla 𝑖 es absorbente si solo si, no existe ningún movimiento que suba la satisfacción de cualquier agent</p>
+<p>Si lo queremos formalizar decimos que una configuración de la grilla 𝑖 es absorbente si solo si, no existe ningún movimiento que suba la satisfacción de cualquier agente</p>
 
 <p> \( p_{ii} = 1 \iff \forall \ k' \in H_t, S_{k'} \leq  S_k, \ k \neq k' \)</p>
 
@@ -171,14 +171,14 @@ nivel de tolerancia \( \tau \). </p>
 
 <h2>Diseño de Simulación</h2>
      
-<p>Seudocodigo usando el paquete algorithm. </p>
+<p>Pseudocódigo usando el paquete algorithm. </p>
 
-<p>El criterio de parada es que todos los agentes estén maximizando el numero de vecinos de igual color en la posición en la que están. Si 𝑈𝑡 = ∅, en la simulación es que la lista donde almacenamos los estados movibles sea vacía. El criterio de parada depende de cierta manera del parámetro de tolerancia porque para valores mas bajos de tolerancia, para estar satisfechos aceptamos pocos vecinos del mismo color y esto repercute en que el numero de transiciones a estados maximizadores sea menor, porque habrá muchos agente satisfechos, lo que causa que la cadena llegue mas rápido al criterio de parada. En el otro caso, si el parámetro de tolerancia es mas alto, exigimos muchos vecinos del mismo color para estar satisfechos, entonces el numero de transiciones a estados maximizadores sera mayor, porque habrá mas agente insatisfechos que se moverán, lo que causa que la cadena llegue mas lento al criterio de parada.</p>
-
+<p>El criterio de parada es que todos los agentes estén maximizando el número de vecinos de igual color en la posición en la que están. Si 𝑈𝑡 = ∅, en la simulación es que la lista donde almacenamos los estados movibles sea vacía. El criterio de parada depende de cierta manera del parámetro de tolerancia porque para valores más bajos de tolerancia, para estar satisfechos aceptamos pocos vecinos del mismo color y esto repercute en que el número de transiciones a estados maximizadores sea menor, porque habrá muchos agentes satisfechos, lo que causa que la cadena llegue más rápido al criterio de parada. En el otro caso, si el parámetro de tolerancia es más alto, exigimos muchos vecinos del mismo color para estar satisfechos, entonces el número de transiciones a estados maximizadores será mayor, porque habrá más agentes insatisfechos que se moverán, lo que causa que la cadena llegue más lento al criterio de parada.</p>
+     
 <p>El primer bloque de código arma un “juego de barrios” en una cuadrícula: primero crea una grilla de 20x20 donde cada casita puede estar ocupada por un vecino rojo, un vecino azul o quedar vacía. Luego, para cada vecino, mira solo el mini-barrio 3x3 que lo rodea y calcula qué proporción de sus vecinos son de su mismo color; si esa proporción es menor que un nivel de tolerancia (tau), el vecino se considera insatisfecho. Los insatisfechos miran todas las casas vacías y “simulan” mudarse a cada una para ver en cuál tendrían más vecinos de su mismo tipo, y eligen al azar una de esas posiciones óptimas (que puede dejarlos satisfechos o no). El código va repitiendo este proceso paso a paso, moviendo de a un vecino insatisfecho por vez, y guardando fotos intermedias de cómo queda el mapa. Después corre la simulación para distintos valores de tau y genera un gráfico tipo mosaico donde se ve, para cada tau y para distintos pasos de tiempo, cómo los barrios se van reordenando y qué tan mezclados o segregados quedan los rojos y los azules.</p>
 
      
-<p>Utilizamos las funciones ya definidas para empezar a hacer los plots, donde en las ejecuciones para distintos valores de tau (nivel de tolerancia) obtuvimos los siguientes graficos: </p>
+<p>Utilizamos las funciones ya definidas para empezar a hacer los plots, donde en las ejecuciones para distintos valores de tau (nivel de tolerancia) obtuvimos los siguientes gráficos: </p>
 
 <img src="../images/Imagen182.png" alt="Título" class="img-proyecto" width="450">
 <p>Cuasi-absorción (Híbrido, tau=0.300) alcanzada en el paso 92</p>
@@ -210,7 +210,7 @@ nivel de tolerancia \( \tau \). </p>
 <p>En estos experimentos lo que buscábamos era ver como se comportaba el tiempo de convergencia en pasos a medida que cambiábamos el tamaño de la grilla para diferentes \( \tau \) (intolerancia social), vemos que para \( \tau = 0.3\) la convergencia en pasos parece crecer de manera lineal a
 medida que aumentamos el tamaño de grilla, esto quiere decir que con un nivel de tolerancia bajo, el aumento del tamaño de la grilla pareciera producir un aumento lineal en la cantidad
 de pasos de convergencia, cabe aclarar que para estos experimentos usamos una cantidad de pasos máxima de 3000. Para este \( \tau \) no logra alcanzar el máximo de pasos, la grilla de 100x100
-logra la convergencia en el paso numero 1999</p>
+logra la convergencia en el paso número 1999</p>
 
 
 <img src="../images/Imagen188.png" alt="Título" class="img-proyecto" width="450">
@@ -218,7 +218,7 @@ logra la convergencia en el paso numero 1999</p>
 <img src="../images/Imagen189.png" alt="Título" class="img-proyecto" width="450">
 
 <p>Para \( \tau = 0.5 \) vemos que se sigue comportando de una manera bastante lineal a medida que aumentamos el tamaño de la grilla, pero en este caso con una grilla de 100x100 no logra
-converger y alcanza el numero máximo de iteraciones, esto nos hace pensar que a medida que el nivel de intolerancia es mayor los agentes tienden a no maximizar su satisfacción de una
+converger y alcanza el número máximo de iteraciones, esto nos hace pensar que a medida que el nivel de intolerancia es mayor los agentes tienden a no maximizar su satisfacción de una
 manera tan rápida como vimos para el 𝜏 = 0.3 en el que para un tamaño de grilla de 100x100 logró la convergencia</p>
 
 
@@ -226,15 +226,15 @@ manera tan rápida como vimos para el 𝜏 = 0.3 en el que para un tamaño de gr
 
 <img src="../images/Imagen191.png" alt="Título" class="img-proyecto" width="450">
 
-<p> Para \( \tau = 0.7 \) vemos que no se comporta de una forma tan lineal sino que más exponencial, para
-un tamaño de grilla de 50x50 ya logra alcanzar el numero máximo de iteraciones, esto quiere decir que la tolerancia tiene un papel clave a la hora poder maximizar su satisfacción.</p>
+<p> Para \( \tau = 0.7 \) vemos que no se comporta de una forma tan lineal, sino que más exponencial, para
+un tamaño de grilla de 50x50 ya logra alcanzar el número máximo de iteraciones, esto quiere decir que la tolerancia tiene un papel clave a la hora poder maximizar su satisfacción.</p>
 
 
      
 <p>Ahora vamos a generar un resumen usando algunos valores representativos de tau (0.2, 0.4, 0.6 y 0.8) para ver cómo cambian las principales métricas del modelo. Para cada tau corremos
 varias simulaciones con distintas semillas y nos quedamos con los valores importantes: cuántos pasos tarda en estabilizarse el sistema, qué proporción de agentes queda insatisfecha, qué
 tan segregado queda el mapa (Moran) y qué tan grandes son los grupos de un mismo color. Después promediamos todo, calculamos la variabilidad y guardamos los resultados para no
-repetir cálculos.Para ilustrar, armamos gráficos que muestran cómo cada métrica cambia según la tolerancia, para ver de un vistazo cómo afecta al comportamiento del modelo</p>
+repetir cálculos. Para ilustrar, armamos gráficos que muestran cómo cada métrica cambia según la tolerancia, para ver de un vistazo cómo afecta al comportamiento del modelo</p>
 
 
 <p>Análisis paramétrico RÁPIDO: 5 corridas por tau, 400 iter máx., 4 valores de tau.</p>
@@ -280,7 +280,7 @@ Lo aplicamos a la grilla final de la simulación. En la gráfica que obtuvimos v
 subir el umbral de tolerancia ( \( \tau \) ) el tamaño medio de los clusters va aumentando, aunque
 este valor fluctúa para valores de tolerancia mayores que 0.7. Esto tiene sentido porque
 para valores bajos de tolerancia, vimos que el gráfico tendía a segregar menos, por eso
-el tamaño promedio de clusters es menor, en cambio para valores altos de tolerancia, el
+el tamaño promedio de clusters es menor, en cambio, para valores altos de tolerancia, el
 cluster tendría a hacer una segregación casi perfecta, por eso el tamaño medio de clusters
 es mayor.</p>
 
@@ -288,16 +288,16 @@ es mayor.</p>
 <p>El Índice de Moran mide la autocorrelación espacial, la tendencia de los valores de atributos a estar correlacionados con valores vecinos. Es una medida formal de segregación,
 cuantifica el grado de agrupamiento de los agentes del mismo tipo. Es un valor entre -1
 y 1 que se aplica a la grilla final. En el gráfico que hicimos vimos que para niveles bajos
-de tolerancia, este indica tiene valores bajos, esto tiene sentido ya que la segregación
-es menor y tenemos menos agrupamiento de vecinos similares. En cambio para niveles
+de tolerancia, este índica tiene valores bajos, esto tiene sentido, ya que la segregación
+es menor y tenemos menos agrupamiento de vecinos similares. En cambio, para niveles
 altos de tolerancia, tenemos clusters con la mayoría todos sus vecinos iguales, por lo que
-este indice es mayor.</p>
+este índice es mayor.</p>
 
 
 <p>El tiempo de Cuasi-Absorción mide el tiempo que se demora en llegar a un estado
-absorbente. Vemos que cuando aumentamos el valor de tolerancia el tiempo de cuasiabsorción aumenta, esto se debe a que para niveles bajos de tolerancia la mayoría de
-agentes estarán satisfechos y habrá pocos desplazamientos, por lo que llegaremos rápido al estado absorbente. En cambio para niveles altos de tolerancia, la mayoría de agentes
-estarán insatisfechos y habrá mas desplazamientos, por lo que llegaremos mas lento al estado absorbente.</p>
+absorbente. Vemos que cuando aumentamos el valor de tolerancia el tiempo de cuasi-absorción aumenta, esto se debe a que para niveles bajos de tolerancia la mayoría de
+agentes estarán satisfechos y habrá pocos desplazamientos, por lo que llegaremos rápido al estado absorbente. En cambio, para niveles altos de tolerancia, la mayoría de agentes
+estarán insatisfechos y habrá más desplazamientos, por lo que llegaremos más lento al estado absorbente.</p>
 
 
 <h2>Conclusiones </h2>
@@ -308,7 +308,7 @@ de Markov, definimos el espacio de estados, la regla de transición y la probabi
 transiciones.</p>
 
 <p>Realizamos una simulación con código en la cual obtuvimos el comportamiento de la grilla
-para distintos valores de tolerancia \( \tau \), ademas de distintas métricas donde vimos la relación de
+para distintos valores de tolerancia \( \tau \), además de distintas métricas donde vimos la relación de
 este nivel de tolerancia con distintos elementos como el tamaño medio de clusters, el índice de
 Moran, y el tiempo a cuasi-absorción.</p>
 
