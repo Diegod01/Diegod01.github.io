@@ -12,7 +12,7 @@
 </head>
 <body>
     <header>
-        <h1>Tecnicas de Muestreo para estimar el promedio de ingresos de usuarios de un banco</h1>
+        <h1>Técnicas de Muestreo para estimar el promedio de ingresos de usuarios de un banco</h1>
     </header>
 
     <main>
@@ -30,104 +30,99 @@
                 <li>Muestreo por Conglomerados</li>
                 <li>Muestreo en dos etapas</li>
                 <li>Efecto Diseño (deff)</li>
-                <li>Estimacion por dominios</li>
+                <li>Estimación por dominios</li>
                 <li>Efecto de Sesgo y Intervalos de Confianza</li>
-                <li>Estimador de una Razon R</li>
+                <li>Estimador de una Razón</li>
                 <li>Jackknife y Bootstrap</li>    
                 <li>Problemas y sesgo de cobertura</li>    
-                <li>Estimador asististido por modelos (GREG)</li>
+                <li>Estimador asistido por modelos (GREG)</li>
                 <li>Estimador Basado en Modelos</li>
-                <li>Post-estratificacion</li>
+                <li>Post-estratificación</li>
                 <li>Raking</li>
                 <li>Trimming</li>
                 <li>No Respuesta</li>
-                <li>Muestras no probabilisticas</li>
+                <li>Muestras no probabilísticas</li>
                     
             </ul>
           
-        <section>
-            <h2>Introducción</h2>
-            <p>El Muestreo es la parte de la estadistica que selecciona muestras de la poblacion objetivo, observa las características de las unidades de muestreo seleccionadas y luego usar esas observaciones para hacer inferencias sobre toda la población objetivo.</p>
+<section>
+    <h2>Introducción</h2>
+    <p>El muestreo es la parte de la estadística que selecciona muestras de la población objetivo, observa las características de las unidades de muestreo seleccionadas y luego usa esas observaciones para hacer inferencias sobre toda la población objetivo.</p>
 
-           <p>En nuestro caso tenemos una poblacion objetivo que son todos los clientes actuales de un banco, nuestra poblacion objetivo tiene un tamaño de N = 45,211 observaciones. En nuestro dataset tenemos datos sobre clientes de un banco (edad, tipo de trabajo, saldo, si aceptaron un préstamo). </p> 
+    <p>En nuestro caso tenemos una población objetivo que son todos los clientes actuales de un banco, nuestra población objetivo tiene un tamaño de N = 45,211 observaciones. En nuestro dataset tenemos datos sobre clientes de un banco (edad, tipo de trabajo, saldo, si aceptaron un préstamo).</p> 
 
-           <p>Nuestro Marco Muestral (Sampling Frame) es la base de datos bank.csv</p>
+    <p>Nuestro Marco Muestral (Sampling Frame) es la base de datos bank.csv</p>
 
-            <p>La Unidad de Muestreo es el cliente individual.</p>
+    <p>La Unidad de Muestreo es el cliente individual.</p>
 
+    <p>En muestreo lo que hacemos es obtener una muestra para realizar una estimación del promedio de una variable de interés, en nuestro caso nuestra variable de interés es "balance", que representa el dinero que tiene un usuario del banco, y nos interesa estimar el promedio de esta variable (que en realidad el promedio es estimar el total y dividir esa estimación entre el tamaño de la población si es conocido o entre el tamaño de la muestra), que es una variable continua con alta asimetría y valores atípicos, lo cual nos influirá al querer obtener una estimación del promedio de esta variable.</p>
 
+    <p>Luego contamos con variables auxiliares, que son todas las demás variables del set de datos, como job, education, marital, age, etc., que puede o no tener una correlación con nuestra variable de interés que es balance; cuanto más correlación haya entre alguna de estas variables auxiliares y balance, mejores serán las estimaciones. Estas variables también nos servirán para diversos métodos que veremos más adelante, como Estratificación, Raking y Post-estratificación.</p>
 
-            <p>En muestreo lo que hacemos es obtener una muestra para realizar una estimacion del promedio de una variable de interes, en nuestro caso nuestra variable de interes es "balance" que representa el dinero que tiene un usuario del banco y nos interesa estimar el promedio de esta variable (que en realidad el promedio es estimar el total y dividir esa estimacion entre el tamaño de la poblacion si es conocido o entre el tamaño de la muestra) que es una variable continua con alta asimetría y valores atípicos, lo cual nos influira al querer obtener una estimacion del promedio de esta variable. </p>
+    <p>Los datos provienen de una base de datos institucional. Dado que los recursos para realizar encuestas a profundidad son limitados, se requiere un diseño muestral que capture la variabilidad del balance sin sesgar los resultados hacia grupos sobre-representados (como clientes con empleos administrativos).</p>
 
-            <p>Luego contamos con variables auxiliares, que son todas las demas variables del set de datos, como job, education, marital, age, etc que puede o no tener una correlacion con nuestra variables de interes que es balance, cuanto mas correlacion haya entre alguna de estas variables auxiliares y balance, mejores seran las estimaciones. Estas variables tambien nos serviran para diversos metodos que veremos mas adelante como Estratificación, Raking, Post-estratificación.</p>
+    <p>Si empezamos explorando la distribución de nuestra variable de interés balance</p>
 
-            <p>Los datos provienen de una base de datos institucional. Dado que los recursos para realizar encuestas a profundidad son limitados, se requiere un diseño muestral que capture la variabilidad del balance sin sesgar los resultados hacia grupos sobre-representados (como clientes con empleos administrativos).</p>
+    <img src="../images/Imagen133.png" alt="Título" class="img-proyecto" width="450">
 
-            <p>Si empezamos explorando la distribucion de nuestra variable de interes balance</p>
+    <p>Vemos que tenemos asimetría extrema con un sesgo a la derecha.</p>
 
-            <img src="../images/Imagen133.png" alt="Título" class="img-proyecto" width="450">
+    <p>La gráfica muestra una concentración masiva de clientes en saldos bajos, cercanos a 0, y una cola muy larga hacia la derecha. Esta asimetría nos causará problemas más adelante, los cuales resolveremos.</p>
+
+    <p>Si hacemos un Muestreo Aleatorio Simple (MAS), tenemos una probabilidad altísima de no seleccionar a ninguno de los clientes con saldos altos (los que están en la cola derecha). Esto causaría una subestimación sistemática del saldo promedio del banco.</p>
+
+    <p>Ahora en cuanto a las distintas profesiones</p>
+
+    <img src="../images/Imagen134.png" alt="Título" class="img-proyecto" width="450">
+
+    <p>Observamos los valores atípicos que pueden generar problemas al usar esta covariable para explicar a nuestra variable de interés balance; además, vemos que hay grupos como retired (jubilados) o management que tienen cajas más anchas y bigotes más largos (más variabilidad), y hay otros grupos más uniformes como services o blue-collar. Además, la variabilidad cambia según el trabajo, por lo que sería bueno que el diseño muestral a usar considere el empleo como variable de control, porque uno que no lo haga será ineficiente.</p>
     
-            <p>Vemos que tenemos asimetría extrema con un sesgo a la derecha.</p>
+    <p>Para obtener la media real (de nuestra población) usamos el siguiente código y obtenemos el valor de 1422.658</p>
+    <p>Media Real = 1422.658</p>
 
-            <p>La gráfica muestra una concentración masiva de clientes en saldos bajos, cercanos a 0, y una cola muy larga hacia la derecha. Esta asimetria nos causara problemas mas adelante los cuales resolveremos.</p>
+    <h2>Muestreo Aleatorio Simple Sin Reemplazo</h2>
+
+    <p>Todos los clientes de tu base de datos tienen exactamente la misma probabilidad de ser seleccionados, la cual es $\pi_i = \frac{n}{N}$, es decir, la probabilidad de seleccionar al individuo i es el tamaño de la muestra dividido el tamaño de la población; por ejemplo, si nuestra población tuviera 1000 datos y sacamos una muestra de 100 personas, la probabilidad de que cualquier persona de la muestra sea seleccionado es 100/1000 = 0.1.</p>
+
+    <p>Este diseño cumple el supuesto de independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Este diseño considera que el tamaño de la muestra es fijo, que no varía, y nosotros podemos obtener una muestra de un tamaño que nos interese. En este MAS asumimos que no hay reemplazo: cuando sale un elemento de la muestra, entonces no puede volver a salir de vuelta.</p>
+
+    <p>Realizamos una estimación de la media poblacional usando una muestra de tamaño 500, obteniendo el valor de 1458.8</p>
+    
+    <p>Salida Código</p>
+
+    <p>Ahora el problema que tenemos con este diseño es que, como vimos en el histograma de saldos, el MAS será ineficiente porque hay mucha variabilidad y una asimetría extrema. Esto causa que la muestra aleatoria simple no incluya suficientes individuos de la "cola derecha", los usuarios de saldos altos, lo que resultaría en una estimación sesgada y errónea del promedio de la riqueza de los usuarios del banco. En nuestro caso vemos que la estimación del promedio hecha con la muestra está considerablemente alejada de la media real.</p>
 
 
-            <p>Si hacemos un Muestreo Aleatorio Simple (MAS), tenemos una probabilidad altísima de no seleccionar a ninguno de los clientes con saldos altos (los que están en la cola derecha). Esto causaría una subestimación sistemática del saldo promedio del banco.</p>
+ 
+           <h2>Muestreo Bernoulli</h2>
 
-            <p>Ahora en cuanto a las distintas profesiones</p>
+<p>Este diseño asume que cada unidad de la población del banco tiene una probabilidad de inclusión independiente e idéntica ($\pi$). A diferencia del Muestreo Aleatorio Simple (MAS), donde el tamaño de la muestra ($n$) es fijo, en el diseño Bernoulli el tamaño de la muestra es aleatorio, varía según la extracción que hagamos, no siempre es el mismo. Se puede probar matemáticamente que el número final de clientes seleccionados sigue una distribución binomial $B(N, \pi)$ y en promedio tendremos $N \times \pi$ clientes, pero el número exacto variará cada vez que ejecutemos el proceso.</p>
 
-            <img src="../images/Imagen134.png" alt="Título" class="img-proyecto" width="450">
+<p>Este diseño sigue cumpliendo la independencia, donde la selección de un cliente no afecta en absoluto la probabilidad de seleccionar a otro.</p>
 
-            <p>Observamos los valores atipicos que pueden generar problemas al usar esta covariable para explicar a nuestra variable de interes balance, ademas vemos que hay grupos como retired (jubilados) o management que tienen cajas más anchas y bigotes más largos (más variabilidad), y hay otros grupos mas uniformes como services o blue-collar. Ademas la variabilidad cambia según el trabajo, por lo que seria bueno que el diseño muestral a usar considere el empleo como variable de control, porque uno que no lo haga será ineficiente.</p>
+<p>Salida Código</p>
             
-            <p>Para obtener la media real (de nuestra poblacion) usamos el siguiente codigo y obtenemos el valor de  1422.658</p>
-            <p>Media Real = 1422.658</p>
+<p>Vemos que la estimación está bastante alejada del valor poblacional de la media; esto se debe a que el diseño Bernoulli también se ve afectado por la asimetría observada en el histograma de saldos, donde la variable balance tiene una cola derecha muy larga. En un diseño Bernoulli con una $\pi$ baja, hay un alto riesgo de que el tamaño de muestra efectivo sea pequeño en los sectores de saldos altos, lo que sube el error estándar. Además, la varianza en el diseño Bernoulli es mayor por la incertidumbre adicional sobre cuántos sujetos terminarán en la muestra.</p>
 
+<p>Si queremos hacer una tabla comparativa entre el MAS y el Bernoulli</p>
 
-            <h2>Muestreo Aleatorio Simple Sin Reemplazo</h2>
+<p>Ahora debemos tener cuidado con las interpretaciones, ya que estas estimaciones se hicieron con una única muestra; generalmente los estimadores, que son funciones de los datos muestrales, se evalúan en múltiples muestras, para las cuales los estimadores tomarán valores distintos, obteniendo así una distribución de probabilidad para estos estimadores. Probaremos esto usando 1000 muestras para evaluar el rendimiento del MAS contra el Bernoulli.</p>
 
-            <p>Todos los clientes de tu base de datos tienen exactamente la misma probabilidad de ser seleccionados, la cual es $\pi_i = \frac{n}{N}$, es decir, la probabilidad de seleccionar al individuo i es el tamaño de la muestra dividido el tamaño de la poblacion, por ejemplo si nuestra poblacion tuviera 1000 datos y sacamos una muestra de 100 personas, la probabilidad de que cualquier persona de la muestra sea seleccionado es 100/1000 = 0.1.</p>
-
-            <p>Este diseño cumple el supuesto de Independencia, el cual dice que la selección de un cliente con saldo alto no afecta la probabilidad de seleccionar a otro con saldo bajo. Este diseño considera que el tamaño de la muestra es fijo, que no varia y nosotros podemos obtener una muestra de un tamaño que nos interese.  En este MAS asumimos que no hay reemplazo, cuando sale un elemento de la muestra, entonces no puede volver a salir de vuelta.</p>
-
-            <p>Realizamos una estimacion de la media poblacional usando una muestra de tamaño 500, obteniendo el valor de 1458.8</p>
+<img src="../images/Imagen135.png" alt="Título" class="img-proyecto" width="450">
             
-            <p>Salida Código</p>
+<p>Vemos en el gráfico de densidad de los estimadores que, si bien ambos diseños son insesgados, es decir, en promedio tienden a estimar bien el valor promedio real, y esto se observa en que las curvas de los estimadores se centran correctamente en la media real de 1422.658, la curva azul del MAS es notablemente más estrecha y alta. Esto demuestra que el MAS es un diseño más preciso para este banco. La mayor dispersión de la curva roja de Bernoulli se debe a que, en ese diseño, el tamaño de la muestra es aleatorio; esa incertidumbre sobre cuántos clientes terminan siendo encuestados añade variabilidad que sube el error. Aunque seguimos teniendo los problemas mencionados de asimetría, alta variabilidad y no consideración de usuarios bancarios con alto ingreso.</p>
 
-            <p>Ahora el problema que tenemos con este diseño es que como vimos en el histograma de saldos, el MAS sera ineficiente porque hay mucha variabilidad y una asimetría extrema, esto causa que la muestra aleatoria simple  no incluya suficientes individuos de la "cola derecha", los usuarios de saldos altos, lo que resultaría en una estimación sesgada y erronea del promedio de la riqueza de los usuarios del banco. En nuestro caso vemos que la estimacion del promedio hecha con la muestra esta considerablemente alejada de la media real.</p>
+<p>Al tener los estimadores distribución de probabilidad, podemos calcular distintos estadísticos como</p>
 
+<p>El sesgo es la comparación entre la media obtenida con los estimadores usando las múltiples muestras extraídas y la media poblacional; el sesgo mide la exactitud de nuestras estimaciones. Un sesgo cercano a cero indica que tu diseño no tiene preferencias ni errores sistemáticos, no está inflado ni subestimado.</p>
 
+<p>La varianza mide la precisión o estabilidad; vimos que el saldo bancario es muy volátil (con clientes de $0 y otros de $60,000), una varianza alta hace que con cada muestra extraída el resultado pueda cambiar mucho.</p>
 
-            <h2>Muestreo Bernoulli</h2>
+<p>El MSE (Error Cuadrático Medio) indica el error total, es la suma del sesgo elevado al cuadrado y de la varianza. Esta métrica sirve para decidir qué diseño es mejor; a menor MSE, más eficiente es el muestreo.</p>
 
-            <p>Este Diseño asume que cada unidad de la población del banco tiene una probabilidad de inclusión independiente e idéntica ($\pi$). A diferencia del Muestreo Aleatorio Simple (MAS), donde el tamaño de la muestra ($n$) es fijo, en el diseño Bernoulli el tamaño de la muestra es aleatorio, varia segun la extraccion que hagamos, no siempre es el mismo. Se puede probar matematicamente que el número final de clientes seleccionados sigue una distribución Binomial $B(N, \pi)$ y en promedio tendremos $N \times \pi$ clientes, pero el número exacto variará cada vez que ejecutemos el proceso.</p>
+<p>El RMSE da el error promedio en las mismas unidades que el saldo (que está en dólares); si el RMSE es de \$200, significa que, en promedio, las estimaciones se desvían \$200 del valor real.</p>
 
-            <p>Este Diseño sigue cumpliendo la Independencia, donde la selección de un cliente no afecta en absoluto la probabilidad de seleccionar a otro.</p>
-
-            <p>Salida Código</p>
-            
-            <p>Vemos que la estimacion esta bastante alejada de el valor poblacional de la media, esto se debe a que el diseño Bernoulli tambien se ve afectado por la asimetría observada en el histograma de saldos, donde la variable balance tiene una cola derecha muy larga. En un diseño Bernoulli con una $\pi$ baja, hay un alto riesgo de que el tamaño de muestra efectivo sea pequeño en los sectores de saldos altos, lo que sube el error estándar. Ademas la varianza en el diseño Bernoulli es mayor por la incertidumbre adicional sobre cuántos sujetos terminarán en la muestra.</p>
-
-            <p>Si queremos hacer una tabla comparativa entre el MAS y el Bernoulli</p>
-
-            <p>Ahora debemos tener cuidado con las interpretaciones ya que estas estimaciones se hicieron con una UNICA muestra, generalmente los estimadores, que son funciones de los datos muestrales se evaluan en multiples muestras, para las cuales los estimadores tomaran valores distintos, obteniendo asi una distribucion de probabilidad para estos estimadores. Probaremos esto usando 1000 muestras para evaluar el rendimiento del MAS contra el Bernoulli.</p>
-
-            <img src="../images/Imagen135.png" alt="Título" class="img-proyecto" width="450">
-            
-            <p>Vemos en el gráfico de Densidad de los Estimadores, que si bien ambos diseños son insesgados, es decir, en promedio tienden a estimar bien el valor promedio real, y esto se observa en que las curvas de los estimadores se centran correctamente en la media real de 1422.658, la curva azul del MAS es notablemente más estrecha y alta. Esto demuestra que el MAS es un diseño más preciso para este banco. La mayor dispersión de la curva roja de Bernoulli se debe a que, en ese diseño, el tamaño de la muestra es aleatorio; esa incertidumbre sobre cuántos clientes terminan siendo encuestados añade variabilidad que sube el error. Aunque seguimos teniendo los problemas mencionados de asimetria, alta variabilidad, y no consideracion de usuarios bancarios con alto ingreso.</p>
-
-            Al tener los estimadores distribucino de probabilidad, podemos calcular distintos estadisticos como 
-
-<p>El sesgo es la comparacion entre la media obtenida con los estimadores usando las multiples muestra extraidas y la media poblacional, el sesgo mide la exactitud de nuestras estimaciones. Un sesgo cercano a cero indica que tu diseño no tiene preferencias ni errores sistemáticos, no está inflado ni subestimado.</p>
-
-<p>La Varianza mide la precisión o estabilidad, vimos que el saldo bancario es muy volátil (con clientes de $0 y otros de $60,000), una varianza alta hace que con cada muestra extraida el resultado pueda cambiar mucho.</p>
-
-<p>El MSE (Error Cuadrático Medio) indica el error total, es la suma del sesgo elevado al cuadrado y de la varianza. Esta métrica sirve para decidir qué diseño es mejor, a menor MSE, más eficiente es el muestreo.</p>
-
-<p>El RMSE da el error promedio en las mismas unidades que el saldo (que esta en dolares), si el RMSE es de \$200, significa que, en promedio, las estimaciones se desvían \$200 del valor real.</p>
-
-<p>El CV (Coeficiente de Variación) da la incertidumbre como un porcentaje. Un CV menor al 5% o 10% indica que el  error es pequeño en relación con la magnitud de los saldos que estamos midiendo.</p>
-
+<p>El CV (Coeficiente de Variación) da la incertidumbre como un porcentaje. Un CV menor al 5% o 10% indica que el error es pequeño en relación con la magnitud de los saldos que estamos midiendo.</p>
 
 <p>Si hacemos la tabla comparativa del MAS y el Bernoulli</p>
 
@@ -136,311 +131,267 @@
             
 <p>Resultado R</p>
 
+<p>Podemos decir en general que el MAS es mejor que el Bernoulli, aunque a gran escala tenemos el problema de asimetría y selección sesgada, dada la poca presencia de clientes con mucho dinero en el banco.</p>
 
-<p>Podemos decir en general que el MAS es mejor que el Bernoulli aunque a gran escala tenemos el problema de asimetria y seleccion sesgada dada la poca precencia de clientes con mucho dinero en el banco.</p>
-
-
-
-      <h2>Muestreo Aleatorio Simple con Reemplazo</h2>
+<h2>Muestreo Aleatorio Simple con Reemplazo</h2>
             
-      <p>El Muestreo Aleatorio Simple con Reemplazo (SIR) es una variante del MAS donde cada vez que seleccionas a un cliente de la poblacion para ponerlo en la muestra, este puede aparecer dos o más veces en la muestra final. La varianza del estimador bajo posibilidad de reemplazo suele ser mayor que si no hubiera posibilidad de reemplazo, porque al permitir repeticiones, la muestra es menos informativa, tenemos menos individuos únicos para representar a la población.</p>
+<p>El Muestreo Aleatorio Simple con Reemplazo (SIR) es una variante del MAS donde cada vez que seleccionas a un cliente de la población para ponerlo en la muestra, este puede aparecer dos o más veces en la muestra final. La varianza del estimador bajo posibilidad de reemplazo suele ser mayor que si no hubiera posibilidad de reemplazo, porque al permitir repeticiones, la muestra es menos informativa; tenemos menos individuos únicos para representar a la población.</p>
+
+<p>En media, tanto con reemplazo como sin reemplazo son insesgados (muy cerca del valor real). En varianza y RMSE, con reemplazo es mayor debido a la reducción de la diversidad de la muestra.</p>
+
+<p>En CV (Coeficiente de Variación), con reemplazo tendrá una precisión menor.</p>
+
+<p>Hasta ahora la lógica detrás de todas las estimaciones se basaba en expandir la muestra y estábamos usando el estimador Horvitz-Thompson (HT). Con la fórmula</p>
+
+<p>\(\hat{Y}_{HT} = \sum_{i \in s} \frac{y_i}{\pi_i} = \sum_{i \in s} y_i \cdot w_i\)</p>
+
+<p>Lo que hace es, para todos los individuos de la muestra, dividirlos entre su probabilidad de selección. Este estimador es siempre insesgado, pero se usa solo para diseños sin reemplazo. Para el caso de diseños con reemplazo, usamos el estimador Hansen-Hurwitz (pwr).</p>
+
+<p>\(\hat{Y}_{pwr} = \frac{1}{n} \sum \frac{y_i}{p_i}\)</p>
 
 
-     <p>En media, tanto reemplazo como no reemplazo son insesgados (muy cerca del valor real). En Varianza y RMSE, con reemplazo es mayor debido a la reduccion de la diversidad de la muestra.</p>
+<p>Estimador pwr</p>
 
-     <p>En CV (Coeficiente de Variación), con reemplazo tendra una precisió menor.</p>
+<p>Si comparamos ambos usando un diseño simple (sin reemplazo para el HT y con reemplazo para el pwr), vemos que las estimaciones de pwr se alejan más de la media real, que es 1422.658, mientras que HT se acerca bastante.</p>
 
+<p>Esto se debe a que el diseño PWR (Hansen-Hurwitz) usa el saldo como medida de probabilidad. Este estimador es muy sensible a la relación entre el saldo y su peso. Si la mayoría de los clientes tienen saldos bajos (como se ve en el histograma), el PWR tiende a estabilizarse en esos valores. Al asignar probabilidades altas a los saldos grandes, el diseño selecciona repetidamente a los mismos clientes extremos (recuerda que es con reemplazo), la varianza del estimador se dispara.</p>
 
-<p>Hasta ahora la lógica detrás de todas las estimaciones se basaba en expandir la muestra y estabamos usando el estimador Horvitz-Thompson (HT). Con la formula</p>
-
-<p> \(\hat{Y}_{HT} = \sum_{i \in s} \frac{y_i}{\pi_i} = \sum_{i \in s} y_i \cdot w_i \)</p>
-
-<p>Lo que hace es para todos los individuos de la muestra, dividirlos entre su probabilidad de seleccion. Este estimador siempre insesgado, pero se usa solo para diseños sin reemplazo. Para el caso de diseños con reemplazo, usamos el estimador Hansen-Hurwitz (pwr).</p>
-
-<p> \( \hat{Y}_{pwr} = \frac{1}{n} \sum \frac{y_i}{p_i} \) </p>
-
-
-
-
-<p>Etimador pwr</p>
-
-
-<p>Si comparamos ambos usando un diseño simple (sin reemplazo para el HT y con reemplazo para el pwr) vemos que las estimaciones de pwr se aleja mas de la media real que es 1422.658, mientras que HT se acerca bastante</p>
-
-<p>Esto se debe a que el diseño PWR (Hansen-Hurwitz) usa el saldo como medida de probabilidad. Este estimador es muy sensible a la relación entre el saldo y su peso. Si la mayoría de los clientes tienen saldos bajos (como se ve en el histograma), el PWR tiende a estabilizarse en esos valores. Al asignar probabilidades altas a los saldos grandes, el diseño selecciona repetidamente a los mismos clientes extremos (recuerda que es con reemplazo), la varianza del estimador se dispara</p>
-
-<p>Para el HT, la media vale 1735.6, es más alta porque, en un muestreo aleatorio simple, si atrapamaos por azar a uno de los pocos clientes con $60,000, ese valor empuja el promedio hacia arriba sin ninguna ponderación que lo suavice. Aunque conceptualmente tiene mas sentido usar un diseño sin reemplazo porque repetir los ingresos de los usuarios del banco tiende a ser informacion redundante.</p>
+<p>Para el HT, la media vale 1735.6; es más alta porque, en un muestreo aleatorio simple, si atrapamos por azar a uno de los pocos clientes con $60,000, ese valor empuja el promedio hacia arriba sin ninguna ponderación que lo suavice. Aunque conceptualmente tiene más sentido usar un diseño sin reemplazo, porque repetir los ingresos de los usuarios del banco tiende a ser información redundante.</p>
             
-<p>Codigo</p>
+<p>Código</p>
 
-<p>Por los factores que mencionamos relacionados a que la varianza de diseños con reemplazo es mas alta que diseños sin reemplazo, vemos que en este caso se cumple, siendo la varianza del pwr casi 6 veces mas grande que la varianza del HT.</p>
+<p>Por los factores que mencionamos, relacionados a que la varianza de diseños con reemplazo es más alta que la de diseños sin reemplazo, vemos que en este caso se cumple, siendo la varianza del pwr casi 6 veces más grande que la varianza del HT.</p>
+
+<h2>Diseño Estratificado</h2>
+
+<p>El Muestreo Estratificado es una técnica de diseño donde la población se divide en grupos mutuamente excluyentes llamados estratos, y luego se selecciona una muestra independiente dentro de cada uno de ellos. Nosotros decidimos la estructura de la muestra para asegurar que todos los sectores importantes del banco estén representados.</p>
+
+<p>Como vimos en el boxplot, los estratos los podemos hacer con las categorías de empleo del banco, esto debido a:</p>
+
+<p>- Homogeneidad interna: En el boxplot, los saldos de los "estudiantes" se parecen mucho entre sí, pero son muy diferentes a los de los "jubilados". Al estratificar, el error estándar solo depende de la variación dentro de cada grupo, eliminando la gran diferencia que hay entre grupos.</p>
+
+<p>- Protección contra "malas muestras": En el MAS, existe el riesgo de que tu muestra no incluya a nadie de una categoría pequeña pero importante (como los desempleados). En el estratificado, garantizas una cuota mínima para cada profesión.</p>
+
+<p>- Mayor precisión (menor varianza): Matemáticamente, si los estratos están bien elegidos (es decir, si la profesión realmente influye en el saldo), la varianza del estimador estratificado siempre será menor o igual a la del muestreo aleatorio simple.</p>
+
+<p>En cada estrato podemos aplicar el diseño que queramos, simple, Bernoulli, etc.</p>
             
+<p>Resultados Código</p>
 
-            <h2>Diseño Estratificado</h2>
-
-            <p>El Muestreo Estratificado es una técnica de diseño donde la población se divide en grupos mutuamente excluyentes llamados estratos, y luego se selecciona una muestra independiente dentro de cada uno de ellos. Nosotros decidimos la estructura de la muestra para asegurar que todos los sectores importantes del banco estén representados.</p>
-
-<p>Como vimos en el boxplot, los estratos los podemos hacer con las categorias de empleo del banco, esto debido a:</p>
-
-<p> - Homogeneidad Interna: En el boxplot, los saldos de los "estudiantes" se parecen mucho entre sí, pero son muy diferentes a los de los "jubilados". Al estratificar, el error estándar solo depende de la variación dentro de cada grupo, eliminando la gran diferencia que hay entre grupos.</p>
-
-<p> - Protección contra "Malas Muestras": En el MAS, existe el riesgo de que tu muestra no incluya a nadie de una categoría pequeña pero importante (como los desempleados). En el estratificado, garantizas una cuota mínima para cada profesión.</p>
-
-<p> - Mayor Precisión (Menor Varianza): Matemáticamente, si los estratos están bien elegidos (es decir, si la profesión realmente influye en el saldo), la varianza del estimador estratificado siempre será menor o igual a la del muestreo aleatorio simple.</p>
-
-<p> En cada estrato podemos aplicar el diseño que querramos, simple, bernoulli, etc.</p>
-
-            
-            
-<p>Resultados Código </p>
-
-<p>Obtenemos una estimacion bastante buena.</p>
+<p>Obtenemos una estimación bastante buena.</p>
 
 <img src="../images/Imagen137.png" alt="Título" class="img-proyecto" width="450">
             
-            
-<p>Este gráfico compara el peso de cada profesión en la población total (barras grises) contra su presencia en la muestra (puntos rojos). Los puntos rojos caen aproximadamente al final de cada barra gris, se logro una Afijación Proporcional perfecta.</p>
+<p>Este gráfico compara el peso de cada profesión en la población total (barras grises) contra su presencia en la muestra (puntos rojos). Los puntos rojos caen aproximadamente al final de cada barra gris; se logró una afijación proporcional perfecta.</p>
 
-<p>En un muestreo aleatorio simple, por puro azar, podrías haberte quedado sin "estudiantes" o con demasiados "jubilados". Aquí forzamos que la muestra sea representativa de la poblacion del banco. Al asegurar que cada grupo (estrato) esté representado en su justa medida, quitamos el error derivado de una muestra sesgada hacia profesiones con saldos muy altos o muy bajos.</p>
-
+<p>En un muestreo aleatorio simple, por puro azar, podrías haberte quedado sin "estudiantes" o con demasiados "jubilados". Aquí forzamos que la muestra sea representativa de la población del banco. Al asegurar que cada grupo (estrato) esté representado en su justa medida, quitamos el error derivado de una muestra sesgada hacia profesiones con saldos muy altos o muy bajos.</p>
 
 
             
-
 <h2>Diseño Sistemático</h2>
 
-<p>En lugar de elegir a cada individuo al azar, seleccionamos a los elementos de la población a intervalos regulares de una lista ordenada. En nestro caso</p>
+<p>En lugar de elegir a cada individuo al azar, seleccionamos a los elementos de la población a intervalos regulares de una lista ordenada. En nuestro caso</p>
 
-<p>Si tenemos a todos los clientes ordenados en una lista, para aplicar el Diseño Sistemático hacemos un proceso de tres pasos:</p>
+<p>Si tenemos a todos los clientes ordenados en una lista, para aplicar el diseño sistemático hacemos un proceso de tres pasos:</p>
 
-<p> 1) Calcular el salto (Intervalo $k$): Si tienes $N = 45,211$ clientes y quieres una muestra de $n = 500$, tu intervalo será $k = N/n \approx 90$.</p>
+<p>1) Calcular el salto (intervalo $k$): Si tienes $N = 45,211$ clientes y quieres una muestra de $n = 500$, tu intervalo será $k = N/n \approx 90$.</p>
 
-<p> 2) Arranque aleatorio ($A$): Eliges un número al azar entre 1 y 90 (por ejemplo, el 12).</p>
+<p>2) Arranque aleatorio ($A$): Eliges un número al azar entre 1 y 90 (por ejemplo, el 12).</p>
 
-<p> 3) Selección sistemática: El primer seleccionado es el cliente 12, el segundo es el $12 + 90$, el tercero el $12 + 180$, y así sucesivamente hasta recorrer toda la lista.</p>
+<p>3) Selección sistemática: El primer seleccionado es el cliente 12, el segundo es el $12 + 90$, el tercero el $12 + 180$, y así sucesivamente hasta recorrer toda la lista.</p>
 
-            
-<p>Obtenemos una estimacion algo lejana de la media real, esto se puede deber a algunos problemas asociados al diseño sistemático como que no todos los elementos tienen probabilidad de inclusion mayor a cero, dado que como vamos dando saltos, hay individuos que no salen en esos saltos y no son considerados, otro problema es que la población tenga un patrón cíclico que coincida con el intervalo $k$. Por ejemplo, si en tu lista cada 90 clientes hay un registro de una sucursal específica, la muestra podría estar sesgada hacia esa sucursal</p>            
-            
+<p>Obtenemos una estimación algo lejana de la media real; esto se puede deber a algunos problemas asociados al diseño sistemático, como que no todos los elementos tienen probabilidad de inclusión mayor a cero, dado que, como vamos dando saltos, hay individuos que no salen en esos saltos y no son considerados. Otro problema es que la población tenga un patrón cíclico que coincida con el intervalo $k$. Por ejemplo, si en tu lista cada 90 clientes hay un registro de una sucursal específica, la muestra podría estar sesgada hacia esa sucursal.</p>            
 
-            
-            <h2>Diseño Poisson</h2>
+<h2>Diseño Poisson</h2>
 
-            <p>El Diseño de Poisson es una extensión natural del muestreo de Bernoulli que permite aplicar probabilidades de selección desiguales a cada individuo, pero manteniendo la independencia entre las selecciones.Mientras que en el diseño de Bernoulli todos los clientes tienen la misma probabilidad $\pi$, en el muestreo de Poisson cada cliente $i$ tiene su propia probabilidad de inclusión $\pi_i$. Es una herramienta sumamente flexible porque permite que el diseño se adapte a la importancia de cada registro.</p>
+<p>El diseño de Poisson es una extensión natural del muestreo de Bernoulli que permite aplicar probabilidades de selección desiguales a cada individuo, pero manteniendo la independencia entre las selecciones. Mientras que en el diseño de Bernoulli todos los clientes tienen la misma probabilidad $\pi$, en el muestreo de Poisson cada cliente $i$ tiene su propia probabilidad de inclusión $\pi_i$. Es una herramienta sumamente flexible porque permite que el diseño se adapte a la importancia de cada registro.</p>
 
-<p>A un cliente con saldo alto le asignas una moneda con 80% de probabilidad de salir "cara" (incluido). A un cliente con saldo bajo le asignas una moneda con solo 5% de probabilidad.  Al igual que en el Bernoulli, el tamaño de la muestra ($n$) es aleatorio, lo que significa que no sabes exactamente cuántos clientes tendrás hasta que terminas de "lanzar todas las monedas".</p>
+<p>A un cliente con saldo alto le asignas una moneda con 80% de probabilidad de salir "cara" (incluido). A un cliente con saldo bajo le asignas una moneda con solo 5% de probabilidad. Al igual que en el Bernoulli, el tamaño de la muestra ($n$) es aleatorio, lo que significa que no sabes exactamente cuántos clientes tendrás hasta que terminas de "lanzar todas las monedas".</p>
 
-<p>Se cumple la Independencia Total, la inclusión del cliente A no afecta en nada la probabilidad del cliente B. Esto simplifica mucho los cálculos teóricos de la varianza. Al igual que el Bernoulli, su mayor debilidad es que el tamaño de muestra final varía. Si por azar obtienes una muestra muy pequeña, el error estándar de tu estimación de saldo se disparará.</p>
+<p>Se cumple la independencia total; la inclusión del cliente A no afecta en nada la probabilidad del cliente B. Esto simplifica mucho los cálculos teóricos de la varianza. Al igual que el Bernoulli, su mayor debilidad es que el tamaño de muestra final varía. Si por azar obtienes una muestra muy pequeña, el error estándar de tu estimación de saldo se disparará.</p>
  
-<p>Obtenemos una estimacion lejana de la media poblacional, por lo que este diseño no parece ser muy bueno.</p>
+<p>Obtenemos una estimación lejana de la media poblacional, por lo que este diseño no parece ser muy bueno.</p>
 
+<h2>Diseño pps y πps</h2>
 
+<p>Ambos diseños le dan más importancia a los elementos "grandes", o sea, a los clientes con saldos altos. Las probabilidades de inclusión son proporcionales al tamaño del individuo en la población.</p>
 
-            <h2>Diseño pps y πps</h2>
+<p>La diferencia entre ambos es que pps es un diseño con reemplazo (existe posibilidad de volver a extraer a un elemento ya extraído en la muestra). Un cliente con un saldo muy alto puede ser seleccionado varias veces. Esto simplifica mucho el cálculo de la varianza, pero "desperdicia" espacio en la muestra al repetir información.</p>
 
-<p>Aunque diseños le dan mas importancia a los elementos "grandes", o sea, a los clientes con saldos altos. Las probabilidades de inclusion son proporcionales al tamaño del inviduo en la poblacion.</p>
-
-<p>La diferencia entre ambos es que pps es un diseño con reemplazo (existe posibilidad de volver a extraer a un elemento ya extraido en la muestra). Un cliente con un saldo muy alto puede ser seleccionado varias veces. Esto simplifica mucho el cálculo de la varianza, pero "desperdicia" espacio en la muestra al repetir información.</p>
-
-<p>Mientras que πps es sin reemplazo, cada cliente aparezca máximo una vez en la muestra.</p>
+<p>Mientras que πps es sin reemplazo, cada cliente aparece máximo una vez en la muestra.</p>
             
-<p>Vemos que ambos diseños al estimar la media se alejan un poco de su verdadero valor poblacion y es curioso que ese alejamiento es de una magnitud similar, donde PPS  subestima el valor real de la media, y πps sobreestima el valor real de la media.</p>            
-
+<p>Vemos que ambos diseños, al estimar la media, se alejan un poco de su verdadero valor poblacional, y es curioso que ese alejamiento es de una magnitud similar, donde pps subestima el valor real de la media y πps sobreestima el valor real de la media.</p>            
 
 <h2>Muestreo por Conglomerados</h2>
 
-<p>El Muestreo por Conglomerados (Cluster Sampling) es un diseño donde, en lugar de seleccionar individuos uno por uno, seleccionas grupos completos de personas que ya están agrupadas de forma natural. En los datos bancarios, podemos no elegir clientes al azar, sino que decidimos elegir ocupaciones específicas y estudiar a todos los clientes que pertenecen a esas ocupaciones, que vienen dadas, nosotros no elegimos a que se dedica cada cliente.</p>
+<p>El muestreo por conglomerados (Cluster Sampling) es un diseño donde, en lugar de seleccionar individuos uno por uno, seleccionas grupos completos de personas que ya están agrupadas de forma natural. En los datos bancarios, podemos no elegir clientes al azar, sino que decidimos elegir ocupaciones específicas y estudiar a todos los clientes que pertenecen a esas ocupaciones, que vienen dadas; nosotros no elegimos a qué se dedica cada cliente.</p>
 
-<p>En este diseño, la unidad de muestreo ya no es el cliente, sino el "conglomerado" (la ocupacion del cliente).</p>
+<p>En este diseño, la unidad de muestreo ya no es el cliente, sino el "conglomerado" (la ocupación del cliente).</p>
 
-<p>Primero dividimos la población en $N$ conglomerados. Luego seleccionas una muestra aleatoria de $n$ conglomerados, por ultimo censamos (muestreamos a todos) dentro de los conglomerados elegidos.</p>
+<p>Primero dividimos la población en $N$ conglomerados. Luego seleccionamos una muestra aleatoria de $n$ conglomerados; por último, censamos (muestreamos a todos) dentro de los conglomerados elegidos.</p>
 
-<p>Obtenemos un valor de 1406.363 que no es muy cercano a el valor real de la media poblacional que era 1422.658, esto puede deberse a los atipicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.</p>            
+<p>Obtenemos un valor de 1406.363 que no es muy cercano al valor real de la media poblacional, que era 1422.658. Esto puede deberse a los atípicos presentes en las ocupaciones de los usuarios del banco, o a la variabilidad que presentaban las ocupaciones.</p>
 
+ 
+ 
+<h3>Coeficiente de heterogeneidad intra-cluster</h3>
 
-<h3>Coeficiente de heterogeneidad intra-cluster </h3>
-
-            
 <p>El valor de rho mide qué tan parecidos son los individuos dentro de un mismo grupo (conglomerado).</p>
 
-<p>Si rho fuera 1: Todos los usuarios a traves de sus trabajos tendrían exactamente el mismo saldo. El muestreo por conglomerados sería ineficiente porque un solo cliente te diría todo lo que necesitas saber del grupo.</p>
+<p>Si rho fuera 1: Todos los usuarios, a través de sus trabajos, tendrían exactamente el mismo saldo. El muestreo por conglomerados sería ineficiente porque un solo cliente te diría todo lo que necesitas saber del grupo.</p>
 
-<p>Si rho es 0: No hay ninguna relación entre el grupo y la variable. El saldo de un cliente no tiene nada que ver con la ocupacion que tiene.</p>
+<p>Si rho es 0: No hay ninguna relación entre el grupo y la variable. El saldo de un cliente no tiene nada que ver con la ocupación que tiene.</p>
 
-<p>En nuestro caso, el valor de $-0.0008$ indica que los clientes dentro de los conglomerados por ocupacion son tan diferentes entre sí como si los hubieras elegido al azar de toda la población. Tenemos más diversidad dentro de los grupos de la que esperarías por puro azar. Es decir, tus grupos son muy heterogéneos internamente, que es algo deseado, porque queremos tener clientes variados dentro de los clusters que vienen dados.</p>
-            
-            
+<p>En nuestro caso, el valor de $-0.0008$ indica que los clientes dentro de los conglomerados por ocupación son tan diferentes entre sí como si los hubieras elegido al azar de toda la población. Tenemos más diversidad dentro de los grupos de la que esperarías por puro azar. Es decir, tus grupos son muy heterogéneos internamente, lo cual es algo deseado, porque queremos tener clientes variados dentro de los clusters que vienen dados.</p>
 
 <h2>Muestreo en dos etapas:</h2>
 
-<p>Primera Etapa (Unidades Primarias de Muestreo - UPM): Seleccionas una muestra aleatoria de empleos (conglomerados).</p>
+<p>Primera etapa (Unidades Primarias de Muestreo - UPM): Seleccionas una muestra aleatoria de empleos (conglomerados).</p>
 
-<p>Segunda Etapa (Unidades Secundarias de Muestreo - USM): Dentro de cada empleo seleccionado, seleccionamos una muestra aleatoria de clientes.</p>
+<p>Segunda etapa (Unidades Secundarias de Muestreo - USM): Dentro de cada empleo seleccionado, seleccionamos una muestra aleatoria de clientes.</p>
 
+<p>Para que este diseño sea eficiente deben cumplirse dos supuestos:</p>
 
-<p>Para que este diseño sea eficiente deben cumplirse dos supestos:</p>
+<p>Independencia: Que la inclusión de una unidad en la muestra no afecte la probabilidad de inclusión de otra.</p>
 
-<p>Independencia: Que la inclusión de una unidad en la muestra no afecta la probabilidad de inclusión de otra.</p>
+<p>Invarianza: Que el valor de la variable de interés ($y_i$, el balance) de un individuo no cambie independientemente de si otros individuos son seleccionados o de qué otros elementos conformen la muestra.</p>
 
-<p>Invarianza: Que el valor de la variable de interés ($y_i$, el balance) de un individuo no cambia independientemente de si otros individuos son seleccionados o de qué otros elementos conformen la muestra</p>
-            
-
-<p>Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza y independencia.</p>            
+<p>Obtenemos un valor bastante alejado de la media real, por lo que este diseño no resulta muy eficiente. Esto puede deberse al no cumplimiento de los supuestos de invarianza e independencia.</p>            
         
-
 <h2>Efecto Diseño (deff)</h2>
 
-<p>El Deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una caracteristica deseable en un diseño.</p>
+<p>El deff (Efecto de Diseño o Design Effect) es un estadístico que mide la eficiencia relativa de un diseño de muestreo complejo comparado con un Muestreo Aleatorio Simple (MAS). Mide cuántas veces es más grande (o más pequeña) la varianza de mi diseño actual frente a la que tendría si hubiera usado un MAS con el mismo tamaño de muestra. Recordar que una varianza grande no es una característica deseable en un diseño.</p>
 
-<p>La formula exacta de esta metrica, siendo D un diseño cualquiera, es:</p>
+<p>La fórmula exacta de esta métrica, siendo D un diseño cualquiera, es:</p>
 
-<p> \( Deff(D) = \frac{V(D)}{V(MAS)} \) </p>
+<p>\( Deff(D) = \frac{V(D)}{V(MAS)} \)</p>
     
 <p>Al ser un cociente tenemos que</p>
 
-<p>Deff(D) > 1 -> La varianza del diseño seleccionado es mayor a la varianza de un diseño basado en MAS, por lo que el diseño D es menos eficiente que un simple.</p>
+<p>Deff(D) &gt; 1 -> La varianza del diseño seleccionado es mayor a la varianza de un diseño basado en MAS, por lo que el diseño D es menos eficiente que uno simple.</p>
 
-<p>Deff(D) = 1 -> La varianza del diseño seleccionado es igual a la varianza de un diseño basado en MAS, si bien son indiferentes en terminos de varianza, se preferira al diseño mas sencillo de implementar de forma practica que por lo general es el MAS</p>
+<p>Deff(D) = 1 -> La varianza del diseño seleccionado es igual a la varianza de un diseño basado en MAS; si bien son indiferentes en términos de varianza, se preferirá el diseño más sencillo de implementar de forma práctica, que por lo general es el MAS.</p>
 
-<p>Deff(D) < 1 -> La varianza del diseño seleccionado es menor a la varianza de un diseño basado en MAS, por lo que el diseño D es mas eficiente que un simple.</p>
-
+<p>Deff(D) &lt; 1 -> La varianza del diseño seleccionado es menor a la varianza de un diseño basado en MAS, por lo que el diseño D es más eficiente que uno simple.</p>
             
 <img src="../images/Imagen138.png" alt="Título" class="img-proyecto" width="450">
+
+
+ 
+<p>Recordemos que el valor de la media poblacional era 1422.658</p>
+
+<p>En esta tabla tenemos 5 columnas. La primera, "Diseño", es el diseño muestral utilizado para realizar la estimación de la media. La segunda es el valor puntual estimado de la media. La tercera es el error estándar asociado a esa estimación; mide la precisión, qué tanto se aleja la estimación del valor real. Cuanto más chico sea este valor, mejor será la estimación, y cuanto más grande sea este valor, peor será la estimación. La cuarta columna es el deff; esta es una métrica que compara la varianza entre el diseño utilizado con respecto a un diseño aleatorio simple sin reemplazo, donde la comparación se hace a través de un cociente. La quinta columna es el Error_Abs, que es la diferencia entre el valor real y el valor estimado.</p>
+
+<p>El MAS con reemplazo es el que más se acercó al valor real en la estimación (error: -20.06), pero tiene un SE alto, más los problemas mencionados al inicio de asimetría y outliers, más el poco sentido conceptual que tiene repetir individuos ya extraídos en la muestra.</p>
+
+<p>Conglomerados tuvo un SE de 125.6156 y, aunque su media (1498.56) tiene un error de +75.90, es el diseño más estable. Su deff de 0.649 indica una ganancia de eficiencia alta, porque los grupos por ocupación capturaron bien la variabilidad interna de los ingresos de los usuarios del banco. Este valor del deff indica que el diseño de conglomerados es un 35% más eficiente que un Muestreo Aleatorio Simple (MAS). Recordemos que vimos el coeficiente de correlación intraclase (rho), que valía casi cero (-0.0012); esto indica que las personas dentro de una misma profesión son muy diferentes entre sí en cuanto a sus saldos, lo que reduce el error de grupo y maximiza la precisión.</p>
+
+<p>El diseño sistemático tiene un SE de 115.56; se comporta casi como un MAS (deff 1.00).</p>
+
+<p>Otros, como el diseño de dos etapas, tienen un SE de 317.59; es el diseño con mayor incertidumbre. El error estándar es muy alto, lo que causa que el intervalo de confianza asociado a la estimación sea muy ancho, lo que resta utilidad a la estimación.</p>
+
+<p>Otros, como πps y pps, a pesar de usar probabilidades de selección proporcionales al saldo, tienen errores absolutos altos (+370 y +138 respectivamente) y SE elevados. Esto puede ocurrir si los saldos extremos (outliers) dominaron demasiado la selección.</p>
+
+<p>Decidí quedarme con el diseño estratificado por tener el SE más bajo y el mejor deff, aunque su estimación no haya sido perfecta. De ahora en adelante se trabajará con este diseño para otros temas de estudio en este informe.</p>
             
+<h2>Estimación por dominios</h2>
 
-<p>Recordemos que el valor de la Media Poblcional era 1422.658</p>
+<p>La estimación por dominios consiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.</p>
 
-<p>En esta tabla tenemos 5 columnas, la primera "Diseño" es el diseño muestral utilizado para realizar la estimacion de la media. La segunda es el valor puntual estimado de la media. La tercera es el error estandar asociado a esa estimacion, mide la precision que tanto se aleja la estimacion del valor real, cuanto mas chico sea este valor, mejor sera la estimacion, y cuanto mas grande sea este valor, peor sera la estimacion. La cuarta columna es el deff, esta es una metrica que compara la varianza entre el diseño utilizado con respecto a un diseño aleatorio simple sin reemplazo, donde la comparacion se hace a traves de un cociente.  La quinta columna es el Error_Abs, que es la diferencia entre el valor real y el valor estimado</p>
-
-<p>El MAS con Reemplazo es el que más se acercó al valor real en la estimacion (Error: -20.06) pero tiene un SE alto mas los problemas mencionados al inicio de asimetria y outliers, mas el poco sentido conceptual que tiene repetir individuos ya extraidos en la muestra.</p>
-
-
-<p>Conglomerados tuvo un SE de 125.6156 y aunque su media (1498.56) tiene un error de +75.90, es el diseño más estable. Su Deff de 0.649 indica una ganancia de eficiencia alta, porque los grupos por ocupacion capturaron bien la variabilidad interna de los ingresos de los usuarios del banco, este valor del deff indica que el diseño de conglomerados es un 35% más eficiente que un Muestreo Aleatorio Simple (MAS). Recordemos que vimos el Coeficiente de Correlación Intraclase (rho) que valia casi cero (-0.0012), esto indica que las personas dentro de una misma profesión son muy diferentes entre sí en cuanto a sus saldos, lo que reduce el error de grupo y maximiza la precisión.</p>
-
-
-<p>El Diseño Sistemático tiene un SE de 115.56, se comporta casi como un MAS (Deff 1.00).</p>
-
-<p>Otros como el Diseño de Dos Etapas tienen un SE de 317.59, es el diseño con mayor incertidumbre. El error estándar es muy alto lo que causa que el intervalo de confianza asociado a la estimacion sea muy ancho, lo que resta utilidad a la estimación.</p>
-
-<p>Otros como piPS y PPS a pesar de usar probabilidades de seleccion proporcionales al saldo, tienen errores absolutos altos (+370 y +138 respectivamente) y SE elevados. Esto puede ocurrir si los saldos extremos (outliers) dominaron demasiado la selección.</p>
-
-<p>Decidi quedarme con el Diseño Estratificado por tener el SE mas bajo y el mejor Deff, aunque su estimacion no haya sido perfecta, de ahora en adelante se trabajara con este diseño para otros temas de estudio en este informe.</p>
-            
-
-    <h2>Edtimacion por dominios</h2>
-
-<p>La Estimación por Dominios consiste en calcular parámetros estadísticos para grupos específicos de la población sin haber diseñado una muestra independiente para cada uno de ellos. En la estimación por dominios los grupos son los que salen en la muestra general. Debido a que el tamaño de muestra en cada dominio es una variable aleatoria, el cálculo del error estándar es más complejo y requiere fórmulas específicas para ser preciso.</p>
-
-<p>Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una estimación por dominios. Las categorias de job que entren en la muestra seran al azar. Si el dominio es muy pequeño la estimación será muy inestable (un SE muy alto).</p>
+<p>Podemos analizar el saldo promedio por ocupación (job), lo que es hacer una estimación por dominios. Las categorías de job que entren en la muestra serán al azar. Si el dominio es muy pequeño, la estimación será muy inestable (un SE muy alto).</p>
             
 <img src="../images/Imagen139.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Este gráfico muestra cómo se distribuye el saldo promedio según el tipo de trabajo bajo el diseño estratificado. El grupo retired (jubilados) es el de mayor saldo promedio, acercándose o superando los 4000. Los clientes con ocupación desconocida y los desempleados tienen un saldo promedio bajo, al igual que los auto-empleados. Ocupaciones como blue-collar, services y admin. se mantienen en la parte baja de la escala (cerca de los 1000-1500), lo que confirma que son la base de clientes con saldos más modestos pero más numerosos.</p>
+<p>Este gráfico muestra cómo se distribuye el saldo promedio según el tipo de trabajo bajo el diseño estratificado. El grupo retired (jubilados) es el de mayor saldo promedio, acercándose o superando los 4000. Los clientes con ocupación desconocida y los desempleados tienen un saldo promedio bajo, al igual que los autoempleados. Ocupaciones como blue-collar, services y admin. se mantienen en la parte baja de la escala (cerca de los 1000–1500), lo que confirma que son la base de clientes con saldos más modestos pero más numerosos.</p>
 
 <p>Al tratar a cada "profesión" como un estrato, la variabilidad real del banco no está en los clientes individuales, sino en el segmento laboral al que pertenecen.</p>
 
 
-    
-      <h2>Efecto de Sesgo y Intervalos de Confianza</h2>
 
-<p>El Sesgo Relativo vale 3.17%, la estimaciones es basante buena porque el sesgo es bajo, por eso seleccionar grupos a traves de conglomerados en lugar de individuos fue una buena decision. La Media Estimada fue 1467.72  y la Media Real vale 1422.66, vemos que existe una ligera sobreestimación de aproximadamente 45 unidades, esto sugiere que los sectores laborales (conglomerados) que resultaron seleccionados tienen un nivel de ahorro ligeramente superior al promedio general. El Intervalo de Confianza es de [ 1241.21 , 1694.23 ], el Valor Real Poblacional (1422.66) se encuentra dentro de este intervalo, se puede afirmar con un 95% de confianza que la estimación es estadísticamente significativa. El rango de este intervalo es considerable y refleja la variabilidad de los saldos bancarios.</p>
+
+ <h2>Efecto de Sesgo y Intervalos de Confianza</h2>
+
+<p>El sesgo relativo vale 3.17%, la estimación es bastante buena porque el sesgo es bajo, por eso seleccionar grupos a través de conglomerados en lugar de individuos fue una buena decisión. La media estimada fue 1467.72 y la media real vale 1422.66; vemos que existe una ligera sobreestimación de aproximadamente 45 unidades. Esto sugiere que los sectores laborales (conglomerados) que resultaron seleccionados tienen un nivel de ahorro ligeramente superior al promedio general. El intervalo de confianza es de [1241.21, 1694.23]; el valor real poblacional (1422.66) se encuentra dentro de este intervalo. Se puede afirmar con un 95% de confianza que la estimación es estadísticamente significativa. El rango de este intervalo es considerable y refleja la variabilidad de los saldos bancarios.</p>
             
             
-<h2>Estimador de una Razon R</h2>
+<h2>Estimador de una Razón R</h2>
 
-<p>La estimacion de ratios en vez de estimar el total o el promedio de una variable (como el saldo promedio), la estimación de una razón analiza la relación matemática entre dos variables distintas para cada individuo a traves de un cociente</p>
+<p>La estimación de ratios, en vez de estimar el total o el promedio de una variable (como el saldo promedio), analiza la relación matemática entre dos variables distintas para cada individuo a través de un cociente.</p>
 
-<p>Su formula es:</p>
+<p>Su fórmula es:</p>
 
-<p> \( \hat{R}= \frac{\sum w_i y_i}{\sum w_i x_i} \) </p>
-<p>Donde "y" es la variable de interes original y "x" es la variable auxiliar.  Se usa cuando queremos entender cómo cambia una variable en función de otra. Los ratios suelen ser estimadores más precisos que las medias si ambas variables están correlacionadas.</p>
+<p>\( \hat{R}= \frac{\sum w_i y_i}{\sum w_i x_i} \)</p>
 
+<p>Donde "y" es la variable de interés original y "x" es la variable auxiliar. Se usa cuando queremos entender cómo cambia una variable en función de otra. Los ratios suelen ser estimadores más precisos que las medias si ambas variables están correlacionadas.</p>
 
-
-<p>En este caso  calcularemos la relación Saldo / Edad. En el Numerador tendremos el saldo bancario (balance) y en el Denominador tendremos la edad del cliente (age). Este ratio nos dice cuánto dinero tiene un cliente en el banco por cada año de vida.</p>
+<p>En este caso calcularemos la relación Saldo / Edad. En el numerador tendremos el saldo bancario (balance) y en el denominador tendremos la edad del cliente (age). Este ratio nos dice cuánto dinero tiene un cliente en el banco por cada año de vida.</p>
             
 <img src="../images/Imagen140.png" alt="Título" class="img-proyecto" width="450">
 
-<p>El resultado es de 35.72 con un Error Estándar (SE) de 2.79 lo que significa que, en promedio, un cliente acumula $35.72$ unidades monetarias por cada año de edad que tiene. En la comparacion de ratios por ocupacion, vemos que los estudiantes y el personal de gerencia (management) tienen los ratios más altos, lo que significa que tienen saldos muy elevados en comparación con su edad relativa. Dado que estamos segmentando el ratio según el trabajo (job), podemos ver quién es más "eficiente" ahorrando según su etapa de vida.</p>
+<p>El resultado es de 35.72 con un error estándar (SE) de 2.79, lo que significa que, en promedio, un cliente acumula $35.72$ unidades monetarias por cada año de edad que tiene. En la comparación de ratios por ocupación, vemos que los estudiantes y el personal de gerencia (management) tienen los ratios más altos, lo que significa que tienen saldos muy elevados en comparación con su edad relativa. Dado que estamos segmentando el ratio según el trabajo (job), podemos ver quién es más "eficiente" ahorrando según su etapa de vida.</p>
 
-<p>Viendo el Intervalo de Confianza [30.26, 41.19] podemos decir con un 95% de confianza que la relación saldo/edad de toda la población del banco se encuentra en este rango. Es un intervalo relativamente estrecho, lo que indica que el Muestreo Sistemático ha sido muy efectivo para capturar esta relación.</p>
+<p>Viendo el intervalo de confianza [30.26, 41.19], podemos decir con un 95% de confianza que la relación saldo/edad de toda la población del banco se encuentra en este rango. Es un intervalo relativamente estrecho, lo que indica que el muestreo sistemático ha sido muy efectivo para capturar esta relación.</p>
 
+<p>Si hacemos un análisis de la razón por ocupaciones, vemos que la acumulación de riqueza por año de vida no es uniforme entre profesiones:</p>
 
-<p>Si hacemos un análisis de la Razón por Ocupaciones, vemos que la acumulación de riqueza por año de vida no es uniforme entre profesiones:</p>
+<p>Los más eficientes (mayor ratio) son Student con un valor de 57.04; es el ratio más alto. A pesar de ser jóvenes, tienen saldos proporcionalmente muy elevados para su edad, pero tiene un SE muy alto (30.03), lo que indica que esta estimación es poco precisa debido a la alta variabilidad entre estudiantes.</p>
 
-<p>Los más Eficientes (Mayor Ratio) son Student con un valor de 57.04, es el ratio más alto. A pesar de ser jóvenes, tienen saldos proporcionalmente muy elevados para su edad, pero tiene un SE muy alto (30.03), lo que indica que esta estimación es poco precisa debido a la alta variabilidad entre estudiantes.</p>
+<p>Management con un valor de 54.05; tienen una alta acumulación por año de edad, con un error estándar mucho más controlado (7.89).</p>
 
-<p>Management con un valor de 54.05, tienen una alta acumulación por año de edad con un error estándar mucho más controlado (7.89).</p>
+<p>Retired con un valor de 49.49; los jubilados tienen una alta relación saldo/edad, aunque su SE (15.31) sugiere que hay jubilados con saldos muy dispares.</p>
 
-<p>Retired con un valor de 49.49, los jubilados tienen una alta relación saldo/edad, aunque su SE (15.31) sugiere que hay jubilados con saldos muy dispares.</p>
+<p>Entrepreneur (15.23) y Self-employed (15.29) tienen ratios bajos; puede ser porque reinvierten su capital en sus negocios en lugar de mantenerlo en saldos bancarios líquidos.</p>
 
-<p>Entrepreneur (15.23) y Self-employed (15.29) tienen ratios bajos, puede ser porque reinvierten su capital en sus negocios en lugar de mantenerlo en saldos bancarios líquidos.</p>
-
-<p>Admin. con un valor de  17.88 es el grupo con la estimación más "segura" o precisa (SE de solo 3.14), pero su capacidad de ahorro por año de vida es de las más bajas.</p>
-
-            
-
+<p>Admin. con un valor de 17.88 es el grupo con la estimación más "segura" o precisa (SE de solo 3.14), pero su capacidad de ahorro por año de vida es de las más bajas.</p>
 
 <h2>Jackknife y Bootstrap</h2>
 
+<p>Jackknife es un método donde, en la muestra sistemática con $n$ elementos, el Jackknife crea $n$ submuestras, eliminando un cliente diferente cada vez. Es útil para detectar "outliers" (clientes con saldos atípicos). Aunque en diseños sistemáticos, el Jackknife a veces puede subestimar la varianza si hay una tendencia muy marcada en el orden de la lista.</p>
 
-<p>Jackknife es un método donde en la muestra sistemática con $n$ elementos, el Jackknife crea $n$ submuestras, eliminando un cliente diferente cada vez. Es útil para detectar "outliers" (clientes con saldos atípicos). Aunque en diseños sistemáticos, el Jackknife a veces puede subestimar la varianza si hay una tendencia muy marcada en el orden de la lista.</p>
-
-<p>Bootstrap es una tecnica de remuestreo con reemplazo. Crea miles de versiones de la muestra sistemática seleccionando clientes al azar de la misma (permitiendo que un cliente aparezca más de una vez en la misma simulación). Si después de 1000 repeticiones de Bootstrap el intervalo de confianza sigue siendo similar al que obtuviste [30.25, 41.19], la estimación obtenida es confiable.</p>
+<p>Bootstrap es una técnica de remuestreo con reemplazo. Crea miles de versiones de la muestra sistemática seleccionando clientes al azar de la misma (permitiendo que un cliente aparezca más de una vez en la misma simulación). Si después de 1000 repeticiones de Bootstrap el intervalo de confianza sigue siendo similar al que obtuviste [30.25, 41.19], la estimación obtenida es confiable.</p>
     
-<p>En este caso vemos que las estimaciones de ambos metodos son bastantes similares y tienen una lejania similar y considerable del valor real de la media de balance que es 1422.658</p>
+<p>En este caso vemos que las estimaciones de ambos métodos son bastante similares y tienen una lejanía similar y considerable del valor real de la media de balance, que es 1422.658.</p>
 
-    
+ 
+<h2>Problemas y sesgo de cobertura</h2>
 
+<p>El sesgo de cobertura ocurre cuando algunos elementos de la población objetivo no tienen posibilidad de ser seleccionados en la muestra. En los datos del banco, esto sucede si el marco muestral (la lista de clientes de la que extrajiste el sistema) no coincide perfectamente con la población real que queremos estudiar.</p>
 
-    <h2>Problemas y sesgo de cobertura</h2>
+<p>Sub-cobertura: Es el problema más frecuente. Sucede si hay grupos de clientes que no aparecen en la base de datos (por ejemplo, clientes con cuentas nuevas que aún no se han procesado o personas que operan solo en efectivo fuera del sistema). Si estos clientes tienen saldos muy diferentes, la estimación del promedio de balance estará sesgada.</p>
 
-<p>El sesgo de cobertura ocurre cuando algunos elementos de la población objetivo no tienen posibilidad de ser seleccionados en la muestra. En los datos del banco esto sucede si el marco muestral (la lista de clientes de la que extrajiste el sistema) no coincide perfectamente con la población real que queremos estudiar.</p>
+<p>Sobre-cobertura: Ocurre cuando el marco muestral incluye elementos que no deberían estar (clientes que cerraron su cuenta pero siguen en la lista o registros duplicados). En el muestreo sistemático, los duplicados son peligrosos porque aumentan artificialmente la probabilidad de seleccionar a ciertos individuos.</p>
 
-<p> Sub-cobertura: Es el problema más frecuente. Sucede si hay grupos de clientes que no aparecen en la base de datos (por ejemplo, clientes con cuentas nuevas que aún no se han procesado o personas que operan solo en efectivo fuera del sistema). Si estos clientes tienen saldos muy diferentes, la estimacion del promedio de balance estará sesgada.</p>
+<p>El muestreo sistemático es sensible a la ordenación del marco muestral; puede darse la periodicidad, que sucede cuando la lista tiene un patrón oculto que coincide con tu intervalo de selección $k$, y podríamos estar omitiendo sistemáticamente a un grupo específico (por ejemplo, si cada 10 clientes hay un "cliente VIP" y tu salto es de 10, o los seleccionas a todos o a ninguno). Si la lista está ordenada por saldo de menor a mayor, el sesgo de cobertura puede aparecer si el punto de inicio aleatorio deja fuera de balance a los extremos de la distribución.</p>
 
-<p> Sobre-cobertura: Ocurre cuando el marco muestral incluye elementos que no deberían estar (clientes que cerraron su cuenta pero siguen en la lista o registros duplicados). En el muestreo sistemático, los duplicados son peligrosos porque aumentan artificialmente la probabilidad de seleccionar a ciertos individuos.</p>
+<p>Si existe sesgo de cobertura, el impacto en la estimación del promedio de balance puede causar sobreestimación o subestimación.</p>
 
-<p> El muestreo sistemático es sensible a la ordenación del marco muestral, puede darse la Periodicidad que sucede cuando la lista tiene un patrón oculto que coincide con tu intervalo de selección $k$, y podríamos estar omitiendo sistemáticamente a un grupo específico (por ejemplo, si cada 10 clientes hay un "cliente VIP" y tu salto es de 10, o los seleccionas a todos o a ninguno). Si la lista está ordenada por saldo de menor a mayor, el sesgo de cobertura puede aparecer si el punto de inicio aleatorio deja fuera de balance a los extremos de la distribución.</p>
+<p>Tenemos problemas de subcobertura: hay error de exclusión. Al eliminar a los trabajadores de tipo blue-collar (operarios) y services (servicios) de la lista de forma sistemática, estamos ignorando a una parte masiva de la población bancaria. En general, estos dos grupos tienen saldos promedio más bajos o moderados; al quitarlos sistemáticamente por la lógica del diseño de ir saltando, el marco muestral queda compuesto mayoritariamente por gerentes, jubilados y profesionales con saldos más altos.</p>
 
-<p>Si existe sesgo de cobertura, el impacto en la estimación de el promedio de balance puede causar sobreestimacion o subestimacion</p>
+<p>El resultado es una sobreestimación sistemática: la media real (1422.66) es el promedio verdadero de todos los clientes, mientras que la media con subcobertura (1763.26) es lo que creemos que es el promedio basado en la lista incompleta. El sesgo es de 340.6; es un sesgo estructural, no importa cuántas veces repitamos la muestra o qué tan grande sea, siempre rondará los 1760 porque el error está en quién puede ser elegido y quién no.</p>
 
+<p>Los problemas asociados son que el banco creería que sus clientes tienen, en promedio, $340 más de lo que realmente tienen, o se podrían diseñar productos de inversión con mínimos de entrada demasiado altos, dejando fuera a los sectores de servicios y operarios que ni siquiera fueron consultados.</p>
 
-<p>Tenemos problemas de Subcobertura, hay error de exclusión. Al eliminar a los trabajadores de tipo blue-collar (operarios) y services (servicios) de la lista de forma sistematica, estamos ignorando a una parte masiva de la población bancaria. En general estos dos grupos tienen saldos promedio más bajos o moderados, al quitarlos sistematicamente por la logica del diseño de ir saltando, el marco muestral queda compuesto mayoritariamente por gerentes, jubilados y profesionales con saldos más altos.</p>
+<h2>Estimador asistido por modelos (GREG)</h2>
 
-
-<p>El resultado es una sobreestimación sistemática, la media Real (1422.66) es el promedio verdadero de todos los clientes, mientras que la media con Subcobertura (1763.26) es lo que creemos que es el promedio basados en la lista incompleta. El sesgo es de 340.6, es un sesgo estructural, no importa cuántas veces repitamos la muestra o qué tan grande sea la media siempre rondará los 1760 porque el error está en quién puede ser elegido y quién no.</p>
-
-<p>Los problemas asociados son que el banco creería que sus clientes tienen, en promedio, $340 más de lo que realmente tienen o se podrian diseñar productos de inversión con mínimos de entrada demasiado altos, dejando fuera a los sectores de servicios y operarios que ni siquiera fueron consultados.</p>
-         
-
-<h2>Estimador asististido por modelos (GREG)</h2>
-
-<p>En lugar de confiar solo en los datos de la muestra, este método utiliza una variable auxiliar (en tu caso, la edad) que está correlacionada con la variable de interés (balance). Este estimador GREG ajusta desbalances de las estimaciones originales, por eso se dice que asiste a la estimacion. La función calibrate modifica los pesos originales de la muestra para que, al sumarlos, coincidan exactamente con los totales conocidos de la población (número total de clientes y suma total de edades).</p>
+<p>En lugar de confiar solo en los datos de la muestra, este método utiliza una variable auxiliar (en tu caso, la edad) que está correlacionada con la variable de interés (balance). Este estimador GREG ajusta desbalances de las estimaciones originales, por eso se dice que asiste a la estimación. La función calibrate modifica los pesos originales de la muestra para que, al sumarlos, coincidan exactamente con los totales conocidos de la población (número total de clientes y suma total de edades).</p>
 
 <p>La media estimada con GREG es de 1470.4 con un error estándar (SE) de 114.8. Al comparar con el valor poblacional de 1422.66, este estimador sigue estando cerca, pero ahora tiene el respaldo de estar "calibrado" por la estructura de edad de todo el banco.</p>
 
-<p>En las tablas de resumen vemos como cambiaron los pesos, viendo valores como su minimo, media, mediana, cuartiles y su maximo.</p>
+<p>En las tablas de resumen vemos cómo cambiaron los pesos, viendo valores como su mínimo, media, mediana, cuartiles y su máximo.</p>
 
-<p>Los pesos Originales en el Diseño Sistemático se distribuian de tal forma que todos los clientes tenían exactamente el mismo peso (8.988). Esto significa que cada persona en la muestra representaba a casi 9 personas de la población de forma rígida.</p>
+<p>Los pesos originales en el diseño sistemático se distribuían de tal forma que todos los clientes tenían exactamente el mismo peso (8.988). Esto significa que cada persona en la muestra representaba a casi 9 personas de la población de forma rígida.</p>
 
-<p>Ahora los pesos calibrados por GREG varían entre 8.852 y 9.265. Le damos más de peso a los clientes cuyas edades estaban subrepresentadas y un poco menos a los que estaban sobrerepresentados y dado que la media de los pesos sigue siendo 8.988, no perdimos ni ganamos clientes totales, solo redistribuiste su importancia para que la muestra represente mejor la edad poblacional.</p>
+<p>Ahora los pesos calibrados por GREG varían entre 8.852 y 9.265. Se da más peso a los clientes cuyas edades estaban subrepresentadas y un poco menos a los que estaban sobrerepresentados, y dado que la media de los pesos sigue siendo 8.988, no perdimos ni ganamos clientes totales; solo redistribuimos su importancia para que la muestra represente mejor la edad poblacional.</p>
 
-<p>El uso de GREG reduce la varianza, si la edad y el saldo están relacionados, el SE es más confiable que el de un estimador sistematico sin usar GREG. Ademas como ya mencionamos corrige sesgos potenciales, si por azar el muestreo sistemático hubiera seleccionado a demasiada gente joven (que suele tener menos saldo), la calibración habría corregido automáticamente ese sesgo dándole más peso a los pocos mayores que entraron en la muestra.</p>
-
-
-
+<p>El uso de GREG reduce la varianza; si la edad y el saldo están relacionados, el SE es más confiable que el de un estimador sistemático sin usar GREG. Además, como ya mencionamos, corrige sesgos potenciales: si por azar el muestreo sistemático hubiera seleccionado a demasiada gente joven (que suele tener menos saldo), la calibración habría corregido automáticamente ese sesgo, dándole más peso a los pocos mayores que entraron en la muestra.</p>
 
 <h2>Estimador Basado en Modelos</h2>
 
-<p>Este es un enfoque donde ya no dependemos de los pesos del diseño muestral ($w_i$), sino que confiamos plenamente en que un modelo matemático planteado describe la estructura de toda la población. En este enfoque, el "estimador" es la suma de los valores observados en la muestra más los valores predichos para los individuos que no fueron seleccionados. Ademas la variabiliad o incertidumbre ya no vienen de "qué pasaría si elijo otra muestra", sino de "qué tan bien ajusta mi modelo matematico a los datos".</p>
+<p>Este es un enfoque donde ya no dependemos de los pesos del diseño muestral ($w_i$), sino que confiamos plenamente en que un modelo matemático planteado describe la estructura de toda la población. En este enfoque, el "estimador" es la suma de los valores observados en la muestra más los valores predichos para los individuos que no fueron seleccionados. Además, la variabilidad o incertidumbre ya no viene de "qué pasaría si elijo otra muestra", sino de "qué tan bien ajusta mi modelo matemático a los datos".</p>
 
-<p>El modelo matematico puede ser cualquiera de los algoritmos utilizados comunmente en Machine Learning, como regresion lineal, arboles de decision, redes neuronales. Cuanto mas complejo el algoritmo, mejor sera la estimacion, pero menos interpretable sera.</p>
+<p>El modelo matemático puede ser cualquiera de los algoritmos utilizados comúnmente en Machine Learning, como regresión lineal, árboles de decisión, redes neuronales. Cuanto más complejo el algoritmo, mejor será la estimación, pero menos interpretable será.</p>
  
-
-
-<p>En este caso usamos un modelo de regresión lineal simple sin basarnos en un diseño muestral. Cuando el modelo es "correcto" (la relación entre edad y saldo es la misma para todos), la estimacion es muy buena. En este caso vemos que la estimacion de la media utilizando modelos, en especifico un modelo de regresion lineal simple, fue de  1470.43, que se aleja del valor real considerablemente, esto puede deberse a que tenemos sesgo de selección o que el modelo simple de edad no logra capturar, o la relación edad-saldo porque es muy simplificador o porque esa relacion no es lineal para toda la población.</p>
-
+<p>En este caso usamos un modelo de regresión lineal simple, sin basarnos en un diseño muestral. Cuando el modelo es "correcto" (la relación entre edad y saldo es la misma para todos), la estimación es muy buena. En este caso, vemos que la estimación de la media utilizando modelos, en específico un modelo de regresión lineal simple, fue de 1470.43, que se aleja del valor real considerablemente. Esto puede deberse a que tenemos sesgo de selección o que el modelo simple de edad no logra capturar la relación edad-saldo, porque es muy simplificador o porque esa relación no es lineal para toda la población.</p>
 
          
 <p>Visualmente:</p>
@@ -448,34 +399,29 @@
 <img src="../images/Imagen141.png" alt="Título" class="img-proyecto" width="450">
             
 
-<p>Vemos que el ajuste de la recta a los puntos no es muy bueno y que la relacion no parece ser muy lineal, esto es una de las causas de que la estimacion no sea muy precisa.</p>
+<p>Vemos que el ajuste de la recta a los puntos no es muy bueno y que la relación no parece ser muy lineal, esto es una de las causas de que la estimación no sea muy precisa.</p>
 
 
 
+<h2>Post-estratificación</h2>
 
-<h2>Post-estratificacion</h2>
+<p>La post-estratificación es una técnica de ajuste que se usa después de haber recolectado los datos para corregir posibles desbalances entre la muestra y la población real. En la post-estratificación, ajustas los pesos de los individuos para que la distribución de una variable (en este caso, el estado civil o marital) coincida exactamente con lo que el banco sabe que tiene en su base de datos total.</p>
 
+<p>Comparamos el diseño sistemático original (res_antes) frente al diseño ajustado por estado civil (res_despues) para la estimación del balance.</p>
 
-<p>La Post-estratificación es una técnica de ajuste que se usa  después de haber recolectado los datos para corregir posibles desbalances entre la muestra y la población real. En la post-estratificación ajustas los pesos de los individuos para que la distribución de una variable (en este caso, el estado civil o marital) coincida exactamente con lo que el banco sabe que tiene en su base de datos total.</p>
+<p>La media subió ligeramente unas 3.4 unidades, de 1467.7 a 1471.1. Esto indica que en la muestra sistemática original, los grupos de estado civil que suelen tener un balance más alto (posiblemente los "casados" o "divorciados") estaban levemente subrepresentados. El proceso de post-estratificación les dio más "peso" a esos individuos para reflejar mejor el balance real de los usuarios del banco, lo que subió el promedio estimado.</p>
 
-<p>Comparamos el diseño sistemático original (res_antes) frente al diseño ajustado por estado civil (res_despues) para la estimacion del balance</p>
+<p>El error estándar aumentó 0.39, de 115.56 a 115.95. La post-estratificación reduce el error si la variable (estado civil) explica bien el comportamiento del saldo. Vemos que el aumento casi imperceptible sugiere que el estado civil no es un predictor muy fuerte del saldo, o que la muestra sistemática ya era bastante buena y representativa en términos de esta variable.</p>
 
-
-<p>La media subió ligeramente unas 3.4 unidades de 1467.7 a 1471.1. Esto indica que en la muestra sistemática original, los grupos de estado civil que suelen tener un balance más alto (posiblemente los "casados" o "divorciados") estaban levemente sub-representados. El proceso de post-estratificación les dio más "peso" a esos individuos para reflejar mejor el balance real de los usuarios del banco, lo que subio el promedio estimado.</p>
-
-<p>El error estándar aumentó 0.39, de 115.56 a 115.95, la post-estratificación reduce el error si la variable (estado civil) explica bien el comportamiento del saldo. Vemos que el aumento casi imperceptible sugiere que el estado civil no es un predictor muy  fuerte del saldo, o que la muestra sistemática ya era bastante buena y representativa en términos de esta variable.</p>
-
-<p>De todas formas la Post-estratificación brinda corrección de sesgo de cobertura, si por azar el muestreo sistemático hubiera saltado a muchos "solteros" (que tienen menos ahorros), la post-estratificación corrige ese error.</p>
-
-
+<p>De todas formas, la post-estratificación brinda corrección de sesgo de cobertura; si por azar el muestreo sistemático hubiera saltado a muchos "solteros" (que tienen menos ahorros), la post-estratificación corrige ese error.</p>
 
 <h2>Raking</h2>
 
-<p>Anteriormente usamos solo el estado civil y no fue muy significativo, pero podemos cruzarlo con la educacion para ver si hay significatividad. Para esto usaremos una tecnica llamada Raking.</p>
+<p>Anteriormente usamos solo el estado civil y no fue muy significativo, pero podemos cruzarlo con la educación para ver si hay significatividad. Para esto usaremos una técnica llamada Raking.</p>
 
-<p>El Raking (también conocido como Iterative Proportional Fitting o Ajuste Proporcional Iterativo) es una técnica de calibración que se usa cuando se necesita que la muestra sea representativa en varias dimensiones al mismo tiempo, pero no conoces el cruce total de la población. Raking solo requiere conocer los totales marginales (ej. cuántos casados hay por un lado, y cuánta gente con educación secundaria hay por otro). El algoritmo ajusta los pesos de forma iterativa hasta que la muestra coincide con todos los totales poblacionales que usamos.</p>
+<p>El Raking (también conocido como Iterative Proportional Fitting o Ajuste Proporcional Iterativo) es una técnica de calibración que se usa cuando se necesita que la muestra sea representativa en varias dimensiones al mismo tiempo, pero no conoces el cruce total de la población. Raking solo requiere conocer los totales marginales (por ejemplo, cuántos casados hay por un lado y cuánta gente con educación secundaria hay por otro). El algoritmo ajusta los pesos de forma iterativa hasta que la muestra coincide con todos los totales poblacionales que usamos.</p>
 
-<p>El algoritmo de Raking está realizando un proceso iterativo:</p>
+<p>El algoritmo de Raking realiza un proceso iterativo:</p>
 
 <p>Paso 1: Ajusta los pesos para que la distribución de marital en la muestra coincida con la del banco. Al hacer esto, la distribución de education se desajusta un poco.</p>
 
@@ -483,59 +429,48 @@
 
 <p>Repetición: Repite estos pasos una y otra vez hasta que, por fin, ambas dimensiones coinciden perfectamente con los totales poblacionales.</p>
 
-<p>La estimación ha subido respecto a los modelos anteriores. Al forzar a la muestra a representar correctamente tanto el estado civil como el nivel educativo simultáneamente, el modelo detectó que los grupos con saldos más altos (por ejemplo, personas casadas con educación universitaria) estaban ligeramente sub-representados en tu muestra sistemática inicial. El ajuste por Raking infló el peso de esos perfiles específicos para que coincidan con la realidad del banco, lo que elevó el promedio global a 1478, aunque la estimacion se alejo mas de la media poblacional, esto puede ser porque no estamos considerando otra variable que seria relevante para el Raking.</p>
+<p>La estimación ha subido respecto a los modelos anteriores. Al forzar a la muestra a representar correctamente tanto el estado civil como el nivel educativo simultáneamente, el modelo detectó que los grupos con saldos más altos (por ejemplo, personas casadas con educación universitaria) estaban ligeramente subrepresentados en tu muestra sistemática inicial. El ajuste por Raking infló el peso de esos perfiles específicos para que coincidieran con la realidad del banco, lo que elevó el promedio global a 1478. Aunque la estimación se alejó más de la media poblacional, esto puede ser porque no estamos considerando otra variable que sería relevante para el Raking.</p>
 
-<p>El Error Estándar (SE) bajó un poco en comparación con la post-estratificación simple. Al usar dos variables auxiliares (marital + education), el modelo tiene más información para explicar la variabilidad del saldo, ganamos mas precision (menos varianza).</p>
-         
+<p>El error estándar (SE) bajó un poco en comparación con la post-estratificación simple. Al usar dos variables auxiliares (marital + education), el modelo tiene más información para explicar la variabilidad del saldo, ganando más precisión (menos varianza).</p>
 
-         
 <h2>Trimming</h2>
 
-<p>Cuando aplicamos Raking, el algoritmo estiró los pesos para que la muestra encajara con la población. Esto a veces crea pesos inflados (individuos que representan a demasiada gente). El problema de los pesos altos es que un cliente tiene un peso muy alto y un saldo inusual, afectando a la media y sube el error estándar.</p>
+<p>Cuando aplicamos Raking, el algoritmo estiró los pesos para que la muestra encajara con la población. Esto a veces crea pesos inflados (individuos que representan a demasiada gente). El problema de los pesos altos es que un cliente tiene un peso muy alto y un saldo inusual, afectando la media y aumentando el error estándar.</p>
 
-<p>El Trimming recorta los pesos poniendo un limite superior (upper) y un limite inferior (lower) a los pesos. En nuestro caso, ningún peso puede ser mayor a 5 ni menor a 15</p>
+<p>El Trimming recorta los pesos poniendo un límite superior (upper) y un límite inferior (lower) a los pesos. En nuestro caso, ningún peso puede ser mayor a 15 ni menor a 5.</p>
 
-<p>Obtuvimos una estimacion de la media con un error estandar asociado igual que antes, esto indica que los pesos asociados al diseño sistematica estaban bien calibrados y no fue necesario recortarlos. El diseño no requiere un recorte de pesos (Trimming) porque el factor de expansión se mantiene en un rango estrecho de 8.05 a 10.03. Esto indica que el Muestreo Sistemático inicial logró una cobertura equilibrada de las categorías de estado civil y educación. Ahora que la estimación (1478) este lejos de la real (1422), no es por los pesos, sino que la edad, la educación y el estado civil no explican el 100% del saldo. Hay clientes con saldos muy bajos por razones que no están en esas variables.</p>
+<p>Obtuvimos una estimación de la media con un error estándar asociado igual que antes. Esto indica que los pesos asociados al diseño sistemático estaban bien calibrados y no fue necesario recortarlos. El diseño no requiere un recorte de pesos (Trimming) porque el factor de expansión se mantiene en un rango estrecho de 8.05 a 10.03. Esto indica que el muestreo sistemático inicial logró una cobertura equilibrada de las categorías de estado civil y educación. Ahora que la estimación (1478) esté lejos de la real (1422), no es por los pesos, sino porque la edad, la educación y el estado civil no explican el 100% del saldo. Hay clientes con saldos muy bajos por razones que no están en esas variables.</p>
 
+<h2>No Respuesta</h2>
 
+<p>La no respuesta ocurre cuando algunos de los clientes seleccionados en tu muestreo sistemático no proporcionan información (por ejemplo, datos de saldo faltantes o clientes que no pudieron ser contactados). En un muestreo sistemático, si la no respuesta no es aleatoria (por ejemplo, si los clientes con saldos muy altos se niegan a responder más que los de saldos bajos), la estimación del promedio será sesgada.</p>
 
-<h2>No Respuesta:</h2>
-
-<p>La No Respuesta ocurre cuando algunos de los clientes seleccionados en tu muestreo sistemático no proporcionan información (por ejemplo, datos de saldo faltantes o clientes que no pudieron ser contactados). En un muestreo sistemático, si la no respuesta no es aleatoria (por ejemplo, si los clientes con saldos muy altos se niegan a responder más que los de saldos bajos), la estimacion del promedio sera sesgada.</p>
-
-<p>En este caso los tipos de No Respuesta son:</p> 
+<p>En este caso, los tipos de no respuesta son:</p> 
 
 <p>No respuesta de ítem: El cliente existe en la base, pero el campo balance está vacío.</p>
 
-<p>No respuesta de unidad: El cliente seleccionado por el salto $k$ no está disponible o su registro es totalmente ilegible</p>
+<p>No respuesta de unidad: El cliente seleccionado por el salto $k$ no está disponible o su registro es totalmente ilegible.</p>
 
+<p>La técnica estándar es el ajuste por propensión de respuesta. Consiste en calcular la probabilidad de que un cliente responda basándose en sus características (edad, trabajo, etc.) y luego inflar el peso de los que sí respondieron para compensar a los que "se perdieron".</p>
 
-<p>La técnica estándar es el Ajuste por Propensión de Respuesta. Consiste en calcular la probabilidad de que un cliente responda basándose en sus características (edad, trabajo, etc.) y luego inflar el peso de los que sí respondieron para compensar a los que "se perdieron".</p>
+<p>La estimación de la media no cambió tras ajustar por no respuesta, lo que significa que no hay sesgo de no respuesta en las variables usadas para ajustar, que en nuestro caso fue por ocupación del usuario del banco. Los clientes que no respondieron en cada categoría de trabajo tienen, en promedio, el mismo saldo que los que sí respondieron. Esto se llama MCAR (Missing Completely at Random) y es una buena característica.</p>
 
+<p>Aunque el error estándar subió, pasando de 115.56 a 122.58, esto se debe a que al ajustar por no respuesta, los pesos dejan de ser todos iguales (8.988). Ahora algunos clientes pesan más para compensar a los que faltan, lo que causa mayor variabilidad; al tener pesos desiguales siempre aumenta la varianza de la estimación.</p>
 
-<p>La estimacion de la media no cambio tras ajustar por no respuesta, lo que significa que no hay sesgo de no respuesta en las variables usadas  para ajustar por no respuesta, que en nuestro caso fue por ocupacion del usuario del banco. Los clientes que no respondieron en cada categoría de trabajo tienen, en promedio, el mismo saldo que los que sí respondieron, esto se llama MCAR (Missing Completely at Random) y es una buena caracteristica.</p>
+<h2>Muestras no probabilísticas</h2>
 
-<p>Aunque el error estandar subio pasando de 115.56 a 122.58, debido a que al ajustar por no respuesta, los pesos dejan de ser todos iguales (8.98). Ahora algunos clientes pesan más para compensar a los que faltan, esto causam ayor variabilidad, al tener pesos desiguales siempre aumenta la varianza de la estimación.</p>
+<p>Las muestras no probabilísticas son aquellas en las que la selección de los elementos no depende del azar, sino de decisiones de conveniencia o de criterios específicos. A diferencia del muestreo sistemático, aquí no todos los individuos de la población bancaria tienen una probabilidad conocida (y distinta de cero) de ser elegidos.</p>
 
-         
+<p>La selección suele basarse en la accesibilidad. Por ejemplo, si decides encuestar solo a los clientes que están físicamente en el banco en ese momento, estás excluyendo a todos los que operan por banca digital. Además, no se puede medir el error de muestreo; en las muestras no probabilísticas, como no hay una base probabilística detrás, el cálculo del error estándar no tiene validez. Aunque este tipo de muestras no probabilísticas son más baratas y rápidas, se usan cuando no existe un marco muestral.</p>
 
+<p>La conveniencia que usamos en este caso fue seleccionar a usuarios del banco que fueran de profesión técnicos y tuvieran menos de 35 años.</p>
 
-         
-<h2>Muestras no probabilisticas</h2>
+<p>En primera instancia, la media sin ajuste (1244.48) tiene una desviación significativa respecto al valor poblacional del promedio del balance de los usuarios del banco (1422.66). Este valor subestimado es el resultado directo de un diseño por conveniencia; al haber seleccionado perfiles específicos, la muestra no captura la diversidad de saldos de la población total. En este escenario, la media no es un reflejo de la realidad financiera, sino un reflejo del segmento particular de técnicos menores de 35 años que tuvo mayor facilidad de acceso o disposición para participar.</p>
 
-<p>Las muestras no probabilísticas son aquellas en las que la selección de los elementos no depende del azar, sino de las decisiones de nosotros, de la conveniencia o de criterios específicos. A diferencia del muestreo sistemático, aquí no todos los individuos de la población bancaria tienen una probabilidad conocida (y distinta de cero) de ser elegidos.</p>
-
-<p>La selección suele basarse en la accesibilidad. Por ejemplo, si decides encuestar solo a los clientes que están físicamente en el banco en ese momento, estás excluyendo a todos los que operan por banca digital. Ademas no se puede medir el error de muestreo, en las muestras no probabilísticas, como no hay una base probabilística detrás, el calculo del error estandar no tiene validez. Aunque este tipo de muestras no probabilisticas son más baratas y rápidas y se usan cuando no existe un marco muestral.</p>
-
-<p>La conveniencia que usamos en este caso fue seleccionar a usuariosd del banco que fueran de profesion tecnicos y tuvieran menos de 35 años.</p>
-
-
-<p>En primera instancia, la Media Sin Ajuste (1244.48) tiene una desviación significativa respecto al valor poblacional del promedio del balance de los usuarios del banco (1422.66). Este valor subestimado es el resultado directo de un diseño por conveniencia, al haber seleccionado perfiles específicos, la muestra no captura la diversidad de saldos de la población total. En este escenario, la media no es un reflejo de la realidad financiera, sino un reflejo del segmento particular de tecnicos menores de 35 años que tuvo mayor facilidad de acceso o disposición para participar.<p>
-
-<p>Al aplicar técnicas de calibración, la Media Con Ajuste (1360.62) muestra una corrección importante hacia el alza. El algoritmo de Raking detectó que los grupos con saldos tradicionalmente más altos estaban subrepresentados y "reponderó" sus valores para intentar equilibrar la balanza demográfica. Pero aunque la media se acerca más al valor real, la corrección de una muestra genero una alta variabilidad (error estándar alto), lo que significa que, aunque el número parezca más exacto, la confianza estadística sigue siendo inferior a la de un muestreo probabilístico.</p>
+<p>Al aplicar técnicas de calibración, la media con ajuste (1360.62) muestra una corrección importante hacia el alza. El algoritmo de Raking detectó que los grupos con saldos tradicionalmente más altos estaban subrepresentados y "reponderó" sus valores para intentar equilibrar la balanza demográfica. Pero aunque la media se acerca más al valor real, la corrección de una muestra generó una alta variabilidad (error estándar alto), lo que significa que, aunque el número parezca más exacto, la confianza estadística sigue siendo inferior a la de un muestreo probabilístico.</p>
 
 <p>Aunque el ajuste matemático puede bajar el sesgo, no puede sustituir la calidad de un buen diseño de muestreo. La diferencia persistente entre los 1360 obtenidos y los 1422 reales sugiere que existen características de los clientes que el ajuste no logra capturar cuando la base de datos no fue seleccionada al azar.</p>
-         
+
          
         </section>
 
