@@ -3,7 +3,7 @@
  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Series Cronologicas</title>
+    <title>Series Cronológicas</title>
     <link rel="stylesheet" href="../style.css">
     
     <script type="text/javascript" async
@@ -31,15 +31,12 @@
                 width="850"
             >
      
-        <h2>Metodologia</h2>
+        <h2>Metodología</h2>
 
-<p>PreProcesamiento de Datos: Los datos que tenemos los obtuvimos de la p´agina del Banco Central Del Uruguay. Los datos van desde Enero de 2016
-hasta Marzo de 2025 y son mensuales, mostrando el valor del IMAE para el primer d´ıa de cada mes. No hay valores nulos en nuestros datos. Convertimos los datos a tipo ts (time series) para poder operar mejor con ellos en el R.<p>
+<p>Pre Procesamiento de Datos: Los datos que tenemos los obtuvimos de la página del Banco Central Del Uruguay. Los datos van desde Enero de 2016
+hasta Marzo de 2025 y son mensuales, mostrando el valor del IMAE para el primer día de cada mes. No hay valores nulos en nuestros datos. Convertimos los datos a tipo ts (time series) para poder operar mejor con ellos en el R.<p>
 
-<p>Medidas de Resumen de la serie: El m´ınimo valor que toma la serie es 85.03 y se alcanza en Abril de 2020, el m´aximo valor que toma la serie es 116.73
-y se alcanza en octubre de 2024. El primer cuartil vale 99.10, el tercero vale 107.21 y la mediana vale 102.36. La media vale 102.76. La varianza es 34.71 y
-el desv´ıo est´andar 5.89. El rango intercuart´ılico vale 8.10</p>
-     
+<p>Medidas de Resumen de la serie: El mínimo valor que toma la serie es 85.03 y se alcanza en Abril de 2020, el máximo valor que toma la serie es 116.73 y se alcanza en octubre de 2024. El primer cuartil vale 99.10, el tercero vale 107.21 y la mediana vale 102.36. La media vale 102.76. La varianza es 34.71 y el desvío estándar 5.89. El rango intercuartílico vale 8.10</p>
 
         <h3>Logaritmo</h3>
 
@@ -80,8 +77,8 @@ el desv´ıo est´andar 5.89. El rango intercuart´ılico vale 8.10</p>
 
 
      
-<p>Otro test de tendencia que hice fue el an´alisis del espectro que nos sirve para detectar tendencia, la cual se da cuando la frecuencia cero explica gran parte de la varianza (´area debajo del espectro), que es lo que ocurre en nuestra
-serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro para la serie diferenciada regularmente (imagen derecha), vemos que la frecuencia cero explica muy poco la varianza, lo que es un indicador de que filtramos la tendencia.</p>
+<p>Otro test de tendencia que hice fue el análisis del espectro que nos sirve para detectar tendencia, la cual se da cuando la frecuencia cero explica gran parte de la varianza (área debajo del espectro), que es lo que ocurre en nuestra
+serie original (imagen izquierda). Cuando hacemos el análisis del espectro para la serie diferenciada regularmente (imagen derecha), vemos que la frecuencia cero explica muy poco la varianza, lo que es un indicador de que filtramos la tendencia.</p>
 
             <img 
                 src="../images/Imagen79.png"
@@ -126,18 +123,18 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
 
      
      
-        <h2>Eleccion de Modelo Posible</h2>
+        <h2>Elección de Modelo Posible</h2>
 
 <p>A partir de la FAC y FACP de la serie (con diferencia regular y estacional), se propuso inicialmente un modelo SARIMA(0,1,2)(0,1,1). La parte regular se justificó por la presencia de dos rezagos significativos en la FAC (q = 2), ausencia de rezagos AR (p = 0) y una diferencia regular (d = 1). En la parte estacional, la significancia del rezago 12 indicó un MA estacional de orden 1 (Q = 1), sin evidencia de AR estacional (P = 0), y se aplicó una diferencia estacional (D = 1).</p>  
 <p>Al estimar el modelo, se observó que al usar la serie logaritmizada los coeficientes no resultaban significativos, mientras que con la serie original sí lo eran, por lo que se decidió descartar el logaritmo. En el modelo final, los coeficientes ma1, ma2 y sma1 resultaron significativos.</p>  
-<p>En el análisis de residuos se cumplieron los supuestos de incorrelación y homocedasticidad, pero no el de normalidad. Para corregirlo, se ajustó el modelo considerando valores atípicos, detectados mediante la función tso del paquete tsoutliers, incorporando estos efectos como regresores externos y reestimando el modelo SARIMA.</p>     
+<p>En el análisis de residuos se cumplieron los supuestos de incorrelación y homoscedasticidad, pero no el de normalidad. Para corregirlo, se ajustó el modelo considerando valores atípicos, detectados mediante la función tso del paquete tsoutliers, incorporando estos efectos como regresores externos y reestimando el modelo SARIMA.</p>     
 
      
-        <h3>Diagnostico y Re-Diagnostico:</h3>
-<p>Vamos a mostrar el diagn´ostico de los residuos que hicimos para el modelo original y el re-diagn´ostico que hicimos para el modelo ajustado por los outliers, para ver que mejoro</p>
+        <h3>Diagnóstico  y Re-Diagnóstico:</h3>
+<p>Vamos a mostrar el diagnóstico de los residuos que hicimos para el modelo original y el re-diagnóstico que hicimos para el modelo ajustado por los outliers, para ver que mejoro</p>
 
     
-        <h3>Incorrelacion de los residuos:</h3>
+        <h3>Incorrelación de los residuos:</h3>
 
     <p>Para el modelo seleccionado y el modelo ajustado por outliers, se analizaron la FAC y la FACP de los residuos, observándose que los rezagos se mantienen dentro de los intervalos de confianza, lo que indica incorrelación. Aunque en el modelo ajustado apareció un rezago aislado (rezago 3) aparentemente significativo, no se consideró relevante al confirmarse la incorrelación mediante pruebas formales.</p>
     <p>Posteriormente, el test de Ljung-Box arrojó p-valores mayores a 0.05 en ambos modelos, por lo que no se rechazó la hipótesis nula, concluyéndose que los residuos son incorrelacionados.</p> 
@@ -163,7 +160,7 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
                 width="850"
             >
 
-       <h3>Homoscedasticidad de los residuo</h3>
+       <h3>Homoscedasticidad de los residuos</h3>
  
 <p>Se verificó la homoscedasticidad de los residuos calculando los residuos al cuadrado y aplicando el test de Ljung-Box, contrastando: Ho) residuos homoscedásticos vs H1) heteroscedásticos.</p>
 <p>Para el modelo seleccionado, p = 0.6093, y para el modelo ajustado por outliers, p = 0.7384; en ambos casos no se rechazó Ho, indicando varianza constante.</p>
@@ -191,7 +188,7 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
             >
 
  
-      <h2>Prediccion</h2>
+      <h2>Predicción</h2>
 
 <p>Se realizó una predicción a 10 meses del IMAE, desde marzo de 2025 hasta enero de 2026. Para esto, se definió un horizonte de predicción de 10 meses y se generó la matriz newxreg1 con los efectos de los outliers futuros, detectados previamente con tso. Esta matriz incluye los valores esperados de los outliers para los periodos de predicción (t+1 hasta t+h) y se utilizó como variable explicativa en la función forecast del modelo ajustado por outliers para obtener las predicciones futuras.</p>
 
@@ -203,12 +200,11 @@ serie original (imagen izquierda). Cuando hacemos el an´alisis del espectro par
             >
 
  
- <p>Para obtener la tasa de crecimiento interanual para los valores de 2025, seguimos usando los valores predichos para 2025 y los compararemos con su correspondiente valor de 2024 a traves de la siguiente formula:</p>
+ <p>Para obtener la tasa de crecimiento interanual para los valores de 2025, seguimos usando los valores predichos para 2025 y los compararemos con su correspondiente valor de 2024 a través de la siguiente fórmula:</p>
 
 <p>Tasa de crecimiento interanual: \( \left(\frac{V_t}{V_{t-12}} - 1 \right)*100  \)   </p>
 
-<p>Fuimos alicando esa formula para los valores predichos que van desde abril de 2025 hasta diciembre de 2026 con los valores
-reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre de 2025.</p>
+<p>Fuimos aplicando esa fórmula para los valores predichos que van desde abril de 2025 hasta diciembre de 2026 con los valores reales ocurridos en ese mismo periodo, pero desde Abril de 2024 hasta Diciembre de 2025.</p>
 
                   <img 
                 src="../images/Imagen88.png"
@@ -217,16 +213,16 @@ reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre d
                 width="850"
             >
  
-<p>Luego para Tasa promedio anual de crecimiento IMAE 2025 respecto a 2024 la formula es</p>
+<p>Luego para Tasa promedio anual de crecimiento IMAE 2025 respecto a 2024 la fórmula es</p>
 
 <p>Tasa de crecimiento anual promedio: \( \left(\frac{\bar{V_{2025}}}{\bar{V_{2024}}} - 1 \right)*100  \)   </p>
 
-<p>y al aplicar obtenemos el valor de 0.64%. El crecimiento del IMAE para 2025 sera de 0.64%.</p>
+<p>y al aplicar obtenemos el valor de 0.64%. El crecimiento del IMAE para 2025 será de 0.64%.</p>
 
 
 
  
-      <h3>Validacion de las Predicciones:</h3>
+      <h3>Validación de las Predicciones:</h3>
  
 <p>Se dividió la serie del IMAE en conjunto de entrenamiento (train) y conjunto de prueba (test). Se usaron 99 observaciones (01/01/2016 a 01/03/2024) para entrenar el modelo y 12 observaciones (01/03/2024 a 01/03/2025) para evaluar su rendimiento dentro de la muestra.</p>
 <p>La predicción dentro de la muestra mostró resultados similares a los valores reales, con pequeñas variaciones. La mayoría de los valores observados se mantuvo dentro de la banda de confianza, aunque al inicio el modelo tuvo un peor desempeño, bordeando la banda de confianza.</p>
@@ -247,7 +243,7 @@ reales ocurridos en ese mismo periodo pero desde abril de 2024 hasta diciembre d
             >
 
  
-<p>O podemos evaluar la calidad de la prediccion con distintas metricas:</p>
+<p>O podemos evaluar la calidad de la predicción con distintas métricas:</p>
  <ul>
     <li><strong>ME:</strong> Error medio, casi sin sesgo, aunque ligeramente sobreestima.</li>
     <li><strong>RMSE:</strong> Raíz del error cuadrático medio, indica mayor precisión en test.</li>
