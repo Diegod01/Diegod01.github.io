@@ -12,12 +12,12 @@
  </head>
   <body>
     <section>
-        <p>Proyecto para el curso de Modelos Lineales de la Licenciatura en Estadistica</p>
+        <p>Proyecto para el curso de Modelos Lineales de la Licenciatura en Estadística</p>
         <h2>Introducción</h2>
     
      
-        <p>En el presente trabajo se analizará un conjunto de datos de economicos, correspondientes a 159 empresas. Para cada ejemplar se registraron medidas como ventas en distintos trimestres, costes, margen, ingresos, tipo de empresa. Estas mediciones conforman un total de siete variables.</p>
-        <p>El objetivo principal del análisis es explicar y predecir los ingresos de la empresas en función de sus ventas, mediante la construcción de un modelo de regresión lineal. Para ello, se convertirá la variable "Ingresos" a formato numérico y se aplicará un enfoque sistemático que incluirá análisis exploratorio, selección de variables, evaluación del ajuste del modelo, diagnóstico de supuestos y valoración del rendimiento predictivo.</p>
+        <p>En el presente trabajo se analizará un conjunto de datos económicos, correspondientes a 159 empresas. Para cada ejemplar se registraron medidas como ventas en distintos trimestres, costes, margen, ingresos, tipo de empresa. Estas mediciones conforman un total de siete variables.</p>
+        <p>El objetivo principal del análisis es explicar y predecir los ingresos de la empresa en función de sus ventas, mediante la construcción de un modelo de regresión lineal. Para ello, se convertirá la variable "Ingresos" a formato numérico y se aplicará un enfoque sistemático que incluirá análisis exploratorio, selección de variables, evaluación del ajuste del modelo, diagnóstico de supuestos y valoración del rendimiento predictivo.</p>
 
         <p>Este estudio busca responder preguntas relevantes como:</p>
      
@@ -31,17 +31,17 @@
      <p>Con ello, se plantean las siguientes hipótesis:</p>
 
      <p>Hipótesis 1)</p>
-      <p>-   Ho) No existe relación lineal significativa entre las caracteristicas de la empresa y sus ingresos.</p>
+      <p>-   Ho) No existe relación lineal significativa entre las características de la empresa y sus ingresos.</p>
       <p>-   H1) Al menos una dimensión se relaciona significativamente con el ingreso</p>
 
      <p>Hipótesis 2)</p>
-     <p>-   Ho) Todas las caracteristicas tienen coeficientes iguales a cero en el modelo.</p>
+     <p>-   Ho) Todas las características tienen coeficientes iguales a cero en el modelo.</p>
      <p>-   H1) Al menos una variable predictora tiene un efecto distinto de cero.</p>
 
      
 <p>Hipótesis 3)</p>
-     <p>-   Ho) Las caracteristicas de la empresa afectan al ingreso de igual forma en todos los tipos de empresas.</p>
-     <p>-   H1) El efecto de las caracteristicas sobre el ingreso varía según el tipo de empresa.</p>
+     <p>-   Ho) Las características de la empresa afectan al ingreso de igual forma en todos los tipos de empresas.</p>
+     <p>-   H1) El efecto de las características sobre el ingreso varía según el tipo de empresa.</p>
      <p>Finalmente, se busca obtener un modelo de regresión lineal significativo y útil para la predicción del ingreso, identificar las variables más influyentes, y presentar los hallazgos mediante visualizaciones e interpretaciones claras y fundamentadas.</p>
 
 
@@ -50,7 +50,7 @@
 
       <h2>Datos</h2>
      <p>El conjunto de datos analizado consta de 159 observaciones. Cada registro incluye siete variables, de las cuales seis son numéricas y una categórica. La variable Segmento identifica el tipo de empresa al que pertenece cada observación y corresponde. La variable Ingresos es la de interés y es cuantitativa.</p>
-     <p>Las variables Ventas_Q1, Ventas_Q2 y Ventas_Q3 recogen tres mediciones trimestrales, mientras que Costes y Margen son representan los gastos de la empresa y el rendimiento de la empresa a traves del margen En conjunto, estas variables permiten analizar la relación entre las caracteristicas de la empresa y el nivel de ingresos, constituyendo la base del análisis estadístico desarrollado en este trabajo.</p>
+     <p>Las variables Ventas_Q1, Ventas_Q2 y Ventas_Q3 recogen tres mediciones trimestrales, mientras que Costes y Margen son representan los gastos de la empresa y el rendimiento de la empresa a través del margen. En conjunto, estas variables permiten analizar la relación entre las características de la empresa y el nivel de ingresos, constituyendo la base del análisis estadístico desarrollado en este trabajo.</p>
      <p>En la Tabla 1 se presentan los nombres, tipos y descripciones de las variables incluidas en la base de datos.</p>
             <img 
                 src="../images/Imagen52.png"
@@ -172,7 +172,7 @@ Ingresos_i =\;& \beta_0
 
 
       <p>Esta visualización se complementó con un gráfico de puntos individuales (Figura 3), el cual permitió identificar la presencia de observaciones con valores de Ingresos sospechosamente cercanos a cero, así como un caso con ingresos exactamente iguales a cero dentro del segmento Particular. Dado que un valor nulo de ingresos resulta conceptualmente inconsistente en este contexto, se consideró que dichas observaciones corresponden probablemente a errores de registro. En consecuencia, se procedió a filtrar la base de datos, eliminando todos los casos con Ingresos menores o iguales a cero.</p>
-      <p>Asimismo, el gráfico de la Figura 3 pone de manifiesto diferencias notables en la dispersión de los ingresos entre segmentos. Mientras que en segmentos como Premium o Multinacional los puntos aparecen ampliamente dispersos, en otros como Pública y Start-up se observa una mayor concentración de valores. Este patrón sugiere la posible presencia de heterocedasticidad, ya que la variabilidad de los ingresos parece diferir entre los distintos segmentos.</p>
+      <p>Asimismo, el gráfico de la Figura 3 pone de manifiesto diferencias notables en la dispersión de los ingresos entre segmentos. Mientras que en segmentos como Premium o Multinacional los puntos aparecen ampliamente dispersos, en otros como Pública y Start-up se observa una mayor concentración de valores. Este patrón sugiere la posible presencia de heteroscedasticidad, ya que la variabilidad de los ingresos parece diferir entre los distintos segmentos.</p>
 
                   <img 
                 src="../images/Imagen54.png"
@@ -205,15 +205,15 @@ Ingresos_i =\;& \beta_0
 
 
 
-     <p>Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemasde colinealidad. El VIF de Costes resultó mayor a 5, lo que refuerza la decisión de eliminarladel modelo. A continuación, se ajustó un nuevo modelo excluyendo esta variable, y se volvióa examinar la significancia de Margen, que seguía presentando un p-valor superior a 0.05.Por esta razón, también se eliminó Margen, obteniendo un modelo más simple que incluyeúnicamente Ventas_Q1 y Segmento como predictores.El VIF (Variance Inflation Factor) es una medida utilizada en modelos lineales para detectarcolinealidad entre las variables explicativas. Su interpretación es la siguiente:
+     <p>Se evaluó además el factor de inflación de la varianza (VIF) para identificar posibles problemas de colinealidad. El VIF de Costes resultó mayor a 5, lo que refuerza la decisión de eliminarla del modelo. A continuación, se ajustó un nuevo modelo excluyendo esta variable, y se volvió a examinar la significancia de Margen, que seguía presentando un p-valor superior a 0.05. Por esta razón, también se eliminó Margen, obteniendo un modelo más simple que incluye únicamente Ventas_Q1 y Segmento como predictores. El VIF (Variance Inflation Factor) es una medida utilizada en modelos lineales para detectar colinealidad entre las variables explicativas. Su interpretación es la siguiente:
       
-      <p>- VIF = 1 → no hay colinealidad1</p>  
+      <p>- VIF = 1 → no hay colinealidad</p>  
 
-      <p>- 1 < VIF < 5   → colinealidad moderada </p>
+      <p>- 1 &lt; VIF &lt; 5 → colinealidad moderada</p>
          
       <p>VIF > 5 → colinealidad alta.</p> 
        
-    </p>En modelos lineales, se recomienda eliminar variables con VIF > 5 para mejorar la estabilidadde los coeficientes estimados</p>
+    </p>En modelos lineales, se recomienda eliminar variables con VIF > 5 para mejorar la estabilidad de los coeficientes estimados</p>
 
    <p>La evaluación del modelo reducido muestra que Ventas_Q1 es altamente significativa, con un impacto claro sobre los ingresos. En cuanto a la variable Segmento, algunos coeficientes asociados a sus niveles presentan p-valores más altos, por lo que se complementó el análisis con un test ANOVA para evaluar la significancia conjunta de esta variable categórica.</p>
                         <img 
@@ -245,11 +245,11 @@ Ingresos_i =\;& \beta_0
 <p>Este análisis permite visualizar cómo se agrupan los segmentos en función de los ingresos y respalda el uso de la variable Segmento como factor explicativo dentro del modelo.</p>
      
 
-     <h2>Etapa de Diagnostico</h2>
+     <h2>Etapa de Diagnóstico</h2>
 
-          <h3>Homocedasticidad</h3>
+          <h3>Homoscedasticidad</h3>
 
-     <p>Tras ajustar el modelo final con Ventas_Q1 y Segmento como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales de la regresión lineal múltiple, prestando especial atención a la homocedasticidad y a la normalidad de los residuos.</p>
+     <p>Tras ajustar el modelo final con Ventas_Q1 y Segmento como variables predictoras, se procedió a diagnosticar el cumplimiento de los supuestos fundamentales de la regresión lineal múltiple, prestando especial atención a la homoscedasticidad y a la normalidad de los residuos.</p>
 
                         <img 
                 src="../images/Imagen60.png"
@@ -257,7 +257,7 @@ Ingresos_i =\;& \beta_0
                 class="img-proyecto"
                 width="450"
             >
-     <p>En primer lugar, se extrajeron los residuos del modelo (residuos, residuos estandarizados yresiduos studentizados) y se construyó un gráfico de residuos studentizados externos frente alos valores predichos. Este gráfico permitió identificar una cierta tendencia en la dispersiónde los puntos, lo que podría indicar la presencia de problemas de heterocedasticidad en elmodelo</p>
+     <p>En primer lugar, se extrajeron los residuos del modelo (residuos, residuos estandarizados y residuos studentizados) y se construyó un gráfico de residuos studentizados externos frente a los valores predichos. Este gráfico permitió identificar una cierta tendencia en la dispersión de los puntos, lo que podría indicar la presencia de problemas de heteroscedasticidad en el modelo</p>
                         <img 
                 src="../images/Imagen61.png"
                 alt="Título"
@@ -265,7 +265,7 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
-      <p>Para evaluar formalmente la homocedasticidad, se aplicó el test de Breusch-Pagan, que con-trasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante.En el modelo original, el estadístico BP tuvo un valor de 12.72 con un p-valor de aproximada-mente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no serechaza la hipótesis de homocedasticidad, aunque el resultado es dudoso y cercano a la regiónde rechazo, lo que motiva explorar posibles transformaciones.Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variabledependiente (Ingresos) como a la variable predictora Ventas_Q1, con el objetivo de estabilizarla varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal conlog(Ingresos) como variable dependiente y log(Ventas_Q1) junto con Segmento como variablesexplicativas</p>
+      <p>Para evaluar formalmente la homoscedasticidad, se aplicó el test de Breusch-Pagan, que contrasta la hipótesis nula de varianza constante frente a la alternativa de varianza no constante. En el modelo original, el estadístico BP tuvo un valor de 12.72 con un p-valor de aproximada-mente 0.079. Dado que este valor está ligeramente por encima del umbral común de 0.05, no se rechaza la hipótesis de homoscedasticidad, aunque el resultado es dudoso y cercano a la región de rechazo, lo que motiva explorar posibles transformaciones. Ante esta evidencia, se decidió aplicar una transformación logarítmica tanto a la variable dependiente (Ingresos) como a la variable predictora Ventas_Q1, con el objetivo de estabilizar la varianza y mejorar la linealidad del modelo. Se ajustó entonces un nuevo modelo lineal con log(Ingresos) como variable dependiente y log(Ventas_Q1) junto con Segmento como variables explicativas</p>
                   <img 
                 src="../images/Imagen62.png"
                 alt="Título"
@@ -273,7 +273,7 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
-     <p>El análisis de residuos sobre este modelo transformado muestra una clara mejora en la disper-sión de los residuos, y el test de Breusch-Pagan resultó en un p-valor de 0.91. Esto indica que,tras la transformación logarítmica, no existe evidencia de heteroscedasticidad, confirmandoque la varianza de los errores puede considerarse constante.</p>
+     <p>El análisis de residuos sobre este modelo transformado muestra una clara mejora en la dispersión de los residuos, y el test de Breusch-Pagan resultó en un p-valor de 0.91. Esto indica que, tras la transformación logarítmica, no existe evidencia de heteroscedasticidad, confirmando que la varianza de los errores puede considerarse constante.</p>
 
 
         <h2>Nuevo Modelo</h2>
@@ -285,7 +285,7 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
-<p>Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a SegmentoStart-up y SegmentoPremium, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y permite explicar la relación entre los Ingresos y las dimensiones representadas por Ventas_Q1, con mayor estabilidad que el modelo sin transformar.</p>
+<p>Además, el modelo logarítmico presenta significancia estadística para todos los coeficientes, con excepción de los correspondientes a Segmento Startup y Segmento Premium, que mostraron p-valores superiores a 0.05. Aun así, el ajuste general del modelo es adecuado y permite explicar la relación entre los Ingresos y las dimensiones representadas por Ventas_Q1, con mayor estabilidad que el modelo sin transformar.</p>
 
 <p>Para una mejor comprensión del modelo ajustado, es importante interpretar los coeficientes estimados. Dado que se trata de un modelo logarítmico en ambas variables numéricas, la interpretación es proporcional.</p>
 
@@ -316,8 +316,8 @@ Ingresos_i =\;& \beta_0
             >
 
 
-<p>Una vez obtenido el nuevo modelo, se procedió a rehacer la clasificación por letras. Se observaque, a diferencia del análisis anterior, ningún segmento contiene más de una letra; cada unoestá claramente definido dentro de su grupo correspondiente.</p>
-<p>Dado que el modelo ajusta por Ventas_Q1, el método de las letras clasifica cada segmentosuponiendo que todos tienen la misma longitud promedio. Por ello, se elaboró un gráfico debarras que representa los Ingresos promedio esperados, considerando que todos los registros delconjunto de datos tienen la misma longitud promedio. Esta visualización permite comparar demanera directa los segmentos ajustados por longitud, mostrando de forma clara las diferenciasrelativas entre ellos.</p>
+<p>Una vez obtenido el nuevo modelo, se procedió a rehacer la clasificación por letras. Se observa que, a diferencia del análisis anterior, ningún segmento contiene más de una letra; cada uno está claramente definido dentro de su grupo correspondiente.</p>
+<p>Dado que el modelo ajusta por Ventas_Q1, el método de las letras clasifica cada segmento suponiendo que todos tienen la misma longitud promedio. Por ello, se elaboró un gráfico de barras que representa los Ingresos promedio esperados, considerando que todos los registros del conjunto de datos tienen la misma longitud promedio. Esta visualización permite comparar de manera directa los segmentos ajustados por longitud, mostrando de forma clara las diferencias relativas entre ellos.</p>
      
         
 <h3>Calculo del \(R^2\)</h3>
@@ -326,7 +326,7 @@ Ingresos_i =\;& \beta_0
 
 <p>Esto ocurre porque el $R^2$ del modelo logarítmico mide la proporción de varianza explicada en la escala logarítmica, no en la escala real de la variable dependiente. Al aplicar la función exponencial a las predicciones del modelo logarítmico para volver a la escala original, el error deja de ser aditivo y se convierte en multiplicativo, lo que modifica la forma en que se mide la varianza explicada.</p>
 
-<p>Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un $R^2$ alternativo, comparando los valores observados de Ingresos con las predicciones retransformadas (exp(predicciones logaritmicas))</p>
+<p>Por este motivo, si se desea evaluar la capacidad predictiva del modelo en la escala original, es necesario calcular un $R^2$ alternativo, comparando los valores observados de Ingresos con las predicciones retransformadas (exp(predicciones logarítmicas))</p>
 
 <p>Esta versión del $R^2$ refleja la calidad del ajuste en la escala original. En nuestro caso, este $R^2$ alternativo resultó ser 0.9728, indicando un ajuste muy bueno del modelo a los datos originales.</p>
    
@@ -348,16 +348,14 @@ Ingresos_i =\;& \beta_0
             >
 
 
-   <p>Tambien hicimos un grafico para comparar la distribucion de los residuos contra la distribucionde una normal estandar. Donde vemos que los residuosse aproximan a una normal.18</p>  
-                        <img 
+   <p>También hicimos un gráfico para comparar la distribución de los residuos contra la distribución de una normal estándar. Donde vemos que los residuos se aproximan a una normal.</p>                          <img 
                 src="../images/Imagen67.png"
                 alt="Título"
                 class="img-proyecto"
                 width="450"
             >
 
- <p>Resaltamos esto porque al hacer los test estadisticos de Kolmogorov-Smirnov, Shapiro-Wilk,y Jarque-Bera, para dos de ellos obtuvimos p valores menores a 0.05 para los ultimos dos,rechazando la normalidad</p>    
-                  <img 
+ <p>Resaltamos esto porque al hacer los test estadísticos de Kolmogorov-Smirnov, Shapiro-Wilk, y Jarque-Bera, para dos de ellos obtuvimos p valores menores a 0.05 para los últimos dos, rechazando la normalidad</p>                     <img 
                 src="../images/Imagen68.png"
                 alt="Título"
                 class="img-proyecto"
@@ -366,8 +364,7 @@ Ingresos_i =\;& \beta_0
 
  <p>El test de Shapiro-Wilk arrojó un valor W = 0.96776 con un p-valor = 0.0009448, lo que indica que se rechaza la hipótesis nula de normalidad al nivel de significancia del 5%. No obstante, este test suele ser muy sensible a leves desviaciones cuando el tamaño muestral es relativamente grande, como en este caso. Por otro lado, el test de Kolmogorov-Smirnov reportó un estadístico D = 0.05098 con un p-valor = 0.7736 lo que implica que no se rechaza la hipótesis de que los residuos provienen de una distribución normal. El test de Jarque-Bera, que evalúa conjuntamente la simetría y la curtosis de los residuos, arrojó un estadístico JB = 39.26 con un p-valor menor a 0.0001. Esto también sugiere que los residuos no siguen una distribución normal perfecta. Al igual que el test de Shapiro-Wilk, es sensible a pequeñas desviaciones de la normalidad, especialmente cuando la muestra es amplia. Existe cierta inconsistencia entre los resultados: mientras que los tests de Shapiro-Wilk y Jarque-Bera indican una desviación significativa de la normalidad, el test de Kolmogorov-Smirnov no detecta diferencias respecto a la distribución normal. Esto es común en muestras moderadas o grandes, donde pequeños desvíos generan significancia estadística sin implicar una gran desviación visual. </p>
 
- <p>Consideramos la posibilidad de quitar atipicos para lograr que los residuos del modelo distribuyeran normal, pero tuvimos un problema que fue que detectamos que todos los atipicos eran influyentes, y decidimos seguir la recomendacion de las notas del curso de no eliminar atipicos con el fin de cumplir supuestos, y menos si esos supuestos no son tan importantes como la normalidad. Ademas tenemos 158 observaciones, por lo que podemos considerar que por el TCL, tenemos un comportamiento normal. </p>
-
+ <p>Consideramos la posibilidad de quitar atípicos para lograr que los residuos del modelo distribuyeran normal, pero tuvimos un problema que fue que detectamos que todos los atípicos eran influyentes, y decidimos seguir la recomendación de las notas del curso de no eliminar atípicos con el fin de cumplir supuestos, y menos si esos supuestos no son tan importantes como la normalidad. Además tenemos 158 observaciones, por lo que podemos considerar que por el TCL, tenemos un comportamiento normal. </p>
      
                   <img 
                 src="../images/Imagen69.png"
@@ -376,9 +373,9 @@ Ingresos_i =\;& \beta_0
                 width="450"
             >
 
- <p>Este gráfico tiene en el eje X el índice de observación y en el eje Y los residuos studentizados (t_i). Se usa para detectar observaciones atípicas (outliers). Los residuos studentizados sirven para comparar residuos entre sí, sin importar la escala. Si un residuo studentizado es alto o bajo, indica que esa observación puede ser atipica, estas son las observaciones que se encuentran por encima o por debajo de ±3. </p>
+ <p>Este gráfico tiene en el eje X el índice de observación y en el eje Y los residuos studentizados (t_i). Se usa para detectar observaciones atípicas (outliers). Los residuos studentizados sirven para comparar residuos entre sí, sin importar la escala. Si un residuo studentizado es alto o bajo, indica que esa observación puede ser atípica, estas son las observaciones que se encuentran por encima o por debajo de ±3. </p>
 
- <p>Este gráfico también tiene el índice de observación en el eje X, y en el eje Y muestra la distancia de Cook de cada observación. Se dibujan barras verticales para cada observación, representando su influencia. La línea roja en 4/n es un umbral, el cual si es superado indica que esa observacion es potencialmente influyente. </p>
+ <p>Este gráfico también tiene el índice de observación en el eje X, y en el eje Y muestra la distancia de Cook de cada observación. Se dibujan barras verticales para cada observación, representando su influencia. La línea roja en 4/n es un umbral, el cual si es superado indica que esa observación es potencialmente influyente. </p>
 
                         <img 
                 src="../images/Imagen70.png"
@@ -415,7 +412,7 @@ En el modelo log-transformado (modelo 3), el gráfico de predichos versus residu
                 class="img-proyecto"
                 width="450"
             >
-<p>Adicionalmente, se exploró un modelo extendido que incluía términos cuadráticos de Costesy Margen para evaluar la posible presencia de relaciones no lineales. Sin embargo, el ajusteno presentó mejoras sustanciales ni cambios significativos en la dispersión de los residuos (verFigura 10). Por esta razón, se decidió mantener el modelo log-lineal con log(Ventas_Q1) ySegmento como predictores principales.</p>
+<p>Adicionalmente, se exploró un modelo extendido que incluía términos cuadráticos de Costes y Margen para evaluar la posible presencia de relaciones no lineales. Sin embargo, el ajuste no presentó mejoras sustanciales ni cambios significativos en la dispersión de los residuos (ver Figura 10). Por esta razón, se decidió mantener el modelo log-lineal con log(Ventas_Q1) y Segmento como predictores principales.</p>
 
 
 
@@ -428,7 +425,7 @@ En el modelo log-transformado (modelo 3), el gráfico de predichos versus residu
   <p>\(R^2\) = 0.9825771</p> 
 
 
-<p>MAE mide el promedio del valor absoluto de los errores de prediccion.</p>
+<p>MAE mide el promedio del valor absoluto de los errores de predicción.</p>
 
 <p>RMSE es la raíz cuadrada del promedio del error cuadrático.</p>
 
@@ -455,7 +452,7 @@ En el modelo log-transformado (modelo 3), el gráfico de predichos versus residu
 
 <p>En cuanto a la variable categórica Segmento, el análisis muestra que también es significativa en su conjunto, aunque no todos sus niveles lo son individualmente. En particular, algunos segmentos como PYME y Corporativo presentan coeficientes claramente distintos del segmento de referencia (Particular), mientras que otros como Start-up y Premium no mostraron significancia estadística. Esto sugiere que la relación entre longitud e ingresos varía levemente entre segmentos, pero no en todos los casos.</p>
 
-<p>El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heterocedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.</p>
+<p>El test de Breusch-Pagan aplicado al modelo transformado confirmó que ya no hay problemas de heteroscedasticidad (p = 0.91), y el gráfico de residuos mostró un patrón aleatorio sin evidencia de varianza no constante. La normalidad de los residuos fue evaluada visualmente mediante un Q-Q plot, y estadísticamente mediante los tests de Shapiro-Wilk (que mostró ligera desviación) y Kolmogorov-Smirnov (que no detectó diferencias significativas). En conjunto, los resultados sugieren que los residuos del modelo son razonablemente normales.</p>
 
 <p>Finalmente, se identificaron algunas observaciones con leve influencia sobre el modelo, pero ninguna que comprometa su validez general. Se concluye que el modelo ajustado es adecuado para describir y predecir los ingresos en función de la longitud y el segmento, dentro del marco de los datos disponibles.</p>
 
@@ -468,7 +465,7 @@ En el modelo log-transformado (modelo 3), el gráfico de predichos versus residu
 
 <p>Se concluyó que la variable más influyente en la predicción de los ingresos es la longitud de los registros, específicamente la medida Ventas_Q1. Además, la inclusión de la variable Segmento permitió capturar diferencias estructurales entre grupos, aunque no todos los segmentos mostraron efectos significativos.</p>
 
-<p>Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heterocedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Ingresos y Ventas_Q1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.</p>
+<p>Los supuestos del modelo clásico de regresión fueron cuidadosamente evaluados. Se detectaron indicios de heteroscedasticidad en el modelo original, los cuales fueron corregidos mediante una transformación logarítmica de las variables Ingresos y Ventas_Q1. Posteriormente, se comprobó la estabilidad de la varianza de los errores y una adecuada normalidad de los residuos.</p>
 
 <p>El análisis de observaciones influyentes identificó algunos casos puntuales con mayor impacto en los coeficientes estimados. No obstante, se demostró que el modelo es robusto frente a estas observaciones, ya que los parámetros estimados no varían sustancialmente.</p>
 
