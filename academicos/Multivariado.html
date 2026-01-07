@@ -63,19 +63,19 @@
 
 <p>La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los usuarios de Netflix.</p>
 
-<img src="../images/Imagen92.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen92.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado.</p>
 
-<img src="../images/Imagen93.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen93.png" alt="Título" class="img-proyecto" width="700">
 
 <p>También se analizó el tiempo de consumo de Netflix en relación al sexo mediante un diagrama de caja (Figura 2). Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro, la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta; eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo a consumir Netflix, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.</p>
 
-<img src="../images/Imagen94.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen94.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Para ampliar el análisis, se graficó la distribución de horas dedicadas a todas las actividades del tiempo libre y obligaciones básicas (Figura 3). El histograma facetado permite ver que dormir y consumir Netflix tienen distribuciones más concentradas, mientras que actividades como tareas médicas o tareas domésticas tienden a presentar mayor asimetría y frecuencias bajas, con muchos estudiantes que no realizaron esas actividades durante el día observado.</p>
 
-<img src="../images/Imagen95.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen95.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, horas de consumo de Netflix, horas de ocio e ingreso del hogar. La tabla correspondiente se muestra en la Tabla 2. Los resultados indican que las mujeres duermen y consumen Netflix más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.</p>
 
@@ -85,11 +85,11 @@
 
 <p>Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la Figura 4. En él, los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de consumo de Netflix tienden a estar inversamente correlacionadas con las de sueño (quienes consumen más Netflix duermen un poco menos) y positivamente con las de ocio.</p>
 
-<img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="700">
 
 <p>También se exploraron asociaciones específicas. En la Figura 5 se presenta un boxplot que compara las horas dedicadas a consumir Netflix según si el usuario trabaja remuneradamente o no. Se observa una clara diferencia: quienes tienen empleo tienden a consumir Netflix menos horas.</p>
 
-<img src="../images/Imagen97.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen97.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Por último, se observó la asociación entre el ingreso del hogar y el tiempo de ocio. Un coeficiente positivo de 0.0418 nos indica que los usuarios de contextos más acomodados tienden a disfrutar de un poco más de tiempo libre, tal vez porque tienen mayor acceso a actividades recreativas pagas o porque su entorno les ofrece más facilidades para el ocio.</p>
 
@@ -101,23 +101,23 @@
 
 <p>A continuación, visualizamos la disposición de las variables en el espacio de los primeros dos componentes, coloreadas según su contribución. Esto nos permite observar qué variables tienen mayor influencia en la construcción de estos componentes y cómo se relacionan entre sí.</p>
 
-<img src="../images/Imagen98.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen98.png" alt="Título" class="img-proyecto" width="700">
 
 <p>A partir de la Figura 6, observamos agrupamientos entre variables que se comportan de forma similar. Por ejemplo, las horas de consumo de Netflix y el nivel educativo suelen estar cercanas, indicando una posible asociación. Por otro lado, variables como las horas de dormir o las tareas domésticas se orientan en direcciones opuestas, mostrando que representan dimensiones distintas del uso del tiempo. Los colores más naranjas indican mayor contribución, los colores amarillos indican una contribución intermedia, los colores celestes indican una menor contribución.</p>
 
 <p>También quisimos analizar cómo se distribuyen los individuos en función de los dos primeros componentes, lo que nos ayuda a detectar posibles agrupamientos o patrones generales.</p>
 
-<img src="../images/Imagen99.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen99.png" alt="Título" class="img-proyecto" width="700">
 
 <p>La métrica $cos^2$ se usa para evaluar la calidad de la representación de una variable o de un individuo en un componente principal, e indica cuánto contribuye un componente a explicar la varianza de una variable. Cuanto más cercano a 1, el vector está casi alineado con el componente, bien representado por ese componente. Cuanto más cercano a 0, el vector forma un ángulo cercano a 90° con el componente, estando mal representado por ese componente. Esta métrica se usa para saber qué variables están bien representadas por los primeros componentes y da la calidad de la representación del individuo sobre el plano definido por los componentes.</p>
 
 <p>En la Figura 7, los puntos que están más alejados del centro y con colores más intensos son aquellos que están mejor representados en el plano de los dos primeros componentes. Esto indica que sus perfiles son más extremos o definidos con respecto a las variables incluidas.</p>
 
-<img src="../images/Imagen100.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen100.png" alt="Título" class="img-proyecto" width="700">
 
 <p>En la Figura 8, el eje X son los componentes principales ordenados del 1 al 10, las dimensiones. El eje Y es el porcentaje de varianza explicada por cada componente (desde 0% hasta 17.3%). Vemos que el primer componente (PC1) explica el 17.3% de la varianza, el segundo componente (PC2) explica el 14.3% y el tercer componente (PC3) explica el 12.7%. Los demás componentes subsiguientes van decreciendo en sus porcentajes asociados a explicar la varianza (10.5%, 9.1%, 8.1%, etc.).</p>
 
-<img src="../images/Imagen101.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen101.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Las flechas son las variables; el eje X es la Dimensión 1 y el eje Y es la Dimensión 2, los dos primeros componentes principales. La Dimensión 1 explica el 17.3% de la varianza total, la Dimensión 2 explica el 14.3% de la varianza. En conjunto, explican un 31.6% de la varianza total del conjunto de datos. Las flechas más largas indican que las variables están mejor representadas en el plano de los dos primeros componentes; las flechas más cercanas al origen indican que las variables no se explican bien en este plano. Las flechas orientadas hacia la derecha indican correlación positiva. Las flechas orientadas hacia la izquierda indican correlación negativa.</p>
 
@@ -129,11 +129,11 @@
 
 <p>Luego, exploramos qué variables contribuyen más a cada uno de los componentes. Esto es importante porque nos permite interpretar el significado de cada eje principal del análisis.</p>
 
-<img src="../images/Imagen102.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen102.png" alt="Título" class="img-proyecto" width="700">
 
 <p>De la Figura 10, observamos que el primer componente tiene una fuerte carga de variables relacionadas con la educación (como años de educación, log_ing y año actual educativo), por lo que podríamos interpretarlo como un eje educativo o socioeconómico.</p>
 
-<img src="../images/Imagen103.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen103.png" alt="Título" class="img-proyecto" width="700">
 
 <p>En cambio, el segundo componente está influido por la edad y las actividades domésticas, y en menor medida por las horas de consumo de Netflix; este eje podría reflejar un perfil de rutina.</p>
 
@@ -151,17 +151,17 @@
 
 <p>Los gráficos mosaico utilizan colores para mostrar los residuos de Pearson (diferencias entre valores observados y esperados bajo independencia): azul indica más observaciones de las esperadas, rojo indica menos observaciones de las esperadas, y gris indica coincidencia con la independencia.</p>
 
-<img src="../images/Imagen104.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen104.png" alt="Título" class="img-proyecto" width="700">
 
 <p>La Figura 12 resulta del análisis de correspondencias entre las variables categóricas <code>disc_h</code>, la cantidad de personas con discapacidad en el hogar (triángulos rojos), y <code>act</code>, la cantidad de personas activas económicamente en el hogar (puntos azules). Los puntos representan categorías de ambas variables proyectadas en un plano que explica la mayor parte de la variabilidad de la tabla: el eje X captura un 95.8% y el eje Y un 3.4% de la variabilidad. Vemos que cuanto más cerca estén dos puntos (uno rojo y uno azul), más frecuente es esa combinación en los datos; cuanto más lejos estén del origen, más aportan a la estructura de la asociación (más "atípicos" respecto a independencia).</p>
 
 <p>Podemos observar que hay tres triángulos rojos que hacen referencia al número de discapacitados, los cuales están más alejados hacia la derecha. Esto puede indicar que hogares con más personas discapacitadas tienden a tener pocos miembros activos económicamente. Otra parte del plano muestra hogares con cero discapacitados, donde se aglomera la actividad económica. Como conclusión, los hogares con mayor cantidad de discapacitados tienden a tener menos miembros activos económicamente, mientras que los hogares sin discapacitados presentan una distribución más equilibrada, con más activos económicamente.</p>
 
-<img src="../images/Imagen105.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen105.png" alt="Título" class="img-proyecto" width="700">
 
 <p>El gráfico de la Figura 13, un screeplot, muestra la proporción de varianza explicada por cada dimensión del ACM. Las primeras dos dimensiones suelen captar el mayor porcentaje de la variabilidad presente en los perfiles de las categorías. Si bien los porcentajes individuales son bajos (propio del ACM cuando hay muchas variables), se consideran útiles si las primeras dimensiones ayudan a discriminar perfiles típicos entre grupos sociales.</p>
 
-<img src="../images/Imagen106.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen106.png" alt="Título" class="img-proyecto" width="700">
 
 <p>En la Figura 14 se observa cómo se distribuyen las categorías de las variables en el plano formado por las dos primeras dimensiones. Las categorías cercanas entre sí representan perfiles similares. Las más alejadas del centro (0,0) son las que más contribuyen a la estructura de la variabilidad. Las que están alineadas sobre un eje indican que explican mejor esa dimensión particular. Este mapa facilita la interpretación conjunta de asociaciones entre múltiples variables cualitativas.</p>
 
@@ -185,11 +185,11 @@
 
 <p>En primer lugar, se seleccionan las variables cuantitativas más relevantes del conjunto de datos original. Estas variables representan actividades del uso del tiempo y características del entorno educativo y familiar. Se eliminan los valores faltantes para asegurar la correcta aplicación de los algoritmos de agrupamiento.</p>
 
-<img src="../images/Imagen107.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen107.png" alt="Título" class="img-proyecto" width="700">
 
 <p>A continuación, se estandarizan los datos y se calcula una matriz de distancias euclidianas. Luego se aplica el método de Ward para construir el dendrograma jerárquico, que muestra visualmente cómo se agrupan las observaciones de forma progresiva. Este primer dendrograma no tiene cortes, ya que todavía no se ha definido la cantidad de clusters a conservar.</p>
 
-<img src="../images/Imagen108.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen108.png" alt="Título" class="img-proyecto" width="700">
 
 <p>Para definir la cantidad adecuada de clusters en el análisis jerárquico, se aplicaron tres criterios frecuentemente utilizados en este tipo de estudios: el ancho promedio de silueta, el índice pseudo-F y el índice pseudo-t². En todos los casos se trabajó con datos previamente estandarizados, utilizando la distancia euclidiana como medida de disimilitud y el método de Ward como estrategia de agrupamiento.</p>
 
@@ -199,7 +199,7 @@
 
 <p>Por su parte, el índice pseudo-t² muestra una caída marcada al pasar de 4 clusters, lo que indica una pérdida de estructura al continuar fusionando grupos. Esta tendencia descendente se mantiene hasta alrededor de 12 clusters, lo que sugiere que más allá de ese punto los agrupamientos pierden sentido.</p>
 
-<img src="../images/Imagen109.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen109.png" alt="Título" class="img-proyecto" width="700">
 
 <p>En base a la interpretación conjunta de los tres índices anteriores, se decidió conservar una solución de 3 clusters. Esta partición fue aplicada al dendrograma original de la Figura 25, coloreando cada grupo resultante para facilitar su visualización. Se observa una separación clara entre los grupos, lo que refuerza la validez de la elección.</p>
 
@@ -212,19 +212,19 @@
 
 <p>El análisis comienza con la inspección de la matriz de correlaciones entre las variables numéricas seleccionadas. Esto es importante porque, si hay variables altamente correlacionadas, podrían dominar el cálculo de distancias y afectar tanto el clustering como el análisis de componentes principales.</p>
     
-<img src="../images/Imagen96.png" alt="Matriz de correlaciones" class="img-proyecto" width="450">
+<img src="../images/Imagen96.png" alt="Matriz de correlaciones" class="img-proyecto" width="700">
 
 <p>Se detecta una relación positiva entre el logaritmo del ingreso (<code>log_ing</code>) y los años de educación promedio del hogar (<code>aniosed_h</code>), lo que indica que mayores niveles educativos se asocian a mejores ingresos. También hay correlaciones entre edad y año que cursa (<code>anio_ed</code>), las cuales deben considerarse en la interpretación posterior del agrupamiento.</p>
 
 <p>Luego se realiza el clustering jerárquico utilizando distancia euclídea y el método de Ward, que busca minimizar la varianza intra-grupo.</p>
 
-<img src="../images/Imagen110.png" alt="Dendrograma inicial" class="img-proyecto" width="450">
+<img src="../images/Imagen110.png" alt="Dendrograma inicial" class="img-proyecto" width="700">
 
 <p>En la Figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clústeres. Este gráfico es una herramienta clave para decidir, junto con otros criterios, cuántos grupos conservar en el análisis final.</p>
 
 <p>Una vez definida la cantidad óptima de clústeres en tres grupos, se procedió a asignar a cada usuario de Netflix su correspondiente clasificación. Luego, se calcularon las medias de las variables de interés por grupo, permitiendo caracterizar los perfiles resultantes. La Tabla 4 resume estas medias para cada clúster.</p>
 
-<img src="../images/Imagen111.png" alt="Medias por clúster" class="img-proyecto" width="450">
+<img src="../images/Imagen111.png" alt="Medias por clúster" class="img-proyecto" width="700">
 
 <p>A partir del gráfico y de la tabla de resumen, se identifican tres tipos de usuarios de Netflix:</p>
 
@@ -238,19 +238,19 @@
 
 <p>Para visualizar los clústeres en un plano reducido, se proyectan las observaciones sobre los dos primeros componentes principales (PCA). Los colores representan los clústeres definidos anteriormente.</p>
 
-<img src="../images/Imagen112.png" alt="PCA de clústeres" class="img-proyecto" width="450">
+<img src="../images/Imagen112.png" alt="PCA de clústeres" class="img-proyecto" width="700">
 
 <p>Se observa que el grupo 3 presenta mayor dispersión, lo que sugiere una mayor heterogeneidad interna. En contraste, los grupos 1 y 2 se concentran en regiones específicas. Aunque la varianza explicada por los dos primeros componentes no es alta, el gráfico de la Figura 20 permite una visualización útil de la segmentación.</p>
 
 <p>Para evaluar la calidad de la clasificación, se construye el gráfico de silueta, que indica qué tan bien está asignada una observación a un clúster en base a la similitud con los demás elementos del grupo.</p>
 
-<img src="../images/Imagen113.png" alt="Gráfico de silueta" class="img-proyecto" width="450">
+<img src="../images/Imagen113.png" alt="Gráfico de silueta" class="img-proyecto" width="700">
 
 <p>Los valores de silueta sugieren que el grupo 1 tiene observaciones con asignaciones cuestionables, ya que presentan valores negativos de silueta. Los grupos 2 y 3 muestran mejores asignaciones de las observaciones en términos de silueta.</p>
 
 <p>También se puede visualizar el dendrograma coloreado según los clústeres elegidos:</p>
     
-<img src="../images/Imagen114.png" alt="Dendrograma coloreado" class="img-proyecto" width="450">
+<img src="../images/Imagen114.png" alt="Dendrograma coloreado" class="img-proyecto" width="700">
 
 <p>Finalmente, se analiza la descomposición de la varianza total entre varianza intra-grupo (WSS) y entre-grupo (BSS), mostrando que al aumentar el número de clústeres, la varianza dentro de los grupos disminuye y la varianza entre los grupos aumenta.</p>    
 
@@ -259,7 +259,7 @@
 
 <p>Tiene sentido que, al aumentar el número de clústeres, la varianza dentro de los grupos disminuya y la varianza entre los grupos aumente. Esto puede visualizarse gráficamente:</p>    
 
-<img src="../images/Imagen115.png" alt="Varianza intra y entre clusters" class="img-proyecto" width="450">
+<img src="../images/Imagen115.png" alt="Varianza intra y entre clusters" class="img-proyecto" width="700">
 
 <p>En la Figura 23 se evidencia que, a partir de cierto punto (en este caso k = 3), las ganancias de reducir la varianza intra-grupo se vuelven marginales, justificando así el número de clústeres seleccionado.</p>
 
@@ -275,19 +275,19 @@
 
 <p>Seleccionamos un conjunto de variables cuantitativas relevantes relacionadas con el uso del tiempo (horas de sueño, alimentación, consumo de Netflix, ocio, etc.) y variables sociodemográficas (edad, año cursado, ingreso logarítmico del hogar y escolaridad media del hogar). A continuación, se estandarizaron para asegurar comparabilidad entre escalas y evitar que variables con mayor rango numérico dominen el análisis.</p>    
 
-<img src="../images/Imagen116.png" alt="Resultado DIANA" class="img-proyecto" width="450">
+<img src="../images/Imagen116.png" alt="Resultado DIANA" class="img-proyecto" width="700">
 
 <p>Inicialmente, utilizamos k=3 y observamos que la división generaba un tercer grupo con un único elemento: un usuario de Netflix que dedicaba muchas horas a actividades médicas y prácticamente nada a las demás actividades. Dado que se trataba de un caso atípico, decidimos eliminarlo y volver a aplicar DIANA con k=2. En la Figura 24 se muestra el resultado de aplicar el algoritmo DIANA sobre los datos estandarizados. Posteriormente, se generó el dendrograma correspondiente, indicando una segmentación en 2 grupos (k=2) para mantener coherencia con la solución adoptada en el método aglomerativo.</p>
 
 <p>El dendrograma muestra cómo se fue separando el conjunto inicial en subgrupos cada vez más homogéneos. Si bien la cantidad de observaciones hace que la visualización sea densa, el gráfico es útil para ilustrar la estructura general de disociación y los niveles de altura en los que se realizó el corte.</p>
 
-<img src="../images/Imagen117.png" alt="Dendrograma divisivo" class="img-proyecto" width="450">
+<img src="../images/Imagen117.png" alt="Dendrograma divisivo" class="img-proyecto" width="700">
 
 <p>Dado que el dendrograma completo resulta difícil de interpretar visualmente por la cantidad de individuos, se generó un dendrograma alternativo con una muestra aleatoria de 100 usuarios de Netflix. Este gráfico permite apreciar mejor la estructura jerárquica del agrupamiento divisivo, mostrando con claridad cómo se ramifican los grupos desde la raíz hasta los clústeres finales.</p>
 
 <p>La tabla presenta los valores promedio de once variables cuantitativas para los tres grupos obtenidos mediante el algoritmo jerárquico divisivo DIANA. Este método parte de un único grupo general e intenta dividirlo iterativamente, buscando maximizar la heterogeneidad entre subgrupos.</p>
 
-<img src="../images/Imagen118.png" alt="Valores promedio DIANA" class="img-proyecto" width="450">
+<img src="../images/Imagen118.png" alt="Valores promedio DIANA" class="img-proyecto" width="700">
 
 <p>Al observar los resultados en la Tabla 5, se identifican tres grupos de usuarios de Netflix obtenidos mediante el método jerárquico divisivo DIANA:</p>
 
@@ -323,9 +323,9 @@
 
 <p>Con base en esto, se ajustó el algoritmo de K-Means para k=3. Se obtuvo una partición estable, con tamaños de grupo relativamente balanceados y una varianza entre grupos considerable respecto a la varianza total, lo que indica una buena diferenciación entre los clústeres.</p>
 
-<img src="../images/Imagen119.png" alt="K-Means k=3" class="img-proyecto" width="450">
+<img src="../images/Imagen119.png" alt="K-Means k=3" class="img-proyecto" width="700">
 
-<img src="../images/Imagen120.png" alt="Gráfico de K-Means" class="img-proyecto" width="450">
+<img src="../images/Imagen120.png" alt="Gráfico de K-Means" class="img-proyecto" width="700">
 
 <p>Como complemento, también se probó la partición para k=4 y se evaluaron ambas configuraciones con gráficos de silueta. En estos gráficos se observa que la solución con 3 clústeres presenta mejores valores promedio, indicando una asignación más consistente de las observaciones a sus respectivos grupos. En cambio, la solución con 4 clústeres incluye algunos casos con valores negativos de silueta, lo que sugiere que ciertas observaciones podrían estar mal asignadas.</p>
 
@@ -343,7 +343,7 @@
 
 <p>A continuación, representamos gráficamente la calidad de la partición mediante el gráfico de siluetas, que permite visualizar qué tan bien asignadas están las observaciones a sus respectivos grupos.</p>
 
-<img src="../images/Imagen121.png" alt="Gráfico de siluetas K-medoides" class="img-proyecto" width="450">
+<img src="../images/Imagen121.png" alt="Gráfico de siluetas K-medoides" class="img-proyecto" width="700">
 
 <p>En la Figura 28, cada barra representa una observación y su valor de silueta. Valores cercanos a 1 indican una buena asignación; valores cercanos a 0 o negativos indican asignaciones dudosas o incorrectas.</p>
 
@@ -351,7 +351,7 @@
 
 <p>Finalmente, visualizamos los clústeres en el espacio reducido por PCA.</p>
 
-<img src="../images/Imagen122.png" alt="Clústeres K-medoides en PCA" class="img-proyecto" width="450">
+<img src="../images/Imagen122.png" alt="Clústeres K-medoides en PCA" class="img-proyecto" width="700">
 
 <p>La Figura 29 permite observar la separación entre los grupos definidos por K-medoides. Aunque esta proyección reduce la información de muchas variables a solo dos componentes, es útil para ilustrar la separación general entre clústeres.</p>
 
@@ -361,21 +361,21 @@
 
 <p>El fuzzy clustering se utiliza cuando no hay claridad sobre la pertenencia de una observación a un grupo o cuando existen solapamientos entre grupos. En lugar de asignar cada observación a un único clúster, este método permite que una observación pertenezca a varios clústeres simultáneamente, con distintos grados de pertenencia, que indican la probabilidad de que la observación pertenezca a cada grupo.</p>
 
-<img src="../images/Imagen123.png" alt="Gráfico de siluetas Fuzzy" class="img-proyecto" width="450">
+<img src="../images/Imagen123.png" alt="Gráfico de siluetas Fuzzy" class="img-proyecto" width="700">
 
 <p>Cada barra de la Figura 30 representa una observación de nuestros datos. La altura de la barra corresponde al valor de silueta, que indica qué tan bien asignada está una observación al clúster correspondiente. Valores mayores a 1 indican una buena asignación (el punto está cerca del centro del grupo). Valores menores a cero indican una mala asignación. La línea roja punteada representa la media global, en este caso 0.14.</p>
 
 <p>Podemos representar los clústeres fuzzy mediante PCA, reduciendo a dos dimensiones.</p>
 
-<img src="../images/Imagen124.png" alt="Fuzzy Clustering en PCA" class="img-proyecto" width="450">
+<img src="../images/Imagen124.png" alt="Fuzzy Clustering en PCA" class="img-proyecto" width="700">
 
 <p>Otro gráfico útil muestra, para los dos clústeres obtenidos con PCA, el grado de pertenencia de cada observación. Las observaciones más claras tienen una pertenencia menos probable al grupo, mientras que las más oscuras tienen una pertenencia más probable al grupo.</p>
 
-<img src="../images/Imagen125.png" alt="Grado de pertenencia Fuzzy Clustering" class="img-proyecto" width="450">
+<img src="../images/Imagen125.png" alt="Grado de pertenencia Fuzzy Clustering" class="img-proyecto" width="700">
 
 <h3>Comparación entre métodos</h3>
 
-<img src="../images/Imagen126.png" alt="Comparación de métodos de clustering" class="img-proyecto" width="450">
+<img src="../images/Imagen126.png" alt="Comparación de métodos de clustering" class="img-proyecto" width="700">
 
 <p><strong>Interpretación de las comparaciones:</strong></p>
 
@@ -406,13 +406,13 @@
 
 <p>Además, la normal multivariante permite aplicar resultados clave, como la distribución de Wishart para matrices de covarianza, y facilita el uso de herramientas de inferencia basadas en la teoría asintótica, lo que resulta especialmente útil al interpretar estructuras de grupos en análisis de conglomerados y PCA.</p>
 
-<img src="../images/Imagen127.png" alt="Cuantiles teóricos vs distancias de Mahalanobis" class="img-proyecto" width="450">
+<img src="../images/Imagen127.png" alt="Cuantiles teóricos vs distancias de Mahalanobis" class="img-proyecto" width="700">
 
 <p>En el gráfico de la Figura 33, que muestra cuantiles teóricos contra distancias de Mahalanobis observadas, se observa que los puntos iniciales se alinean bien con la línea diagonal punteada, pero las observaciones en los extremos se alejan de ella, especialmente en la parte superior derecha. Estas desviaciones sugieren la presencia de valores atípicos o casos con mayor distancia al centro de la distribución. La desviación sistemática en la cola superior indica que la distribución presenta colas más pesadas que una normal multivariante, y la curtosis multivariada es mayor a la esperada bajo normalidad. Además, la discontinuidad en los valores observados, evidenciada por saltos en los puntos, indica que no se cumple el supuesto de multinormalidad. Esto se confirmó mediante la función `testes.R` en R, obteniendo un p-valor menor a 0.05, por lo que se rechazó la hipótesis nula de multinormalidad.</p>
 
 <h2>Análisis Discriminante</h2>
 
-<img src="../images/Imagen132.png" alt="Análisis discriminante" class="img-proyecto" width="450">
+<img src="../images/Imagen132.png" alt="Análisis discriminante" class="img-proyecto" width="700">
 
 <p>La variable dependiente <strong>Y_netflix</strong> se construyó a partir de la variable original <strong>h_netflix</strong>, que representaba el número de horas dedicadas al consumo de Netflix, una variable cuantitativa continua. Con Y_netflix, convertimos h_netflix en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para esto se utilizaron los terciles de la distribución de h_netflix, que particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron:</p>
 
@@ -494,7 +494,7 @@
     Multi-class area under the curve (AUC): 0.756
 </div>
 
-<img src="../images/Imagen131.png" alt="Curva ROC multinomial" class="img-proyecto" width="450">
+<img src="../images/Imagen131.png" alt="Curva ROC multinomial" class="img-proyecto" width="700">
 
 <p>La curva ROC refleja la capacidad del modelo para discriminar entre las clases. Valores de AUC cercanos a 1 indican buena capacidad discriminativa, mientras que valores cercanos a 0.5 indican desempeño similar al azar. En este caso, las categorías “poco” y “mucho” presentan un AUC mayor a 0.75, mientras que “intermedio” tiene un rendimiento más bajo (0.687).</p>
 
