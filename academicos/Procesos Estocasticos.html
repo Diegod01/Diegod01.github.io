@@ -10,7 +10,20 @@
         src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
     </script>
  </head>
+
   <body>
+   <div class="lang-switch">
+  <button onclick="traducir('en')"><img src="../images/us.png"> English</button>
+  <button onclick="traducir('es')"><img src="../images/es.png"> Español</button>
+</div>
+
+<div id="google_translate_element" style="display:none"></div>
+
+<script src="../js/lang.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+   
        <header>
         <h1>Modelo de Schelling para la segregación de consumidores de inversión</h1>
     </header>
