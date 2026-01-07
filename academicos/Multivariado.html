@@ -267,161 +267,155 @@
 
 
     
-            <h3>Cluster Jerarquico Divisivo</h3>
+       <h3>Clúster Jerárquico Divisivo</h3>
 
-<p>Luego de aplicar un análisis de clúster jerárquico agregativo con el método de Ward, decidimos complementar el estudio con un enfoque jerárquico divisivo, que parte del conjunto total de observaciones y las va dividiendo sucesivamente en grupos más pequeños. Este procedimiento resulta útil cuando se busca detectar "grupos disidentes" en un conjunto relativamente homogéneo, y permite visualizar la estructura de disgregación desde una gran masa inicial.</p>
+<p>Luego de aplicar un análisis de clúster jerárquico aglomerativo con el método de Ward, decidimos complementar el estudio con un enfoque jerárquico divisivo, que parte del conjunto total de observaciones y las va dividiendo sucesivamente en grupos más pequeños. Este procedimiento resulta útil cuando se busca detectar "grupos disidentes" en un conjunto relativamente homogéneo y permite visualizar la estructura de disgregación desde una gran masa inicial.</p>
 
-<p>En este caso, empleamos el algoritmo DIANA (Divisive ANAlysis Clustering)</p>
-
-<p>Es un algoritmo de clustering jerárquico divisivo, que sigue la lógica de empezar con los elementos en un único grupo y luego los va dividiendo sucesivamente. Primero empieza con todos los objetos en un solo clúster, luego en cada paso, se selecciona el clúster actual que tenga la mayor disimilitud interna, el más heterogéneo. Luego se busca dividir ese clúster en dos partes, extrayendo el elemento más alejado (más disímil) del resto y se crea un nuevo clúster con él. Luego se asignan los demás elementos al nuevo clúster si están más cerca de este que del original (usando disimilitudes promedio), este método se repite iterativamente hasta lograr una división clara en dos subconjuntos. Se repiten los pasos 2 y 3 eligiendo el próximo clúster más disperso, hasta que cada objeto está en su propio clúster o se llega a una cantidad fijada de clústers.</p>
+<p>En este caso, empleamos el algoritmo DIANA (Divisive ANAlysis Clustering), un algoritmo de clustering jerárquico divisivo que sigue la lógica de empezar con todos los elementos en un único grupo y luego dividirlos sucesivamente. Primero se inicia con todos los objetos en un solo clúster; en cada paso se selecciona el clúster con la mayor disimilitud interna, es decir, el más heterogéneo. Luego se busca dividir ese clúster en dos partes extrayendo el elemento más alejado (más disímil) del resto y se crea un nuevo clúster con él. Posteriormente, se asignan los demás elementos al nuevo clúster si están más cerca de este que del original (usando disimilitudes promedio). Este método se repite iterativamente hasta lograr una división clara en dos subconjuntos, y los pasos se repiten eligiendo el próximo clúster más disperso hasta que cada objeto esté en su propio clúster o se alcance una cantidad fija de clústeres.</p>
 
 <p>Seleccionamos un conjunto de variables cuantitativas relevantes relacionadas con el uso del tiempo (horas de sueño, alimentación, consumo de Netflix, ocio, etc.) y variables sociodemográficas (edad, año cursado, ingreso logarítmico del hogar y escolaridad media del hogar). A continuación, se estandarizaron para asegurar comparabilidad entre escalas y evitar que variables con mayor rango numérico dominen el análisis.</p>    
 
+<img src="../images/Imagen116.png" alt="Resultado DIANA" class="img-proyecto" width="450">
 
-    <img src="../images/Imagen116.png" alt="Título" class="img-proyecto" width="450">
+<p>Inicialmente, utilizamos k=3 y observamos que la división generaba un tercer grupo con un único elemento: un usuario de Netflix que dedicaba muchas horas a actividades médicas y prácticamente nada a las demás actividades. Dado que se trataba de un caso atípico, decidimos eliminarlo y volver a aplicar DIANA con k=2. En la Figura 24 se muestra el resultado de aplicar el algoritmo DIANA sobre los datos estandarizados. Posteriormente, se generó el dendrograma correspondiente, indicando una segmentación en 2 grupos (k=2) para mantener coherencia con la solución adoptada en el método aglomerativo.</p>
 
-<p>Primero utilizamos k=3 y vimos que la division agregaba un tercer grupo que tenia un unico elemento que era un usuario de Netflix que dedicaba muchas horas al medico y practicamente nada a las demas actividades, dado que nos parecio un caso atipico decidimos eliminarlo y volver a aplicar DIANA con k=2. Vemos en la figura 24 el resultado de aplicar el algoritmo diana sobre los datos estandarizados. Luego, se generó el dendrograma correspondiente , indicando una segmentación en 2 grupos (k = 2), para mantener la coherencia con la solución adoptada en el método agregativo.</p>
+<p>El dendrograma muestra cómo se fue separando el conjunto inicial en subgrupos cada vez más homogéneos. Si bien la cantidad de observaciones hace que la visualización sea densa, el gráfico es útil para ilustrar la estructura general de disociación y los niveles de altura en los que se realizó el corte.</p>
 
-<p>El dendrograma muestra cómo se fue separando el conjunto inicial en subgrupos cada vez más homogéneos. Si bien la cantidad de observaciones hace que la visualización sea muy densa, el gráfico es útil para ilustrar la estructura general de disociación y los niveles de altura en los que se realizó el corte.</p>
+<img src="../images/Imagen117.png" alt="Dendrograma divisivo" class="img-proyecto" width="450">
 
-    <img src="../images/Imagen117.png" alt="Título" class="img-proyecto" width="450">
-
-<p>Dado que el dendrograma completo resulta difícil de interpretar visualmente por la cantidad de individuos, se generó un dendrograma alternativo con una muestra aleatoria de 100 usuarios de Netflix. Este gráfico permite apreciar mejor la estructura jerárquica del agrupamiento divisivo, mostrando con mayor claridad cómo se ramifican los grupos desde la raíz hasta los clusters finales.</p>
+<p>Dado que el dendrograma completo resulta difícil de interpretar visualmente por la cantidad de individuos, se generó un dendrograma alternativo con una muestra aleatoria de 100 usuarios de Netflix. Este gráfico permite apreciar mejor la estructura jerárquica del agrupamiento divisivo, mostrando con claridad cómo se ramifican los grupos desde la raíz hasta los clústeres finales.</p>
 
 <p>La tabla presenta los valores promedio de once variables cuantitativas para los tres grupos obtenidos mediante el algoritmo jerárquico divisivo DIANA. Este método parte de un único grupo general e intenta dividirlo iterativamente, buscando maximizar la heterogeneidad entre subgrupos.</p>
 
-    <img src="../images/Imagen118.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen118.png" alt="Valores promedio DIANA" class="img-proyecto" width="450">
 
-    
-<p>Al observar los resultados en la tabla 5 logramos identificar 3 grupos de usuarios de Netflix obtenidos a través del método de cluster jerárquico divisivo:</p>
+<p>Al observar los resultados en la Tabla 5, se identifican tres grupos de usuarios de Netflix obtenidos mediante el método jerárquico divisivo DIANA:</p>
 
-<p>Grupo 1 – “usuarios de Netflix balanceados” Son usuarios de Netflix que dedican más tiempo al ocio y tareas domésticas en comparación con el otro grupo. Dedican menos tiempo al consumo de Netflix y menos tiempo en atención médica en comparación con el otro grupo, pero es un tiempo considerable. Su edad promedio es de 17 años. Cuentan con mayor nivel educativo del hogar y a nivel individual, encontrándose en tercero de educación secundaria.</p>
+<ul>
+<li><strong>Grupo 1 – “Usuarios de Netflix balanceados”:</strong> Dedican más tiempo al ocio y a tareas domésticas en comparación con los otros grupos. Dedican menos tiempo al consumo de Netflix y a la atención médica, aunque este último sigue siendo significativo. Su edad promedio es de 17 años y presentan un mayor nivel educativo del hogar y a nivel individual, encontrándose en tercer año de educación secundaria.</li>
 
-<p>Grupo 2 – “usuarios de Netflix Disciplinados” Son usuarios de Netflix que dedican más tiempo al consumo de Netflix, también dedican mucho más tiempo a la atención médica y menos tiempo al ocio y a las tareas domésticas. Su edad promedio es de 16 años, y en promedio se encuentran a mitad del segundo año de educación secundaria. Presentan un menor nivel educativo y menor educación individual debido a que son más jóvenes. Tienen un ingreso logarítmico de los miembros del hogar levemente mayor.</p>
+<li><strong>Grupo 2 – “Usuarios de Netflix disciplinados”:</strong> Dedican más tiempo al consumo de Netflix, más tiempo a la atención médica y menos tiempo al ocio y a tareas domésticas. Su edad promedio es de 16 años y, en promedio, se encuentran a mitad del segundo año de educación secundaria. Presentan un nivel educativo menor, acorde con su edad, y un ingreso logarítmico del hogar levemente mayor.</li>
+</ul>
 
 <p>Esta segmentación permite enriquecer la lectura del fenómeno estudiado, destacando que no todos los jóvenes usuarios de Netflix comparten los mismos estilos de vida ni condiciones de contexto.</p>
 
-            <h3>Cluster no jerarquico</h3>
+<h3>Clúster No Jerárquico</h3>
 
-<p>Además del enfoque jerárquico, exploramos métodos de clasificación no jerárquicos, que permiten agrupar a los usuarios de Netflix sin asumir una estructura en forma de árbol. A diferencia del clustering jerárquico, los métodos no jerárquicos como k-means, k-medoides y fuzzy clustering parten de una cantidad fija de grupos (k) y asignan directamente cada observación a uno (o varios) clusters. Esto se hace mediante un proceso iterativo que optimiza la coherencia interna de cada grupo.</p>
+<p>Además del enfoque jerárquico, exploramos métodos de clasificación no jerárquicos, que permiten agrupar a los usuarios de Netflix sin asumir una estructura en forma de árbol. A diferencia del clustering jerárquico, los métodos no jerárquicos, como k-means, k-medoides y fuzzy clustering, parten de una cantidad fija de grupos (k) y asignan directamente cada observación a uno (o varios) clústeres. Esto se realiza mediante un proceso iterativo que optimiza la coherencia interna de cada grupo.</p>
 
-<p>En esta sección aplicamos y comparamos tres enfoques no jerárquicos: k-means, que busca minimizar la variabilidad dentro de los grupos a partir de centroides móviles; k-medoides, que utiliza observaciones reales como centros representativos, lo que lo hace más robusto ante valores atípicos; y fuzzy clustering, que permite que una misma observación pertenezca parcialmente a más de un grupo, con distintos grados de pertenencia. Cada técnica se evalúa con herramientas gráficas (como siluetas) y se compara con las estructuras halladas en el análisis jerárquico.</p>
-    
+<p>En esta sección aplicamos y comparamos tres enfoques no jerárquicos:</p>
 
-            <h3>K-Means</h3>
+<ul>
+<li><strong>K-means:</strong> Busca minimizar la variabilidad dentro de los grupos a partir de centroides móviles.</li>
+<li><strong>K-medoides:</strong> Utiliza observaciones reales como centros representativos, haciéndolo más robusto ante valores atípicos.</li>
+<li><strong>Fuzzy clustering:</strong> Permite que una misma observación pertenezca parcialmente a más de un grupo, con distintos grados de pertenencia.</li>
+</ul>
+
+<p>Cada técnica se evaluó con herramientas gráficas (como siluetas) y se comparó con las estructuras halladas en el análisis jerárquico.</p>
+
+<h3>K-Means</h3>
 
 <p>El método K-Means es una técnica fundamental del análisis multivariado que busca dividir un conjunto de datos en K grupos distintos. Su lógica se basa en la similitud entre las observaciones: cada punto se asigna al grupo cuyo centroide (la media de todas las observaciones de ese grupo) es el más cercano.</p>
 
-<p>El proceso es iterativo. Comienza con una selección inicial de K centroides aleatorios. Luego, cada observación se asigna al centroide más cercano. Después de esta asignación, los centroides se recalculan como la media de los puntos ahora asignados a ellos. Este ciclo de asignación y actualización se repite hasta que los centroides se estabilizan, lo que significa que la agrupación ya no cambia significativamente.</p>
+<p>El proceso es iterativo. Comienza con una selección inicial de K centroides aleatorios. Luego, cada observación se asigna al centroide más cercano. Posteriormente, los centroides se recalculan como la media de los puntos ahora asignados a ellos. Este ciclo de asignación y actualización se repite hasta que los centroides se estabilizan, es decir, cuando la agrupación deja de cambiar significativamente.</p>
 
-<p>Además del análisis jerárquico, se implementó la técnica de k-means para realizar una partición no supervisada de los estudiantes según sus características. Este método parte de una cantidad fija de grupos y busca minimizar la variabilidad interna dentro de cada cluster, a partir de iteraciones sucesivas de asignación y actualización de centroides.</p>
+<p>Además del análisis jerárquico, se implementó K-Means para realizar una partición no supervisada de los usuarios según sus características. Para determinar el número óptimo de clústeres, se utilizó la función NbClust, que evalúa múltiples índices de validación interna. Según la regla de la mayoría, la mejor partición se obtiene al dividir los datos en 3 clústeres. Esta elección fue respaldada por los resultados del método del codo (WSS) y el análisis del ancho promedio de silueta, ambos implementados mediante la función fviz_nbclust. En ambos casos, k=3 aparece como una buena elección en términos de balance entre cohesión y separación de grupos.</p>
 
-<p>Para determinar el número óptimo de clusters, se utilizó la función NbClust, que evalúa múltiples índices de validación interna. Según la regla de la mayoría, la mejor partición se obtiene al dividir los datos en 3 clusters. Esta elección fue respaldada además por los resultados del método del codo (WSS) y el análisis del ancho promedio de silueta, ambos implementados mediante la función fviz_nbclust. En ambos casos se observa que k=3 aparece como una buena elección en términos de balance entre cohesión y separación de grupos.</p>
+<p>Con base en esto, se ajustó el algoritmo de K-Means para k=3. Se obtuvo una partición estable, con tamaños de grupo relativamente balanceados y una varianza entre grupos considerable respecto a la varianza total, lo que indica una buena diferenciación entre los clústeres.</p>
 
-<p>Con base en esto, se ajustó el algoritmo de k-means para k=3. Se obtuvo una partición estable, con tamaños de grupo relativamente balanceados y una varianza entre grupos considerable respecto a la varianza total, lo que indica una buena diferenciación entre los clusters.</p>
+<img src="../images/Imagen119.png" alt="K-Means k=3" class="img-proyecto" width="450">
 
+<img src="../images/Imagen120.png" alt="Gráfico de K-Means" class="img-proyecto" width="450">
 
-        <img src="../images/Imagen119.png" alt="Título" class="img-proyecto" width="450">
+<p>Como complemento, también se probó la partición para k=4 y se evaluaron ambas configuraciones con gráficos de silueta. En estos gráficos se observa que la solución con 3 clústeres presenta mejores valores promedio, indicando una asignación más consistente de las observaciones a sus respectivos grupos. En cambio, la solución con 4 clústeres incluye algunos casos con valores negativos de silueta, lo que sugiere que ciertas observaciones podrían estar mal asignadas.</p>
 
-        <img src="../images/Imagen120.png" alt="Título" class="img-proyecto" width="450">
+<p>En función de estos resultados, se concluye que la partición en 3 grupos ofrece un buen equilibrio entre simplicidad y separación, y fue seleccionada como solución final para el análisis con K-Means.</p>
 
+     <h3>K-Medoides</h3>
 
-<p>Como complemento, también se probó la partición para k=4, y se evaluaron ambas configuraciones con gráficos de silueta. En estos gráficos se observa que la solución con 3 clusters presenta mejores valores promedio, lo que indica una asignación más consistente de las observaciones a sus respectivos grupos. En cambio, la solución con 4 clusters incluye algunos casos con valores negativos de silueta, lo que sugiere que ciertas observaciones podrían estar mal asignadas en los grupos en los cuales fueron asignadas.</p>
-
-<p>En función de estos resultados, se concluye que la partición en 3 grupos ofrece un buen equilibrio entre simplicidad y separación, y fue seleccionada como solución final para el análisis con k-means.</p>
-
-
-
-            <h3>K-medoides</h3>
-
-<p>El método k-medoides, al igual que k-means, busca particionar las observaciones en k grupos a partir de la similitud entre ellas. La diferencia clave es que los centros de los grupos son observaciones reales del conjunto de datos —denominadas medoides—, en lugar de promedios. Esto hace que el método sea menos sensible a valores atípicos y más adecuado en contextos donde un centroide no tiene interpretación significativa.</p>
+<p>El método K-medoides, al igual que K-means, busca particionar las observaciones en k grupos a partir de la similitud entre ellas. La diferencia clave es que los centros de los grupos son observaciones reales del conjunto de datos —denominadas medoides— en lugar de promedios. Esto hace que el método sea menos sensible a valores atípicos y más adecuado en contextos donde un centroide no tiene interpretación significativa.</p>
 
 <p>El procedimiento comienza seleccionando k medoides iniciales, y en cada iteración se agrupan las observaciones según su cercanía a estos. Si al intercambiar un medoide con otra observación del grupo se logra reducir la variabilidad interna, se realiza el cambio. El algoritmo continúa hasta que la estructura de los grupos se estabiliza.</p>
 
 <p>Esta técnica es especialmente útil cuando se requiere mayor robustez frente a datos extremos o cuando se desea trabajar exclusivamente con observaciones reales como referencia de cada grupo.</p>
-    
-<p>Se observa que pam() retorna la asignación de cada observación a uno de los tres grupos (clustering), los índices de los medoides elegidos (medoids), y un resumen por grupo que incluye el número de elementos, la distancia media dentro del clúster y el ancho promedio de silueta.</p>
 
-<p>A continuación, representamos gráficamente la calidad de la partición mediante el gráfico de siluetas, que nos ayuda a visualizar qué tan bien asignadas están las observaciones a sus respectivos grupos.</p>
+<p>Se observa que <code>pam()</code> retorna la asignación de cada observación a uno de los tres grupos (clustering), los índices de los medoides elegidos (medoids) y un resumen por grupo que incluye el número de elementos, la distancia media dentro del clúster y el ancho promedio de silueta.</p>
 
-        <img src="../images/Imagen121.png" alt="Título" class="img-proyecto" width="450">
+<p>A continuación, representamos gráficamente la calidad de la partición mediante el gráfico de siluetas, que permite visualizar qué tan bien asignadas están las observaciones a sus respectivos grupos.</p>
+
+<img src="../images/Imagen121.png" alt="Gráfico de siluetas K-medoides" class="img-proyecto" width="450">
 
 <p>En la Figura 28, cada barra representa una observación y su valor de silueta. Valores cercanos a 1 indican una buena asignación; valores cercanos a 0 o negativos indican asignaciones dudosas o incorrectas.</p>
 
 <p>El gráfico de siluetas muestra un valor promedio de 0.09, lo cual indica una estructura de clústeres débil. La mayoría de las observaciones tienen valores cercanos a cero e incluso negativos, en especial dentro del clúster 3. Esto sugiere que muchas asignaciones fueron poco consistentes y que las fronteras entre grupos son difusas.</p>
 
 <p>Finalmente, visualizamos los clústeres en el espacio reducido por PCA.</p>
+
+<img src="../images/Imagen122.png" alt="Clústeres K-medoides en PCA" class="img-proyecto" width="450">
+
+<p>La Figura 29 permite observar la separación entre los grupos definidos por K-medoides. Aunque esta proyección reduce la información de muchas variables a solo dos componentes, es útil para ilustrar la separación general entre clústeres.</p>
+
+<p>La proyección en el plano de componentes principales confirma la idea anterior. Si bien se observan concentraciones parciales de observaciones por grupo, no hay una separación clara entre clústeres. Los colores se superponen y las regiones asignadas a cada grupo se mezclan, lo que coincide con los bajos valores de silueta. En conjunto, estos resultados indican que la partición obtenida por K-medoides logra capturar algunas diferencias generales entre los usuarios de Netflix, pero no logra formar grupos bien definidos.</p>
+
+<h3>Fuzzy Clustering</h3>
+
+<p>El fuzzy clustering se utiliza cuando no hay claridad sobre la pertenencia de una observación a un grupo o cuando existen solapamientos entre grupos. En lugar de asignar cada observación a un único clúster, este método permite que una observación pertenezca a varios clústeres simultáneamente, con distintos grados de pertenencia, que indican la probabilidad de que la observación pertenezca a cada grupo.</p>
+
+<img src="../images/Imagen123.png" alt="Gráfico de siluetas Fuzzy" class="img-proyecto" width="450">
+
+<p>Cada barra de la Figura 30 representa una observación de nuestros datos. La altura de la barra corresponde al valor de silueta, que indica qué tan bien asignada está una observación al clúster correspondiente. Valores mayores a 1 indican una buena asignación (el punto está cerca del centro del grupo). Valores menores a cero indican una mala asignación. La línea roja punteada representa la media global, en este caso 0.14.</p>
+
+<p>Podemos representar los clústeres fuzzy mediante PCA, reduciendo a dos dimensiones.</p>
+
+<img src="../images/Imagen124.png" alt="Fuzzy Clustering en PCA" class="img-proyecto" width="450">
+
+<p>Otro gráfico útil muestra, para los dos clústeres obtenidos con PCA, el grado de pertenencia de cada observación. Las observaciones más claras tienen una pertenencia menos probable al grupo, mientras que las más oscuras tienen una pertenencia más probable al grupo.</p>
+
+<img src="../images/Imagen125.png" alt="Grado de pertenencia Fuzzy Clustering" class="img-proyecto" width="450">
+
+<h3>Comparación entre métodos</h3>
+
+<img src="../images/Imagen126.png" alt="Comparación de métodos de clustering" class="img-proyecto" width="450">
+
+<p><strong>Interpretación de las comparaciones:</strong></p>
+
+<ol>
+<li><strong>Coeficiente de Silueta:</strong> Se mueve en un rango de -1 a 1, donde valores cercanos a 1 indican buenas asignaciones y valores cercanos a -1 indican asignaciones incorrectas. DIANA obtuvo el mejor valor (0.36), sugiriendo la estructura de clústeres más clara. K-means (0.13) y Fuzzy (0.096) tuvieron resultados mediocres. Ward y K-medoides obtuvieron los valores más bajos (~0.09).</li>
+
+<li><strong>Índice Rand Ajustado (ARI_vs_Ward):</strong> Compara la similitud de las asignaciones de los métodos con respecto a Ward. K-means mostró la mayor similitud (ARI=0.34), DIANA y K-medoides tuvieron concordancia baja pero positiva, y Fuzzy mostró la peor similitud.</li>
+
+<li><strong>Índice Dunn:</strong> Mide separación entre clústeres (valores altos son mejores). DIANA destacó nuevamente (0.107), seguido de Fuzzy (0.084), mientras que los otros métodos mostraron valores bajos.</li>
+
+<li><strong>Davies-Bouldin:</strong> Mide compacidad y separación (valores bajos son mejores). Fuzzy fue el mejor con 0.77, seguido por DIANA (0.99); Ward y K-medoides obtuvieron peores resultados.</li>
+
+<li><strong>Calinski-Harabasz:</strong> Ratio entre dispersión inter e intra-clúster (valores altos son mejores). K-means obtuvo 82.27, siendo el mejor entre los métodos; DIANA y Fuzzy tuvieron bajo rendimiento.</li>
+</ol>
+
+<p><strong>Conclusiones generales:</strong> DIANA resultó ser el método más eficiente debido a su mayor coeficiente de silueta (0.36) y buen balance en los índices Dunn y Davies-Bouldin, aunque su ARI con Ward fue moderado (0.12). K-means tuvo resultados variados, destacando en Calinski-Harabasz (82.27) pero menor desempeño en silueta (0.13) y Dunn (0.033), aunque mostró alta concordancia con Ward (ARI=0.34). Fuzzy tuvo buen rendimiento en Davies-Bouldin (0.77) pero mal desempeño en Calinski-Harabasz (1.42) y casi nula correlación con Ward (ARI≈0). Finalmente, Ward y K-medoides mostraron menor desempeño en las distintas métricas.</p>
+     
     
-       <img src="../images/Imagen122.png" alt="Título" class="img-proyecto" width="450">
-
-<p>La Figura 29 permite observar la separación entre los grupos definidos por k-medoides. Aunque esta proyección reduce la información de muchas variables a solo dos componentes, es útil para ilustrar la separación general entre clústeres.</p>
-
-<p>La proyección en el plano de componentes principales confirma la idea anterior. Si bien se observan concentraciones parciales de observaciones por grupo, no hay una separación clara entre clústeres. Los colores se superponen y las regiones asignadas a cada grupo se mezclan, lo que coincide con los bajos valores de silueta. En conjunto, estos resultados indican que la partición obtenida por k-medoides logra capturar algunas diferencias generales entre los usuarios de Netflix, pero no logra formar grupos bien definidos.</p>
-    
-    
-            <h3>Fuzzy</h3>
-
- <p>El fuzzy clustering se usa cuando no tenemos clara la pertenencia de una observacion a un gruoo o cuando hay solapamientos entre grupos. Lo que hace es no asignar cada observación a un único cluster, sino que una observacion pertenecer a varios clusters al mismo tiempo, con distintos grados de pertenencia, que nos indican que tan probable es que esa observacion pertenezca a ese cluster.</p>   
-
-       <img src="../images/Imagen123.png" alt="Título" class="img-proyecto" width="450">
-
-<p>Cada barra de la figura 30 es una observación de nuestros datos, la altura de la barra se relaciona con el eje Y que es la silueta, que indica qué tan bien asignada está una observacion al cluster correspondiente, si este valor es mayor a 1, quiere decir que la asignacion de la observacion en el grupo fue buena (el punto está cerca del centro del grupo). Si el valor es menor a cero, esto indica mala asignación. La linea roja punteada es la media global, en este caso vale 0.14.</p>
-
-<p>Podemos representar el cluster fuzzy a traves de PCA, con 2 dimensiones.</p>
-
-       <img src="../images/Imagen124.png" alt="Título" class="img-proyecto" width="450">
-
-<p>Otro grafico util es el siguiente, que nos indica para los 2 cluster que obtenemos con PCA a traves de reducir la variabilidad, para todas las observaciones, cual es su grado de pertenencia, donde las observaciones mas claras tienen una pertenencia menos probable al grupo, y las mas ocuras tienen una perenencia mas probable al grupo.</p>
-
-
-       <img src="../images/Imagen125.png" alt="Título" class="img-proyecto" width="450">
-
-    
-            <h3>Comparación entre métodos:</h3>
-    
-       <img src="../images/Imagen126.png" alt="Título" class="img-proyecto" width="450">
-
-
-<p>Interpretación de las comparaciones:</p>
-
-<p>1)  El coeficiente de Silueta se mueve en un rango entre -1 y 1, donde los valores cercanos a 1 indican que las observaciones están bien asignadas en el cluster y cercanos a -1 indican que están mal asignadas en ese cluster. Vemos que DIANA obtuvo el mejor valor (0.36), sugiriendo la estructura de clusters más clara. K-means (0.13) y Fuzzy (0.096) tuvieron resultados mediocres. Ward y K-medoides tuvieron los valores más bajos (\~0.09)</p>
-
-<p>2)  Índice Rand Ajustado (ARI_vs_Ward): Compara que tan bien asignan y dividen los demás métodos en términos de similitud entre los resultados de los métodos, comparado con el método de Ward. K-means mostró la mayor similitud (ARI=0.34), DIANA y K-medoides tuvieron concordancia baja, pero positiva, Fuzzy mostró peor similitud al ser comparado con Ward.</p>
-
-<p>3)  Índice Dunn: Mide separación entre clusters, valores altos son mejores, DIANA destacó nuevamente (0.107), seguido de Fuzzy (0.084), los otros métodos tuvieron un peor rendimiento con valores bajos.</p>
-
-<p>4)  Davies-Bouldin mide compacidad y separación, acá los valores bajos son mejores, Fuzzy fue el mejor con un valor de 0.77, seguido por DIANA con un valor de 0.99, Ward y K-medoides tuvieron peores valores.</p>
-
-<p>5)  Calinski-Harabasz es un ratio entre dispersión inter e intra-cluster, acá los valores altos son mejores. Vemos que K-means obtuvo un valor de 82.27, fue el mejor con respecto a otros métodos, vemos que DIANA en este caso no tuvo buen rendimiento al igual que fuzzy.</p>
-
-<p>Conclusiones en general: DIANA resultó el método más eficiente debido a mayor coeficiente de silueta (0.36), mejor balance en índices Dunn y Davies-Bouldin, aunque su ARI con Ward fue moderado (0.12), su estructura de clusters parece más natural. K-means tuvo resultados variados con un buen valor en Calinski-Harabasz (82.27), menos desempeño en silueta (0.13) y Dunn (0.033), aunque tuvo alta concordancia con Ward (ARI=0.34). Fuzzy tuvo buen rendimiento en Davies-Bouldin (0.77) pero mal rendimiento en Calinski-Harabasz (1.42), además de casi nula correlación con Ward (ARI≈0). Luego Ward y K-medoides tuvieron peor rendimiento en las distintas métricas.</p>
-    
-    
-
-      <h2>Distribución normal multivariante</h2>
+ <h2>Distribución Normal Multivariante</h2>
 
 <p>La distribución normal multivariante es la generalización de la distribución normal univariada al caso de vectores aleatorios. Un vector $X \in \mathbb{R}^p$ tiene distribución $N_p(\mu, \Sigma)$ si su función de densidad está dada por:</p>
 
-<p> \(f_X(x) = \frac{1}{(2\pi)^{p/2} |\Sigma|^{1/2}} \exp\left\{ -\frac{1}{2}(x - \mu)' \Sigma^{-1} (x - \mu) \right\} \) </p>
+<p>\(f_X(x) = \frac{1}{(2\pi)^{p/2} |\Sigma|^{1/2}} \exp\left\{ -\frac{1}{2}(x - \mu)' \Sigma^{-1} (x - \mu) \right\} \)</p>
 
 <p>donde $\mu$ es el vector de medias y $\Sigma$ la matriz de covarianzas, que debe ser simétrica y definida positiva.</p>
 
-<p>Esta distribución es fundamental porque muchas técnicas multivariadas como el análisis discriminante, MANOVA o incluso los métodos de inferencia aplicados al clustering asumen normalidad multivariante. Esta condición garantiza que los estimadores de máxima verosimilitud de $\mu$ y $\Sigma$ coincidan con la media y la matriz de covarianza muestrales, respectivamente.</p>
+<p>Esta distribución es fundamental porque muchas técnicas multivariadas, como el análisis discriminante, MANOVA o incluso los métodos de inferencia aplicados al clustering, asumen normalidad multivariante. Esta condición garantiza que los estimadores de máxima verosimilitud de $\mu$ y $\Sigma$ coincidan con la media y la matriz de covarianza muestrales, respectivamente.</p>
 
-<p>Además, la normal multivariante permite aplicar resultados clave como la distribución de Wishart para matrices de covarianza, y facilita el uso de herramientas de inferencia basadas en la teoría asintótica, lo que resulta especialmente útil al interpretar estructuras de grupos en análisis de conglomerados y PCA.</p>
+<p>Además, la normal multivariante permite aplicar resultados clave, como la distribución de Wishart para matrices de covarianza, y facilita el uso de herramientas de inferencia basadas en la teoría asintótica, lo que resulta especialmente útil al interpretar estructuras de grupos en análisis de conglomerados y PCA.</p>
 
-       <img src="../images/Imagen127.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen127.png" alt="Cuantiles teóricos vs distancias de Mahalanobis" class="img-proyecto" width="450">
 
-<p>El gráfico de la Figura 33 de cuantiles teóricos contra distancias de Mahalanobis observadas, vemos que los puntos iniciales se alinean bien con la línea diagonal punteada, pero las observaciones en los extremos se alejan de esa línea, especialmente en la parte superior derecha. Estas desviaciones sugieren la presencia de valores atípicos o casos con mayor distancia al centro de la distribución. Hay una desviación sistemática en la cola superior porque los puntos en la parte superior derecha del gráfico se desvían significativamente por encima de la línea teórica. Esto indica que hay valores atípicos multivariados, por lo que la distribución que sigue tiene colas más pesadas que una normal multivariada, además la curtosis multivariada es mayor que la esperada bajo normalidad. Otro factor es la discontinuidad en los valores observados, la presencia de saltos en los puntos indica el no cumplimiento del supuesto de multinormalidad. Otro factor que usamos para afirmar el cumplimiento del no supuesto de multinormalidad fue el uso de la función testes.R que nos servía para verificar este supuesto, donde obtuvimos un p-valor muy pequeño (menor a 0.05), por lo que rechazamos la hipótesis nula que indicaba multinormalidad.</p>
-    
-    
+<p>En el gráfico de la Figura 33, que muestra cuantiles teóricos contra distancias de Mahalanobis observadas, se observa que los puntos iniciales se alinean bien con la línea diagonal punteada, pero las observaciones en los extremos se alejan de ella, especialmente en la parte superior derecha. Estas desviaciones sugieren la presencia de valores atípicos o casos con mayor distancia al centro de la distribución. La desviación sistemática en la cola superior indica que la distribución presenta colas más pesadas que una normal multivariante, y la curtosis multivariada es mayor a la esperada bajo normalidad. Además, la discontinuidad en los valores observados, evidenciada por saltos en los puntos, indica que no se cumple el supuesto de multinormalidad. Esto se confirmó mediante la función `testes.R` en R, obteniendo un p-valor menor a 0.05, por lo que se rechazó la hipótesis nula de multinormalidad.</p>
 
-     <h2>Análisis Discriminante</h2>
+<h2>Análisis Discriminante</h2>
 
-       <img src="../images/Imagen132.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen132.png" alt="Análisis discriminante" class="img-proyecto" width="450">
 
-<p>La variable dependiente Y_netflix fue construida a partir de la variable original h_netflix la cual representaba el número de horas dedicadas al consumo de Netflix y se presenta como una variable cuantitativa continua. Con Y_netflix convertimos h_netflix en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para hacer esto usamos los terciles de la distribución de h_netflix, los cuales particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron: De 0.0 a 0.5 horas: categoría “poco” De 0.5 a 5 horas: categoría “intermedio” De 5 a 11 horas: categoría “mucho” Las frecuencias observadas en cada categoría fueron: 241 individuos en “poco”, 265 en “intermedio”, y 180 en “mucho”, esta particion es balanceada.</p>
-    
+<p>La variable dependiente <strong>Y_netflix</strong> se construyó a partir de la variable original <strong>h_netflix</strong>, que representaba el número de horas dedicadas al consumo de Netflix, una variable cuantitativa continua. Con Y_netflix, convertimos h_netflix en una variable categórica ordinal, dividiendo su rango en tres categorías: “poco”, “intermedio” y “mucho”. Para esto se utilizaron los terciles de la distribución de h_netflix, que particionan el conjunto de datos en tres grupos de igual tamaño (33% cada uno). Los puntos de corte fueron:</p>
+
 <table>
     <tr>
         <th>Inicio</th>
@@ -445,12 +439,11 @@
     </tr>
 </table>
 
-<p>Utilizamos un script testes.r creada por la comunidad de R para verificar multinormalidad, homoscedasticidad, igualdad de medias, pero obtuvimos que en nuestos datos no se cumplia la multinormalidad, por lo que no nos servia analisis discrimintante lineal ni cuadratico. Entonces probamos con analisis discriminante logistico. Otro motivo para esto es que en nuestros datos existen variables cualitativas y cuantitativas.</p>
+<p>Las frecuencias observadas fueron: 241 individuos en “poco”, 265 en “intermedio” y 180 en “mucho”, resultando en una partición balanceada.</p>
 
-<p>Decidimos ajustar un modelo que explique las horas de consumo de Netflix en funcion de todas las demas variables.</p>
+<p>Se utilizó el script <code>testes.R</code> para verificar multinormalidad, homoscedasticidad e igualdad de medias. Los resultados indicaron que no se cumple la multinormalidad, por lo que no era adecuado aplicar análisis discriminante lineal ni cuadrático. Además, debido a la presencia de variables cualitativas y cuantitativas, se optó por un análisis discriminante logístico.</p>
 
-<p>Hicimos las predicciones y obtuvimos la siguiente matriz de confusion 3x3.</p>
-
+<p>Se ajustó un modelo que explica las horas de consumo de Netflix en función de todas las demás variables. La matriz de confusión obtenida fue:</p>
 
 <table>
     <tr>
@@ -458,90 +451,71 @@
         <th colspan="3">Predicho</th>
     </tr>
     <tr>
-        <th>poco</th>
-        <th>intermedio</th>
-        <th>mucho</th>
+        <th>Poco</th>
+        <th>Intermedio</th>
+        <th>Mucho</th>
     </tr>
     <tr>
-        <th class="header">poco</th>
+        <th>Poco</th>
         <td>153</td>
         <td>64</td>
         <td>24</td>
     </tr>
     <tr>
-        <th class="header">intermedio</th>
+        <th>Intermedio</th>
         <td>64</td>
         <td>153</td>
         <td>48</td>
     </tr>
     <tr>
-        <th class="header">mucho</th>
+        <th>Mucho</th>
         <td>27</td>
         <td>71</td>
         <td>82</td>
     </tr>
 </table>
-    
 
-<p>Curva ROC:</p>
-
-<p>Para evaluar el rendimiento del modelo de regresión logística multinomial ajustado para predecir la variable categórica Y_estudio (poco, intermedio, mucho), se construyeron curvas ROC (Receiver Operating Characteristic) para cada una de las tres clases. En el grafico vemos que Clase "poco" (azul) tiene un AUC de 0.797. Clase "intermedio" (rojo) tiene un AUC de 0.687. Clase "mucho" (verde) tiene un AUC de 0.780.</p>
-
-<p>Esta curva es una métrica que refleja la capacidad del modelo para discriminar entre las clases. Cuanto mas cercano a 1 sea el AUC, mejor es la capacidad discriminativa, si el valor es cercano a 0.5, es como discriminar al azar. En nuestro caso, para los casos “poco” y “mucho”, el AUC es mayor a 0.75, esta bien. Para la categoría “intermedio” tiene un rendimiento más bajo, de 0.687.</p>
-
-          <img src="../images/Imagen131.png" alt="Título" class="img-proyecto" width="450">
- 
+<p>Se evaluó el rendimiento mediante curvas ROC para cada clase. Los resultados fueron:</p>
 
 <table>
     <tr>
-        <th>poco</th>
-        <th>intermedio</th>
-        <th>mucho</th>
+        <th>Poco</th>
+        <th>Intermedio</th>
+        <th>Mucho</th>
     </tr>
     <tr>
-        <td>0.7973892</td>
-        <td>0.6869538</td>
-        <td>0.7795345</td>
+        <td>0.797</td>
+        <td>0.687</td>
+        <td>0.780</td>
     </tr>
 </table>
 
 <div class="auc">
-    Multi-class area under the curve (AUC): 0.7559
+    Multi-class area under the curve (AUC): 0.756
 </div>
 
+<img src="../images/Imagen131.png" alt="Curva ROC multinomial" class="img-proyecto" width="450">
+
+<p>La curva ROC refleja la capacidad del modelo para discriminar entre las clases. Valores de AUC cercanos a 1 indican buena capacidad discriminativa, mientras que valores cercanos a 0.5 indican desempeño similar al azar. En este caso, las categorías “poco” y “mucho” presentan un AUC mayor a 0.75, mientras que “intermedio” tiene un rendimiento más bajo (0.687).</p>
+
+<h2>Conclusión</h2>
+
+<p>El análisis de los datos permitió caracterizar de forma profunda y estructurada los patrones de organización temporal de los usuarios de Netflix. A través de técnicas descriptivas, análisis factorial, métodos de agrupamiento y análisis de correspondencias, se obtuvieron hallazgos significativos sobre el uso del tiempo.</p>
+
+<p>En la etapa descriptiva, se observaron diferencias según el sexo, destacando mayor carga de trabajo no remunerado y menor tiempo libre en mujeres. También se identificaron desigualdades vinculadas a trabajo remunerado, edad y entorno educativo, respaldadas por medidas de tendencia central, dispersión y visualizaciones detalladas de distribución de actividades y tiempos.</p>
+
+<p>Desde la perspectiva multivariada, se asumió distribución normal multivariante para justificar el uso de técnicas como PCA, permitiendo reducir dimensionalidad e identificar combinaciones lineales de variables que explican gran parte de la varianza. Esto facilitó interpretar perfiles de usuarios según patrones de actividad.</p>
+
+<p>El análisis de correspondencias permitió explorar relaciones entre variables cualitativas, visualizando asociaciones relevantes entre sexo, educación, tenencia de hijos, uso de tecnología y entorno familiar. El Análisis de Correspondencias Simple (CA) y Múltiple (MCA) ofrecieron una representación robusta de relaciones entre múltiples dimensiones.</p>
+
+<p>Los métodos de agrupamiento jerárquico (Ward y DIANA) y no jerárquico (K-medoides, K-means y clustering difuso tipo Fanny) permitieron identificar grupos homogéneos dentro de la población de usuarios. Se observó una estructura óptima de tres clusters, diferenciados por carga horaria, edad, ingreso y nivel educativo del hogar.</p>
+
+<p>El análisis discriminante logístico aportó evidencia adicional sobre la relevancia de variables como horas de Netflix, trabajo doméstico, ocio y educación del hogar para diferenciar a los usuarios, validando estadísticamente los clusters formados.</p>
+
+<p>En conjunto, los resultados muestran que el uso del tiempo entre los usuarios de Netflix no es homogéneo ni aleatorio, sino que responde a configuraciones estructurales, sociales y económicas. La combinación de técnicas multivariadas enriqueció el análisis, ofreciendo una visión más precisa sobre los determinantes del tiempo cotidiano y el consumo de Netflix. El análisis de correspondencias aportó información sobre cómo las condiciones del entorno y los recursos del hogar están interrelacionados con el consumo de Netflix.</p>
 
 
-    
-     <h2>Conclusión</h2>
-
-<p>El análisis de los datos provenientes permitió caracterizar de forma profunda y estructurada los patrones de organización temporal de los usuarios de Netflix. A través de una combinación de técnicas descriptivas, análisis factorial, métodos de agrupamiento y análisis de correspondencias, se obtuvieron hallazgos significativos que aportan a la comprensión del uso del tiempo de los usuarios de Netflix.</p>
-
-<p>En la etapa descriptiva, se observaron diferencias claras según el sexo, destacándose una mayor carga de trabajo no remunerado y menor tiempo libre entre las mujeres. También se detectaron desigualdades vinculadas al trabajo remunerado, la edad y el entorno educativo, lo cual fue respaldado por medidas de tendencia central y dispersión, así como por visualizaciones detalladas de la distribución de actividades y tiempos.</p>
-
-<p>Desde una perspectiva estadística multivariada, se asumió una distribución normal multivariante para justificar la aplicación de técnicas como el Análisis de Componentes Principales (PCA), el cual permitió reducir la dimensionalidad del problema, identificando combinaciones lineales de variables que explican gran parte de la varianza observada. Este paso fue clave para interpretar los perfiles subyacentes de los usuarios de Netflix según sus patrones de actividad.</p>
-
-<p>Se incorporó el análisis de correspondencias para profundizar en las relaciones entre variables categóricas. Mediante gráficos de mosaico se visualizaron asociaciones relevantes entre el sexo, la educación inicial, la tenencia de hijos, el uso de tecnología, el tipo de centro educativo y otras condiciones del entorno familiar y social. A través del Análisis de Correspondencias Simple (CA) entre edad y año educativo, se identificaron patrones de asociación coherentes con la el consumo de Netflix. Por otro lado, el Análisis de Correspondencias Múltiple (MCA), utilizando tablas disyuntivas y de Burt, permitió representar en el espacio de dos dimensiones las categorías con mayor peso explicativo, ofreciendo una visión sintética y robusta de las relaciones entre múltiples dimensiones cualitativas.</p>
-
-<p>Además, el uso de técnicas de agrupamiento jerárquico (Ward y DIANA) y no jerárquico (k-medoides, k-medias, y clustering difuso tipo fanny) facilitó la identificación de grupos relativamente homogéneos dentro de la población de consumidores de Netflix. En general, se observó una estructura óptima de tres clusters, con perfiles diferenciados en términos de carga horaria, edad, ingreso y nivel educativo del hogar. Estas técnicas permitieron corroborar que existen patrones significativos y estables de consumo de Netflix entre los consumidores.</p>
-
-<p>El análisis discriminante, por su parte, aportó evidencia adicional sobre la relevancia de variables como las horas dedicadas al consumo de Netflix, el trabajo doméstico, el ocio y el nivel educativo del hogar para diferenciar a los consumidores de Netflix, validando estadísticamente la solidez de los clusters formados.</p>
-
-<p>En conjunto, el trabajo muestra que el uso del tiempo entre los usuarios de Netflix no es homogéneo ni aleatorio, sino que responde a configuraciones estructurales, sociales y económicas que se reflejan en los datos. La combinación de técnicas multivariadas permitió enriquecer sustancialmente el análisis y ofrecer una mirada más compleja y precisa sobre los determinantes del tiempo cotidiano y de consumo de Netflix en esta población. La inclusión del análisis de correspondencias aportó una capa adicional de interpretación sobre cómo las condiciones del entorno y los recursos del hogar están profundamente entrelazados con el consumo de Netflix de los usuarios.</p>
-
-
-
-    
 </section>
-
-
-
-
-
-
-
-
-    
-
 
       <footer>
         <a href="../index.html">Volver al portafolio</a>
