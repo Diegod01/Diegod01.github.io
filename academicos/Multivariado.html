@@ -26,59 +26,50 @@
     </header>
 
 <section>
-        <h2>Resumen Ejecutivo:</h2>
-        <p>Este trabajo busca entender el uso de tiempo que le dan los usuarios que consumen la plataforma de streaming Netflix, ademas se analizan características sociodemográficas de ususarios de la plataforma. El objetivo principal es identificar perfiles diferenciados de usuarios según sus actividades cotidianas, entorno familiar y contexto socioeconómico, ademas de entender porque no estan dedicando tiempo a la plataforma. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.</p>
-        <p>Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar.</p>
+    
+<h2>Resumen Ejecutivo:</h2>
+<p>Este trabajo busca entender el uso de tiempo que le dan los usuarios que consumen la plataforma de streaming Netflix, además se analizan características sociodemográficas de usuarios de la plataforma. El objetivo principal es identificar perfiles diferenciados de usuarios según sus actividades cotidianas, entorno familiar y contexto socioeconómico, además de entender por qué no están dedicando tiempo a la plataforma. Para ello, se adopta un enfoque multivariado que combina técnicas descriptivas, análisis factorial, métodos de agrupamiento y visualizaciones gráficas que permiten interpretar la estructura latente de los datos.</p>
+<p>Los resultados permiten distinguir al menos tres grupos claramente diferenciados, con patrones contrastantes en cuanto al tiempo dedicado al estudio, ocio, trabajo y tareas domésticas. También se observaron diferencias relevantes por sexo y nivel educativo del hogar.</p>
 
-
-
-        <h2>Introducción</h2>
+<h2>Introducción</h2>
 <p>El presente estudio busca comprender cómo los usuarios de Netflix organizan su tiempo diario, identificando posibles perfiles según variables personales, familiares y educativas. Se trabaja con datos exclusivamente de usuarios que declararon estar suscritos a la plataforma.</p>
 <p>La estrategia metodológica combina análisis descriptivo con herramientas multivariadas. Inicialmente se realizó una limpieza de la base de datos y un resumen estadístico de las variables clave. Luego, se exploraron asociaciones entre variables mediante análisis bivariado y correlaciones. A partir de allí, se aplicó Análisis de Componentes Principales (PCA) para reducir la dimensionalidad y facilitar la interpretación de patrones complejos.</p>
-<p>Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de usuarios según sus condiciones y como estas se relacionan con el uso de tiempo en la plataforma de Netflix</p>
+<p>Adicionalmente, se incorporó el análisis de correspondencias como herramienta específica para estudiar las asociaciones entre variables categóricas. A través de gráficos de mosaico y técnicas como el Análisis de Correspondencias Simple (CA) y Múltiple (MCA), se exploraron visualmente las relaciones entre atributos cualitativos tales como edad, sexo, nivel educativo, acceso a recursos tecnológicos y contexto residencial, revelando estructuras latentes y perfiles de usuarios según sus condiciones y cómo estas se relacionan con el uso de tiempo en la plataforma de Netflix.</p>
 <p>Sobre la base de estas exploraciones, se implementaron distintas técnicas de agrupamiento (clustering), tanto jerárquicas como no jerárquicas, para detectar perfiles homogéneos de estudiantes. Posteriormente, se evaluó el ajuste de los datos a una distribución normal multivariante, aspecto fundamental para la validez de ciertas técnicas estadísticas. Finalmente, se utilizó el análisis discriminante como herramienta de validación para examinar la capacidad predictiva de las variables y consolidar la interpretación de los grupos encontrados.</p>
-    
 
-        <h2>Marco Metodológico</h2>
+<h2>Marco Metodológico</h2>
+<p>Este trabajo emplea un enfoque cuantitativo basado en técnicas multivariadas aplicadas a datos previamente estandarizados. En primer lugar, se utilizó el Análisis de Componentes Principales (PCA), que permitió sintetizar la información de múltiples variables en un número reducido de componentes, facilitando la visualización e interpretación de las relaciones entre ellas.</p>
+<p>Para abordar las variables categóricas del estudio, se incorporó el Análisis de Correspondencias. En una primera etapa, se utilizaron gráficos de mosaico para explorar visualmente la dependencia entre pares de variables cualitativas como sexo, años de educación, trabajo remunerado, acceso a tecnologías o servicios, entre otras. Luego, mediante el Análisis de Correspondencias Simple (CA), se estudió la relación entre la edad y el año educativo, obteniendo una representación bidimensional que reveló asociaciones significativas entre ambas variables. Finalmente, el Análisis de Correspondencias Múltiple (MCA), aplicado sobre la tabla disyuntiva y la tabla de Burt, permitió visualizar el posicionamiento relativo de múltiples categorías y su contribución a las dimensiones latentes del espacio factorial.</p>
+<p>Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de usuarios con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.</p>
+<p>Dado que muchas técnicas multivariadas presuponen normalidad multivariante, se evaluó esta condición a través de simulaciones, gráficos Q-Q y distancias de Mahalanobis. Finalmente, se aplicó análisis discriminante lineal para validar la segmentación obtenida, evaluando la capacidad de las variables seleccionadas para predecir correctamente la pertenencia a los grupos definidos.</p>
 
-  <p>Este trabajo emplea un enfoque cuantitativo basado en técnicas multivariadas aplicadas a datos previamente estandarizados. En primer lugar, se utilizó el Análisis de Componentes Principales (PCA), que permitió sintetizar la información de múltiples variables en un número reducido de componentes, facilitando la visualización e interpretación de las relaciones entre ellas.<p>
-  <p>Para abordar las variables categóricas del estudio, se incorporó el Análisis de Correspondencias. En una primera etapa, se utilizaron gráficos de mosaico para explorar visualmente la dependencia entre pares de variables cualitativas como sexo, años de educación, trabajo remunerado, acceso a tecnologías o servicios, entre otras. Luego, mediante el Análisis de Correspondencias Simple (CA), se estudió la relación entre la edad y el año educativo, obteniendo una representación bidimensional que reveló asociaciones significativas entre ambas variables. Finalmente, el Análisis de Correspondencias Múltiple (MCA), aplicado sobre la tabla disyuntiva y la tabla de Burt, permitió visualizar el posicionamiento relativo de múltiples categorías y su contribución a las dimensiones latentes del espacio factorial.<p>
-  <p>Posteriormente, se aplicaron técnicas de agrupamiento con el objetivo de identificar perfiles de usuarios con comportamientos similares. Se exploraron métodos jerárquicos (como el algoritmo de Ward y clustering divisivo tipo DIANA) y no jerárquicos (k-means, k-medoides y clustering difuso mediante fanny), evaluando la calidad de los agrupamientos mediante gráficos de silueta y proyecciones en el espacio PCA.<p>
-  <p>Dado que muchas técnicas multivariadas presuponen normalidad multivariante, se evaluó esta condición a través de simulaciones, gráficos Q-Q y distancias de Mahalanobis. Finalmente, se aplicó análisis discriminante lineal para validar la segmentación obtenida, evaluando la capacidad de las variables seleccionadas para predecir correctamente la pertenencia a los grupos definidos.</p>  
-
-        <h2>Datos</h2>
-
-<p>El conjunto de variables disponibles es amplio y permite caracterizar a cada usuarios desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) y de su contexto sociodemográfico y familiar.<p>
-<p>Se incluyen variables continuas como las horas diarias dedicadas a dormir, estudiar, alimentarse, asearse, realizar tareas domésticas, asistir a consultas médicas o participar en actividades recreativas. También se consideran variables de contexto como la edad del encuestado, el año educativo que cursa, el logaritmo del ingreso mensual del hogar y el promedio de años de educación de los adultos del hogar.<p>
-<p>A nivel categórico, hay variables dicotómicas que indican la presencia o ausencia de determinadas condiciones (por ejemplo: si trabaja remuneradamente, si el hogar recibe Asignación Familiar, si tiene computadora o televisión con abono, si vive en Montevideo, etc.). Otras variables permiten identificar la composición del hogar en términos de activos, inactivos y personas con discapacidad.<p>
+<h2>Datos</h2>
+<p>El conjunto de variables disponibles es amplio y permite caracterizar a cada usuario desde el punto de vista de su rutina diaria (tiempo dedicado a distintas actividades) y de su contexto sociodemográfico y familiar.</p>
+<p>Se incluyen variables continuas como las horas diarias dedicadas a dormir, estudiar, alimentarse, asearse, realizar tareas domésticas, asistir a consultas médicas o participar en actividades recreativas. También se consideran variables de contexto como la edad del encuestado, el año educativo que cursa, el logaritmo del ingreso mensual del hogar y el promedio de años de educación de los adultos del hogar.</p>
+<p>A nivel categórico, hay variables dicotómicas que indican la presencia o ausencia de determinadas condiciones (por ejemplo: si trabaja remuneradamente, si el hogar recibe Asignación Familiar, si tiene computadora o televisión con abono, si vive en Montevideo, etc.). Otras variables permiten identificar la composición del hogar en términos de activos, inactivos y personas con discapacidad.</p>
 <p>Este conjunto de variables brinda una visión multidimensional de la situación de los usuarios, haciendo posible identificar perfiles diferenciados de uso del tiempo y asociarlos a factores sociales y económicos del hogar.</p>
-    
 
-        <h2>Análisis descriptivo:</h2>
-<p>Nuestro objetivo es caracterizar la distribución de las principales variables de interés horas dedicadas a dormir, a consumir Netflix, ocio, tareas domésticas y otras actividades así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior.  Es importante aclarar que las horas dedicas a consumir Netflix no se incluyen como actividad de ocio.</p>
+<h2>Análisis descriptivo:</h2>
+<p>Nuestro objetivo es caracterizar la distribución de las principales variables de interés: horas dedicadas a dormir, a consumir Netflix, ocio, tareas domésticas y otras actividades, así como resumir atributos sociodemográficos (sexo, edad, año cursado, logaritmo del ingreso). Empleamos estadísticas univariadas (medias, medianas, rangos) y visualizaciones para identificar patrones generales y posibles diferencias según grupos, sentando las bases para el análisis multivariado posterior. Es importante aclarar que las horas dedicadas a consumir Netflix no se incluyen como actividad de ocio.</p>
 
-    
-
-            <h3>Pre-Procesamiento</h3>
+<h3>Pre-Procesamiento</h3>
 <p>Antes de realizar análisis multivariados, llevamos a cabo una etapa de limpieza y preparación de los datos. En primer lugar, identificamos valores faltantes en la base. La única variable con datos nulos es aniosed_h (años de educación promedio de los adultos del hogar), con un único valor faltante. Ese caso fue eliminado para evitar distorsiones en los cálculos posteriores, dado que representa menos del 0.1% del total de observaciones.</p>
 
-<p>Creamos un nuevo objeto llamado "cuantitativas"  que solo contiene las variables numéricas que nos interesan estudiar: horas dedicadas a dormir (`h_dormir`), alimentarse, cuidado personal, estudio, tareas domésticas, ocio y atención médica; junto con datos sociodemográficos como edad, año que cursa (`anio_ed`), logaritmo del ingreso del hogar (`log_ing`), años de escolaridad del hogar (`aniosed_h`), y marcadores de actividad (`act`, `inact`) y discapacidad (`disc_h`). De esta forma aislamos en un solo data frame todas las medidas cuantitativas relevantes para nuestro análisis descriptivo, facilitando los siguientes pasos de resumen y visualización.</p>
+<p>Creamos un nuevo objeto llamado "cuantitativas" que solo contiene las variables numéricas que nos interesan estudiar: horas dedicadas a dormir (`h_dormir`), alimentarse, cuidado personal, estudio, tareas domésticas, ocio y atención médica; junto con datos sociodemográficos como edad, año que cursa (`anio_ed`), logaritmo del ingreso del hogar (`log_ing`), años de escolaridad del hogar (`aniosed_h`), y marcadores de actividad (`act`, `inact`) y discapacidad (`disc_h`). De esta forma aislamos en un solo data frame todas las medidas cuantitativas relevantes para nuestro análisis descriptivo, facilitando los siguientes pasos de resumen y visualización.</p>
 
-<p>A continuación, utilizamos "summary(cuantitativas)" para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los usuarios de Netflix duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de consumo de Netflix oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos usuarios dedicaron tiempo a citas médicas en la jornada registrada</p>    
+<p>A continuación, utilizamos "summary(cuantitativas)" para obtener de manera inmediata un panorama de cada variable: el valor mínimo, el primer cuartil, la mediana, la media, el tercer cuartil y el valor máximo, así como el conteo de datos faltantes. Con este vistazo rápido descubrimos, por ejemplo, que los usuarios de Netflix duermen generalmente entre 6 y 9 horas (mediana alrededor de 8 h), que el tiempo de consumo de Netflix oscila con medianas cercanas a 2 h al día, y que en variables como `h_medico` la mayoría de los valores está en cero, indicando que pocos usuarios dedicaron tiempo a citas médicas en la jornada registrada.</p>
 
+    <h3>Visualización Univariada</h3>
 
-    
-            <h3>Visualización Univariada</h3>
-
-<p>La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los usuarios de Netflix</p>
+<p>La visualización univariada permite explorar cómo se distribuye una sola variable en la muestra, proporcionando información clave sobre su forma, tendencia central, dispersión y posibles valores atípicos. Este tipo de análisis es fundamental como primer paso para comprender el comportamiento individual de cada variable antes de pasar a enfoques multivariados más complejos. En esta sección se presentan histogramas, diagramas de caja y tablas descriptivas que permiten examinar en detalle variables seleccionadas relacionadas con el uso del tiempo y el perfil sociodemográfico de los usuarios de Netflix.</p>
 
 <img src="../images/Imagen92.png" alt="Título" class="img-proyecto" width="450">
 
 <p>Para observar la distribución de las horas dedicadas a dormir, se construyó un histograma (Figura 1) que agrupa los valores en intervalos de media hora. El gráfico revela una alta concentración en torno a las 7–8 horas, lo que indica que ese es el rango más común, mientras que la cola izquierda (menos de 5 h) y la derecha (más de 10 h) resaltan casos de sueño insuficiente o muy prolongado.</p>
-    
+
 <img src="../images/Imagen93.png" alt="Título" class="img-proyecto" width="450">
 
-<p>También se analizó el tiempo de consumo de Netflix en relación al sexo mediante un diagrama de caja (Figura 2). Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta, eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo a consumir Netflix, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.</p>
+<p>También se analizó el tiempo de consumo de Netflix en relación al sexo mediante un diagrama de caja (Figura 2). Observamos, por un lado, la mediana de horas de estudio para mujeres y para hombres, y por otro, la dispersión de cada grupo. Las mujeres presentan una mediana levemente superior y una caja más compacta; eso sugiere que un porcentaje importante de ellas dedica consistentemente más tiempo a consumir Netflix, con menos valores extremos, mientras que los hombres podrían mostrar mayor variabilidad.</p>
 
 <img src="../images/Imagen94.png" alt="Título" class="img-proyecto" width="450">
 
@@ -86,123 +77,113 @@
 
 <img src="../images/Imagen95.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, horas de consumo de Netflix, horas de ocio e ingreso del hogar. La tabla correspondiente se muestra en la tabla 2. Los resultados indican que las mujeres duermen y consumen Netflix más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.</p>
+<p>Finalmente, se construyó una tabla de estadísticas agrupadas por sexo que resume las medias y medianas de algunas variables clave: horas de sueño, horas de consumo de Netflix, horas de ocio e ingreso del hogar. La tabla correspondiente se muestra en la Tabla 2. Los resultados indican que las mujeres duermen y consumen Netflix más que los varones, mientras que estos últimos dedican más tiempo al ocio. También se observa una leve diferencia en el ingreso promedio del hogar, siendo superior entre los hombres.</p>
 
+<h3>Análisis de asociación entre variables</h3>
 
-    
-       <h3>Análisis de asociación entre variables</h3>
+<p>Para comprender cómo se relacionan las distintas dimensiones del uso del tiempo y los factores sociodemográficos, se calculó la matriz de correlación entre las variables cuantitativas seleccionadas. En la Tabla 3 vemos que se realizó utilizando el coeficiente de correlación de Pearson sobre pares completos de observaciones.</p>
 
-<p>Para comprender cómo se relacionan las distintas dimensiones del uso del tiempo y los factores sociodemográficos, se calculó la matriz de correlación entre las variables cuantitativas seleccionadas. En la tabla 3 vermos que se realizó utilizando el coeficiente de correlación de Pearson sobre pares completos de observaciones.</p>
-<p>Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la figura 4. En él los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de consumo de Netflix tienden a estar inversamente correlacionadas con las de sueño (quienes consumen mas Netflix duermen un poco menos) y positivamente con las de ocio</p>
+<p>Se elaboró un mapa de calor de la matriz de correlaciones, que puede verse en la Figura 4. En él, los colores más intensos señalan relaciones fuertes positivas o negativas, y las celdas en blanco o claras indican correlaciones débiles. Por ejemplo, detectamos que las horas de consumo de Netflix tienden a estar inversamente correlacionadas con las de sueño (quienes consumen más Netflix duermen un poco menos) y positivamente con las de ocio.</p>
 
 <img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="450">
 
-<p>También se exploraron asociaciones específicas. En la Figura 5 se presenta un boxplot que compara las horas dedicadas an consumir Netflix según si el usuario trabaja remuneradamente o no. Se observa una clara diferencia: quienes tienen empleo tienden a consumir Netflix menos horas.</p>
+<p>También se exploraron asociaciones específicas. En la Figura 5 se presenta un boxplot que compara las horas dedicadas a consumir Netflix según si el usuario trabaja remuneradamente o no. Se observa una clara diferencia: quienes tienen empleo tienden a consumir Netflix menos horas.</p>
 
 <img src="../images/Imagen97.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Por último, se observo la asociación entre el ingreso del hogar y el tiempo de ocio. Un coeficiente positivo de 0.0418 que nos indica que los usuarios de contextos más acomodados tienden a disfrutar de un poco más de tiempo libre, tal vez porque tienen mayor acceso a actividades recreativas pagas o porque su entorno les ofrece más facilidades para el ocio.</p>
+<p>Por último, se observó la asociación entre el ingreso del hogar y el tiempo de ocio. Un coeficiente positivo de 0.0418 nos indica que los usuarios de contextos más acomodados tienden a disfrutar de un poco más de tiempo libre, tal vez porque tienen mayor acceso a actividades recreativas pagas o porque su entorno les ofrece más facilidades para el ocio.</p>
 
-
-        <h2>Tecnicas de análisis factorial</h2>
+<h2>Técnicas de análisis factorial</h2>
 
 <p>Para entender mejor la estructura de nuestros datos y reducir la complejidad de la información, aplicamos un Análisis de Componentes Principales (PCA) sobre un conjunto de variables cuantitativas seleccionadas. Estas variables incluían horas dedicadas a distintas actividades como dormir, alimentarse, consumir Netflix, ocio, tareas domésticas, visitas médicas, así como también variables como la edad, el año cursado en educación secundaria, el logaritmo del ingreso mensual del hogar y los años promedio de educación en el hogar.</p>
 
-<p>Antes de aplicar el PCA, las variables fueron estandarizadas (es decir, convertidas a una escala común) para que ninguna dominara el análisis solo por tener un rango mayor. Luego, se ejecutó el PCA, que automáticamente reemplazó los valores faltantes por la media de cada variable</p>
+<p>Antes de aplicar el PCA, las variables fueron estandarizadas (es decir, convertidas a una escala común) para que ninguna dominara el análisis solo por tener un rango mayor. Luego, se ejecutó el PCA, que automáticamente reemplazó los valores faltantes por la media de cada variable.</p>
 
 <p>A continuación, visualizamos la disposición de las variables en el espacio de los primeros dos componentes, coloreadas según su contribución. Esto nos permite observar qué variables tienen mayor influencia en la construcción de estos componentes y cómo se relacionan entre sí.</p>
 
 <img src="../images/Imagen98.png" alt="Título" class="img-proyecto" width="450">
 
-<p>A partir de la figura 6, observamos agrupamientos entre variables que se comportan de forma similar. Por ejemplo, las horas de consumo de Netflix y el nivel educativo suelen estar cercanas, indicando una posible asociación. Por otro lado, variables como las horas de dormir o las tareas domésticas se orientan en direcciones opuestas, mostrando que representan dimensiones distintas del uso del tiempo. Los colores más naranjas indican mayor contribución, los colores amarillos indican una contribución intermedia, los colores celestes indican una menor contribución.</p>
+<p>A partir de la Figura 6, observamos agrupamientos entre variables que se comportan de forma similar. Por ejemplo, las horas de consumo de Netflix y el nivel educativo suelen estar cercanas, indicando una posible asociación. Por otro lado, variables como las horas de dormir o las tareas domésticas se orientan en direcciones opuestas, mostrando que representan dimensiones distintas del uso del tiempo. Los colores más naranjas indican mayor contribución, los colores amarillos indican una contribución intermedia, los colores celestes indican una menor contribución.</p>
 
 <p>También quisimos analizar cómo se distribuyen los individuos en función de los dos primeros componentes, lo que nos ayuda a detectar posibles agrupamientos o patrones generales.</p>
-    
+
 <img src="../images/Imagen99.png" alt="Título" class="img-proyecto" width="450">
 
+<p>La métrica $cos^2$ se usa para evaluar la calidad de la representación de una variable o de un individuo en un componente principal, e indica cuánto contribuye un componente a explicar la varianza de una variable. Cuanto más cercano a 1, el vector está casi alineado con el componente, bien representado por ese componente. Cuanto más cercano a 0, el vector forma un ángulo cercano a 90° con el componente, estando mal representado por ese componente. Esta métrica se usa para saber qué variables están bien representadas por los primeros componentes y da la calidad de la representación del individuo sobre el plano definido por los componentes.</p>
 
-<p>La métrica $cos^2$ se usa para evaluar la calidad de la representación de una variable o de un individuo en un componente principal, indica cuánto contribuye un componente a explicar la varianza de una variable. Cuanto más cercano a 1, el vector está casi alineado con el componente, bien representado por ese componente. Cuanto más cercano a 0, el vector forma un ángulo cercano a 90° con el componente, esta mal representado por ese componente. Esta métrica se usa para saber qué variables están bien representadas por los primeros componentes, da la calidad de la representación del individuo sobre el plano definido por los componentes.</p>
-
-<p>En la figura 7, los puntos que están más alejados del centro y con colores más intensos son aquellos que están mejor representados en el plano de los dos primeros componentes. Esto indica que sus perfiles son más extremos o definidos con respecto a las variables incluidas.</p>
+<p>En la Figura 7, los puntos que están más alejados del centro y con colores más intensos son aquellos que están mejor representados en el plano de los dos primeros componentes. Esto indica que sus perfiles son más extremos o definidos con respecto a las variables incluidas.</p>
 
 <img src="../images/Imagen100.png" alt="Título" class="img-proyecto" width="450">
 
-<p>En la figura 8 el Eje X son los componentes principales ordenados del 1 al 10, las dimensiones. El Eje Y es el porcentaje de varianza explicada por cada componente (desde 0% hasta 17.3%). Vemos que el Primer componente (PC1) explica el 17.3% de la varianza. Segundo componente (PC2) explica el 14.3%. Tercer componente (PC3) explica el 12.7%. Los demas componentes subsiguientes van decreciendo en sus porcentajes asociados a explicar la varianza (10.5%, 9.1%, 8.1%, etc.)</p>
+<p>En la Figura 8, el eje X son los componentes principales ordenados del 1 al 10, las dimensiones. El eje Y es el porcentaje de varianza explicada por cada componente (desde 0% hasta 17.3%). Vemos que el primer componente (PC1) explica el 17.3% de la varianza, el segundo componente (PC2) explica el 14.3% y el tercer componente (PC3) explica el 12.7%. Los demás componentes subsiguientes van decreciendo en sus porcentajes asociados a explicar la varianza (10.5%, 9.1%, 8.1%, etc.).</p>
 
 <img src="../images/Imagen101.png" alt="Título" class="img-proyecto" width="450">
 
-<p>Las flechas son las variables, el eje X es la Dimension 1 y el eje Y es la Dimension 2, son los dos primeros componentes principales. La Dimension 1 explica el 17.3% de la varianza total, la dimension 2 explica el 14.3% de la varianza. En conjunto, explican un 31.6% de la varianza total del conjunto de datos. Las flechas mas largas indican que las variables están mejor representadas en el plano de los dos primeros componentes, las flechas mas cercanas al origen indican que las variables no se explican bien en este plano. Las flechas orientadas hacia la derecha indican correlación positiva. Las flechas orientadas hacia la izquierda indican correlación negativa.</p>
+<p>Las flechas son las variables; el eje X es la Dimensión 1 y el eje Y es la Dimensión 2, los dos primeros componentes principales. La Dimensión 1 explica el 17.3% de la varianza total, la Dimensión 2 explica el 14.3% de la varianza. En conjunto, explican un 31.6% de la varianza total del conjunto de datos. Las flechas más largas indican que las variables están mejor representadas en el plano de los dos primeros componentes; las flechas más cercanas al origen indican que las variables no se explican bien en este plano. Las flechas orientadas hacia la derecha indican correlación positiva. Las flechas orientadas hacia la izquierda indican correlación negativa.</p>
 
-<p>Luego los angulos pequeños entre flechas indican que las variables estan positivamente correlacionadas, un angulo recto de 90 grados, indica poca o nula correlación. Luego un angulo obstuso (180) indica correlación negativa.</p>
+<p>Luego, los ángulos pequeños entre flechas indican que las variables están positivamente correlacionadas; un ángulo recto de 90° indica poca o nula correlación. Un ángulo obtuso (180°) indica correlación negativa.</p>
 
-<p>Luego $cos^2$ da la calidad de representación de cada variable en el plano. El color rojo indica alta calidad de representación, luego el color verde indica una representacion intermedia, y el color violeta indica baja calidad.</p>
+<p>Luego, $cos^2$ da la calidad de representación de cada variable en el plano. El color rojo indica alta calidad de representación, el color verde indica una representación intermedia y el color violeta indica baja calidad.</p>
 
-<p>Algunos ejemplos son que edad, aniosed_h, log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir, h_medico están mal representadas (azules/violetas). edad esta bien representada, porque contribuye a la dimension 1, luego aniosed_h y log_ing estan bien representadas, y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_netflix es bastante perpendicular a la variable edad, por lo que no parecen tener relación directa. Por ultimo h_dormir esta mal representada en este plano.</p>
+<p>Algunos ejemplos son: edad, aniosed_h y log_ing están bien representadas (rojas/naranjas). Luego h_ocio, h_dormir y h_medico están mal representadas (azules/violetas). Edad está bien representada porque contribuye a la Dimensión 1; luego aniosed_h y log_ing están bien representadas y están muy próximas (pueden estar correlacionadas positivamente). Otras como h_netflix son bastante perpendiculares a la variable edad, por lo que no parecen tener relación directa. Por último, h_dormir está mal representada en este plano.</p>
 
 <p>Luego, exploramos qué variables contribuyen más a cada uno de los componentes. Esto es importante porque nos permite interpretar el significado de cada eje principal del análisis.</p>
 
 <img src="../images/Imagen102.png" alt="Título" class="img-proyecto" width="450">
 
-<p>De la figura 10 observamos que el primer componente tiene una fuerte carga de variables relacionadas a la educación (como años de educación, log_ing y año actual de educativo), por lo que podríamos interpretarlo como un eje educativo o socioeconómico.</p>
+<p>De la Figura 10, observamos que el primer componente tiene una fuerte carga de variables relacionadas con la educación (como años de educación, log_ing y año actual educativo), por lo que podríamos interpretarlo como un eje educativo o socioeconómico.</p>
 
 <img src="../images/Imagen103.png" alt="Título" class="img-proyecto" width="450">
 
-<p>En cambio, el segundo componente está influido por la edad y las actividades domesticas, y en menor medida por las horas de consumo de Netflix, este eje podría reflejar un perfil de rutina.</p>
+<p>En cambio, el segundo componente está influido por la edad y las actividades domésticas, y en menor medida por las horas de consumo de Netflix; este eje podría reflejar un perfil de rutina.</p>
 
 <p>Finalmente, obtuvimos los autovalores de los componentes principales, los cuales nos indican cuánta varianza explican. Esto nos ayuda a decidir cuántos componentes retener para el análisis.</p>
 
-<p>Los autovalores nos muestran que los primeros componentes explican una parte importante de la varianza total del conjunto de datos, lo que justifica el uso de un plano bidimensional para la representación gráfica. Los primeros 5 componentes tienen autovalores \> 1, explican en conjunto el 63.83% de la varianza total.</p>   
+<p>Los autovalores nos muestran que los primeros componentes explican una parte importante de la varianza total del conjunto de datos, lo que justifica el uso de un plano bidimensional para la representación gráfica. Los primeros 5 componentes tienen autovalores &gt; 1, explican en conjunto el 63.83% de la varianza total.</p>
 
 
 
-    
-        <h2>Analisis Correspondencia:</h2>
+    <h2>Análisis de Correspondencia</h2>
 
 <p>El análisis de correspondencias es una técnica estadística que permite explorar la relación entre dos o más variables categóricas. A través de tablas de contingencia y representaciones gráficas como los gráficos mosaico, es posible detectar patrones de asociación entre categorías y comprender cómo se distribuyen las observaciones en función de dichas combinaciones.</p>
 
- <p>En este trabajo, se construyeron mosaicos para observar cómo varía la distribución de distintas características educativas, sociales y económicas en función del sexo de los usuarios, y como esto se relaciona con el consumo de Netflix.</p>
+<p>En este trabajo, se construyeron mosaicos para observar cómo varía la distribución de distintas características educativas, sociales y económicas en función del sexo de los usuarios, y cómo esto se relaciona con el consumo de Netflix.</p>
 
- <p>Los gráficos mosaico utilizan colores para mostrar los residuos de Pearson (diferencias entre valores observados y esperados bajo independencia): Azul indica más observaciones de las esperadas, Rojo indica menos observaciones de las esperadas, Gris indica coincidencia con la independencia.</p>
+<p>Los gráficos mosaico utilizan colores para mostrar los residuos de Pearson (diferencias entre valores observados y esperados bajo independencia): azul indica más observaciones de las esperadas, rojo indica menos observaciones de las esperadas, y gris indica coincidencia con la independencia.</p>
 
 <img src="../images/Imagen104.png" alt="Título" class="img-proyecto" width="450">
 
+<p>La Figura 12 resulta del análisis de correspondencias entre las variables categóricas <code>disc_h</code>, la cantidad de personas con discapacidad en el hogar (triángulos rojos), y <code>act</code>, la cantidad de personas activas económicamente en el hogar (puntos azules). Los puntos representan categorías de ambas variables proyectadas en un plano que explica la mayor parte de la variabilidad de la tabla: el eje X captura un 95.8% y el eje Y un 3.4% de la variabilidad. Vemos que cuanto más cerca estén dos puntos (uno rojo y uno azul), más frecuente es esa combinación en los datos; cuanto más lejos estén del origen, más aportan a la estructura de la asociación (más "atípicos" respecto a independencia).</p>
 
- <p>La figura 12 resultantes del análisis de correspondencias entre las variables categóricas `disc_h`, la cantidad de personas con discapacidad en el hogar (triángulos rojos) y `act`, la cantidad de personas activas económicamente en el hogar (puntos azules). Los puntos representan categorías de ambas variables proyectadas en un plano que explica la mayor parte de la variabilidad de la tabla en el eje X, captando una variabilidad del 95.8% y en el eje Y captado una variabilidad del 3.4%. Vemos que cuanto más cerca estén dos puntos (uno rojo y uno azul), más frecuente es esa combinación en los datos y cuanto más lejos estén del origen, más aportan a la estructura de la asociación (más "atípicos" respecto a independencia).</p>
-
- <p>Podemos ver que hay tres triángulos rojos que hacen referencia a número de discapacitados, que están más alejado hacia la derecha, puede indicar que hogares con bastante discapacitados tienden a tener pocos activos económicamente. Hay otra parte del plano con discapacitados cero que es donde se aglomera la actividad económica. Podemos plantear como conclusión que los hogares con mayor cantidad de discapacitados tienden a tener menos miembros activos económicamente, y los hogares sin discapacitados tienen una distribución más equilibrada, donde hay más activos económicamente.</p>
+<p>Podemos observar que hay tres triángulos rojos que hacen referencia al número de discapacitados, los cuales están más alejados hacia la derecha. Esto puede indicar que hogares con más personas discapacitadas tienden a tener pocos miembros activos económicamente. Otra parte del plano muestra hogares con cero discapacitados, donde se aglomera la actividad económica. Como conclusión, los hogares con mayor cantidad de discapacitados tienden a tener menos miembros activos económicamente, mientras que los hogares sin discapacitados presentan una distribución más equilibrada, con más activos económicamente.</p>
 
 <img src="../images/Imagen105.png" alt="Título" class="img-proyecto" width="450">
 
-<p>El gráfico de la figura 13 de sedimentación (screeplot) muestra la proporción de varianza explicada por cada dimensión del ACM. Las primeras dos dimensiones suelen captar el mayor porcentaje de la variabilidad presente en los perfiles de las categorías. Si bien los porcentajes individuales son bajos (propio del ACM cuando hay muchas variables), se considera útil si las primeras dimensiones ayudan a discriminar perfiles típicos entre grupos sociales.</p>
+<p>El gráfico de la Figura 13, un screeplot, muestra la proporción de varianza explicada por cada dimensión del ACM. Las primeras dos dimensiones suelen captar el mayor porcentaje de la variabilidad presente en los perfiles de las categorías. Si bien los porcentajes individuales son bajos (propio del ACM cuando hay muchas variables), se consideran útiles si las primeras dimensiones ayudan a discriminar perfiles típicos entre grupos sociales.</p>
 
 <img src="../images/Imagen106.png" alt="Título" class="img-proyecto" width="450">
 
-<p>En la figura 14 se observa cómo se distribuyen las categorías de las variables en el plano formado por las dos primeras dimensiones. Las categorías cercanas entre sí representan perfiles similares. Las más alejadas del centro (0,0) son las que más contribuyen a la estructura de la variabilidad. Las que están alineadas sobre un eje indican que explican mejor esa dimensión particular. Este mapa facilita la interpretación conjunta de asociaciones entre múltiples variables cualitativas.</p>
-    
+<p>En la Figura 14 se observa cómo se distribuyen las categorías de las variables en el plano formado por las dos primeras dimensiones. Las categorías cercanas entre sí representan perfiles similares. Las más alejadas del centro (0,0) son las que más contribuyen a la estructura de la variabilidad. Las que están alineadas sobre un eje indican que explican mejor esa dimensión particular. Este mapa facilita la interpretación conjunta de asociaciones entre múltiples variables cualitativas.</p>
 
-
-        <h2>Análisis de clúster:</h2>
-
+<h2>Análisis de Clúster</h2>
 
 <p>El análisis de clúster es una técnica estadística multivariada cuyo objetivo principal es agrupar observaciones similares entre sí en función de sus características, sin requerir categorías predefinidas. Se trata de un método de clasificación no supervisada, lo que significa que no hay una variable dependiente o “etiqueta” que guíe el agrupamiento. En lugar de ello, el algoritmo identifica patrones y similitudes dentro del conjunto de datos, formando grupos o clústeres de forma tal que los elementos de un mismo clúster son más parecidos entre sí que respecto a los elementos de otros clústeres.</p>
 
-<p>En este contexto, se parte del supuesto de que en el espacio multidimensional donde están representadas las observaciones, existen zonas con mayor densidad de individuos y zonas de baja densidad que los separan. Cada subconjunto representa una clase o perfil identificado a partir de las variables observadas.</p>
+<p>En este contexto, se parte del supuesto de que, en el espacio multidimensional donde están representadas las observaciones, existen zonas con mayor densidad de individuos y zonas de baja densidad que los separan. Cada subconjunto representa una clase o perfil identificado a partir de las variables observadas.</p>
 
-<p>Esta técnica tiene múltiples aplicaciones. Por un lado, permite reducir la complejidad del análisis mediante la construcción de una tipología o taxonomía de individuos. Por otro, facilita la descripción de perfiles emergentes en el conjunto de datos, y también detecta relaciones latentes entre variables a través del comportamiento grupal. En el marco del aprendizaje estadístico (statistical learning), el análisis de clúster se considera una herramienta exploratoria fundamental para entender la estructura de los datos y generar hipótesis de investigación.</p>
+<p>Esta técnica tiene múltiples aplicaciones. Permite reducir la complejidad del análisis mediante la construcción de una tipología o taxonomía de individuos, facilita la descripción de perfiles emergentes en el conjunto de datos y también detecta relaciones latentes entre variables a través del comportamiento grupal. En el marco del aprendizaje estadístico (statistical learning), el análisis de clúster se considera una herramienta exploratoria fundamental para entender la estructura de los datos y generar hipótesis de investigación.</p>
 
 <p>En esta investigación, el análisis de clúster se emplea para identificar grupos de usuarios con patrones similares de uso del tiempo y características sociodemográficas. Se utilizó un enfoque jerárquico aglomerativo con el método de Ward y distancia euclídea, adecuado para minimizar la varianza interna de los grupos formados.</p>
 
-<p>Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como h_dormir, h_netflix, h_ocio, h_domesticas, h_medico, etc.) como del contexto sociodemográfico (edad, anio_ed, log_ing, aniosed_h). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.</p>
+<p>Para ello, se seleccionaron variables relevantes tanto del uso del tiempo (como <code>h_dormir</code>, <code>h_netflix</code>, <code>h_ocio</code>, <code>h_domesticas</code>, <code>h_medico</code>, etc.) como del contexto sociodemográfico (edad, <code>anio_ed</code>, <code>log_ing</code>, <code>aniosed_h</code>). Dado que estas variables se expresan en escalas diferentes, fueron estandarizadas mediante z-scores, lo que permite compararlas equitativamente al eliminar diferencias de escala y unidad de medida.</p>
 
 <p>A continuación, se aplicará el análisis jerárquico paso a paso, presentando las visualizaciones necesarias para justificar la elección del número de clústeres, así como una caracterización de los grupos de usuarios resultantes.</p>
 
+<h3>Reglas de detención</h3>
 
+<p>Las reglas de detención son criterios estadísticos que ayudan a decidir cuántos grupos (clusters) conviene conservar en un análisis de clúster jerárquico. Como este tipo de análisis produce una jerarquía anidada de grupos, necesitamos algún criterio para "cortar" el dendrograma en una cantidad adecuada de clusters. En esta sección se aplican varios indicadores para definir la cantidad óptima de agrupamientos, combinando la inspección visual del dendrograma con tres índices comunes: el índice pseudo-F, el pseudo-T² y el ancho promedio de silueta.</p>
 
-
-             <h3>Reglas de detención</h3>
-
-    <p>Las reglas de detención son criterios estadísticos que ayudan a decidir cuántos grupos (clusters) conviene conservar en un análisis de clúster jerárquico. Como este tipo de análisis produce una jerarquía anidada de grupos, necesitamos algún criterio para "cortar" el dendrograma en una cantidad adecuada de clusters. En esta sección se aplican varios indicadores para definir la cantidad óptima de agrupamientos, combinando la inspección visual del dendrograma con tres índices comunes: el índice pseudo-F, el pseudo-T² y el ancho promedio de silueta.</p>
-    <p>En primer lugar, se seleccionan las variables cuantitativas más relevantes del conjunto de datos original. Estas variables representan actividades del uso del tiempo y características del entorno educativo y familiar. Se eliminan los valores faltantes para asegurar la correcta aplicación de los algoritmos de agrupamiento.</p>
+<p>En primer lugar, se seleccionan las variables cuantitativas más relevantes del conjunto de datos original. Estas variables representan actividades del uso del tiempo y características del entorno educativo y familiar. Se eliminan los valores faltantes para asegurar la correcta aplicación de los algoritmos de agrupamiento.</p>
 
 <img src="../images/Imagen107.png" alt="Título" class="img-proyecto" width="450">
 
@@ -212,80 +193,79 @@
 
 <p>Para definir la cantidad adecuada de clusters en el análisis jerárquico, se aplicaron tres criterios frecuentemente utilizados en este tipo de estudios: el ancho promedio de silueta, el índice pseudo-F y el índice pseudo-t². En todos los casos se trabajó con datos previamente estandarizados, utilizando la distancia euclidiana como medida de disimilitud y el método de Ward como estrategia de agrupamiento.</p>
 
-<p>En primer lugar, el análisis del ancho de silueta promedio indicó que el valor más alto se obtiene con 3 clusters, aunque los valores para 2 y 4 también son relativamente altos. Esto sugiere que esas configuraciones también logran una buena separación entre grupos, sin una pérdida significativa de cohesión interna.</p>
+<p>El análisis del ancho de silueta promedio indicó que el valor más alto se obtiene con 3 clusters, aunque los valores para 2 y 4 también son relativamente altos. Esto sugiere que esas configuraciones también logran una buena separación entre grupos, sin una pérdida significativa de cohesión interna.</p>
 
-<p>Respecto al índice pseudo-F, el mayor valor se encuentra en 2 clusters, y a partir de ahí comienza una disminución progresiva. Si bien esto apunta a una fuerte ganancia de heterogeneidad entre los grupos al usar 2 clusters, el descenso posterior no es abrupto, lo que deja cierto margen para considerar otras particiones cercanas.</p>
+<p>Respecto al índice pseudo-F, el mayor valor se encuentra en 2 clusters, y a partir de ahí comienza una disminución progresiva. Esto apunta a una fuerte ganancia de heterogeneidad entre los grupos al usar 2 clusters, aunque el descenso posterior no es abrupto, dejando margen para considerar otras particiones cercanas.</p>
 
 <p>Por su parte, el índice pseudo-t² muestra una caída marcada al pasar de 4 clusters, lo que indica una pérdida de estructura al continuar fusionando grupos. Esta tendencia descendente se mantiene hasta alrededor de 12 clusters, lo que sugiere que más allá de ese punto los agrupamientos pierden sentido.</p>
 
 <img src="../images/Imagen109.png" alt="Título" class="img-proyecto" width="450">
 
-<p>En base a la interpretación conjunta de los tres índices anteriores, se decidió conservar una solución de 3 clusters. Esta partición fue aplicada al dendrograma original de la figura 25, coloreando cada grupo resultante para facilitar su visualización. Se observa una separación clara entre los grupos, lo que refuerza la validez de la elección.</p>    
+<p>En base a la interpretación conjunta de los tres índices anteriores, se decidió conservar una solución de 3 clusters. Esta partición fue aplicada al dendrograma original de la Figura 25, coloreando cada grupo resultante para facilitar su visualización. Se observa una separación clara entre los grupos, lo que refuerza la validez de la elección.</p>
 
-<p>Otra forma de ver esto es con la función "NbClust", que nos muestra el número óptimo de clusters para nuestros datos en base a distintas métricas. En este caso, usando la distancia euclidiana y el método de Ward, obtenemos que el número óptimo de clusters es 3.</p>
+<p>Otra forma de ver esto es con la función "NbClust", que muestra el número óptimo de clusters para nuestros datos en base a distintas métricas. En este caso, usando la distancia euclidiana y el método de Ward, se obtiene que el número óptimo de clusters es 3.</p>
 
 <p>En conjunto, los tres indicadores sugieren que la estructura más clara y consistente se encuentra entre 2 y 4 clusters. Considerando el equilibrio entre simplicidad y riqueza interpretativa, se decidió conservar 3 clusters como solución final. Esta elección permite capturar con mayor detalle las diferencias en los perfiles de uso del tiempo entre los usuarios de Netflix, sin perder solidez en la segmentación observada en el dendrograma.</p>
     
+
+<h3>Clúster Jerárquico Aglomerativo</h3>
+
+<p>El análisis comienza con la inspección de la matriz de correlaciones entre las variables numéricas seleccionadas. Esto es importante porque, si hay variables altamente correlacionadas, podrían dominar el cálculo de distancias y afectar tanto el clustering como el análisis de componentes principales.</p>
     
+<img src="../images/Imagen96.png" alt="Matriz de correlaciones" class="img-proyecto" width="450">
 
-    <h3>Cluster Jerarquico Agregativo</h3>
-
-<p>El análisis comienza con la inspección de la matriz de correlaciones entre las variables numéricas seleccionadas. Esto es importante porque si hay variables altamente correlacionadas, podrían dominar el cálculo de distancias y afectar tanto el clustering como el análisis de componentes principales.</p>
-    
-<img src="../images/Imagen96.png" alt="Título" class="img-proyecto" width="450">
-
-<p>Se detecta una relación positiva entre el logaritmo del ingreso (`log_ing`) y los años de educación promedio del hogar (`aniosed_h`), lo que indica que mayores niveles educativos se asocian a mejores ingresos. También hay correlaciones entre edad y año que cursa ("anio_ed"), que deben considerarse en la interpretación posterior del agrupamiento.</p>
+<p>Se detecta una relación positiva entre el logaritmo del ingreso (<code>log_ing</code>) y los años de educación promedio del hogar (<code>aniosed_h</code>), lo que indica que mayores niveles educativos se asocian a mejores ingresos. También hay correlaciones entre edad y año que cursa (<code>anio_ed</code>), las cuales deben considerarse en la interpretación posterior del agrupamiento.</p>
 
 <p>Luego se realiza el clustering jerárquico utilizando distancia euclídea y el método de Ward, que busca minimizar la varianza intra-grupo.</p>
 
+<img src="../images/Imagen110.png" alt="Dendrograma inicial" class="img-proyecto" width="450">
 
-<img src="../images/Imagen110.png" alt="Título" class="img-proyecto" width="450">
+<p>En la Figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clústeres. Este gráfico es una herramienta clave para decidir, junto con otros criterios, cuántos grupos conservar en el análisis final.</p>
 
-<p>En la figura 19 se observa que algunas fusiones ocurren a alturas relativamente elevadas, lo que sugiere que existen estructuras diferenciadas en los datos que podrían justificar la división en un número reducido de clusters. Este gráfico es una herramienta clave para decidir, en conjunto con otros criterios, cuántos grupos conservar en el análisis final.</p>
+<p>Una vez definida la cantidad óptima de clústeres en tres grupos, se procedió a asignar a cada usuario de Netflix su correspondiente clasificación. Luego, se calcularon las medias de las variables de interés por grupo, permitiendo caracterizar los perfiles resultantes. La Tabla 4 resume estas medias para cada clúster.</p>
 
-<p>Una vez definida la cantidad óptima de clusters en tres grupos, se procedió a asignar a cada usuario de Netflix su correspondiente clasificación. Luego, se calcularon las medias de las variables de interés por grupo, permitiendo caracterizar los perfiles resultantes. La Tabla 4 resume estas medias para cada cluster.</p>
+<img src="../images/Imagen111.png" alt="Medias por clúster" class="img-proyecto" width="450">
 
-<img src="../images/Imagen111.png" alt="Título" class="img-proyecto" width="450">
+<p>A partir del gráfico y de la tabla de resumen, se identifican tres tipos de usuarios de Netflix:</p>
 
-<p>A través de el gráfico y de esta tabla de resumen, logramos identificar tres tipos de usuarios de Netflix:</p>
+<ul>
+<li><strong>Usuarios de Netflix equilibrados:</strong> Tienen horas de sueño similares al promedio general, dedican bastantes horas al consumo de Netflix y pocas horas a actividades domésticas. Dedican bastante tiempo al ocio y su rango promedio de edad es de 17 años. Casi todos tienen educación inicial y muy pocos trabajan. El 44% de los pertenecientes a esta categoría son hombres.</li>
 
-<p>Usuarios de Netflix equilibrados: Tienen horas de sueño similares al promedio general, dedican bastantes horas al consumo de Netflix y pocas horas a actividades domésticas. Dedican bastante tiempo al ocio y su rango promedio de edad es de 17 años. Casi todos tienen educación inicial y muy pocos trabajan. El 44% de los pertenecientes a esta categoría son hombres.</p>
+<li><strong>Usuarios de Netflix dormilones:</strong> Dedican muchas horas a dormir, un tiempo considerable al consumo de Netflix y muy pocas horas a actividades domésticas; dedican menos horas al ocio que el grupo anterior. Su promedio de edad es de 15 años, un porcentaje muy bajo trabaja y el 53% son hombres.</li>
 
-<p>Usuarios de Netflix dormilones: Dedican muchas horas a dormir, dedican un tiempo considerable al consumo de Netflix, muy pocas horas a actividades domésticas, menos horas que el grupo anterior al ocio. Su promedio de edad es de 15 años, un porcentaje muy bajo trabaja y el 53% son hombres.</p>
+<li><strong>Usuarios de Netflix responsables del hogar:</strong> Dedican en promedio 7 horas a dormir, muchas horas a actividades domésticas y la menor cantidad de horas entre los tres grupos al consumo de Netflix; también dedican muy poco al ocio. Su edad promedio es de 27 años, ya son adultos y por eso dedican más tiempo a otras responsabilidades que no son el consumo de Netflix. Esto se refuerza al observar que casi el 50% de los integrantes de este grupo trabaja. Además, solo el 11% son hombres.</li>
+</ul>
 
-<p>Usuarios de Netflix Responsables del hogar: Dedican en promedio 7 horas a dormir, dedican muchas horas a actividades domésticas y la menor cantidad de horas entre los tres grupos al consumo de Netflix, también dedican muy poco al ocio. Su edad promedio es de 27 años, ya son adultos por eso dedican tanto a otras responsabilidades que no son el consumo de Netflix, esto se refuerza al ver que casi el 50% de los de este grupo trabaja. Además solo el 11% son hombres.</p>
+<p>Para visualizar los clústeres en un plano reducido, se proyectan las observaciones sobre los dos primeros componentes principales (PCA). Los colores representan los clústeres definidos anteriormente.</p>
 
-<p>Para visualizar los clusters en un plano reducido, se proyectan las observaciones sobre los dos primeros componentes principales (PCA). Los colores representan los clusters definidos anteriormente.</p>
+<img src="../images/Imagen112.png" alt="PCA de clústeres" class="img-proyecto" width="450">
 
-<img src="../images/Imagen112.png" alt="Título" class="img-proyecto" width="450">
+<p>Se observa que el grupo 3 presenta mayor dispersión, lo que sugiere una mayor heterogeneidad interna. En contraste, los grupos 1 y 2 se concentran en regiones específicas. Aunque la varianza explicada por los dos primeros componentes no es alta, el gráfico de la Figura 20 permite una visualización útil de la segmentación.</p>
 
-<p>Se observa que el grupo 3 presenta mayor dispersión, lo que sugiere una mayor heterogeneidad interna. En contraste, los grupos 1 y 2 se concentran en regiones específicas. Aunque la varianza explicada por los dos primeros componentes no es alta, el gráfico de la figura 20 permite una visualización útil de la segmentación.</p>
+<p>Para evaluar la calidad de la clasificación, se construye el gráfico de silueta, que indica qué tan bien está asignada una observación a un clúster en base a la similitud con los demás elementos del grupo.</p>
 
-<p>Para evaluar la calidad de la clasificación, se construye el gráfico de silueta, que nos indica que tan bien asignada esta una observacion en un cluster en base a la similitud con los demas elementos del grupo.</p>
+<img src="../images/Imagen113.png" alt="Gráfico de silueta" class="img-proyecto" width="450">
 
-<img src="../images/Imagen113.png" alt="Título" class="img-proyecto" width="450">
+<p>Los valores de silueta sugieren que el grupo 1 tiene observaciones con asignaciones cuestionables, ya que presentan valores negativos de silueta. Los grupos 2 y 3 muestran mejores asignaciones de las observaciones en términos de silueta.</p>
 
-<p>Los valores de silueta sugieren que el grupo 1 tiene observaciones que indican que asignarlas en ese cluster no es lo correcto, estas son las observaciones con una silueta negativa. Los grupos 2 y 3 muestran mejores asignaciones de las observaciones en terminos de silueta.</p>
-
-<p>También puede visualizarse el dendrograma coloreado según los clusters elegidos:</p>
+<p>También se puede visualizar el dendrograma coloreado según los clústeres elegidos:</p>
     
-<img src="../images/Imagen114.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen114.png" alt="Dendrograma coloreado" class="img-proyecto" width="450">
 
-<p>Finalmente, se analiza la descomposición de la varianza total entre varianza intra-grupo (WSS) y entre-grupo (BSS), mostrando que al aumentar el número de clusters, la varianza dentro de los grupos disminuye y la varianza entre los grupos aumenta.</p>    
+<p>Finalmente, se analiza la descomposición de la varianza total entre varianza intra-grupo (WSS) y entre-grupo (BSS), mostrando que al aumentar el número de clústeres, la varianza dentro de los grupos disminuye y la varianza entre los grupos aumenta.</p>    
 
-<p>Varianza intra-cluster (SSW): 18.84748</p>
-<p>Varianza entre-cluster (SSW): 81.15252</p>
+<p>Varianza intra-clúster (WSS): 18.84748</p>
+<p>Varianza entre-clúster (BSS): 81.15252</p>
 
-    
-<p>Tiene sentido que al aumentar el numero de clusters, la varianza dentro de los grupos disminuya y la varianza entre los grupos aumente. Podemos visualizar esto graficamente:</p>    
+<p>Tiene sentido que, al aumentar el número de clústeres, la varianza dentro de los grupos disminuya y la varianza entre los grupos aumente. Esto puede visualizarse gráficamente:</p>    
 
-    <img src="../images/Imagen115.png" alt="Título" class="img-proyecto" width="450">
+<img src="../images/Imagen115.png" alt="Varianza intra y entre clusters" class="img-proyecto" width="450">
 
-<p>En la figura 23 se evidencia que, a partir de cierto punto (en este caso k = 3), las ganancias de reducir la varianza intra-grupo se vuelven marginales, justificando así el número de clusters seleccionado.</p>
+<p>En la Figura 23 se evidencia que, a partir de cierto punto (en este caso k = 3), las ganancias de reducir la varianza intra-grupo se vuelven marginales, justificando así el número de clústeres seleccionado.</p>
 
-<p>En el clustering jerárquico con Ward, los incrementos de varianza (hc_ward\$height) están ordenados de menor a mayor, ya que el algoritmo fusiona primero los pares de clusters que generan el menor aumento de varianza intra-clase y deja las fusiones más "costosas" (mayor incremento) para el final.</p>
+<p>En el clustering jerárquico con Ward, los incrementos de varianza (<code>hc_ward$height</code>) están ordenados de menor a mayor, ya que el algoritmo fusiona primero los pares de clústeres que generan el menor aumento de varianza intra-clase y deja las fusiones más "costosas" (mayor incremento) para el final.</p>
 
-    
+
     
             <h3>Cluster Jerarquico Divisivo</h3>
 
