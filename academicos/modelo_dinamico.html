@@ -13,151 +13,134 @@
  </head>
 <body>
     <section>
-        <p>Proyecto para el curso de Cálculo III, ecuaciones diferenciales y sistemas dinámicos</p>
-        <h2>Introducción al modelo de Lotka-Volterra</h2>
-        <p>Este proyecto utiliza el modelo matemático de Lotka-Volterra que describe la interacción entre depredadores y presas para analizar la dinámica financiera de la acción de Twitter. En lugar de especies biológicas, el modelo analiza la relación entre el Precio (Presa) y el Volumen de transacciones (Depredador), demostrando que los mercados financieros operan con ciclos de retroalimentación y límites de recursos.</p>
-        
-        <p>Este modelo en su forma clásica contiene dos variables que son:</p>
-        <p>
-            \( x(t): \) es el tamaño de los precios
-        </p>
-        <p>
-            \( y(t): \) es el tamaño del volumen de transacciones
-        </p>
+<p>Proyecto para el curso de Cálculo III, ecuaciones diferenciales y sistemas dinámicos</p>
+<h2>Introducción al modelo de Lotka-Volterra</h2>
+<p>Este proyecto utiliza el modelo matemático de Lotka-Volterra que describe la interacción entre depredadores y presas para analizar la dinámica financiera de la acción de Twitter. En lugar de especies biológicas, el modelo analiza la relación entre el Precio (Presa) y el Volumen de transacciones (Depredador), demostrando que los mercados financieros operan con ciclos de retroalimentación y límites de recursos.</p>
 
+<p>Este modelo, en su forma clásica, contiene dos variables que son:</p>
+<p>
+    \( x(t): \) es el tamaño de los precios
+</p>
+<p>
+    \( y(t): \) es el tamaño del volumen de transacciones
+</p>
 
-        <p>Y cuatro parámetros:</p>
+<p>Y cuatro parámetros:</p>
 
-        <p>\(\alpha\) que es la tasa de crecimiento intrínseco de los precios (sin transacciones).</p>
+<p>\(\alpha\) que es la tasa de crecimiento intrínseco de los precios (sin transacciones).</p>
 
-        <p>\(\beta\) que es la tasa de decrecimiento de los precios por encuentro con volumen de transacciones</p>
+<p>\(\beta\) que es la tasa de decrecimiento de los precios por encuentro con volumen de transacciones.</p>
 
-        <p>\(\gamma\) que es la tasa de crecimiento del volumen de transacciones por interactuar con los precios</p>
+<p>\(\gamma\) que es la tasa de crecimiento del volumen de transacciones por interactuar con los precios.</p>
 
-        <p>\(\delta\) que es la tasa de decrecimiento intrínseca del volumen de transacciones (sin precios).</p>
+<p>\(\delta\) que es la tasa de decrecimiento intrínseca del volumen de transacciones (sin precios).</p>
 
+<p>Con esto se forma el siguiente sistema de ecuaciones diferenciales:</p>
+<p>$$ \frac{dx}{dt} = \alpha x - \beta x y $$</p>
+<p>$$ \frac{dy}{dt} = \delta x y - \gamma y $$ </p>
 
+<p>Para los precios \(\frac{\partial x}{\partial t}\), tenemos que:</p>
+<p>\(\alpha x\) es el crecimiento exponencial de los precios.</p>
+<p>\(-\beta x y\) es el decrecimiento debido a la interacción del precio con el volumen de transacciones.</p>
 
-        <p>Con esto se forma el siguiente sistema de ecuaciones diferenciales: </p>
-        <p>$$ \frac{dx}{dt} = \alpha x - \beta x y $$</p>
-        <p>$$ \frac{dy}{dt} = \delta x y - \gamma y $$ </p>
+<p>Para el volumen de transacciones \(\frac{\partial y}{\partial t}\), tenemos que:</p>
+<p>\(\gamma x y\) es el crecimiento del volumen de transacciones por interactuar con los precios.</p>
+<p>\(-\delta y\) es el decrecimiento natural del volumen de transacciones (en ausencia de precios).</p>
 
-        <p>Para los precios \(\frac{\partial x}{\partial t}\), tenemos que:</p>
-            
-        <p>\(\alpha x\) es el crecimiento exponencial de los precios</p>
-            
-       <p>\(-\beta x y\) es el decrecimiento debido a la interaccion del precio con el volumen de transacciones.</p>
-        
-       <p>Para el volumen de transacciones \(\frac{\partial y}{\partial t}\) tenemos que:</p>
-        
-       <p>\(\gamma x y\) es el crecimiento del volumen de transacciones por interactuar con los precios.</p>
-            
-       <p>\(- \delta y\) es el decrecimiento natural del volumen de transacciones (en ausencia de precios).</p>
+<p>Un elemento importante en este modelo son los puntos de equilibrio. En estos puntos ocurre que el sistema se encuentra en equilibrio y las poblaciones, tanto de precios como de volumen de transacciones, son constantes.</p>
 
+<p>El primero de estos puntos es el $(0, 0)$. En este punto no hay precio ni volumen de transacciones; dado que no hay operaciones, el sistema se mantiene siempre estático en este punto.</p>
 
-       <p> Un elemento importante en este modelo son los puntos de equilibrio, en estos puntos ocurre que el sistema se encuentra en equilibrio y las poblaciones tanto de precios como de volumen de transacciones son constantes.</p>
+<p>El otro de estos puntos es \( \left(\frac{\delta}{\gamma}, \frac{\alpha}{\beta} \right) = (x^*, y^*) \).</p>
 
-       <p>El primero de estos puntos es el $(0, 0)$, en este punto no hay precio ni volumen de transacciones, dado que no hay operaciones el sistema se mantiene siempre estatico en este punto.</p>
+<p>\(x^* = \frac{\delta}{\gamma}\), la cantidad de precio en equilibrio es proporcional a la tasa de decrecimiento del volumen de transacciones (\(\delta\)) e inversamente proporcional a su eficiencia de conversión (\(\gamma\)). Si el volumen de transacciones decrece rápido (\(\delta\) grande), se necesitan más precios para mantenerlo. Si el volumen de transacciones es muy eficiente (\(\gamma\) grande), se necesitan menos precios.</p>
 
+<p>\(y^* = \frac{\alpha}{\beta}\), el volumen de transacciones en equilibrio es proporcional a la tasa de crecimiento del precio (\(\alpha\)) e inversamente proporcional a su tasa de captura (\(\beta\)). Si los precios aumentan rápido (\(\alpha\) grande) pueden sostener más volumen de transacciones. Si el volumen de transacciones es muy efectivo (\(\beta\) grande), habrá menos volumen de transacciones (porque bajan mucho los precios).</p>
 
-       <p>El otro de estos puntos es \( \left(\frac{\delta}{\gamma}, \frac{\alpha}{\beta} \right) = (x*, y*) \)</p>
+<p>Cualquier otro punto que no sea alguno de estos hace que el sistema sea inestable y no constante. Además, es importante mencionar que el modelo de Lotka-Volterra tiene una estabilidad no lineal: el centro es inestable porque cualquier pequeña perturbación en el modelo cambia radicalmente el comportamiento. Cuando se llega a un punto de equilibrio, hay un comportamiento de órbita, pero las órbitas son cíclicas y no asintóticas; no se acercan ni se alejan del equilibrio, solo giran alrededor.</p>
+       
+     
+<p>Uno de los gráficos que obtenemos con este modelo es el siguiente:</p>
+<img 
+        src="../images/Imagen48.png"
+        alt="Título"
+        class="img-proyecto"
+>   
 
+<p>Este es el gráfico teórico que se obtiene en un modelo de Lotka-Volterra. El gráfico de arriba muestra la interacción entre
+depredadores y presas, y el gráfico de abajo es la órbita con respecto al punto de equilibrio, mostrando la estabilidad del sistema.</p>
 
-       <p> \(x* = \frac{\delta}{\gamma} \), la cantidad de precio en equilibrio es proporcional a la tasa de decrecimiento del volumen de transacciones \( (\delta) \) e inversamente proporcional a su eficiencia de conversión \( (\gamma) \). Si el volumen de transacciones decrece rápido \( ( \delta \ \ grande ) \) , se necesitan más precios para mantenerlos. Si el volumen de transacciones es muy eficiente \( (\gamma \ \ grande) \)  , se necesitan menos precios.</p>
+<p>Calculamos la tasa de crecimiento con la siguiente fórmula: primero definimos el precio en un momento de tiempo t, denominado \( P_t \).</p>    
 
+<p>Si definimos \( P_t \) como el precio (o población) en el tiempo t, y \( P_{t-1} \) como el precio en el periodo de tiempo anterior, la fórmula para el crecimiento queda: \( \frac{P_t - P_{t-1}}{P_{t-1}} \).</p>
 
-       <p> \( y* = \frac{\alpha}{\beta} \), el volumen de transacciones en equilibrio es proporcional a la tasa de crecimiento del precio \( (\alpha) \) e inversamente proporcional a su tasa de captura \( (\beta) \). Si los precios aumentan rápido \( (\alpha \ \ grande) \)  pueden sostener más volumen de transacciones. Si el volumen de transacciones es muy efectivos  \( (\beta) \) habrá menos volumen de transacciones (porque bajan mucho los precios).</p>
+<p>Mide el cambio porcentual directo respecto al día anterior; por ejemplo, el precio creció un \( x\% \). Básicamente, esta tasa de crecimiento aritmética sirve para representar las variaciones porcentuales diarias de la acción y el volumen, funcionando como aproximación discreta de las derivadas en las ecuaciones de Lotka-Volterra.</p>
 
+<section>
+<section>
+    <p>Proyecto para el curso de Cálculo III, ecuaciones diferenciales y sistemas dinámicos</p>
+    <h2>Implementación código</h2>
 
-       <p>Cualquier otro puntos que no sea alguno de estos hace que el sistema sea inestable y no constante, ademas es importante mencionar que el modelo de Lotka-Volterra tiene una estabilidad no lineal, el centro es inestable porque cualquier pequeña perturbación en el modelo cambia radicalmente el comportamiento, cuando se llega a un punto de equilibrio, hay un comportamiento de orbita, pero las órbitas son cíclicas y no asintóticas, no se acercan ni alejan del equilibrio, solo giran alrededor.</p>
+    <p>En nuestro caso implementamos código para obtener el punto de equilibrio, el cual resultó ser (0.3890509, 0.3208804).</p>
 
+    <p>En cuanto al gráfico de la interacción entre el volumen de transacciones y los precios, obtuvimos lo siguiente:</p>
+    <img 
+        src="../images/Imagen49.png"
+        alt="Título"
+        class="img-proyecto"
+        width="900"
+    >
 
-           <p>Uno de los gráficos que obtenemos con este modelo es el siguiente </p>
-        <img 
-                src="../images/Imagen48.png"
-                alt="Título"
-                class="img-proyecto"
-            >   
+    <p>Tenemos picos en 2021 y 2022. El área azul (Precio) sube primero y, casi inmediatamente después, el área verde (Volumen de transacciones) sube y lo alcanza. 
+       El aumento de precios permite que el volumen de transacciones crezca; esto puede deberse a que el aumento de precio atrae el interés de los usuarios y aumenta el número de transacciones. 
+       Al final del gráfico (2022), se da el pico verde más alto de toda la serie. Cuando el volumen es muy alto, termina afectando al precio.
+       Evidentemente, el gráfico no es igual al gráfico teórico, pero vemos que sigue un comportamiento similar, por lo que podemos decir que las acciones de Twitter tienen ciclos de depredador-presa. 
+       El volumen de transacciones se expande ante el crecimiento del precio, pero puede llegar a saturar el mercado, provocando colapsos cíclicos que obligan al sistema a buscar puntos de equilibrio.</p>        
 
-        <p>Este es el grafico teórico que se obtiene en un modelo de Lotka-Volterra, el gráfico de arriba muestra la interacción entre
-        depredadores y presas, y el grafico de abajo es la orbita con respecto al punto de equilibrio y muestra la estabilidad del sistema</p>
+    <p>Luego, para el gráfico de órbita, obtuvimos lo siguiente:</p>
+    <img 
+        src="../images/Imagen50.png"
+        alt="Título"
+        class="img-proyecto"
+        width="900"
+    >  
 
+    <p>Cada órbita es un nivel diferente de volatilidad. Cuando se entra en una órbita, se mantendrá rotando en ella para siempre, a menos que un factor externo lo empuje a otra.</p>
+    <p>El asterisco es el punto de equilibrio, donde la tasa de crecimiento de la presa (Precio) y del depredador (Volumen de transacciones) son cero; ambos se mantienen constantes.</p>
+    <p>Además, la forma de la órbita, que no es un círculo perfecto, sino que está inclinada y estirada, representa las distintas fases por las que pasa el modelo:</p>
 
-        <p>Calculamos la tasa de crecimiento con la siguiente formula, primero definimos el precio en un momento de tiempo t, denominado \( P_t \)</p>    
+    <p>- Fase de Crecimiento (Abajo a la derecha): El precio sube porque hay pocas "fuerzas depredadoras" (poco volumen de venta/especulación).</p>
 
-        <p>Si definimos \( P_t \) como el precio (o población) en el tiempo t, y \( P_{t-1} \) como el precio en el periodo de tiempo anterior, la fórmula para el crecimiento nos queda: \( \frac{P_t - P_{t-1}}{P_{t-1}} \)</p>
+    <p>- Fase de Depredación (Arriba a la derecha): El volumen alcanza su máximo justo cuando el precio empieza a flaquear. El "depredador" está en su apogeo.</p>
 
-        <p>Mide el cambio porcentual directo respecto al día anterior, por ejemplo el precio crecio un  \( x\%  \). Basicamente esta tasa de crecimiento aritmética sirve para representar las variaciones porcentuales diarias de la acción y el volumen, sirviendo como aproximación discreta de las derivadas en las ecuaciones de Lotka-Volterra.</p>
+    <p>- Fase de Declive (Arriba a la izquierda): El alto volumen agota el movimiento y el precio cae.</p>
 
-    <section>
+    <p>- Fase de Recuperación (Abajo a la izquierda): Ambos están en mínimos; el sistema descansa para reiniciar el ciclo.</p>
 
-        
-    <section>
-        <p>Proyecto para el curso de Cálculo III, ecuaciones diferenciales y sistemas dinámicos</p>
-        <h2>Implementacion codigo</h2>
+    <p>Podemos observar un gráfico de Correlación Cruzada (CCF):</p>
+    <img 
+        src="../images/Imagen51.png"
+        alt="Título"
+        class="img-proyecto"
+        width="900"
+    >  
 
-        <p>En nuestro caso implementamos codigo para obtener el punto de equilibrio, el cual resulto ser (0.3890509, 0.3208804)</p>
+    <p>Este gráfico nos muestra la causalidad y el desfase temporal entre el Precio (Presa) y el Volumen (Depredador).</p>
+    <p>Existe una correlación negativa, porque en el CCF todas las barras están del lado negativo del eje Y.</p>
+    <p>Existe una relación inversa dominante: en las acciones de Twitter, los picos de Volumen de transacciones (Depredador) tienden a coincidir con caídas en el Precio o con momentos de alta volatilidad donde el precio pierde estabilidad.</p>
+    <p>En un sistema depredador-presa, cuando la población de depredadores (volumen de transacciones) llega a su punto máximo, la población de presas (precio) suele bajar por la "sobre-depredación".</p>
 
-         <p>En cuanto al grafico de la interaccion entre el volumen de transacciones y los precios obtuvimos lo siguiente:</p>
-            <img 
-                src="../images/Imagen49.png"
-                alt="Título"
-                class="img-proyecto"
-                width="900"
-            >
+    <p>Si analizamos el desfase (Lag), tenemos que en el eje X se representa el "Lag" o retraso en días.</p>
+    <p>Hacia el Lag -30 (izquierda), el comportamiento pasado del volumen tiene una fuerte influencia en el precio actual.</p>
+    <p>Cerca del Lag 0, tenemos la interacción inmediata. La correlación negativa aquí indica que, en el momento en que el volumen de transacciones sube, el precio tiende a bajar.</p>
+    <p>Con respecto a la simetría, que la correlación se mantenga negativa en un rango amplio de días confirma que no es un evento aislado, sino un ciclo de retroalimentación persistente.</p>
+</section>
 
-             <p>Tenemos picos en 2021 y 2022. El área azul (Precio) sube primero y, casi inmediatamente después, el área verde (Volumen de transacciones) sube y lo alcanza. 
-                 El aumento de precios permite que el volumen de transacciones crezca, esto puede deberse a que el aumento de precio atrae el interés de los usuarios y aumenta el numero de transacciones. 
-                 Al final del gráfico (2022), se da el pico verde más alto de toda la serie. Cuando el (volumen) es muy alto, termina bajando al precio.
-                 Evidentemente, el grafico no es igual al grafico teorico, pero vemos que sigue un comportamiento similar, por lo que podemos decir que las acciones de Twitter tienen ciclos de depredador-presa. 
-                 El volumen de transacciones se expande ante el crecimiento del precio, pero puede llegar a saturar el mercado, provocando colapsos cíclicos que obligan al sistema a buscar puntos de equilibrio</p>        
-         
+<section>
+    <h2>Conclusión</h2>
 
-
-            
-         <p>Luego para el grafico de orbita obtuvimos lo siguiente<p>
-                         <img 
-                src="../images/Imagen50.png"
-                alt="Título"
-                class="img-proyecto"
-                width="900"
-            >  
-
-             <p>Cada órbita es un nivel diferente de volatilidad, cuand se entra en una órbita, se mantendrá rotando en ella para siempre a menos que un factor externo lo empuje a otra.</p>
-             <p>El asterisco es el punto de equilibrio, donde la tasa de crecimiento de la presa (Precio) y del depredador (Volumen de transacciones) son cero, ambos se mantienen constantes</p>
-             <p>Ademas la forma de la Órbita, que no es un círculo perfecto, sino que están inclinadas y estiradas, representan las distintas fases por las que pasa el modelo:</p>
-
-             <p> -Fase de Crecimiento (Abajo a la derecha): El precio sube porque hay pocas "fuerzas depredadoras" (poco volumen de venta/especulación).</p>
-
-             <p> - Fase de Depredación (Arriba a la derecha): El volumen alcanza su máximo justo cuando el precio empieza a flaquear. El "depredador" está en su apogeo.</p>
-
-             <p> - Fase de Declive (Arriba a la izquierda): El alto volumen agota el movimiento y el precio cae.</p>
-
-             <p> - Fase de Recuperación (Abajo a la izquierda): Ambos están en mínimos; el sistema descansa para reiniciar el ciclo.</p>
-            
-            <p>Podemos observar un grafico de Correlación Cruzada (CCF)</p>
-            <img 
-                src="../images/Imagen51.png"
-                alt="Título"
-                class="img-proyecto"
-                width="900"
-            >  
-
-            <p>Este grafico nos muestra la causalidad y el desfase temporal entre el Precio (Presa) y el Volumen (Depredador).</p>
-            <p>Existe una  Correlación Negativa, porque en el CCF, todas las barras estan del lado negativo del eje Y</p>
-            <p>Existe una relación inversa dominante, en las acciones de Twitter, los picos de Volumen de transacciones (depredador) tienden a coincidir con caídas en el Precio o con momentos de alta volatilidad donde el precio pierde estabilidad.</p>
-            <p>En un sistema depredador-presa, cuando la población de depredadores (volumen de transacciones) llega a su punto máximo, la población de presas (precio) suele bajar por la "sobre-depredación".</p>
-
-            <p>Si analizamos del Desfase (Lag), tenemos que en el eje X tenemos el "Lag" o retraso en días</p>
-            <p>Hacia el Lag -30 (Izquierda), tenemos que el comportamiento pasado del volumen tiene una fuerte influencia en el precio actual.</p>
-            <p>Cerca del Lag 0, tenemos la interacción inmediata. La correlación negativa aquí indica que en el momento en que el volumen de transacciones sube, el precio tiende a bajar.</p>
-            <p>Con respecto a la simetría, que la correlación se mantenga negativa en un rango amplio de días confirma que no es un evento aislado, sino un ciclo de retroalimentación persistente.</p>
-     </section>
-     <section>
-        <h2>Conclusion</h2>
-
-         <p>A través de la aplicación del modelo de Lotka-Volterra, se ha validado que el Precio (Presa) y el Volumen de transacciones(Depredador) de Twitter mantienen una relación de interdependencia cíclica. El volumen de transacciones se ve influido por la volatilidad del precio, alcanzando su maximo justo antes de que el precio de mercado sufra correcciones, tal como predice la teoría de depredador-presa.transacciones</p>
-         <p>El análisis de Correlación Cruzada mostro el desfase temporal (lag) entre las variables. La persistencia de correlaciones negativas en distintos lapsos de tiempo refuerza la idea de que el volumen de transacciones excesivo suele ser un indicador de que bajara el precio.</p>
-     <section>
+    <p>A través de la aplicación del modelo de Lotka-Volterra, se ha validado que el Precio (Presa) y el Volumen de transacciones (Depredador) de Twitter mantienen una relación de interdependencia cíclica. El volumen de transacciones se ve influido por la volatilidad del precio, alcanzando su máximo justo antes de que el precio de mercado sufra correcciones, tal como predice la teoría de depredador-presa.</p>
+    <p>El análisis de Correlación Cruzada mostró el desfase temporal (Lag) entre las variables. La persistencia de correlaciones negativas en distintos lapsos de tiempo refuerza la idea de que el volumen de transacciones excesivo suele ser un indicador de que bajará el precio.</p>
+</section>
   </body>
 </html>
