@@ -13,6 +13,19 @@
  </head>
 <body>
     <section>
+<div class="lang-switch">
+  <button onclick="traducir('en')"><img src="../images/us.png"> English</button>
+  <button onclick="traducir('es')"><img src="../images/es.png"> Español</button>
+</div>
+
+<div id="google_translate_element" style="display:none"></div>
+
+<script src="../js/lang.js"></script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+
+     
 <p>Proyecto para el curso de Cálculo III, ecuaciones diferenciales y sistemas dinámicos</p>
 <h2>Introducción al modelo de Lotka-Volterra</h2>
 <p>Este proyecto utiliza el modelo matemático de Lotka-Volterra que describe la interacción entre depredadores y presas para analizar la dinámica financiera de la acción de Twitter. En lugar de especies biológicas, el modelo analiza la relación entre el Precio (Presa) y el Volumen de transacciones (Depredador), demostrando que los mercados financieros operan con ciclos de retroalimentación y límites de recursos.</p>
